@@ -35,37 +35,40 @@ $gantry->addScript('rokmediaqueries.js');
 ob_start();
 ?>
 <body <?php echo $gantry->displayBodyTag(); ?>>
-	<div id="rt-top-surround">
-		<div id="rt-header">
-			<div class="rt-container">
-				<?php echo $gantry->displayModules('header','standard','standard'); ?>
-				<div class="clear"></div>
-			</div>
-		</div>
-	</div>
-	<div class="rt-container">
-		<div class="component-content">
-			<div class="rt-grid-12">
-				<div class="rt-block">
-					<div class="rt-error-rocket"></div>
-					<div class="rt-error-content">
-						<h1 class="error-title title">Error: <span><?php echo $this->error->getCode(); ?></span> - <?php echo $this->error->getMessage(); ?></h1>
-						<div class="error-content">
-						<p><strong>You may not be able to visit this page because of:</strong></p>
-						<ol>
-							<li>an out-of-date bookmark/favourite</li>
-							<li>a search engine that has an out-of-date listing for this site</li>
-							<li>a mistyped address</li>
-							<li>you have no access to this page</li>
-							<li>The requested resource was not found.</li>
-							<li>An error has occurred while processing your request.</li>
-						</ol>
-						<p><a href="<?php echo $gantry->baseUrl; ?>" class="readon"><span>&larr; Home</span></a></p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div id="rt-top-surround">
+        <div id="rt-header">
+            <div class="rt-container">
+                <?php echo $gantry->displayModules('header','standard','standard'); ?>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <div class="rt-container">
+        <div class="component-content">
+            <div class="rt-grid-12">
+                <div class="rt-block">
+                    <div class="rt-error-content">
+                        <h1 class="error-title title">Error: <span><?php echo $this->error->getCode(); ?></span> - <?php echo $this->error->getMessage(); ?></h1>
+                            <div class="error-content">
+                                <p><strong>Lo sentimos pero la página solicitada no está disponible. Es posible que por alguno de los siguientes motivos:</strong></p>
+                                <ol>
+                                    <li>Un marcador o favorito obsoleto</li>
+                                    <li>Un buscador que tenga información obsoleta sobre este sitio web</li>
+                                    <li>Que haya ocurrido un error procesando la petición</li>
+                                    <li>Una dirección web mal escrita</li>
+                                    <li>No tener acceso a la página en cuestión</li>
+                                    <li>El recurso solicitado no ha sido encontrado</li>
+                                </ol>
+                                <p>
+                                    <a href="<?php echo $gantry->baseUrl; ?>" class="readon"><span>&larr; Ir a la página de inicio</span></a>
+                                    <a title="Ir al área de contacto para informar del error" class="readon" href="contacto">Informar del error</a>
+                                </p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 <?php
