@@ -1,0 +1,275 @@
+/**
+ * @version   $Id: template.less 5229 2012-11-16 17:12:08Z kevin $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
+
+// Core
+a {
+	.transition(color 0.2s ease-out);
+}
+#rt-transition.rt-hidden {
+	opacity: 0;
+}
+#rt-transition.rt-visible {
+	opacity: 1;
+	.transition(opacity 0.4s ease-in);
+}
+
+// Logo
+.logo-block {
+	padding: 0 15px;
+	margin: 7px 10px;
+}
+#rt-logo {
+	margin: 0;
+	width: 112px;
+	height: 46px;
+	display: block;
+}
+
+// Header
+#rt-top-surround {
+	position: relative;
+}
+#rt-top-surround:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 0;
+}
+#rt-header, #rt-top {
+	z-index: 2;
+	position: relative;
+}
+
+// Navigation
+.menu-block {
+	padding: 0;
+	margin: 0;
+}
+.rt-menu-mobile {
+	text-align: center;
+	padding: 0 0 15px 0;
+}
+
+// Main
+#rt-maintop {
+	padding-top: 20px;
+}
+
+// Modules
+.title, .component-content h2 {
+	font-size: @baseFontSize * 2;
+	line-height: @baseLineHeight * 1.5;
+	font-weight: normal;
+	letter-spacing: normal;
+	margin-top: 0;
+	padding-bottom: 15px;
+	margin-bottom: 15px;
+}
+#rt-top-surround, #rt-showcase {
+	.title {
+		border: none;
+		box-shadow: none;
+	}
+}
+.title1 {
+	.title {
+		margin: -11px -16px 20px -16px;
+		padding: 10px 15px;
+		.border-radius(4px);
+	}
+}
+.title2 {
+	.title {
+		margin: -10px -15px 20px -15px;
+		padding: 10px 15px;
+		.border-radius(4px);
+	}
+}
+.title3 {
+	.title {
+		margin: -10px -15px 20px -15px;
+		padding: 10px 15px;
+		.border-radius(4px);
+	}
+}
+.box1, .box2, .box3 {
+	.border-radius(4px);
+}
+.box1 {
+	.module-surround {
+		margin: -1px;
+	}
+}
+
+// Menu Module
+ul.menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	ul {
+		list-style: none;
+	}
+	li {
+		margin-bottom: 8px;
+		a, .item, .separator {
+			display: block;
+			font-size: 1.1em;
+			font-weight: bold;
+		}
+		a:before, .item:before, .separator:before {
+			content: "\2022";
+			font-family: FontAwesome;
+			margin-right: 10px;
+			display: inline;
+			vertical-align: middle;
+			font-size: 1.6em;
+			font-weight: normal;
+		}
+	}
+	li.active.current, li#current.active {
+		> a:before, > .item:before, > .separator:before {
+			content: "\f054";
+			font-size: 1em;
+			margin-right: 11px;
+		}
+	}
+	ul.small {
+		font-size: 14px;
+	}
+}
+
+// Buttons and Inputs
+.button, .readon, .readmore, button.validate, #member-profile a, #member-registration a, .formelm-buttons button {
+	display: inline-block;
+	padding: 3px 10px;
+	line-height: 1.7em;
+	font-size: 1em;
+	.border-radius(4px);
+	border: 1px solid;
+}
+
+// Extras
+.promo-image {
+	float: left;
+	margin: -10px 10px -30px -40px;
+	width: 30%;
+	img {
+		max-width: 100%;
+	}
+}
+.promo-desc {
+	padding-top: 10px;
+}
+.promo {
+	h1 {
+		position: relative;
+		font-size: 3.9em;
+		line-height: 1.2em;
+	}
+	p {
+		font-size: 1.5em;
+		line-height: 1.7em;
+	}
+	.readon {
+		margin-top: 10px;
+	}
+}
+
+.gantry-example {
+	position: relative;
+	margin: 15px 0;
+	padding: 39px 19px 14px;
+	*padding-top: 19px;
+	background-color: @white;
+	border: 1px solid #dddddd;
+	.border-radius(4px);
+	.table, .well, blockquote {
+		margin-bottom: 5px;
+	}
+	.lead {
+		font-size: 18px;
+		line-height: 24px;
+	}
+	> p:last-child {
+		margin-bottom: 0;
+	}
+	+ .prettyprint {
+		margin-top: -20px;
+		padding-top: 15px;
+	}
+}
+.gantry-example:after {
+	content: "Example";
+	position: absolute;
+	top: -1px;
+	left: -1px;
+	padding: 3px 7px;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: #f5f5f5;
+	border: 1px solid #dddddd;
+	color: #9da0a4;
+	.border-radius(4px 0 4px 0);
+	font-style: normal;
+}
+form.gantry-example {
+	padding-bottom: 19px;
+}
+
+// Images
+.gantry-img img, img.gantry-img {
+	max-width: 100%;
+	height: auto;
+}
+
+// Branding
+.powered-by {
+	display: block;
+	width: 120px;
+	height: 32px;
+	margin: 0 auto;
+	opacity: 0.8;
+	.transition(opacity 0.2s ease-in);
+	&:hover {
+		opacity: 1;
+	}
+}
+
+// Features
+#gantry-totop {
+	display: inline-block;
+	padding: 4px 10px;
+	.border-radius(3px);
+}
+#rt-accessibility {
+	.rt-desc {
+		float: left;
+		margin-right: 8px;
+		font-weight: bold;
+	}
+	#rt-buttons {
+		.button {
+			line-height: 1em;
+			padding: 0;
+			width: 14px;
+			height: 14px;
+			text-align: center;
+		}
+		.small {
+			font-size: inherit;
+		}
+		.small .button:after {
+			content: '-';
+		}
+		.large .button:after {
+			content: '+';
+		}
+	}
+}

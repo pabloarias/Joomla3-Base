@@ -1,0 +1,141 @@
+/**
+* @version   $Id$
+* @author    RocketTheme http://www.rockettheme.com
+* @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+* @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
+*/
+
+// Top Section -----------------
+@topbackground:			#3b3b3b;
+@topbackground2:		#2e2e2e;
+@toptext:				#adadad;
+@toptitle:				#ffffff;
+@topshadow:				#000000;
+
+// Showcase --------------------
+@showcasebackground:	#212121;
+@showcasebackground2:	#4c4c4c;
+@showcasebackground3:	#7db9e8;
+@showcasetext:			#bbbbbb;
+@showcasetitle:			#ffffff;
+
+// Logo
+.logo-type-gantry #rt-logo {
+	background: url(../images/logo/dark/logo.png) 0 0 no-repeat;
+}
+
+// Top
+#rt-top-surround {
+	#gradient > .vertical(@topbackground, @topbackground2);
+	color: @toptext;
+	text-shadow: 0 2px 3px @topshadow;
+	.box-shadow(0 2px 4px rgba(0,0,0,0.4));
+	border-bottom: 1px solid @topshadow;
+	.title {
+		color: @toptitle;
+		text-shadow: 1px 1px 1px @topshadow;
+	}
+	a {
+		&:hover {
+			color: @toptitle;
+		}
+	}
+}
+
+#rt-top-surround:after {
+	background: url(../images/patterns/noise.png);
+}
+
+// Showcase
+#rt-showcase {
+	#gradient > .vertical(@showcasebackground, @showcasebackground2);
+	color: @showcasetext;
+	border-bottom: 1px solid @white;
+	.box-shadow(inset 0 -1px 0 @topshadow);
+	text-shadow: 0 2px 3px @topshadow;
+		.title {
+			color: @showcasetitle;
+			text-shadow: 1px 1px 1px @topshadow;
+		}
+}
+#rt-showcase {
+	a {
+		&:hover {
+			color: @showcasetitle;
+		}
+	}
+}
+
+.rt-showcase-pattern {
+background-image: -webkit-linear-gradient(rgba(0,0,0,0.1) 2px, transparent 2px),-webkit-linear-gradient(0, rgba(0,0,0,0.1) 2px, transparent 2px),-webkit-linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),-webkit-linear-gradient(0, rgba(0,0,0,0.1) 1px, transparent 1px);background-size:80px 80px, 80px 80px, 5px 5px, 5px 5px;background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px;}
+
+// Modules
+.title3 {
+	.title {
+		#gradient > .vertical(@topbackground, @topbackground2);
+		.box-shadow(0 2px 4px rgba(0,0,0,0.4));
+		border-bottom: 1px solid @topshadow;
+		color: @toptitle;text-shadow: 1px 1px 1px @topshadow;
+	}
+}
+
+.box3 {
+	#gradient > .vertical(@topbackground, @topbackground2);
+	.box-shadow(0 2px 4px rgba(0,0,0,0.4));
+	border-bottom: 1px solid @topshadow;
+	color: @toptext;text-shadow: 0 2px 3px @topshadow;
+	.title {
+		color: @toptitle;
+		text-shadow: 1px 1px 1px @topshadow;
+		border-bottom: 1px solid @showcasebackground;
+		.box-shadow(0 1px 0 @showcasebackground2);
+	}
+	a {
+		&:hover {
+			color: @toptitle;
+		}
+	}
+}
+
+// Module Overrides
+#rt-showcase, #rt-top-surround {
+	.box3 {
+		.title {
+			border-bottom: 1px solid @showcasebackground;
+			.box-shadow(0 1px 0 @showcasebackground2);
+		}
+	}
+	.title3 {
+		.title {
+			.box-shadow(0 2px 4px rgba(0,0,0,0.4));
+			border-bottom: 1px solid @topshadow;
+		}
+	}
+	.button, .readon, .readmore, button.validate, .formelm-buttons button {
+		&:active {
+			.box-shadow(0 1px 0 rgba(255,255,255,0.2));
+		}
+	}
+}
+
+// Extras
+.promo {
+	h1 {
+		text-shadow: 1px 2px 7px rgba(0,0,0,0.9);
+		b {
+			color: #e7ecf0;
+			-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 1)), color-stop(40%, rgba(0, 0, 0, 1)), color-stop(100%, rgba(0, 0, 0, 0.50)));
+			mask: url(../images/mask.svg#light);
+		}
+
+	}
+	p b {
+		color: @toptitle;
+	}
+}
+
+#rt-drawer {
+	background: @topbackground;
+	border-bottom: 1px solid @topshadow;
+	.box-shadow(inset 0 -2px 4px rgba(0,0,0,0.4));
+}
