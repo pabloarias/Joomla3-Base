@@ -16,6 +16,14 @@ defined('_JEXEC') or die;
 class NewsfeedsTableNewsfeed extends JTable
 {
 	/**
+	 * Helper object for storing and deleting tag information.
+	 *
+	 * @var    JHelperTags
+	 * @since  3.1
+	 */
+	protected $tagsHelper = null;
+
+	/**
 	 * Constructor
 	 *
 	 * @param JDatabaseDriver A database connector object
@@ -23,6 +31,8 @@ class NewsfeedsTableNewsfeed extends JTable
 	public function __construct(&$db)
 	{
 		parent::__construct('#__newsfeeds', 'id', $db);
+		$this->tagsHelper = new JHelperTags();
+		$this->tagsHelper->typeAlias = 'com_newsfeeds.newsfeed';
 	}
 
 	/**
@@ -119,8 +129,26 @@ class NewsfeedsTableNewsfeed extends JTable
 
 		return true;
 	}
+
 	/**
-	 * Overriden JTable::store to set modified data and user id.
+	 * Override parent delete method to delete tags information.
+	 *
+	 * @param   integer  $pk  Primary key to delete.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.1
+	 * @throws  UnexpectedValueException
+	 */
+	public function delete($pk = null)
+	{
+		$result = parent::delete($pk);
+		$this->tagsHelper->typeAlias = 'com_newsfeeds.newsfeed';
+		return $result && $this->tagsHelper->deleteTagData($this, $pk);
+	}
+
+	/**
+	 * Overriden JTable::store to set modified data.
 	 *
 	 * @param   boolean	True to update fields even if they are null.
 	 * @return  boolean  True on success.
@@ -149,14 +177,19 @@ class NewsfeedsTableNewsfeed extends JTable
 				$this->created_by = $user->get('id');
 			}
 		}
-	// Verify that the alias is unique
+		// Verify that the alias is unique
 		$table = JTable::getInstance('Newsfeed', 'NewsfeedsTable');
 		if ($table->load(array('alias' => $this->alias, 'catid' => $this->catid)) && ($table->id != $this->id || $this->id == 0))
 		{
 			$this->setError(JText::_('COM_NEWSFEEDS_ERROR_UNIQUE_ALIAS'));
 			return false;
 		}
-		return parent::store($updateNulls);
+
+		$this->tagsHelper->typeAlias = 'com_newsfeeds.newsfeed';
+		$this->tagsHelper->preStoreProcess($this);
+		$result = parent::store($updateNulls);
+
+		return $result && $this->tagsHelper->postStoreProcess($this);
 	}
 
 }

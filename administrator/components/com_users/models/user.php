@@ -49,6 +49,9 @@ class UsersModelUser extends JModelAdmin
 	{
 		$result = parent::getItem($pk);
 
+		$result->tags = new JHelperTags;
+		$result->tags->getTagIds($result->id, 'com_users.user');
+
 		// Get the dispatcher and load the users plugins.
 		$dispatcher	= JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('user');
@@ -111,19 +114,9 @@ class UsersModelUser extends JModelAdmin
 			$data = $this->getItem();
 		}
 
-		// TODO: Maybe this can go into the parent model somehow?
-		// Get the dispatcher and load the users plugins.
-		$dispatcher	= JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('user');
 
-		// Trigger the data preparation event.
-		$results = $dispatcher->trigger('onContentPrepareData', array('com_users.profile', $data));
-
-		// Check for errors encountered while preparing the data.
-		if (count($results) && in_array(false, $results, true))
-		{
-			$this->setError($dispatcher->getError());
-		}
+		$this->preprocessData('com_users.profile', $data);
 
 		return $data;
 	}
@@ -320,7 +313,7 @@ class UsersModelUser extends JModelAdmin
 
 				// Prepare the logout options.
 				$options = array(
-					'clientid' => array(0, 1)
+					'clientid' => 0
 				);
 
 				if ($allow)
@@ -582,8 +575,8 @@ class UsersModelUser extends JModelAdmin
 			$query = $db->getQuery(true);
 
 			// Remove users from the group
-			$query->delete($db->quoteName('#__user_usergroup_map'));
-			$query->where($db->quoteName('user_id') . ' IN (' . implode(',', $user_ids) . ')');
+			$query->delete($db->quoteName('#__user_usergroup_map'))
+				->where($db->quoteName('user_id') . ' IN (' . implode(',', $user_ids) . ')');
 
 			// Only remove users from selected group
 			if ($doDelete == 'group')
@@ -610,9 +603,9 @@ class UsersModelUser extends JModelAdmin
 			$query = $db->getQuery(true);
 
 			// First, we need to check if the user is already assigned to a group
-			$query->select($db->quoteName('user_id'));
-			$query->from($db->quoteName('#__user_usergroup_map'));
-			$query->where($db->quoteName('group_id') . ' = ' . (int) $group_id);
+			$query->select($db->quoteName('user_id'))
+				->from($db->quoteName('#__user_usergroup_map'))
+				->where($db->quoteName('group_id') . ' = ' . (int) $group_id);
 			$db->setQuery($query);
 			$users = $db->loadColumn();
 
@@ -635,8 +628,8 @@ class UsersModelUser extends JModelAdmin
 				return false;
 			}
 
-			$query->insert($db->quoteName('#__user_usergroup_map'));
-			$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
+			$query->insert($db->quoteName('#__user_usergroup_map'))
+				->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
 			$db->setQuery($query);
 
 			try

@@ -66,6 +66,16 @@ JHtml::_('behavior.keepalive');
 				<li><?php echo $this->form->getLabel('language'); ?>
 				<?php echo $this->form->getInput('language'); ?></li>
 
+				<!-- Tag field -->
+				<?php foreach ($this->get('form')->getFieldset('jmetadata') as $field) : ?>
+					<?php if ($field->name == 'jform[metadata][tags][]') :?>
+						<li>
+							<?php echo $field->label; ?>
+							<?php echo $field->input; ?>
+						</li>
+					<?php endif; ?>
+				<?php endforeach; ?>
+
 				<li><?php echo $this->form->getLabel('id'); ?>
 				<?php echo $this->form->getInput('id'); ?></li>
 
@@ -92,8 +102,30 @@ JHtml::_('behavior.keepalive');
 				<legend class="element-invisible"><?php echo JText::_('JGLOBAL_FIELDSET_METADATA_OPTIONS'); ?></legend>
 				<?php echo $this->loadTemplate('metadata'); ?>
 			</fieldset>
-			<?php
 
+			<?php
+				$fieldSets = $this->form->getFieldsets('attribs');
+					foreach ($fieldSets as $name => $fieldSet) :
+						if ($name != 'editorConfig' && $name != 'basic-limited') :
+							$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CATEGORIES_'.$name.'_FIELDSET_LABEL';
+							echo JHtml::_('sliders.panel', JText::_($label), $name.'-options');
+							if (isset($fieldSet->description) && trim($fieldSet->description)) :
+								echo '<p class="tip">'.$this->escape(JText::_($fieldSet->description)).'</p>';
+							endif;
+					?>
+						<div class="clr"></div>
+						<fieldset class="panelform">
+							<ul class="adminformlist">
+								<?php foreach ($this->form->getFieldset($name) as $field) : ?>
+									<li><?php echo $field->label; ?>
+									<?php echo $field->input; ?></li>
+								<?php endforeach; ?>
+							</ul>
+						</fieldset>
+						<?php endif; ?>
+					<?php endforeach;?>
+
+			<?php
 				$fieldSets = $this->form->getFieldsets('associations');
 
 				foreach ($fieldSets as $name => $fieldSet) :
@@ -112,7 +144,7 @@ JHtml::_('behavior.keepalive');
 							<?php endforeach; ?>
 						</ul>
 					</fieldset>
-			<?php endforeach;?>
+				<?php endforeach;?>
 
 		<?php echo JHtml::_('sliders.end'); ?>
 	</div>

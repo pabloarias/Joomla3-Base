@@ -16,21 +16,15 @@ defined('_JEXEC') or die;
  * @subpackage  Content.vote
  * @since       1.5
  */
-class plgContentVote extends JPlugin
+class PlgContentVote extends JPlugin
 {
 	/**
-	 * Constructor
+	 * Load the language file on instantiation.
 	 *
-	 * @access      protected
-	 * @param       object  $subject The object to observe
-	 * @param       array   $config  An array that holds the plugin configuration
-	 * @since       1.5
+	 * @var    boolean
+	 * @since  3.1
 	 */
-	public function __construct(& $subject, $config)
-	{
-		parent::__construct($subject, $config);
-		$this->loadLanguage();
-	}
+	protected $autoloadLanguage = true;
 
 	/**
 	 * @since   1.6
@@ -39,7 +33,7 @@ class plgContentVote extends JPlugin
 	{
 		$html = '';
 
-		if ($params->get('show_vote'))
+		if (!empty($params) && $params->get('show_vote', null))
 		{
 			$rating = (int) @$row->rating;
 
@@ -77,14 +71,14 @@ class plgContentVote extends JPlugin
 				}
 
 				// generate voting form
-				$html .= '<form method="post" action="' . $uri->toString() . '" class="form-inline">';
+				$html .= '<form method="post" action="' . htmlspecialchars($uri->toString()) . '" class="form-inline">';
 				$html .= '<span class="content_vote">';
 				$html .= '<label class="unseen element-invisible" for="content_vote_' . $row->id . '">'.JText::_('PLG_VOTE_LABEL').'</label>';
 				$html .= JHTML::_('select.genericlist', $options, 'user_rating', null, 'value', 'text', '5', 'content_vote_'.$row->id);
 				$html .= '&#160;<input class="btn btn-mini" type="submit" name="submit_vote" value="' . JText::_('PLG_VOTE_RATE') . '" />';
 				$html .= '<input type="hidden" name="task" value="article.vote" />';
 				$html .= '<input type="hidden" name="hitcount" value="0" />';
-				$html .= '<input type="hidden" name="url" value="' . $uri->toString() . '" />';
+				$html .= '<input type="hidden" name="url" value="' . htmlspecialchars($uri->toString()) . '" />';
 				$html .= JHtml::_('form.token');
 				$html .= '</span>';
 				$html .= '</form>';

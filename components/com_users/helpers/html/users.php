@@ -28,7 +28,8 @@ abstract class JHtmlUsers
 		{
 			return JText::_('COM_USERS_PROFILE_VALUE_NOT_FOUND');
 		}
-		else
+
+		elseif (!is_array($value))
 		{
 			return htmlspecialchars($value);
 		}
@@ -47,7 +48,7 @@ abstract class JHtmlUsers
 		}
 		else
 		{
-			$pathToXml = JPATH_ADMINISTRATOR.'/help/helpsites.xml';
+			$pathToXml = JPATH_ADMINISTRATOR . '/help/helpsites.xml';
 
 			$text = $value;
 			if (!empty($pathToXml) && $xml = simplexml_load_file($pathToXml))
@@ -65,10 +66,11 @@ abstract class JHtmlUsers
 			$value = htmlspecialchars($value);
 			if (substr($value, 0, 4) == "http")
 			{
-				return '<a href="'.$value.'">'.$text.'</a>';
+				return '<a href="' . $value . '">' . $text . '</a>';
 			}
-			else {
-				return '<a href="http://'.$value.'">'.$text.'</a>';
+			else
+			{
+				return '<a href="http://' . $value . '">' . $text . '</a>';
 			}
 		}
 	}
@@ -82,17 +84,18 @@ abstract class JHtmlUsers
 		else
 		{
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select('title');
-			$query->from('#__template_styles');
-			$query->where('id = '.$db->quote($value));
+			$query = $db->getQuery(true)
+				->select('title')
+				->from('#__template_styles')
+				->where('id = ' . $db->quote($value));
 			$db->setQuery($query);
 			$title = $db->loadResult();
 			if ($title)
 			{
 				return htmlspecialchars($title);
 			}
-			else {
+			else
+			{
 				return self::value('');
 			}
 		}
@@ -119,7 +122,8 @@ abstract class JHtmlUsers
 			{
 				return htmlspecialchars($result['name']);
 			}
-			else {
+			else
+			{
 				return self::value('');
 			}
 		}
@@ -146,7 +150,8 @@ abstract class JHtmlUsers
 			{
 				return htmlspecialchars($result['name']);
 			}
-			else {
+			else
+			{
 				return self::value('');
 			}
 		}
@@ -162,20 +167,20 @@ abstract class JHtmlUsers
 		{
 			$db = JFactory::getDbo();
 			$lang = JFactory::getLanguage();
-			$query = $db->getQuery(true);
-			$query->select('name');
-			$query->from('#__extensions');
-			$query->where('element = '.$db->quote($value));
-			$query->where('folder = '.$db->quote('editors'));
+			$query = $db->getQuery(true)
+				->select('name')
+				->from('#__extensions')
+				->where('element = ' . $db->quote($value))
+				->where('folder = ' . $db->quote('editors'));
 			$db->setQuery($query);
 			$title = $db->loadResult();
 			if ($title)
 			{
-					$lang->load("plg_editors_$value.sys", JPATH_ADMINISTRATOR, null, false, false)
-				||	$lang->load("plg_editors_$value.sys", JPATH_PLUGINS . '/editors/' . $value, null, false, false)
-				||	$lang->load("plg_editors_$value.sys", JPATH_ADMINISTRATOR, $lang->getDefault(), false, false)
-				||	$lang->load("plg_editors_$value.sys", JPATH_PLUGINS . '/editors/' . $value, $lang->getDefault(), false, false);
-				$lang->load($title.'.sys');
+				$lang->load("plg_editors_$value.sys", JPATH_ADMINISTRATOR, null, false, false)
+					|| $lang->load("plg_editors_$value.sys", JPATH_PLUGINS . '/editors/' . $value, null, false, false)
+					|| $lang->load("plg_editors_$value.sys", JPATH_ADMINISTRATOR, $lang->getDefault(), false, false)
+					|| $lang->load("plg_editors_$value.sys", JPATH_PLUGINS . '/editors/' . $value, $lang->getDefault(), false, false);
+				$lang->load($title . '.sys');
 				return JText::_($title);
 			}
 			else
@@ -184,5 +189,4 @@ abstract class JHtmlUsers
 			}
 		}
 	}
-
 }

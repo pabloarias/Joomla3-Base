@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
  * @subpackage  Editors.tinymce
  * @since       1.5
  */
-class plgEditorTinymce extends JPlugin
+class PlgEditorTinymce extends JPlugin
 {
 	/**
 	 * Base path for editor files
@@ -24,18 +24,12 @@ class plgEditorTinymce extends JPlugin
 	protected $_basePath = 'media/editors/tinymce/jscripts/tiny_mce';
 
 	/**
-	 * Constructor
+	 * Load the language file on instantiation.
 	 *
-	 * @param  object  $subject  The object to observe
-	 * @param  array   $config   An array that holds the plugin configuration
-	 *
-	 * @since       1.5
+	 * @var    boolean
+	 * @since  3.1
 	 */
-	public function __construct(&$subject, $config)
-	{
-		parent::__construct($subject, $config);
-		$this->loadLanguage();
-	}
+	protected $autoloadLanguage = true;
 
 	/**
 	 * Initialises the Editor.
@@ -92,12 +86,11 @@ class plgEditorTinymce extends JPlugin
 		/*
 		 * Lets get the default template for the site application
 		 */
-		$db		= JFactory::getDBO();
-		$query	= $db->getQuery(true);
-
-		$query->select('template');
-		$query->from('#__template_styles');
-		$query->where('client_id=0 AND home=' . $db->quote('1'));
+		$db		= JFactory::getDbo();
+		$query	= $db->getQuery(true)
+			->select('template')
+			->from('#__template_styles')
+			->where('client_id=0 AND home=' . $db->quote('1'));
 
 		$db->setQuery($query);
 		$template = $db->loadResult();

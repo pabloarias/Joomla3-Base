@@ -131,11 +131,11 @@ class ContentModelCategory extends JModelList
 			// limit to published for people who can't edit or edit.state.
 			$this->setState('filter.published', 1);
 			// Filter by start and end dates.
-			$nullDate = $db->Quote($db->getNullDate());
-			$nowDate = $db->Quote(JFactory::getDate()->toSQL());
+			$nullDate = $db->quote($db->getNullDate());
+			$nowDate = $db->quote(JFactory::getDate()->toSQL());
 
-			$query->where('(a.publish_up = ' . $nullDate . ' OR a.publish_up <= ' . $nowDate . ')');
-			$query->where('(a.publish_down = ' . $nullDate . ' OR a.publish_down >= ' . $nowDate . ')');
+			$query->where('(a.publish_up = ' . $nullDate . ' OR a.publish_up <= ' . $nowDate . ')')
+				->where('(a.publish_down = ' . $nullDate . ' OR a.publish_down >= ' . $nowDate . ')');
 		}
 		else
 		{
@@ -240,7 +240,8 @@ class ContentModelCategory extends JModelList
 					$this->setError($model->getError());
 				}
 			}
-			else {
+			else
+			{
 				$this->_articles = array();
 			}
 
@@ -361,7 +362,7 @@ class ContentModelCategory extends JModelList
 	}
 
 	/**
-	 * Get the parent categorie.
+	 * Get the parent category.
 	 *
 	 * @param   integer  An optional category id. If not supplied, the model state 'category.id' will be used.
 	 *
@@ -452,10 +453,10 @@ class ContentModelCategory extends JModelList
 		$pk = (!empty($pk)) ? $pk : (int) $this->getState('category.id');
 
 		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-		$query->update('#__categories');
-		$query->set('hits = hits + 1');
-		$query->where('id = ' . (int) $pk);
+		$query = $db->getQuery(true)
+			->update('#__categories')
+			->set('hits = hits + 1')
+			->where('id = ' . (int) $pk);
 		$db->setQuery($query);
 
 		try

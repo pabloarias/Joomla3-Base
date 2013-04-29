@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
  * @subpackage  mod_login
  * @since       1.5
  */
-class modLoginHelper
+class ModLoginHelper
 {
 	public static function getReturnURL($params, $type)
 	{
@@ -26,12 +26,11 @@ class modLoginHelper
 		if ($itemid = $params->get($type))
 		{
 			$db		= JFactory::getDbo();
-			$query	= $db->getQuery(true);
-
-			$query->select($db->quoteName('link'));
-			$query->from($db->quoteName('#__menu'));
-			$query->where($db->quoteName('published') . '=1');
-			$query->where($db->quoteName('id') . '=' . $db->quote($itemid));
+			$query	= $db->getQuery(true)
+				->select($db->quoteName('link'))
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('published') . '=1')
+				->where($db->quoteName('id') . '=' . $db->quote($itemid));
 
 			$db->setQuery($query);
 			if ($link = $db->loadResult())

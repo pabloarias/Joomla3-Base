@@ -141,4 +141,20 @@ class ContentControllerArticle extends JControllerForm
 
 		return parent::batch($model);
 	}
+
+	/**
+	 * Function that allows child controller access to model data after the data has been saved.
+	 *
+	 * @param   JModelLegacy  $model  The data model object.
+	 * @param   array         $validData   The validated data.
+	 *
+	 * @return	void
+	 *
+	 * @since	3.1
+	 */
+	protected function postSaveHook(JModelLegacy $model, $validData = array())
+	{
+
+		return;
+	}
 }

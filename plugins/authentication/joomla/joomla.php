@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
  * @subpackage  Authentication.joomla
  * @since       1.5
  */
-class plgAuthenticationJoomla extends JPlugin
+class PlgAuthenticationJoomla extends JPlugin
 {
 	/**
 	 * This method should handle any authentication and report back to the subject
@@ -41,11 +41,10 @@ class plgAuthenticationJoomla extends JPlugin
 
 		// Get a database object
 		$db		= JFactory::getDbo();
-		$query	= $db->getQuery(true);
-
-		$query->select('id, password');
-		$query->from('#__users');
-		$query->where('username=' . $db->Quote($credentials['username']));
+		$query	= $db->getQuery(true)
+			->select('id, password')
+			->from('#__users')
+			->where('username=' . $db->quote($credentials['username']));
 
 		$db->setQuery($query);
 		$result = $db->loadObject();

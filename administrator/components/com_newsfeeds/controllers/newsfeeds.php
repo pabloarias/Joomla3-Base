@@ -59,4 +59,7 @@ class NewsfeedsControllerNewsfeeds extends JControllerAdmin
 		// Close the application
 		JFactory::getApplication()->close();
 	}
+	protected function postDeleteHook(JModelLegacy $model, $ids = null)
+	{
+	}
 }
