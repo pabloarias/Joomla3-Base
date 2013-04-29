@@ -5,7 +5,7 @@ class JConfig {
 	public $display_offline_message = '1';
 	public $offline_image = '';
 	public $sitename = 'Joomla 3 - Base';
-	public $editor = 'tinymce';
+	public $editor = 'jce';
 	public $captcha = '0';
 	public $list_limit = '20';
 	public $access = '1';
@@ -55,7 +55,7 @@ class JConfig {
 	public $feed_limit = '10';
 	public $log_path = 'C:\\xampp\\htdocs\\Joomla3-Base/logs';
 	public $tmp_path = 'C:\\xampp\\htdocs\\Joomla3-Base/tmp';
-	public $lifetime = '15';
+	public $lifetime = '480';
 	public $session_handler = 'database';
 	public $MetaRights = '';
 	public $sitename_pagetitles = '0';
