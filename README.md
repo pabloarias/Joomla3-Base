@@ -18,7 +18,7 @@ Paquetes incluidos:
 - Editor JCE 2.3.2.4 + traducción al español
 - Xmap 2.3.3
 - Akeeba Backup 3.7.6 + traducción al español
-- Framework Gantry 4.1.9
+- Framework Gantry 4.1.9 + Roknavmenu 2.0.2
 - Title Manager 3.0
 
 Contenidos incluidos:
