@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: RokMenuProviderJoomla16.php 8586 2013-03-20 14:15:35Z steph $
+ * @version   $Id: RokMenuProviderJoomla16.php 9104 2013-04-04 02:26:54Z steph $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -52,8 +52,30 @@ if (!class_exists('RokMenuProviderJoomla16')) {
 		{
 			$app  = JFactory::getApplication();
 			$menu = $app->getMenu();
+
+            $attributes = array('menutype');
+            $values = array($args['menutype']);
+
+            //public level menu items
+            if (isset($args['check_access_level']) && $args['check_access_level']==0) {
+                $attributes[] = 'access';
+                $values[] = array(1);
+            }
+
+            //registered level menu items
+            elseif (isset($args['check_access_level']) && $args['check_access_level']==1) {
+                $attributes[] = 'access';
+                $values[] = array(1,2);
+            }
+
+            //user level menu items
+            else {
+                $attributes[] = 'access';
+                $values[] = JFactory::getUser()->getAuthorisedViewLevels();
+            }
+
 			// Get Menu Items
-			$rows = $menu->getItems('menutype', $args['menutype']);
+			$rows = $menu->getItems($attributes, $values);
 
 			$outputNodes = array();
 
@@ -159,7 +181,8 @@ if (!class_exists('RokMenuProviderJoomla16')) {
 					$node->setAccess($item->access);
 					$node->addSpanClass($node->getType());
 
-					$outputNodes[$node->getId()] = $node;
+                    // Add node to output list
+                    $outputNodes[$node->getId()] = $node;
 				}
 			}
 			return $outputNodes;

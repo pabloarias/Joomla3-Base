@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: RokNavMenu1XRenderer.php 4585 2012-10-27 01:44:54Z btowles $
+ * @version   $Id: RokNavMenu1XRenderer.php 9687 2013-04-24 20:37:47Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -231,7 +231,7 @@ class RokNavMenu1XRenderer implements RokMenuRenderer {
 
         $theme_type = 'Template';
         // Find if this is a Default or Template theme
-        if (dirname(JPath::clean($params->get('theme'))) == $default_module_theme_dir) {
+        if (dirname(JPath::clean($params->get('theme', $theme))) == $default_module_theme_dir) {
             $theme_type = 'Default';
         }
 
