@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.5
+-- version 3.5.2.2
 -- http://www.phpmyadmin.net
 --
--- Servidor: localhost
--- Tiempo de generación: 29-04-2013 a las 17:37:15
--- Versión del servidor: 5.5.16
--- Versión de PHP: 5.3.8
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 11-06-2013 a las 02:40:03
+-- Versión del servidor: 5.5.27
+-- Versión de PHP: 5.4.7
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Base de datos: `joomla3-base`
+-- Base de datos: `joomla3base`
 --
 
 -- --------------------------------------------------------
@@ -499,7 +499,7 @@ CREATE TABLE IF NOT EXISTS `nj65v_content_types` (
   `router` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`type_id`),
   KEY `idx_alias` (`type_alias`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10000 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Volcado de datos para la tabla `nj65v_content_types`
@@ -556,7 +556,7 @@ CREATE TABLE IF NOT EXISTS `nj65v_extensions` (
   KEY `element_clientid` (`element`,`client_id`),
   KEY `element_folder_clientid` (`element`,`folder`,`client_id`),
   KEY `extension` (`type`,`element`,`folder`,`client_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=730 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=733 ;
 
 --
 -- Volcado de datos para la tabla `nj65v_extensions`
@@ -712,13 +712,13 @@ INSERT INTO `nj65v_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 (719, 'FOF', 'library', 'lib_fof', '', 0, 1, 1, 0, '{"name":"FOF","type":"library","creationDate":"2013-04-23","author":"Nicholas K. Dionysopoulos \\/ Akeeba Ltd","copyright":"(C)2011-2013 Nicholas K. Dionysopoulos","authorEmail":"nicholas@akeebabackup.com","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"rev40A6B41-1366646702","description":"Framework-on-Framework (FOF) - A rapid component development framework for Joomla!","group":""}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (720, 'AkeebaStrapper', 'file', 'files_strapper', '', 0, 1, 0, 0, '{"name":"AkeebaStrapper","type":"file","creationDate":"July 2012","author":"Nicholas K. Dionysopoulos","copyright":"(C) 2012-2013 Akeeba Ltd.","authorEmail":"nicholas@dionysopoulos.me","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"1.0.0","description":"Namespaced jQuery, jQuery UI and Bootstrap for Akeeba products.","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (721, 'akeebabackup-es-ES', 'file', 'es-ES', '', 0, 1, 0, 0, '{"name":"akeebabackup-es-ES","type":"file","creationDate":"23 Apr 2013","author":"AkeebaBackup.com","copyright":"Copyright (C)2013 AkeebaBackup.com. All rights reserved.","authorEmail":"","authorUrl":"","version":"0.0.20132304114716","description":"Spanish (Castillian) translation file for Akeeba Backup","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(723, 'Gantry', 'library', 'lib_gantry', '', 0, 1, 1, 0, '{"name":"Gantry","type":"library","creationDate":"April 1, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"4.1.9","description":"Gantry Starting Template for Joomla! v4.1.9","group":""}', '{}', '{"last_update":1367226785}', '', 0, '0000-00-00 00:00:00', 0, 0),
-(724, 'gantry', 'component', 'com_gantry', '', 0, 1, 0, 0, '{"name":"Gantry","type":"component","creationDate":"April 1, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"4.1.9","description":"Gantry Starting Template for Joomla! v4.1.9","group":""}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(725, 'System - Gantry', 'plugin', 'gantry', 'system', 0, 1, 1, 0, '{"name":"System - Gantry","type":"plugin","creationDate":"April 1, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"4.1.9","description":"Gantry System Plugin for Joomla","group":""}', '{"debugloglevel":"63"}', '', '', 0, '0000-00-00 00:00:00', 1, 0),
+(724, 'gantry', 'component', 'com_gantry', '', 0, 1, 0, 0, '{"name":"Gantry","type":"component","creationDate":"May 7, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"4.1.10","description":"Gantry Starting Template for Joomla! v4.1.10","group":""}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(725, 'System - Gantry', 'plugin', 'gantry', 'system', 0, 1, 1, 0, '{"name":"System - Gantry","type":"plugin","creationDate":"May 7, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"4.1.10","description":"Gantry System Plugin for Joomla","group":""}', '{"debugloglevel":"63"}', '', '', 0, '0000-00-00 00:00:00', 1, 0),
 (726, 'gantry', 'template', 'gantry', '', 0, 1, 1, 0, '{"name":"gantry","type":"template","creationDate":"April 1, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"4.1.9","description":"Gantry Starting Template for Joomla! v4.1.9","group":""}', '{"master":"true"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (727, 'System - RokExtender', 'plugin', 'rokextender', 'system', 0, 1, 1, 0, '{"name":"System - RokExtender","type":"plugin","creationDate":"October 31, 2012","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2012 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"2.0.0","description":"System - Gantry","group":""}', '{"registered":"\\/modules\\/mod_roknavmenu\\/lib\\/RokNavMenuEvents.php"}', '', '', 0, '0000-00-00 00:00:00', 1, 0),
-(728, 'RokNavMenu', 'module', 'mod_roknavmenu', '', 0, 1, 1, 0, '{"name":"RokNavMenu","type":"module","creationDate":"April 1, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"2.0.1","description":"RocketTheme Customizable Navigation Menu","group":""}', '{"limit_levels":"0","startLevel":"0","endLevel":"0","showAllChildren":"0","filteringspacer2":"","theme":"default","custom_layout":"default.php","custom_formatter":"default.php","cache":"0","module_cache":"1","cache_time":"900","cachemode":"itemid"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(729, 'plg_system_titlemanager', 'plugin', 'titlemanager', 'system', 0, 1, 1, 0, '{"name":"plg_system_titlemanager","type":"plugin","creationDate":"April 2013","author":"Ercan \\u00d6zkaya","copyright":"(C) 2013 Ercan \\u00d6zkaya. All rights reserved.","authorEmail":"ercan@ozkaya.net","authorUrl":"http:\\/\\/ercanozkaya.com\\/","version":"3.0","description":"Title Manager","group":""}', '{"position":"after","frontpage":"1","separator":"{s}|{s}","sitename":"","frontpage_sitename":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0);
+(728, 'RokNavMenu', 'module', 'mod_roknavmenu', '', 0, 1, 1, 0, '{"name":"RokNavMenu","type":"module","creationDate":"June 7, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"2.0.3","description":"RocketTheme Customizable Navigation Menu","group":""}', '{"limit_levels":"0","startLevel":"0","endLevel":"0","showAllChildren":"0","filteringspacer2":"","theme":"default","custom_layout":"default.php","custom_formatter":"default.php","cache":"0","module_cache":"1","cache_time":"900","cachemode":"itemid"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(729, 'plg_system_titlemanager', 'plugin', 'titlemanager', 'system', 0, 1, 1, 0, '{"name":"plg_system_titlemanager","type":"plugin","creationDate":"April 2013","author":"Ercan \\u00d6zkaya","copyright":"(C) 2013 Ercan \\u00d6zkaya. All rights reserved.","authorEmail":"ercan@ozkaya.net","authorUrl":"http:\\/\\/ercanozkaya.com\\/","version":"3.0","description":"Title Manager","group":""}', '{"position":"after","frontpage":"1","separator":"{s}|{s}","sitename":"","frontpage_sitename":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(731, 'Gantry', 'library', 'lib_gantry', '', 0, 1, 1, 0, '{"name":"Gantry","type":"library","creationDate":"May 7, 2013","author":"RocketTheme, LLC","copyright":"(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.","authorEmail":"support@rockettheme.com","authorUrl":"http:\\/\\/www.rockettheme.com","version":"4.1.10","description":"Gantry Starting Template for Joomla! v4.1.10","group":""}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -1346,7 +1346,7 @@ CREATE TABLE IF NOT EXISTS `nj65v_menu` (
   KEY `idx_alias` (`alias`),
   KEY `idx_path` (`path`(255)),
   KEY `idx_language` (`language`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=113 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=114 ;
 
 --
 -- Volcado de datos para la tabla `nj65v_menu`
@@ -4871,8 +4871,8 @@ CREATE TABLE IF NOT EXISTS `nj65v_session` (
 --
 
 INSERT INTO `nj65v_session` (`session_id`, `client_id`, `guest`, `time`, `data`, `userid`, `username`) VALUES
-('i5527bf4ps39cf8fjp0rtan2k7', 1, 0, '1367248758', '__default|a:8:{s:15:"session.counter";i:309;s:19:"session.timer.start";i:1367223016;s:18:"session.timer.last";i:1367248757;s:17:"session.timer.now";i:1367248757;s:22:"session.client.browser";s:72:"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0";s:8:"registry";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":15:{s:11:"application";O:8:"stdClass":1:{s:4:"lang";s:0:"";}s:13:"com_installer";O:8:"stdClass":4:{s:7:"message";s:0:"";s:17:"extension_message";s:0:"";s:9:"languages";O:8:"stdClass":4:{s:6:"filter";O:8:"stdClass":1:{s:6:"search";s:7:"spanish";}s:10:"limitstart";s:1:"0";s:8:"ordercol";s:4:"name";s:9:"orderdirn";s:3:"asc";}s:12:"redirect_url";N;}s:16:"com_joomlaupdate";O:8:"stdClass":3:{s:4:"file";N;s:8:"password";s:32:"h3RSJHo6BB9Ng2s6Akj306Bw4dhFTlvX";s:8:"filesize";i:7457004;}s:10:"com_config";O:8:"stdClass":1:{s:6:"config";O:8:"stdClass":1:{s:6:"global";O:8:"stdClass":1:{s:4:"data";N;}}}s:13:"com_languages";O:8:"stdClass":3:{s:9:"installed";O:8:"stdClass":2:{s:8:"ordercol";s:6:"a.name";s:10:"limitstart";s:1:"0";}s:9:"overrides";O:8:"stdClass":5:{s:6:"filter";O:8:"stdClass":3:{s:6:"client";s:1:"0";s:8:"language";s:5:"es-ES";s:15:"language_client";s:6:"es-ES0";}s:10:"limitstart";i:0;s:8:"ordercol";s:3:"key";s:9:"orderdirn";s:3:"asc";s:10:"cachedtime";O:8:"stdClass":1:{s:4:"site";O:8:"stdClass":1:{s:5:"es-ES";i:1367248725;}}}s:4:"edit";O:8:"stdClass":1:{s:8:"override";O:8:"stdClass":1:{s:4:"data";N;}}}s:6:"global";O:8:"stdClass":1:{s:4:"list";O:8:"stdClass":1:{s:5:"limit";i:0;}}s:11:"com_content";O:8:"stdClass":1:{s:4:"edit";O:8:"stdClass":1:{s:7:"article";O:8:"stdClass":1:{s:4:"data";N;}}}s:8:"com_xmap";O:8:"stdClass":1:{s:4:"edit";O:8:"stdClass":1:{s:7:"sitemap";O:8:"stdClass":1:{s:4:"data";N;}}}s:14:"com_categories";O:8:"stdClass":1:{s:10:"categories";O:8:"stdClass":1:{s:6:"filter";O:8:"stdClass":1:{s:9:"extension";s:11:"com_contact";}}}s:10:"com_gantry";O:8:"stdClass":1:{s:4:"edit";O:8:"stdClass":1:{s:8:"template";O:8:"stdClass":2:{s:2:"id";a:0:{}s:4:"data";N;}}}s:11:"com_modules";O:8:"stdClass":3:{s:7:"modules";O:8:"stdClass":4:{s:6:"filter";O:8:"stdClass":8:{s:18:"client_id_previous";i:0;s:6:"search";s:0:"";s:6:"access";i:0;s:5:"state";s:0:"";s:8:"position";s:0:"";s:6:"module";s:0:"";s:9:"client_id";i:0;s:8:"language";s:0:"";}s:10:"limitstart";i:0;s:8:"ordercol";s:8:"position";s:9:"orderdirn";s:3:"asc";}s:4:"edit";O:8:"stdClass":1:{s:6:"module";O:8:"stdClass":2:{s:2:"id";a:0:{}s:4:"data";N;}}s:3:"add";O:8:"stdClass":1:{s:6:"module";O:8:"stdClass":2:{s:12:"extension_id";N;s:6:"params";N;}}}s:9:"com_menus";O:8:"stdClass":2:{s:4:"edit";O:8:"stdClass":2:{s:4:"menu";O:8:"stdClass":2:{s:4:"data";N;s:2:"id";a:0:{}}s:4:"item";O:8:"stdClass":5:{s:4:"data";N;s:4:"type";N;s:4:"link";N;s:2:"id";a:0:{}s:8:"menutype";s:11:"footer-menu";}}s:5:"items";O:8:"stdClass":3:{s:9:"published";s:1:"1";s:6:"filter";O:8:"stdClass":1:{s:8:"menutype";s:8:"mainmenu";}s:10:"limitstart";i:0;}}s:4:"item";O:8:"stdClass":1:{s:6:"filter";O:8:"stdClass":1:{s:8:"menutype";s:11:"footer-menu";}}s:11:"com_plugins";O:8:"stdClass":2:{s:7:"plugins";O:8:"stdClass":4:{s:6:"filter";O:8:"stdClass":4:{s:6:"search";s:0:"";s:6:"access";i:0;s:7:"enabled";s:0:"";s:6:"folder";s:0:"";}s:10:"limitstart";s:1:"0";s:8:"ordercol";s:6:"folder";s:9:"orderdirn";s:3:"asc";}s:4:"edit";O:8:"stdClass":1:{s:6:"plugin";O:8:"stdClass":2:{s:2:"id";a:0:{}s:4:"data";N;}}}s:11:"com_contact";O:8:"stdClass":1:{s:4:"edit";O:8:"stdClass":1:{s:7:"contact";O:8:"stdClass":2:{s:4:"data";N;s:2:"id";a:1:{i:0;i:1;}}}}}}s:4:"user";O:5:"JUser":24:{s:9:"\\0\\0\\0isRoot";b:1;s:2:"id";s:3:"868";s:4:"name";s:10:"Super User";s:8:"username";s:5:"admin";s:5:"email";s:20:"correo@pabloarias.eu";s:8:"password";s:65:"72822108c211c1912c82ec83216fb3dc:Y97cliAUHbslQuTC0mQT1XNIkqWYlp8J";s:14:"password_clear";s:0:"";s:5:"block";s:1:"0";s:9:"sendEmail";s:1:"1";s:12:"registerDate";s:19:"2013-03-19 09:25:50";s:13:"lastvisitDate";s:19:"2013-03-19 09:57:38";s:10:"activation";s:1:"0";s:6:"params";s:0:"";s:6:"groups";a:1:{i:8;s:1:"8";}s:5:"guest";i:0;s:13:"lastResetTime";s:19:"0000-00-00 00:00:00";s:10:"resetCount";s:1:"0";s:10:"\\0\\0\\0_params";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}}s:14:"\\0\\0\\0_authGroups";a:2:{i:0;i:1;i:1;i:8;}s:14:"\\0\\0\\0_authLevels";a:4:{i:0;i:1;i:1;i:1;i:2;i:2;i:3;i:3;}s:15:"\\0\\0\\0_authActions";N;s:12:"\\0\\0\\0_errorMsg";N;s:10:"\\0\\0\\0_errors";a:0:{}s:3:"aid";i:0;}s:13:"session.token";s:32:"6ac97891bc8b44c89406b6e274e5b934";}__wf|a:1:{s:13:"session.token";s:32:"acf5d652690c255c28fa76be12bc5949";}__akeeba|a:1:{s:7:"profile";i:1;}', 868, 'admin'),
-('r42866s8ajhqvkgb9497rkonk7', 0, 1, '1367249504', '__default|a:10:{s:15:"session.counter";i:118;s:19:"session.timer.start";i:1367223012;s:18:"session.timer.last";i:1367249501;s:17:"session.timer.now";i:1367249504;s:22:"session.client.browser";s:72:"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0";s:8:"registry";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":1:{s:5:"users";O:8:"stdClass":1:{s:5:"login";O:8:"stdClass":1:{s:4:"form";O:8:"stdClass":1:{s:4:"data";a:1:{s:6:"return";s:39:"index.php?option=com_users&view=profile";}}}}}}s:4:"user";O:5:"JUser":24:{s:9:"\\0\\0\\0isRoot";b:0;s:2:"id";i:0;s:4:"name";N;s:8:"username";N;s:5:"email";N;s:8:"password";N;s:14:"password_clear";s:0:"";s:5:"block";N;s:9:"sendEmail";i:0;s:12:"registerDate";N;s:13:"lastvisitDate";N;s:10:"activation";N;s:6:"params";N;s:6:"groups";a:1:{i:0;s:1:"9";}s:5:"guest";i:1;s:13:"lastResetTime";N;s:10:"resetCount";N;s:10:"\\0\\0\\0_params";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}}s:14:"\\0\\0\\0_authGroups";a:2:{i:0;i:1;i:1;i:9;}s:14:"\\0\\0\\0_authLevels";a:3:{i:0;i:1;i:1;i:1;i:2;i:5;}s:15:"\\0\\0\\0_authActions";N;s:12:"\\0\\0\\0_errorMsg";N;s:10:"\\0\\0\\0_errors";a:0:{}s:3:"aid";i:0;}s:13:"session.token";s:32:"40bcde5ba4257f3011c1e621a32bfa80";s:23:"gantry-current-template";s:6:"gantry";s:16:"com_mailto.links";a:2:{s:40:"00eb1eb81e4d215caa3512ca6a0c8b081df10ed8";O:8:"stdClass":2:{s:4:"link";s:40:"http://localhost/Joomla3-Base/privacidad";s:6:"expiry";i:1367231407;}s:40:"ac47d2c53fdf7d07d506c6f25c00b8cca6fc7807";O:8:"stdClass":2:{s:4:"link";s:40:"http://localhost/Joomla3-Base/nota-legal";s:6:"expiry";i:1367231512;}}}', 0, '');
+('4j8dna1b947fr3lvslehjch9i1', 0, 1, '1370908195', '__default|a:8:{s:15:"session.counter";i:1;s:19:"session.timer.start";i:1370908193;s:18:"session.timer.last";i:1370908193;s:17:"session.timer.now";i:1370908193;s:22:"session.client.browser";s:72:"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:21.0) Gecko/20100101 Firefox/21.0";s:8:"registry";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}}s:4:"user";O:5:"JUser":24:{s:9:"\\0\\0\\0isRoot";b:0;s:2:"id";i:0;s:4:"name";N;s:8:"username";N;s:5:"email";N;s:8:"password";N;s:14:"password_clear";s:0:"";s:5:"block";N;s:9:"sendEmail";i:0;s:12:"registerDate";N;s:13:"lastvisitDate";N;s:10:"activation";N;s:6:"params";N;s:6:"groups";a:1:{i:0;s:1:"9";}s:5:"guest";i:1;s:13:"lastResetTime";N;s:10:"resetCount";N;s:10:"\\0\\0\\0_params";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}}s:14:"\\0\\0\\0_authGroups";a:2:{i:0;i:1;i:1;i:9;}s:14:"\\0\\0\\0_authLevels";a:3:{i:0;i:1;i:1;i:1;i:2;i:5;}s:15:"\\0\\0\\0_authActions";N;s:12:"\\0\\0\\0_errorMsg";N;s:10:"\\0\\0\\0_errors";a:0:{}s:3:"aid";i:0;}s:23:"gantry-current-template";s:6:"gantry";}', 0, ''),
+('877eabsj5t0v920afjb27644u5', 1, 0, '1370910833', '__default|a:8:{s:15:"session.counter";i:15;s:19:"session.timer.start";i:1370910591;s:18:"session.timer.last";i:1370910808;s:17:"session.timer.now";i:1370910825;s:22:"session.client.browser";s:72:"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:21.0) Gecko/20100101 Firefox/21.0";s:8:"registry";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":3:{s:11:"application";O:8:"stdClass":1:{s:4:"lang";s:0:"";}s:13:"com_installer";O:8:"stdClass":4:{s:7:"message";s:0:"";s:17:"extension_message";s:0:"";s:8:"warnings";O:8:"stdClass":1:{s:8:"ordercol";N;}s:6:"manage";O:8:"stdClass":4:{s:6:"filter";O:8:"stdClass":5:{s:6:"search";s:0:"";s:9:"client_id";s:0:"";s:6:"status";s:0:"";s:4:"type";s:0:"";s:5:"group";s:0:"";}s:10:"limitstart";s:1:"0";s:8:"ordercol";s:4:"name";s:9:"orderdirn";s:3:"asc";}}s:6:"global";O:8:"stdClass":1:{s:4:"list";O:8:"stdClass":1:{s:5:"limit";i:0;}}}}s:4:"user";O:5:"JUser":24:{s:9:"\\0\\0\\0isRoot";b:1;s:2:"id";s:3:"868";s:4:"name";s:10:"Super User";s:8:"username";s:5:"admin";s:5:"email";s:20:"correo@pabloarias.eu";s:8:"password";s:65:"72822108c211c1912c82ec83216fb3dc:Y97cliAUHbslQuTC0mQT1XNIkqWYlp8J";s:14:"password_clear";s:0:"";s:5:"block";s:1:"0";s:9:"sendEmail";s:1:"1";s:12:"registerDate";s:19:"2013-03-19 09:25:50";s:13:"lastvisitDate";s:19:"2013-04-29 08:10:23";s:10:"activation";s:1:"0";s:6:"params";s:0:"";s:6:"groups";a:1:{i:8;s:1:"8";}s:5:"guest";i:0;s:13:"lastResetTime";s:19:"0000-00-00 00:00:00";s:10:"resetCount";s:1:"0";s:10:"\\0\\0\\0_params";O:9:"JRegistry":1:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}}s:14:"\\0\\0\\0_authGroups";a:2:{i:0;i:1;i:1;i:8;}s:14:"\\0\\0\\0_authLevels";a:4:{i:0;i:1;i:1;i:1;i:2;i:2;i:3;i:3;}s:15:"\\0\\0\\0_authActions";N;s:12:"\\0\\0\\0_errorMsg";N;s:10:"\\0\\0\\0_errors";a:0:{}s:3:"aid";i:0;}s:13:"session.token";s:32:"c2887afc3c8b9be1b3ef56ab005a4e8b";}__wf|a:1:{s:13:"session.token";s:32:"4121b9a18d4b062b7d80ec4e78a73a45";}', 868, 'admin');
 
 -- --------------------------------------------------------
 
@@ -5049,28 +5049,28 @@ CREATE TABLE IF NOT EXISTS `nj65v_updates` (
   `detailsurl` text NOT NULL,
   `infourl` text NOT NULL,
   PRIMARY KEY (`update_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Available Updates' AUTO_INCREMENT=54 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Available Updates' AUTO_INCREMENT=65 ;
 
 --
 -- Volcado de datos para la tabla `nj65v_updates`
 --
 
 INSERT INTO `nj65v_updates` (`update_id`, `update_site_id`, `extension_id`, `name`, `description`, `element`, `type`, `folder`, `client_id`, `version`, `data`, `detailsurl`, `infourl`) VALUES
-(1, 6, 0, 'fof', 'FOF Stable', 'lib_fof', 'library', '', 1, '2.0.6', '', 'http://cdn.akeebabackup.com/updates/fof.xml', 'https://www.akeebabackup.com/download/fof/fof-2-0-6.html'),
-(2, 3, 0, 'Flemish', '', 'pkg_nl-BE', 'package', '', 0, '3.0.3.2', '', 'http://update.joomla.org/language/details3/nl-BE_details.xml', ''),
+(1, 3, 0, 'Romanian', '', 'pkg_ro-RO', 'package', '', 0, '3.1.1.2', '', 'http://update.joomla.org/language/details3/ro-RO_details.xml', ''),
+(2, 3, 0, 'Flemish', '', 'pkg_nl-BE', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/nl-BE_details.xml', ''),
 (3, 3, 0, 'Chinese Traditional', '', 'pkg_zh-TW', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/zh-TW_details.xml', ''),
 (4, 3, 0, 'French', '', 'pkg_fr-FR', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/fr-FR_details.xml', ''),
 (5, 3, 0, 'Galician', '', 'pkg_gl-ES', 'package', '', 0, '3.0.2.2', '', 'http://update.joomla.org/language/details3/gl-ES_details.xml', ''),
 (6, 3, 0, 'German', '', 'pkg_de-DE', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/de-DE_details.xml', ''),
-(7, 3, 0, 'Hebrew', '', 'pkg_he-IL', 'package', '', 0, '3.0.1.1', '', 'http://update.joomla.org/language/details3/he-IL_details.xml', ''),
+(7, 3, 0, 'Hebrew', '', 'pkg_he-IL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/he-IL_details.xml', ''),
 (8, 3, 0, 'Hungarian', '', 'pkg_hu-HU', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/hu-HU_details.xml', ''),
-(9, 3, 0, 'Afrikaans', '', 'pkg_af-ZA', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/af-ZA_details.xml', ''),
+(9, 3, 0, 'Afrikaans', '', 'pkg_af-ZA', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/af-ZA_details.xml', ''),
 (10, 3, 0, 'Arabic Unitag', '', 'pkg_ar-AA', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/ar-AA_details.xml', ''),
 (11, 3, 0, 'Belarusian', '', 'pkg_be-BY', 'package', '', 0, '3.0.2.1', '', 'http://update.joomla.org/language/details3/be-BY_details.xml', ''),
 (12, 3, 0, 'Bulgarian', '', 'pkg_bg-BG', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/bg-BG_details.xml', ''),
-(13, 3, 0, 'Catalan', '', 'pkg_ca-ES', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/ca-ES_details.xml', ''),
-(14, 3, 0, 'Chinese Simplified', '', 'pkg_zh-CN', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/zh-CN_details.xml', ''),
-(15, 3, 0, 'Croatian', '', 'pkg_hr-HR', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/hr-HR_details.xml', ''),
+(13, 3, 0, 'Catalan', '', 'pkg_ca-ES', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/ca-ES_details.xml', ''),
+(14, 3, 0, 'Chinese Simplified', '', 'pkg_zh-CN', 'package', '', 0, '3.1.1.2', '', 'http://update.joomla.org/language/details3/zh-CN_details.xml', ''),
+(15, 3, 0, 'Croatian', '', 'pkg_hr-HR', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/hr-HR_details.xml', ''),
 (16, 3, 0, 'Danish', '', 'pkg_da-DK', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/da-DK_details.xml', ''),
 (17, 3, 0, 'Dutch', '', 'pkg_nl-NL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/nl-NL_details.xml', ''),
 (18, 3, 0, 'English AU', '', 'pkg_en-AU', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/en-AU_details.xml', ''),
@@ -5078,17 +5078,17 @@ INSERT INTO `nj65v_updates` (`update_id`, `update_site_id`, `extension_id`, `nam
 (20, 3, 0, 'Estonian', '', 'pkg_et-EE', 'package', '', 0, '3.0.2.1', '', 'http://update.joomla.org/language/details3/et-EE_details.xml', ''),
 (21, 3, 0, 'Italian', '', 'pkg_it-IT', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/it-IT_details.xml', ''),
 (22, 3, 0, 'Japanese', '', 'pkg_ja-JP', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/ja-JP_details.xml', ''),
-(23, 3, 0, 'Korean', '', 'pkg_ko-KR', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/ko-KR_details.xml', ''),
+(23, 3, 0, 'Korean', '', 'pkg_ko-KR', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/ko-KR_details.xml', ''),
 (24, 3, 0, 'Kurdish Sorani', '', 'pkg_ckb-IQ', 'package', '', 0, '3.0.2.1', '', 'http://update.joomla.org/language/details3/ckb-IQ_details.xml', ''),
 (25, 3, 0, 'Latvian', '', 'pkg_lv-LV', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/lv-LV_details.xml', ''),
 (26, 3, 0, 'Macedonian', '', 'pkg_mk-MK', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/mk-MK_details.xml', ''),
-(27, 3, 0, 'Norwegian Bokmal', '', 'pkg_nb-NO', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/nb-NO_details.xml', ''),
-(28, 3, 0, 'Persian', '', 'pkg_fa-IR', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/fa-IR_details.xml', ''),
-(29, 3, 0, 'Polish', '', 'pkg_pl-PL', 'package', '', 0, '3.1.0.2', '', 'http://update.joomla.org/language/details3/pl-PL_details.xml', ''),
+(27, 3, 0, 'Norwegian Bokmal', '', 'pkg_nb-NO', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/nb-NO_details.xml', ''),
+(28, 3, 0, 'Persian', '', 'pkg_fa-IR', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/fa-IR_details.xml', ''),
+(29, 3, 0, 'Polish', '', 'pkg_pl-PL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/pl-PL_details.xml', ''),
 (30, 3, 0, 'Portuguese', '', 'pkg_pt-PT', 'package', '', 0, '3.0.2.2', '', 'http://update.joomla.org/language/details3/pt-PT_details.xml', ''),
 (31, 3, 0, 'Russian', '', 'pkg_ru-RU', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/ru-RU_details.xml', ''),
 (32, 3, 0, 'Scottish Gaelic', '', 'pkg_gd-GB', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/gd-GB_details.xml', ''),
-(33, 3, 0, 'Slovak', '', 'pkg_sk-SK', 'package', '', 0, '3.0.3.2', '', 'http://update.joomla.org/language/details3/sk-SK_details.xml', ''),
+(33, 3, 0, 'Slovak', '', 'pkg_sk-SK', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/sk-SK_details.xml', ''),
 (34, 3, 0, 'Swedish', '', 'pkg_sv-SE', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/sv-SE_details.xml', ''),
 (35, 3, 0, 'Syriac', '', 'pkg_sy-IQ', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/sy-IQ_details.xml', ''),
 (36, 3, 0, 'Tamil', '', 'pkg_ta-IN', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/ta-IN_details.xml', ''),
@@ -5096,19 +5096,28 @@ INSERT INTO `nj65v_updates` (`update_id`, `update_site_id`, `extension_id`, `nam
 (38, 3, 0, 'Turkish', '', 'pkg_tr-TR', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/tr-TR_details.xml', ''),
 (39, 3, 0, 'Ukrainian', '', 'pkg_uk-UA', 'package', '', 0, '3.0.2.1', '', 'http://update.joomla.org/language/details3/uk-UA_details.xml', ''),
 (40, 3, 0, 'Uyghur', '', 'pkg_ug-CN', 'package', '', 0, '3.0.2.1', '', 'http://update.joomla.org/language/details3/ug-CN_details.xml', ''),
-(41, 3, 0, 'Portuguese Brazil', '', 'pkg_pt-BR', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/pt-BR_details.xml', ''),
-(42, 3, 0, 'Serbian Latin', '', 'pkg_sr-YU', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/sr-YU_details.xml', ''),
-(43, 3, 0, 'Bosnian', '', 'pkg_bs-BA', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/bs-BA_details.xml', ''),
-(44, 3, 0, 'Serbian Cyrillic', '', 'pkg_sr-RS', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/sr-RS_details.xml', ''),
-(45, 3, 0, 'Vietnamese', '', 'pkg_vi-VN', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/vi-VN_details.xml', ''),
-(46, 3, 0, 'Bahasa Indonesia', '', 'pkg_id-ID', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/id-ID_details.xml', ''),
-(47, 3, 0, 'Finnish', '', 'pkg_fi-FI', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/fi-FI_details.xml', ''),
-(48, 3, 0, 'Swahili', '', 'pkg_sw-KE', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/sw-KE_details.xml', ''),
-(49, 8, 0, 'RokBooster', '', 'rokbooster', 'plugin', 'system', 0, '1.1.6', '', 'http://updates.rockettheme.com/joomla/plugins/rokbooster.xml', ''),
-(50, 8, 0, 'RokPad', '', 'rokpad', 'plugin', 'editors', 0, '2.1.5', '', 'http://updates.rockettheme.com/joomla/plugins/rokpad.xml', ''),
-(51, 8, 0, 'RokBox', '', 'rokbox', 'plugin', 'system', 0, '2.0.3', '', 'http://updates.rockettheme.com/joomla/plugins/rokbox.xml', ''),
-(52, 8, 0, 'RokSprocket', '', 'mod_roksprocket', 'module', '', 0, '1.8.9', '', 'http://updates.rockettheme.com/joomla/modules/roksprocket.xml', ''),
-(53, 8, 728, 'RokNavMenu', '', 'mod_roknavmenu', 'module', '', 0, '2.0.2', '', 'http://updates.rockettheme.com/joomla/modules/roknavmenu.xml', '');
+(41, 3, 0, 'Albanian', '', 'pkg_sq-AL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/sq-AL_details.xml', ''),
+(42, 3, 0, 'Portuguese Brazil', '', 'pkg_pt-BR', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/pt-BR_details.xml', ''),
+(43, 3, 0, 'Serbian Latin', '', 'pkg_sr-YU', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/sr-YU_details.xml', ''),
+(44, 3, 0, 'Bosnian', '', 'pkg_bs-BA', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/bs-BA_details.xml', ''),
+(45, 3, 0, 'Serbian Cyrillic', '', 'pkg_sr-RS', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/sr-RS_details.xml', ''),
+(46, 3, 0, 'Vietnamese', '', 'pkg_vi-VN', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/vi-VN_details.xml', ''),
+(47, 3, 0, 'Bahasa Indonesia', '', 'pkg_id-ID', 'package', '', 0, '3.0.3.1', '', 'http://update.joomla.org/language/details3/id-ID_details.xml', ''),
+(48, 3, 0, 'Finnish', '', 'pkg_fi-FI', 'package', '', 0, '3.1.0.1', '', 'http://update.joomla.org/language/details3/fi-FI_details.xml', ''),
+(49, 3, 0, 'Swahili', '', 'pkg_sw-KE', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/sw-KE_details.xml', ''),
+(50, 6, 0, 'fof', 'FOF Stable', 'lib_fof', 'library', '', 1, '2.1.b1', '', 'http://cdn.akeebabackup.com/updates/fof.xml', 'https://www.akeebabackup.com/download/fof/2-1-b1.html'),
+(52, 8, 0, 'RokPad Plugin for Joomla!', '', 'rokpad', 'plugin', 'editors', 0, '2.1.5', '0802', 'http://updates.rockettheme.com/joomla/plugin/rokpad/1', 'http://www.rockettheme.com/extensions-joomla/rokpad'),
+(53, 8, 0, 'RokSprocket Module for Joomla!', '', 'mod_roksprocket', 'module', '', 0, '1.8.10', '0802', 'http://updates.rockettheme.com/joomla/module/mod_roksprocket/2', 'http://www.rockettheme.com/extensions-joomla/roksprocket'),
+(54, 8, 0, 'RokCommon Library for Joomla!', '', 'lib_rokcommon', 'library', '', 0, '3.1.6', '0802', 'http://updates.rockettheme.com/joomla/library/lib_rokcommon/4', ''),
+(55, 8, 0, 'RokAjaxSearch Module for Joomla!', '', 'mod_rokajaxsearch', 'module', '', 0, '2.0.0', '0802', 'http://updates.rockettheme.com/joomla/module/mod_rokajaxsearch/5', 'http://www.rockettheme.com/extensions-joomla/rokajaxsearch'),
+(56, 8, 0, 'RokBooster Plugin for Joomla!', '', 'rokbooster', 'plugin', 'system', 0, '1.1.6', '0802', 'http://updates.rockettheme.com/joomla/plugin/rokbooster/7', 'http://www.rockettheme.com/extensions-joomla/rokbooster'),
+(57, 8, 0, 'RokBox Plugin for Joomla!', '', 'rokbox', 'plugin', 'system', 0, '2.0.4', '0802', 'http://updates.rockettheme.com/joomla/plugin/rokbox/8', 'http://www.rockettheme.com/extensions-joomla/rokbox'),
+(58, 8, 0, 'RokCandy for Joomla!', '', 'com_rokcandy', 'component', '', 1, '2.0.0', '0802', 'http://updates.rockettheme.com/joomla/component/com_rokcandy/9', 'http://www.rockettheme.com/extensions-joomla/rokcandy'),
+(60, 8, 0, 'RokQuickCart Component for Joomla!', '', 'com_rokquickcart', 'component', '', 1, '2.0.0', '0802', 'http://updates.rockettheme.com/joomla/component/com_rokquickcart/14', 'http://www.rockettheme.com/extensions-joomla/rokquickcart'),
+(61, 8, 0, 'RokSocialButtons Plugin for Joomla!', '', 'roksocialbuttons', 'plugin', 'content', 0, '1.0.4', '0802', 'http://updates.rockettheme.com/joomla/plugin/roksocialbuttons/15', ''),
+(62, 8, 0, 'RokEcwid Component for Joomla', '', 'com_rokecwid', 'component', '', 1, '2.0.1', '0802', 'http://updates.rockettheme.com/joomla/component/com_rokecwid/19', ''),
+(63, 8, 0, 'RokUpdater Plugin for Joomla!', '', 'rokupdater', 'plugin', 'system', 0, '1.0.6', '0802', 'http://updates.rockettheme.com/joomla/plugin/rokupdater/20', 'http://www.rockettheme.com/extensions-joomla/rokupdater'),
+(64, 8, 0, 'RokTabs Module for Joomla!', '', 'mod_roktabs', 'module', '', 0, '1.11', '0802', 'http://updates.rockettheme.com/joomla/module/mod_roktabs/22', 'http://www.rockettheme.com/extensions-joomla/roktabs');
 
 -- --------------------------------------------------------
 
@@ -5124,21 +5133,21 @@ CREATE TABLE IF NOT EXISTS `nj65v_update_sites` (
   `enabled` int(11) DEFAULT '0',
   `last_check_timestamp` bigint(20) DEFAULT '0',
   PRIMARY KEY (`update_site_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Update Sites' AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Update Sites' AUTO_INCREMENT=10 ;
 
 --
 -- Volcado de datos para la tabla `nj65v_update_sites`
 --
 
 INSERT INTO `nj65v_update_sites` (`update_site_id`, `name`, `type`, `location`, `enabled`, `last_check_timestamp`) VALUES
-(1, 'Joomla Core', 'collection', 'http://update.joomla.org/core/list.xml', 1, 1367246677),
+(1, 'Joomla Core', 'collection', 'http://update.joomla.org/core/list.xml', 1, 1370910641),
 (2, 'Joomla Extension Directory', 'collection', 'http://update.joomla.org/jed/list.xml', 0, 0),
-(3, 'Accredited Joomla! Translations', 'collection', 'http://update.joomla.org/language/translationlist_3.xml', 1, 1367246677),
-(4, 'JCE Editor Updates', 'extension', 'https://www.joomlacontenteditor.net/index.php?option=com_updates&view=update&format=xml&id=1', 1, 1367246677),
-(5, 'Xmap Update Site', 'extension', 'https://raw.github.com/guilleva/Xmap/master/xmap-update.xml', 1, 1367246677),
-(6, 'FOF Updates (official releases)', 'extension', 'http://cdn.akeebabackup.com/updates/fof.xml', 1, 1367246677),
-(7, 'Gantry Framework Update Site', 'extension', 'http://www.gantry-framework.org/updates/joomla16/gantry.xml', 1, 1367246677),
-(8, 'RocketTheme Update Directory', 'collection', 'http://updates.rockettheme.com/joomla/updates.xml', 1, 1367246677);
+(3, 'Accredited Joomla! Translations', 'collection', 'http://update.joomla.org/language/translationlist_3.xml', 1, 1370910641),
+(4, 'JCE Editor Updates', 'extension', 'https://www.joomlacontenteditor.net/index.php?option=com_updates&view=update&format=xml&id=1', 1, 1370910641),
+(5, 'Xmap Update Site', 'extension', 'https://raw.github.com/guilleva/Xmap/master/xmap-update.xml', 1, 1370910641),
+(6, 'FOF Updates (official releases)', 'extension', 'http://cdn.akeebabackup.com/updates/fof.xml', 1, 1370910641),
+(8, 'RocketTheme Update Directory', 'collection', 'http://updates.rockettheme.com/joomla/updates.xml', 1, 1370910641),
+(9, 'Gantry Framework Update Site', 'extension', 'http://www.gantry-framework.org/updates/joomla16/gantry.xml', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -5164,8 +5173,8 @@ INSERT INTO `nj65v_update_sites_extensions` (`update_site_id`, `extension_id`) V
 (4, 707),
 (5, 708),
 (6, 719),
-(7, 723),
-(8, 728);
+(8, 728),
+(9, 731);
 
 -- --------------------------------------------------------
 
@@ -5233,7 +5242,7 @@ CREATE TABLE IF NOT EXISTS `nj65v_users` (
 --
 
 INSERT INTO `nj65v_users` (`id`, `name`, `username`, `email`, `password`, `block`, `sendEmail`, `registerDate`, `lastvisitDate`, `activation`, `params`, `lastResetTime`, `resetCount`) VALUES
-(868, 'Super User', 'admin', 'correo@pabloarias.eu', '72822108c211c1912c82ec83216fb3dc:Y97cliAUHbslQuTC0mQT1XNIkqWYlp8J', 0, 1, '2013-03-19 09:25:50', '2013-04-29 08:10:23', '0', '', '0000-00-00 00:00:00', 0);
+(868, 'Super User', 'admin', 'correo@pabloarias.eu', '72822108c211c1912c82ec83216fb3dc:Y97cliAUHbslQuTC0mQT1XNIkqWYlp8J', 0, 1, '2013-03-19 09:25:50', '2013-06-11 00:30:22', '0', '', '0000-00-00 00:00:00', 0);
 
 -- --------------------------------------------------------
 
