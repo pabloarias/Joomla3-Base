@@ -23,7 +23,7 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
     public function __construct(&$args)
     {
         parent::__construct($args);
-        /** @var $gantry Gantry */
+
 		global $gantry;
         $theme_rel_path = "/html/mod_roknavmenu/themes/gantry-dropdown";
         $this->theme_path = $gantry->templatePath . $theme_rel_path;
@@ -35,7 +35,6 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
 
     public function stageHeader()
     {
-        /** @var $gantry Gantry */
 		global $gantry;
 
         JHtml::_('behavior.framework', true);
@@ -58,7 +57,6 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
     protected function renderItem(JoomlaRokMenuNode &$item, RokMenuNodeTree &$menu)
     {
 
-        /** @var $gantry Gantry */
 		global $gantry;
 
         $wrapper_css = '';
@@ -215,6 +213,11 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
                                         <?php $this->renderItem($child, $menu); ?>
                                     <?php else: ?>
                                         <li class="modules">
+                                            <?php if (isset($module) and ($module->showtitle != 0)) : ?>
+                                                <div class="module-title">
+                                                    <h2 class="title"><?php echo $module->title; ?></h2>
+                                                </div>
+                                            <?php endif; ?>                                            
                                             <div class="module-content">
                                                 <?php echo ($child); ?>
                                             </div>
@@ -234,6 +237,11 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
                                 <?php $this->renderItem($child, $menu); ?>
                             <?php else: ?>
                                 <li class="modules">
+                                    <?php if (isset($module) and ($module->showtitle != 0)) : ?>
+                                        <div class="module-title">
+                                            <h2 class="title"><?php echo $module->title; ?></h2>
+                                        </div>
+                                    <?php endif; ?>                                       
                                     <div class="module-content">
                                         <?php echo ($child); ?>
                                     </div>

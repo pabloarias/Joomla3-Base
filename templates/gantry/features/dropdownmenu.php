@@ -24,16 +24,11 @@ class GantryFeatureDropdownMenu extends GantryFeature {
     var $_menu_picker = 'menu-type';
 
     function isEnabled() {
-        /** @var $gantry Gantry */
 		global $gantry;
         $menu_enabled = $gantry->get('menu-enabled');
         $selected_menu = $gantry->get($this->_menu_picker);
 
         $cookie = 0;
-
-        //$gantry->set($this->_menu_picker, $this->_legacy_name);
-
-
 
         if (1 == (int)$menu_enabled && ($selected_menu == $this->_feature_name || $selected_menu == $this->_legacy_name) && $cookie == 0) return true;
         return false;
@@ -44,7 +39,6 @@ class GantryFeatureDropdownMenu extends GantryFeature {
     }
 
     function render($position) {
-        /** @var $gantry Gantry */
 		global $gantry;
 
         $renderer = $gantry->document->loadRenderer('module');

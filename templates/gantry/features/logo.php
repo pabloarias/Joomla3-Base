@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: logo.php 2381 2012-08-15 04:14:26Z btowles $
+* @version   $Id: logo.php 9775 2013-04-26 18:11:22Z kevin $
 * @author    RocketTheme http://www.rockettheme.com
 * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
 * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -13,15 +13,11 @@ defined('JPATH_BASE') or die();
 
 gantry_import('core.gantryfeature');
 
-/**
- * @package     gantry
- * @subpackage  features
- */
 class GantryFeaturelogo extends GantryFeature {
     var $_feature_name = 'logo';
 
     function isEnabled() {
-        /** @var $gantry Gantry */
+        
 		global $gantry;
         if (!isset($gantry->browser)) return $this->get('enabled');
         if ($gantry->browser->platform != 'iphone' && $gantry->browser->platform != 'android') return $this->get('enabled');
@@ -35,7 +31,7 @@ class GantryFeaturelogo extends GantryFeature {
     }
 
     function isInPosition($position){
-        /** @var $gantry Gantry */
+        
 		global $gantry;
         if (!isset($gantry->browser)) return $this->get('enabled');
         if ($gantry->browser->platform != 'iphone' && $gantry->browser->platform != 'android') return ($this->getPosition() == $position);
@@ -50,7 +46,7 @@ class GantryFeaturelogo extends GantryFeature {
     }
 
     function render($position) {
-        /** @var $gantry Gantry */
+        
 		global $gantry;
 
         ob_start();

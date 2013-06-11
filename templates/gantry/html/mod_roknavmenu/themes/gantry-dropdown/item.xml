@@ -18,9 +18,9 @@
                     <option value="inorder">In Order</option>
                     <option value="manual">Manually</option>
                 </field>
-                <field name="dropdown_manual_distribution" default="" type="text" size="30" label="Manual Item Distribution" description="comma seperated count of rows in each column, eg: 4, 2, 3" />
+                <field name="dropdown_manual_distribution" default="" type="text" size="30" label="Manual Item Distribution" description="comma separated count of rows in each column, eg: 4, 2, 3" />
                 <field name="dropdown_dropdown_width" type="text" size="10" label="Drop-Down Width (px)" description="width of any dropdown column in px, eg: 400"/>
-                <field name="dropdown_column_widths" type="text" size="30" label="Column Widths (px)" description="comma seperated columns, eg: 100, 150, 300"/>
+                <field name="dropdown_column_widths" type="text" size="30" label="Column Widths (px)" description="comma separated columns, eg: 100, 150, 300"/>
                 <field name="dropdown_children_group" type="radio" default="0" label="Group Child Items" description="Select this to group children under menu item rather than treating as a submenu">
                     <option value="0">No</option>
                     <option value="1">Yes</option>

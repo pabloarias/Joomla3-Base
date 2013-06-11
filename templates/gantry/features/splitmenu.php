@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: splitmenu.php 3895 2012-09-25 04:02:54Z rhuk $
+* @version   $Id: splitmenu.php 9775 2013-04-26 18:11:22Z kevin $
 * @author    RocketTheme http://www.rockettheme.com
 * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
 * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -23,7 +23,6 @@ class GantryFeatureSplitMenu extends GantryFeature {
     var $_menu_picker = 'menu-type';
 
     function isEnabled() {
-        /** @var $gantry Gantry */
 		global $gantry;
         $menu_enabled = $gantry->get('menu-enabled');
         $selected_menu = $gantry->get($this->_menu_picker);
@@ -43,7 +42,6 @@ class GantryFeatureSplitMenu extends GantryFeature {
 
 
 	function render($position) {
-        /** @var $gantry Gantry */
 		global $gantry;
         $output='';
         $renderer	= $gantry->document->loadRenderer('module');

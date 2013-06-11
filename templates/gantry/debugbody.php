@@ -61,7 +61,6 @@ $gantry->init();
 	<?php
 		$gantry->addStyle('grid-responsive.css', 5);
 		$gantry->addLess('bootstrap.less', 'bootstrap.css', 6); 
-		$gantry->addLess('global.less', 'master.css', 8, array('headerstyle'=>$gantry->get('headerstyle','dark')));
 	?>
 </head>
 	<body id="debug">

@@ -19,7 +19,6 @@ $app = JFactory::getApplication();
 
 $gantry->addStyle('grid-responsive.css', 5);
 $gantry->addLess('bootstrap.less', 'bootstrap.css', 6);
-$gantry->addLess('global.less', 'master.css', 8, array('headerstyle'=>$gantry->get('headerstyle','dark')));
 if ($gantry->browser->name == 'ie') {
 	if ($gantry->browser->shortversion == 8) {
 		$gantry->addScript('html5shim.js');

@@ -1,5 +1,5 @@
 /**
-* @version   $Id: joomla-core.less 8179 2013-03-11 18:09:27Z james $
+* @version   $Id: joomla-core.less 9229 2013-04-09 15:22:00Z kat $
 * @author    RocketTheme http://www.rockettheme.com
 * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
 * @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
@@ -1151,44 +1151,107 @@ input[type="radio"], input[type="checkbox"] {
 #system-message {
 	padding: 0;
 	margin: 15px 0;
+	.alert {
+		border-radius: 4px;
+		margin: 15px 0;
+		list-style: none;
+		padding: 10px 35px 10px 10px;
+		color: #0055BB;
+		background: #BFD3E6;
+		border: 1px solid #84A7DB;		
+		p {
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+		&:before {
+			font-family: FontAwesome;
+			content: '\f05a';
+			margin-right: 10px;
+			font-size: @base-font-size + 12;
+			opacity: 0.5;
+			vertical-align: middle;
+			float: left;
+		}
+		&-error {
+			color: #cc0000;
+			background: #EBC8C9;
+			border: 1px solid #DE7A7B;			
+			&:before {
+				content: '\f056';
+			}
+		}
+		&-warning {
+			color: #A08B4C;
+			background: #F5ECC1;
+			border: 1px solid #B8A871;			
+			&:before {
+				content: '\f06a';
+			}
+		}
+		&-success {
+			color: #468847;
+			background: #dff0d8;
+			border: 1px solid #93BC8F;			
+			&:before {
+				content: '\f058';
+			}
+		}
+	}
 	> div:first-child {
 		margin-bottom: 0 !important;
-	}
-	dt {
-		font-weight: bold;
 	}
 	dd {
 		margin: 0;
 		font-weight: bold;
-		ul {
-			background: #BFD3E6;
-			color: #0055BB;
-			margin: 10px 0 10px 0;
+		text-shadow: none;
+		ul {	
+			border-radius: 4px;
+			margin: 15px 0;
 			list-style: none;
 			padding: 10px;
-			border: 2px solid #84A7DB;
+			color: #0055BB;
+			background: #BFD3E6;
+			border: 1px solid #84A7DB;			
+			li {
+				&:before {
+					font-family: FontAwesome;
+					content: '\f05a';
+					margin-right: 8px;
+					font-size: @base-font-size + 10;
+					opacity: 0.5;
+					vertical-align: middle;
+				}
+			}
 		}
 	}
-	dt.error {
-		display: none;
+	.error {
 		ul {
-			color: #c00;
-			background-color: #EBC8C9;
-			border: 2px solid #DE7A7B;
+			color: #cc0000;
+			background: #EBC8C9;
+			border: 1px solid #DE7A7B;
+			li {
+				&:before {
+					content: '\f056';
+				}
+			}
 		}
 	}
-	dd.notice {
-		background: none;
-		border: 0;
+	.notice {
 		ul {
 			color: #A08B4C;
 			background: #F5ECC1;
-			border: 2px solid #F0DC7E;
+			border: 1px solid #B8A871;			
+			li {
+				&:before {
+					content: '\f06a';
+				}
+			}
 		}
 	}
-	dt.notice {
+	dt.error, dt.notice, dt.message {
 		display: none;
-	}
+	} 
 }
 
 // Debug

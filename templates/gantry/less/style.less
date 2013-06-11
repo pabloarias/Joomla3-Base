@@ -1,5 +1,5 @@
 /**
- * @version   $Id: style.less 8181 2013-03-11 18:34:17Z james $
+ * @version   $Id: style.less 9769 2013-04-26 17:40:14Z kevin $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -15,6 +15,10 @@ a:hover {
 }
 h1, h2, h3, h4, h5, h6 {
 	color: @bodytitle;
+}
+
+a, ul.menu li .separator {
+	color: @linkcolor;
 }
 
 // Main Top
@@ -129,6 +133,19 @@ ul.menu {
 	}
 }
 
+.button, .readon, .readmore, button.validate, #member-profile a, #member-registration a, .formelm-buttons button, .btn-primary {
+	border-color: darken(@linkcolor, 20%);
+	#gradient > .vertical(lighten(@linkcolor, 4%), darken(@linkcolor, 9%));
+}
+
+.button:hover, .readon:hover, .readmore:hover, button.validate:hover, #member-profile a:hover, #member-registration a:hover, .formelm-buttons button:hover, .btn-primary:hover {
+	#gradient > .vertical(lighten(@linkcolor, 10%), darken(@linkcolor, 3%));
+}
+
+.button:active, .readon:active, .readmore:active, button.validate:active, #member-profile a:active, #member-registration a:active, .formelm-buttons button:active, .btn-primary:active {
+	#gradient > .vertical(darken(@linkcolor, 2%), lighten(@linkcolor, 8%));
+}
+
 // Branding
 .powered-by {
 	background: url(../images/logo/powered.png);
@@ -210,6 +227,9 @@ ul.menu {
 }
 
 // Typography
+.tags .label-info {
+	background: darken(@linkcolor, 10%);
+}
 
 // Abbreviations and acronyms
 abbr[title] {

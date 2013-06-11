@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: modules.php 4672 2012-10-29 12:48:57Z james $
+* @version   $Id: modules.php 9775 2013-04-26 18:11:22Z kevin $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -29,7 +29,6 @@ defined('_JEXEC') or die('Restricted access');
 function modChrome_submenu($module, &$params, &$attribs)
 {
 global $Itemid;
-	/** @var $gantry Gantry */
 		global $gantry;
 	
 	$start	= intval($params->get('submenu-startLevel'));

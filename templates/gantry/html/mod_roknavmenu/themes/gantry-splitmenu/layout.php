@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: layout.php 7234 2013-02-06 05:09:14Z steph $
+* @version   $Id: layout.php 9775 2013-04-26 18:11:22Z kevin $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -23,7 +23,6 @@ class GantrySplitmenuLayout extends AbstractRokMenuLayout
     public function __construct(&$args)
     {
         parent::__construct($args);
-        /** @var $gantry Gantry */
 		global $gantry;
         $theme_rel_path = "/html/mod_roknavmenu/themes/gantry-splitmenu";
         $this->theme_path = $gantry->templatePath . $theme_rel_path;
@@ -35,7 +34,6 @@ class GantrySplitmenuLayout extends AbstractRokMenuLayout
 
     public function stageHeader()
     {
-        /** @var $gantry Gantry */
 		global $gantry;
 
         //don't include class_sfx on 3rd level menu
@@ -45,7 +43,7 @@ class GantrySplitmenuLayout extends AbstractRokMenuLayout
 
         JHtml::_('behavior.framework', true);
 
-		if (!self::$jsLoaded){
+		if (!self::$jsLoaded && $gantry->get('layout-mode', 'responsive') == 'responsive'){
             if (!($gantry->browser->name == 'ie' && $gantry->browser->shortver < 9)){
                 $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/rokmediaqueries.js');
                 $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive.js');

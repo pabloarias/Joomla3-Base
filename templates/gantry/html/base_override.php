@@ -1,11 +1,43 @@
 <?php
 /**
- * @version   $Id: base_override.php 5317 2012-11-20 23:03:43Z btowles $
+ * @version   $Id: base_override.php 9830 2013-04-29 23:56:49Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('_JEXEC') or die;
+
+if (!function_exists('base_override_getAvailablePlatformVersions')) {
+	/**
+	 * Get the list of available platform versions
+	 * @return array the list of available Platform Versions
+	 */
+	function base_override_getAvailablePlatformVersions($dir)
+	{
+		$family = substr(JVERSION, 0, strpos(JVERSION, '.'));
+		$dir    = rtrim($dir, '/\\');
+		// find all entries in the dir
+		$entries = array();
+		if ($handle = opendir($dir)) {
+			while (false !== ($entry = readdir($handle))) {
+				if ($entry != "." && $entry != ".." && preg_match(sprintf('/^%s\./', $family), $entry) && is_dir($dir . '/' . $entry)) {
+					$key             = (preg_match('/^\d+\.\d+$/', $entry)) ? $entry . '.0' : $entry;
+					$entries[$entry] = $key;
+				}
+			}
+			closedir($handle);
+		}
+		$entries = array_filter($entries, 'base_override_versionfilter');
+		uksort($entries, 'version_compare');
+		return array_reverse(array_keys($entries));
+	}
+
+	function base_override_versionfilter($version)
+	{
+		$jversion = new JVersion();
+		return version_compare($version, $jversion->getShortVersion(), '<=');
+	}
+}
 
 $go_app              = JFactory::getApplication();
 $go_current_template = $go_app->getTemplate(true);
@@ -26,19 +58,19 @@ if ($go_extension != 'html') {
 
 JLog::add(JText::sprintf('PLG_SYSTEM_GANTRY_LOG_USING_OVERRRIDE', $go_backtrace[0]['file']), JLog::DEBUG, 'gantry');
 
-// add custom version paths
-$go_search_paths[] = implode('/', array(
-                                       dirname(__FILE__),
-                                       'joomla',
-                                       $go_jversion->getShortVersion(),
-                                       $go_relative_template_override_path
-                                  ));
-$go_search_paths[] = implode('/', array(
-                                       dirname(__FILE__),
-                                       'joomla',
-                                       $go_jversion->RELEASE,
-                                       $go_relative_template_override_path
-                                  ));
+$go_template_platform_versions = base_override_getAvailablePlatformVersions(implode('/', array(
+                                                                                              dirname(__FILE__),
+                                                                                              'joomla'
+                                                                                         )));
+foreach ($go_template_platform_versions as $go_template_version) {
+	$go_search_paths[] = implode('/', array(
+	                                       dirname(__FILE__),
+	                                       'joomla',
+	                                       $go_template_version,
+	                                       $go_relative_template_override_path
+	                                  ));
+}
+
 if (defined('GANTRY_OVERRIDES_PATH')) {
 	$go_output = '';
 
