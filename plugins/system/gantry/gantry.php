@@ -1,6 +1,6 @@
 <?php
 /**
- * @version        4.1.9 April 1, 2013
+ * @version        4.1.10 May 7, 2013
  * @author         RocketTheme http://www.rockettheme.com
  * @copyright      Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -145,10 +145,10 @@ class plgSystemGantry extends JPlugin
 	 * @param     $params
 	 * @param int $page
 	 */
-	function onContentPrepare($context, &$article, &$params, $page = 0)
+	function onContentBeforeDisplay($context, &$article, &$params, $page = 0)
 	{
 
-		if (!self::$prettyprint && strpos($article->text, '<code class="prettyprint') !== false || strpos($article->text, '<pre class="prettyprint') !== false) {
+		if (!self::$prettyprint && isset($article->text) && (strpos($article->text, '<code class="prettyprint') !== false || strpos($article->text, '<pre class="prettyprint') !== false)) {
 
 			$doc = JFactory::getDocument();
 			$app = JFactory::getApplication();

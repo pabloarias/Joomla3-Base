@@ -5,8 +5,8 @@
 8a3edb0428f11a404535d9134c90063f fields/debuglink/index.html
 8a3edb0428f11a404535d9134c90063f fields/index.html
 357dd365352da3b689535db68cc2355d functions.php
-8a91f53faeaa64c68b53b63d3f59a8d5 gantry.php
-f86c0d046d9b3d772fc948fececda87e gantry.xml
+46873183f05f120eaef782b753e84dbe gantry.php
+1f613f9e405b671d9a8a6cd827eef378 gantry.xml
 8a3edb0428f11a404535d9134c90063f index.html
 a46e79d587e1dc6fca23d48211010d80 language/en-GB/en-GB.plg_system_gantry.ini
 8a3edb0428f11a404535d9134c90063f language/en-GB/index.html
@@ -18,7 +18,7 @@ f5b63dd841c38fe75d0f1c8592f436fb overrides/3.0/2.5/com_contact/categories/defaul
 596ef67a8d627abb5e108283b4923e71 overrides/3.0/2.5/com_contact/category/default_children.php
 74ba51e27ce6c8262795f42c55bd44db overrides/3.0/2.5/com_contact/category/default_items.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_contact/category/index.html
-88e95973d1e6da561fdfd5bd77983840 overrides/3.0/2.5/com_contact/contact/default.php
+0666705cfb5edc2a1a0b6ac25d2df593 overrides/3.0/2.5/com_contact/contact/default.php
 f754003be3efaa16a6d3154ef9dbabb4 overrides/3.0/2.5/com_contact/contact/default_address.php
 957fb91ea6caf31ccc54366d38c5ee0b overrides/3.0/2.5/com_contact/contact/default_articles.php
 c946d37e83fd5eee0f1742cb5bd16d40 overrides/3.0/2.5/com_contact/contact/default_form.php
@@ -32,7 +32,7 @@ c946d37e83fd5eee0f1742cb5bd16d40 overrides/3.0/2.5/com_contact/contact/default_f
 86e9b16ac3f66b480e8b411fb829f25a overrides/3.0/2.5/com_content/archive/default.php
 da996e1610ffd0f24e784d7fa3ed877f overrides/3.0/2.5/com_content/archive/default_items.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_content/archive/index.html
-cb05942d0fa1addafd9a34e4f02ba4c6 overrides/3.0/2.5/com_content/article/default.php
+77aca09e17fee54871fac3c25bb404b8 overrides/3.0/2.5/com_content/article/default.php
 616c5ba6a137f5cb45e82ae56f62e60d overrides/3.0/2.5/com_content/article/default_links.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_content/article/index.html
 52376420d076cba95f39fe3d972abce0 overrides/3.0/2.5/com_content/categories/default.php
