@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantrymenuformatter.class.php 2325 2012-08-13 17:46:48Z btowles $
+ * @version   $Id: gantrymenuformatter.class.php 11319 2013-06-07 15:26:51Z steph $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -34,7 +34,7 @@ class GantryMenuFormatter
 		}
 	}
 
-	function format(&$node, $menu_params)
+	function format(&$node, &$menu_params)
 	{
 
 	}

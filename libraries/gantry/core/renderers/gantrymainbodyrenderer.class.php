@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantrymainbodyrenderer.class.php 6491 2013-01-15 02:25:56Z btowles $
+ * @version   $Id: gantrymainbodyrenderer.class.php 11911 2013-07-03 16:21:51Z rhuk $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -35,13 +35,16 @@ class GantryMainBodyRenderer
 		/** @var $gantry Gantry */
 		global $gantry;
 
-		$editmode         = JFactory::getApplication()->input->getCmd('task') == 'edit' ? true : false;
+		/** Get the running component **/
+		$option = JFactory::getApplication()->input->get('option');
+		$editmode         = ($option == 'com_content' && JFactory::getApplication()->input->getCmd('task')) == 'edit' ? true : false;
+
+
 		$position_renders = array();
 
 		if ($grid == null) {
 			$grid = GRID_SYSTEM;
 		}
-
 
 		if (!$editmode) {
 			//get current sidebar count based on module usages

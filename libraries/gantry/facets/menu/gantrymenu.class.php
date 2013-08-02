@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantrymenu.class.php 9828 2013-04-29 18:14:05Z steph $
+ * @version   $Id: gantrymenu.class.php 11319 2013-06-07 15:26:51Z steph $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -56,7 +56,7 @@ class GantryMenu
 		return $gantrymenu;
 	}
 
-	function &_getInstance($params)
+	static function &_getInstance($params)
 	{
 		$gantrymenu = new GantryMenu($params);
 		return $gantrymenu;

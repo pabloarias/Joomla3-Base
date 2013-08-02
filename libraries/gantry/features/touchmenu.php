@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: touchmenu.php 2381 2012-08-15 04:14:26Z btowles $
+ * @version   $Id: touchmenu.php 11497 2013-06-15 04:57:41Z steph $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -85,7 +85,7 @@ class GantryFeatureTouchMenu extends GantryFeature
 		}
 		$passing_params = new GantryRegistry();
 		$passing_params->loadString($module_params, 'INI');
-		$gantrymenu = GantryMenu::getInstance($passing_params);
+        $gantrymenu = new GantryMenu($passing_params);
 
 		return $gantrymenu->render($passing_params);
 

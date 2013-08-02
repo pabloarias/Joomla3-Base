@@ -123,8 +123,8 @@
    ],
    "subsets": [
     "latin-ext",
-    "latin",
-    "greek"
+    "greek",
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-07-25",
@@ -199,6 +199,23 @@
    "lastModified": "2012-07-25",
    "files": {
     "regular": "http://themes.googleusercontent.com/static/fonts/aldrich/v3/kMMW1S56gFx7RP_mW1g-Eg.ttf"
+   }
+  },
+  {
+   "kind": "webfonts#webfont",
+   "family": "Alef",
+   "variants": [
+    "regular",
+    "700"
+   ],
+   "subsets": [
+    "latin"
+   ],
+   "version": "v1",
+   "lastModified": "2013-05-22",
+   "files": {
+    "regular": "http://themes.googleusercontent.com/static/fonts/alef/v1/ENvZ_P0HBDQxNZYCQO0lUA.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/alef/v1/VDgZJhEwudtOzOFQpZ8MEA.ttf"
    }
   },
   {
@@ -554,10 +571,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -605,12 +622,12 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -794,13 +811,13 @@
     "700italic"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-12-17",
@@ -1142,8 +1159,8 @@
     "regular"
    ],
    "subsets": [
-    "latin",
-    "cyrillic"
+    "cyrillic",
+    "latin"
    ],
    "version": "v2",
    "lastModified": "2012-07-25",
@@ -1207,11 +1224,11 @@
    "subsets": [
     "khmer"
    ],
-   "version": "v5",
-   "lastModified": "2012-07-25",
+   "version": "v6",
+   "lastModified": "2013-06-12",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/battambang/v5/MzrUfQLefYum5vVGM3EZVPesZW2xOQ-xsNqO47m55DA.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/battambang/v5/dezbRtMzfzAA99DmrCYRMgJKKGfqHaYFsRG-T3ceEVo.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/battambang/v6/MzrUfQLefYum5vVGM3EZVPesZW2xOQ-xsNqO47m55DA.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/battambang/v6/dezbRtMzfzAA99DmrCYRMgJKKGfqHaYFsRG-T3ceEVo.ttf"
    }
   },
   {
@@ -1865,9 +1882,9 @@
    ],
    "subsets": [
     "latin-ext",
-    "latin",
     "greek",
-    "greek-ext"
+    "greek-ext",
+    "latin"
    ],
    "version": "v5",
    "lastModified": "2012-07-25",
@@ -1948,9 +1965,9 @@
    ],
    "subsets": [
     "latin-ext",
-    "latin",
     "greek",
-    "greek-ext"
+    "greek-ext",
+    "latin"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -2303,11 +2320,11 @@
     "700"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -2641,9 +2658,9 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v4",
    "lastModified": "2012-08-02",
@@ -2864,12 +2881,12 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -3110,11 +3127,11 @@
     "regular"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "vietnamese",
-    "cyrillic"
+    "cyrillic",
+    "latin-ext",
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -3529,6 +3546,22 @@
   },
   {
    "kind": "webfonts#webfont",
+   "family": "Fauna One",
+   "variants": [
+    "regular"
+   ],
+   "subsets": [
+    "latin-ext",
+    "latin"
+   ],
+   "version": "v1",
+   "lastModified": "2013-06-12",
+   "files": {
+    "regular": "http://themes.googleusercontent.com/static/fonts/faunaone/v1/8kL-wpAPofcAMELI_5NRnQ.ttf"
+   }
+  },
+  {
+   "kind": "webfonts#webfont",
    "family": "Federant",
    "variants": [
     "regular"
@@ -3707,10 +3740,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -4819,10 +4852,10 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v5",
    "lastModified": "2012-07-25",
@@ -5099,12 +5132,12 @@
     "600"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -5137,12 +5170,13 @@
     "regular"
    ],
    "subsets": [
+    "latin-ext",
     "latin"
    ],
-   "version": "v4",
-   "lastModified": "2012-07-25",
+   "version": "v5",
+   "lastModified": "2013-05-22",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/justmeagaindownhere/v4/sN06iTc9ITubLTgXoG-kc3M9eVLpVTSK6TqZTIgBrWQ.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/justmeagaindownhere/v5/sN06iTc9ITubLTgXoG-kc3M9eVLpVTSK6TqZTIgBrWQ.ttf"
    }
   },
   {
@@ -5239,9 +5273,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -5273,10 +5307,10 @@
    "subsets": [
     "khmer"
    ],
-   "version": "v5",
-   "lastModified": "2012-07-25",
+   "version": "v6",
+   "lastModified": "2013-06-12",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/khmer/v5/vWaBJIbaQuBNz02ALIKJ3A.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/khmer/v6/vWaBJIbaQuBNz02ALIKJ3A.ttf"
    }
   },
   {
@@ -5506,9 +5540,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-07-25",
@@ -5607,6 +5641,22 @@
   },
   {
    "kind": "webfonts#webfont",
+   "family": "Lily Script One",
+   "variants": [
+    "regular"
+   ],
+   "subsets": [
+    "latin-ext",
+    "latin"
+   ],
+   "version": "v1",
+   "lastModified": "2013-06-12",
+   "files": {
+    "regular": "http://themes.googleusercontent.com/static/fonts/lilyscriptone/v1/uPWsLVW8uiXqIBnE8ZwGPDjVlsJB_M_Q_LtZxsoxvlw.ttf"
+   }
+  },
+  {
+   "kind": "webfonts#webfont",
    "family": "Limelight",
    "variants": [
     "regular"
@@ -5645,10 +5695,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v5",
    "lastModified": "2012-07-25",
@@ -5968,9 +6018,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -6016,9 +6066,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -6231,20 +6281,29 @@
    "family": "Merriweather",
    "variants": [
     "300",
+    "300italic",
     "regular",
+    "italic",
     "700",
-    "900"
+    "700italic",
+    "900",
+    "900italic"
    ],
    "subsets": [
+    "latin-ext",
     "latin"
    ],
-   "version": "v4",
-   "lastModified": "2012-07-25",
+   "version": "v5",
+   "lastModified": "2013-05-22",
    "files": {
-    "300": "http://themes.googleusercontent.com/static/fonts/merriweather/v4/ZvcMqxEwPfh2qDWBPxn6nqcQoVhARpoaILP7amxE_8g.ttf",
-    "regular": "http://themes.googleusercontent.com/static/fonts/merriweather/v4/RFda8w1V0eDZheqfcyQ4EC3USBnSvpkopQaUR-2r7iU.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/merriweather/v4/ZvcMqxEwPfh2qDWBPxn6nkD2ttfZwueP-QU272T9-k4.ttf",
-    "900": "http://themes.googleusercontent.com/static/fonts/merriweather/v4/ZvcMqxEwPfh2qDWBPxn6nqObDOjC3UL77puoeHsE3fw.ttf"
+    "300": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/ZvcMqxEwPfh2qDWBPxn6nqcQoVhARpoaILP7amxE_8g.ttf",
+    "300italic": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/EYh7Vl4ywhowqULgRdYwICna0FLWfcB-J_SAYmcAXaI.ttf",
+    "regular": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/RFda8w1V0eDZheqfcyQ4EC3USBnSvpkopQaUR-2r7iU.ttf",
+    "italic": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/So5lHxHT37p2SS4-t60SlPMZXuCXbOrAvx5R0IT5Oyo.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/ZvcMqxEwPfh2qDWBPxn6nkD2ttfZwueP-QU272T9-k4.ttf",
+    "700italic": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/EYh7Vl4ywhowqULgRdYwIPAs9-1nE9qOqhChW0m4nDE.ttf",
+    "900": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/ZvcMqxEwPfh2qDWBPxn6nqObDOjC3UL77puoeHsE3fw.ttf",
+    "900italic": "http://themes.googleusercontent.com/static/fonts/merriweather/v5/EYh7Vl4ywhowqULgRdYwIBd0_s6jQr9r5s5OZYvtzBY.ttf"
    }
   },
   {
@@ -6252,21 +6311,29 @@
    "family": "Merriweather Sans",
    "variants": [
     "300",
+    "300italic",
     "regular",
+    "italic",
     "700",
-    "800"
+    "700italic",
+    "800",
+    "800italic"
    ],
    "subsets": [
     "latin-ext",
     "latin"
    ],
-   "version": "v1",
-   "lastModified": "2013-03-07",
+   "version": "v2",
+   "lastModified": "2013-06-12",
    "files": {
-    "300": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v1/6LmGj5dOJopQKEkt88Gowan5N8K-_DP0e9e_v51obXQ.ttf",
-    "regular": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v1/AKu1CjQ4qnV8MUltkAX3sOAj_ty82iuwwDTNEYXGiyQ.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v1/6LmGj5dOJopQKEkt88GowbqxG25nQNOioCZSK4sU-CA.ttf",
-    "800": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v1/6LmGj5dOJopQKEkt88GowYufzO2zUYSj5LqoJ3UGkco.ttf"
+    "300": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/6LmGj5dOJopQKEkt88Gowan5N8K-_DP0e9e_v51obXQ.ttf",
+    "300italic": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/nAqt4hiqwq3tzCecpgPmVdytE4nGXk2hYD5nJ740tBw.ttf",
+    "regular": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/AKu1CjQ4qnV8MUltkAX3sOAj_ty82iuwwDTNEYXGiyQ.ttf",
+    "italic": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/3Mz4hOHzs2npRMG3B1ascZ32VBCoA_HLsn85tSWZmdo.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/6LmGj5dOJopQKEkt88GowbqxG25nQNOioCZSK4sU-CA.ttf",
+    "700italic": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/nAqt4hiqwq3tzCecpgPmVbuqAJxizi8Dk_SK5et7kMg.ttf",
+    "800": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/6LmGj5dOJopQKEkt88GowYufzO2zUYSj5LqoJ3UGkco.ttf",
+    "800italic": "http://themes.googleusercontent.com/static/fonts/merriweathersans/v2/nAqt4hiqwq3tzCecpgPmVdDmPrYMy3aZO4LmnZsxTQw.ttf"
    }
   },
   {
@@ -6803,8 +6870,8 @@
     "regular"
    ],
    "subsets": [
-    "latin",
-    "cyrillic"
+    "cyrillic",
+    "latin"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -6998,9 +7065,9 @@
     "700italic"
    ],
    "subsets": [
+    "vietnamese",
     "latin-ext",
-    "latin",
-    "vietnamese"
+    "latin"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -7021,13 +7088,13 @@
     "700italic"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v1",
    "lastModified": "2013-04-17",
@@ -7048,13 +7115,13 @@
     "700italic"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v1",
    "lastModified": "2013-04-17",
@@ -7102,8 +7169,8 @@
     "regular"
    ],
    "subsets": [
-    "latin",
-    "greek"
+    "greek",
+    "latin"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -7337,13 +7404,13 @@
     "800italic"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v6",
    "lastModified": "2012-07-25",
@@ -7369,13 +7436,13 @@
     "700"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v6",
    "lastModified": "2012-07-25",
@@ -7392,10 +7459,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v1",
    "lastModified": "2012-08-23",
@@ -7608,10 +7675,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v1",
    "lastModified": "2013-04-10",
@@ -7629,17 +7696,18 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
-   "version": "v4",
-   "lastModified": "2013-04-10",
+   "version": "v5",
+   "lastModified": "2013-05-29",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/ptsans/v4/UFoEz2uiuMypUGZL1NKoeg.ttf",
-    "italic": "http://themes.googleusercontent.com/static/fonts/ptsans/v4/yls9EYWOd496wiu7qzfgNg.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/ptsans/v4/F51BEgHuR0tYHxF0bD4vwvesZW2xOQ-xsNqO47m55DA.ttf",
-    "700italic": "http://themes.googleusercontent.com/static/fonts/ptsans/v4/lILlYDvubYemzYzN7GbLkC3USBnSvpkopQaUR-2r7iU.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/ptsans/v5/UFoEz2uiuMypUGZL1NKoeg.ttf",
+    "italic": "http://themes.googleusercontent.com/static/fonts/ptsans/v5/yls9EYWOd496wiu7qzfgNg.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/ptsans/v5/F51BEgHuR0tYHxF0bD4vwvesZW2xOQ-xsNqO47m55DA.ttf",
+    "700italic": "http://themes.googleusercontent.com/static/fonts/ptsans/v5/lILlYDvubYemzYzN7GbLkC3USBnSvpkopQaUR-2r7iU.ttf"
    }
   },
   {
@@ -7650,15 +7718,16 @@
     "700"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
-   "version": "v5",
-   "lastModified": "2013-04-10",
+   "version": "v6",
+   "lastModified": "2013-05-29",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/ptsanscaption/v5/OXYTDOzBcXU8MTNBvBHeSW8by34Z3mUMtM-o4y-SHCY.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/ptsanscaption/v5/Q-gJrFokeE7JydPpxASt25tc0eyfI4QDEsobEEpk_hA.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/ptsanscaption/v6/OXYTDOzBcXU8MTNBvBHeSW8by34Z3mUMtM-o4y-SHCY.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/ptsanscaption/v6/Q-gJrFokeE7JydPpxASt25tc0eyfI4QDEsobEEpk_hA.ttf"
    }
   },
   {
@@ -7669,15 +7738,16 @@
     "700"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
-   "version": "v3",
-   "lastModified": "2012-07-25",
+   "version": "v4",
+   "lastModified": "2013-05-29",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/ptsansnarrow/v3/UyYrYy3ltEffJV9QueSi4ZTvAuddT2xDMbdz0mdLyZY.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/ptsansnarrow/v3/Q_pTky3Sc3ubRibGToTAYsLtdzs3iyjn_YuT226ZsLU.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/ptsansnarrow/v4/UyYrYy3ltEffJV9QueSi4ZTvAuddT2xDMbdz0mdLyZY.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/ptsansnarrow/v4/Q_pTky3Sc3ubRibGToTAYsLtdzs3iyjn_YuT226ZsLU.ttf"
    }
   },
   {
@@ -7690,16 +7760,18 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
+    "latin-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
-   "version": "v4",
-   "lastModified": "2013-04-10",
+   "version": "v5",
+   "lastModified": "2013-05-29",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/ptserif/v4/sAo427rn3-QL9sWCbMZXhA.ttf",
-    "italic": "http://themes.googleusercontent.com/static/fonts/ptserif/v4/9khWhKzhpkH0OkNnBKS3n_esZW2xOQ-xsNqO47m55DA.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/ptserif/v4/kyZw18tqQ5if-_wpmxxOeKCWcynf_cDxXwCLxiixG1c.ttf",
-    "700italic": "http://themes.googleusercontent.com/static/fonts/ptserif/v4/Foydq9xJp--nfYIx2TBz9QJKKGfqHaYFsRG-T3ceEVo.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/ptserif/v5/sAo427rn3-QL9sWCbMZXhA.ttf",
+    "italic": "http://themes.googleusercontent.com/static/fonts/ptserif/v5/9khWhKzhpkH0OkNnBKS3n_esZW2xOQ-xsNqO47m55DA.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/ptserif/v5/kyZw18tqQ5if-_wpmxxOeKCWcynf_cDxXwCLxiixG1c.ttf",
+    "700italic": "http://themes.googleusercontent.com/static/fonts/ptserif/v5/Foydq9xJp--nfYIx2TBz9QJKKGfqHaYFsRG-T3ceEVo.ttf"
    }
   },
   {
@@ -7710,14 +7782,16 @@
     "italic"
    ],
    "subsets": [
+    "cyrillic",
+    "latin-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
-   "version": "v4",
-   "lastModified": "2013-04-10",
+   "version": "v5",
+   "lastModified": "2013-05-29",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/ptserifcaption/v4/7xkFOeTxxO1GMC1suOUYWVsRioCqs5fohhaYel24W3k.ttf",
-    "italic": "http://themes.googleusercontent.com/static/fonts/ptserifcaption/v4/0kfPsmrmTSgiec7u_Wa0DB1mqvzPHelJwRcF_s_EUM0.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/ptserifcaption/v5/7xkFOeTxxO1GMC1suOUYWVsRioCqs5fohhaYel24W3k.ttf",
+    "italic": "http://themes.googleusercontent.com/static/fonts/ptserifcaption/v5/0kfPsmrmTSgiec7u_Wa0DB1mqvzPHelJwRcF_s_EUM0.ttf"
    }
   },
   {
@@ -7804,14 +7878,30 @@
   },
   {
    "kind": "webfonts#webfont",
-   "family": "Patrick Hand",
+   "family": "Pathway Gothic One",
    "variants": [
     "regular"
    ],
    "subsets": [
     "latin-ext",
-    "latin",
-    "vietnamese"
+    "latin"
+   ],
+   "version": "v1",
+   "lastModified": "2013-06-12",
+   "files": {
+    "regular": "http://themes.googleusercontent.com/static/fonts/pathwaygothicone/v1/Lqv9ztoTUV8Q0FmQZzPqaA6A6xIYD7vYcYDop1i-K-c.ttf"
+   }
+  },
+  {
+   "kind": "webfonts#webfont",
+   "family": "Patrick Hand",
+   "variants": [
+    "regular"
+   ],
+   "subsets": [
+    "vietnamese",
+    "latin-ext",
+    "latin"
    ],
    "version": "v7",
    "lastModified": "2013-02-27",
@@ -7826,9 +7916,9 @@
     "regular"
    ],
    "subsets": [
+    "vietnamese",
     "latin-ext",
-    "latin",
-    "vietnamese"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2013-02-27",
@@ -7938,8 +8028,8 @@
     "700italic"
    ],
    "subsets": [
-    "latin",
-    "cyrillic"
+    "cyrillic",
+    "latin"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -8021,12 +8111,12 @@
     "700"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -8063,9 +8153,9 @@
     "900italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v7",
    "lastModified": "2012-11-28",
@@ -8090,9 +8180,9 @@
     "900italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-10-31",
@@ -8129,9 +8219,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-07-25",
@@ -8269,10 +8359,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
     "greek",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-07-25",
@@ -8318,9 +8408,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-07-25",
@@ -8801,13 +8891,13 @@
     "900italic"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v8",
    "lastModified": "2013-05-02",
@@ -8838,13 +8928,13 @@
     "700italic"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v7",
    "lastModified": "2013-01-23",
@@ -8867,13 +8957,13 @@
     "700"
    ],
    "subsets": [
-    "latin-ext",
-    "cyrillic-ext",
-    "latin",
-    "greek",
     "vietnamese",
+    "cyrillic",
+    "latin-ext",
+    "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v1",
    "lastModified": "2013-05-01",
@@ -8977,13 +9067,13 @@
    "subsets": [
     "latin"
    ],
-   "version": "v6",
-   "lastModified": "2012-07-25",
+   "version": "v7",
+   "lastModified": "2013-05-22",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/rosario/v6/bL-cEh8dXtDupB2WccA2LA.ttf",
-    "italic": "http://themes.googleusercontent.com/static/fonts/rosario/v6/pkflNy18HEuVVx4EOjeb_Q.ttf",
-    "700": "http://themes.googleusercontent.com/static/fonts/rosario/v6/nrS6PJvDWN42RP4TFWccd_esZW2xOQ-xsNqO47m55DA.ttf",
-    "700italic": "http://themes.googleusercontent.com/static/fonts/rosario/v6/EOgFX2Va5VGrkhn_eDpIRS3USBnSvpkopQaUR-2r7iU.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/rosario/v7/bL-cEh8dXtDupB2WccA2LA.ttf",
+    "italic": "http://themes.googleusercontent.com/static/fonts/rosario/v7/pkflNy18HEuVVx4EOjeb_Q.ttf",
+    "700": "http://themes.googleusercontent.com/static/fonts/rosario/v7/nrS6PJvDWN42RP4TFWccd_esZW2xOQ-xsNqO47m55DA.ttf",
+    "700italic": "http://themes.googleusercontent.com/static/fonts/rosario/v7/EOgFX2Va5VGrkhn_eDpIRS3USBnSvpkopQaUR-2r7iU.ttf"
    }
   },
   {
@@ -9112,10 +9202,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -9130,9 +9220,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-07-25",
@@ -9308,9 +9398,9 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-09-26",
@@ -9375,9 +9465,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-10-26",
@@ -9996,9 +10086,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-09-26",
@@ -10142,10 +10232,10 @@
    "subsets": [
     "khmer"
    ],
-   "version": "v5",
-   "lastModified": "2012-07-25",
+   "version": "v6",
+   "lastModified": "2013-06-12",
    "files": {
-    "regular": "http://themes.googleusercontent.com/static/fonts/suwannaphum/v5/1jIPOyXied3T79GCnSlCN6CWcynf_cDxXwCLxiixG1c.ttf"
+    "regular": "http://themes.googleusercontent.com/static/fonts/suwannaphum/v6/1jIPOyXied3T79GCnSlCN6CWcynf_cDxXwCLxiixG1c.ttf"
    }
   },
   {
@@ -10250,10 +10340,10 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
     "latin",
-    "cyrillic"
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -10479,12 +10569,12 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v4",
    "lastModified": "2012-07-25",
@@ -10506,12 +10596,12 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -10529,12 +10619,12 @@
     "700italic"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "cyrillic-ext",
-    "latin",
     "greek",
     "greek-ext",
-    "cyrillic"
+    "latin",
+    "cyrillic-ext"
    ],
    "version": "v3",
    "lastModified": "2012-07-25",
@@ -10582,9 +10672,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v1",
    "lastModified": "2012-09-26",
@@ -11033,9 +11123,9 @@
     "regular"
    ],
    "subsets": [
+    "cyrillic",
     "latin-ext",
-    "latin",
-    "cyrillic"
+    "latin"
    ],
    "version": "v6",
    "lastModified": "2012-09-26",

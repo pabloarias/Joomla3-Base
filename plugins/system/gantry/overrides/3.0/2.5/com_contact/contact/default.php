@@ -9,6 +9,8 @@
 defined('_JEXEC') or die;
 
 $cparams = JComponentHelper::getParams ('com_media');
+
+jimport('joomla.html.html.bootstrap');
 ?>
 <div class="contact<?php echo $this->pageclass_sfx?>">
 <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -41,8 +43,8 @@ $cparams = JComponentHelper::getParams ('com_media');
 		</form>
 	<?php endif; ?>
 	
-	<?php // TAGS ?>
-	<?php if ($params->get('show_tags', 1) && isset($this->item->tags) && !empty($this->item->tags)) : ?>
+	<?php // TAGS ?>	
+	<?php if ($this->params->get('show_tags', 1) && !empty($this->item->tags)) : ?>
 		<?php $this->item->tagLayout = new JLayoutFile('joomla.content.tags'); ?>
 		<?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?>
 	<?php endif; ?>
