@@ -43,10 +43,10 @@
             		self._togglePreview();
             	}    
             	
-            	if (ed.plugins.fullscreen) {
-					ed.onFullScreen.add(function(state, settings) {
+            	if (ed.onFullScreen) {
+					ed.onFullScreen.add(function(editor, state) {
 		            	if (!state) {
-		            		self.setState(!settings.preview_state);
+		            		self.setState(!editor.settings.preview_state);
 		            		self._togglePreview();
 		            	}
 		            });
@@ -79,7 +79,7 @@
                 }
             });
 
-			ed.addButton('preview', {title : 'preview.preview_desc', cmd : 'mcePreview'});
+			ed.addButton('preview', {title : 'preview.desc', cmd : 'mcePreview'});
 			
 			// add theme resize
             ed.theme.onResize.add(function() {
