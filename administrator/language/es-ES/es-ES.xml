@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metafile version="3.1" client="administrator">
 	<name>Spanish (ES)</name>
-	<version>3.1.0.1</version>
-	<creationDate>2012-4-24</creationDate>
+	<version>3.1.5.1</version>
+	<creationDate>2013-8-1</creationDate>
 	<author>Spanish Translation Team: Comunidad Joomla</author>
 	<authorEmail>info@comunidadjoomla.org</authorEmail>
 	<authorUrl>www.comunidadjoomla.org</authorUrl>
-	<copyright>Copyright (C) 2005 - 2012 Open Source Matters and comunidadjoomla.org. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2005 - 2013 Open Source Matters and comunidadjoomla.org. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<description>Spanish language pack for Joomla! 3.1.0 - Administrator</description>
+	<description>Spanish language pack for Joomla! 3.1.5 - Administrator</description>
 	<metadata>
 		<name>Spanish (español)</name>
 		<tag>es-ES</tag>

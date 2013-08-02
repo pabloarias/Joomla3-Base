@@ -2,8 +2,8 @@
 <extension type="package" version="3.1">
 <name>Spanish Language Pack</name>
 <packagename>es-ES</packagename>
-<version>3.1.0.1</version>
-<creationDate>24 de abril del 2013</creationDate>
+<version>3.1.5.1</version>
+<creationDate>1 de agosto del 2013</creationDate>
 <author>Spanish Translation Team: comunidadjoomla.org</author>
 <authorEmail>info@comunidadjoomla.org</authorEmail>
 <authorUrl>www.comunidadjoomla.org</authorUrl>
@@ -13,7 +13,7 @@
 <packager>Spanish Translation Team</packager>
 <packagerurl>www.comunidadjoomla.org</packagerurl>
 <description><![CDATA[
-		<h2>Successfully installed the spanish language pack for Joomla! 3.1.0 with the TinyMCE 3.5.2 language files included.</h2>
+		<h2>Successfully installed the spanish language pack for Joomla! 3.1.5 with the TinyMCE 3.5.2 language files included.</h2>
 		If you use other languages than English and spanish, please make sure that you also installed all other language packs for TinyMCE before you enabling "Automatic Language Selection" through the following steps:<br/>
 		<ol>
 		<li>Extensions</li>
@@ -27,7 +27,7 @@
 		<p>Please report any bugs or issues at the Comunidad Joomla! <a href="http://foro.comunidadjoomla.org/traduccion-ext/" target="_blank">Translation forum</a></p>
 		<p></p>
 		<p>Translated by: <a href="http://www.comunidadjoomla.org" target="_blank" title="">The spanish translation team of Comunidad Joomla!</a></p>
-		<h2>El paquete en español para Joomla! 3.1.0, incluyendo los archivos del editor TinyMCE 3.5.2, se ha instalado correctamente</h2>
+		<h2>El paquete en español para Joomla! 3.1.5, incluyendo los archivos del editor TinyMCE 3.5.2, se ha instalado correctamente</h2>
 		Referente al idioma del editor TinyMCE, si usted usa otros idiomas además del inglés y el español, por favor, asegúrese de que también instala los demás idiomas para el TinyMCE antes de habilitar la opción "Selección automática del idioma" por medio de los siguientes pasos:<br/>
 		<ol>
 		<li>Extensiones</li>
