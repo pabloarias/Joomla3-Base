@@ -61,6 +61,9 @@ class JFile
 	 */
 	public static function makeSafe($file)
 	{
+		// Remove any trailing dots, as those aren't ever valid file names.
+		$file = rtrim($file, '.');
+
 		$regex = array('#(\.){2,}#', '#[^A-Za-z0-9\.\_\- ]#', '#^\.#');
 
 		return preg_replace($regex, '', $file);
@@ -294,7 +297,7 @@ class JFile
 	 * @return  mixed  Returns file contents or boolean False if failed
 	 *
 	 * @since   11.1
-	 * @deprecated  13.3  Use the native file_get_contents() instead.
+	 * @deprecated  13.3 (Platform) & 4.0 (CMS) - Use the native file_get_contents() instead.
 	 */
 	public static function read($filename, $incpath = false, $amount = 0, $chunksize = 8192, $offset = 0)
 	{
@@ -517,7 +520,7 @@ class JFile
 	 * @return  string  filename
 	 *
 	 * @since   11.1
-	 * @deprecated  13.3 Use basename() instead.
+	 * @deprecated  13.3 (Platform) & 4.0 (CMS) - Use basename() instead.
 	 */
 	public static function getName($file)
 	{
