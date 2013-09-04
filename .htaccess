@@ -40,11 +40,9 @@ RewriteRule .* index.php [F]
 ## End - Rewrite rules to block out some common exploits.
 
 ## Begin - Custom redirects
-#
-# If you need to redirect some pages, or set a canonical non-www to
-# www redirect (or vice versa), place that code here. Ensure those
-# redirects use the correct RewriteRule syntax and the [R=301,L] flags.
-#
+# Redirects to the subdomain www
+#RewriteCond %{HTTP_HOST} !^www\.domain\.com$ [NC]
+#RewriteRule ^(.*)$ http://www.domain.com/$1 [R=301,L]
 ## End - Custom redirects
 
 ##
