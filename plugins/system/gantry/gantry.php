@@ -1,6 +1,6 @@
 <?php
 /**
- * @version        4.1.12 July 3, 2013
+ * @version        4.1.20 December 5, 2013
  * @author         RocketTheme http://www.rockettheme.com
  * @copyright      Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -26,9 +26,9 @@ class plgSystemGantry extends JPlugin
 	protected $bootstrapTriggers = array(
 		'data-toggle="tab"',
 		'data-toggle="pill"',
-		'data-dismiss="alert"'
+		'data-dismiss="alert"',
+		'data-toggle="collapse"'
 	);
-
 	/**
 	 * @var array
 	 */
@@ -57,11 +57,10 @@ class plgSystemGantry extends JPlugin
 		)
 	);
 
-
 	public function __construct(&$subject, $config = array())
 	{
 		parent::__construct($subject, $config);
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$lang->load('plg_system_gantry', JPATH_ADMINISTRATOR);
 		JLog::addLogger(array('text_file' => 'gantry.php'), $this->params->get('debugloglevel', 63), array('gantry'));
@@ -79,6 +78,7 @@ class plgSystemGantry extends JPlugin
 				JLog::add(sprintf('Setting override path to %s', GANTRY_OVERRIDES_PATH), JLog::DEBUG, 'rokoverrides');
 			}
 			require_once dirname(__FILE__) . '/functions.php';
+
 		}
 	}
 
@@ -139,149 +139,6 @@ class plgSystemGantry extends JPlugin
 	}
 
 	/* temporary solution to add Google Prettify stuff */
-	/**
-	 * @param     $context
-	 * @param     $article
-	 * @param     $params
-	 * @param int $page
-	 */
-	function onContentBeforeDisplay($context, &$article, &$params, $page = 0)
-	{
-
-		if (!self::$prettyprint && isset($article->text) && (strpos($article->text, '<code class="prettyprint') !== false || strpos($article->text, '<pre class="prettyprint') !== false)) {
-
-			$doc = JFactory::getDocument();
-			$app = JFactory::getApplication();
-			if (!file_exists(JPATH_THEMES . '/' . $app->getTemplate() . '/less/prettify.less')) {
-				if (file_exists(JPATH_THEMES . '/' . $app->getTemplate() . '/css/prettify.css')) {
-					$doc->addStyleSheet(JURI::root(true) . '/' . $app->getTemplate() . '/css/prettify.css');
-				} else {
-					$doc->addStyleSheet(JURI::root(true) . '/libraries/gantry/libs/google-code-prettify/prettify.css');
-				}
-			}
-			$doc->addScript(JURI::root(true) . '/libraries/gantry/libs/google-code-prettify/prettify.js');
-			$doc->addScriptDeclaration("\nwindow.addEvent('domready', function() { prettyPrint();});\n");
-			self::$prettyprint = true;
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function onBeforeCompileHead()
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	public function onAfterRender()
-	{
-		$app = JFactory::getApplication();
-
-		if (!$app->isAdmin()) return;
-
-		$option = $app->input->getString('option', '');
-		$view   = $app->input->getString('view', '');
-		$task   = $app->input->getString('task', '');
-
-		if ($option == 'com_templates' && (($view == 'styles') || (empty($view) && empty($task)))) {
-			$master_templates = $this->getMasters();
-			$gantry_templates = $this->getGantryTemplates();
-			if (!class_exists('phpQuery')) {
-				require_once(JPATH_LIBRARIES . "/gantry/libs/phpQuery.php");
-			}
-			$document = JFactory::getDocument();
-			$doctype  = $document->getType();
-			if ($doctype == 'html') {
-				$body = JResponse::getBody();
-				$pq   = phpQuery::newDocument($body);
-
-				foreach ($gantry_templates as $gantry) {
-					if (in_array($gantry['id'], $master_templates)) {
-						pq('td > input[value=' . $gantry['id'] . ']')->parent()->next()->append('<span style="white-space:nowrap;margin:0 10px;background:#d63c1f;color:#fff;padding:2px 4px;font-family:Helvetica,Arial,sans-serif;border-radius:3px;">&#10029; Master</span>');
-					} else {
-						pq('td > input[value=' . $gantry['id'] . ']')->parent()->next()->append('<span style="white-space:nowrap;margin:0 10px;background:#999;color:#fff;padding:2px 4px;font-family:Helvetica,Arial,sans-serif;border-radius:3px;">Override</span>');
-					}
-
-					$link  = pq('td > input[value=' . $gantry['id'] . ']')->parent()->next()->find('a:not([title])');
-					$value = str_replace('style.edit', 'template.edit', str_replace('com_templates', 'com_gantry', $link->attr('href')));
-					$link->attr('href', $value);
-				}
-
-
-				$body = $pq->getDocument()->htmlOuter();
-				JResponse::setBody($body);
-			}
-		}
-
-		if ($option == 'com_gantry') {
-
-
-			if (!class_exists('phpQuery')) {
-				require_once(JPATH_LIBRARIES . "/gantry/libs/phpQuery.php");
-			}
-
-			$body = JResponse::getBody();
-			$pq   = phpQuery::newDocument($body);
-
-			// default system message
-			pq('div#toolbar-box')->after('<div class="clr"></div><dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl>');
-			// adminpraise3
-			pq('#system-message-container')->append('<dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl></div><div class="clear">');
-
-			pq('#mc-title')->before('<div class="clr"></div><dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl>');
-			pq('div#content > .pagetitle')->after('<div class="clr"></div><dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl>');
-
-
-			$body = $pq->getDocument()->htmlOuter();
-			JResponse::setBody($body);
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function onAfterDispatch()
-	{
-		$app = JFactory::getApplication();
-
-		if ($app->isAdmin()) return;
-
-		$document = JFactory::getDocument();
-		$doctype  = $document->getType();
-		$messages = JFactory::getSession()->get('application.queue');
-
-		if ($doctype == 'html') {
-			$buffer      = "";
-			$tmp_buffers = $document->getBuffer();
-			if (is_array($tmp_buffers)) {
-				foreach ($document->getBuffer() as $key => $value) {
-					$buffer .= $document->getBuffer($key);
-				}
-			}
-
-			if (empty($buffer) && !count($messages)) return;
-
-			// wether to load bootstrap jui or not
-			if (($this->_contains($buffer, $this->bootstrapTriggers) || count($messages)) && version_compare(JVERSION, '3.0.0') >= 0) {
-				JHtml::_('bootstrap.framework');
-			}
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function onSearch()
-	{
-
-	}
-
-
 
 	/**
 	 * @param $key
@@ -289,7 +146,7 @@ class plgSystemGantry extends JPlugin
 	 */
 	private function setRequestOption($key, $value)
 	{
-		if (class_exists('JRequest')){
+		if (class_exists('JRequest')) {
 			JRequest::set(array($key => $value), 'GET');
 			JRequest::set(array($key => $value), 'POST');
 		}
@@ -338,6 +195,136 @@ class plgSystemGantry extends JPlugin
 	}
 
 	/**
+	 * @param     $context
+	 * @param     $article
+	 * @param     $params
+	 * @param int $page
+	 */
+	function onContentBeforeDisplay($context, &$article, &$params, $page = 0)
+	{
+
+		if (!self::$prettyprint && isset($article->text) && (strpos($article->text, '<code class="prettyprint') !== false || strpos($article->text, '<pre class="prettyprint') !== false)) {
+
+			$doc = JFactory::getDocument();
+			$app = JFactory::getApplication();
+			if (!file_exists(JPATH_THEMES . '/' . $app->getTemplate() . '/less/prettify.less')) {
+				if (file_exists(JPATH_THEMES . '/' . $app->getTemplate() . '/css/prettify.css')) {
+					$doc->addStyleSheet(JURI::root(true) . '/' . $app->getTemplate() . '/css/prettify.css');
+				} else {
+					$doc->addStyleSheet(JURI::root(true) . '/libraries/gantry/libs/google-code-prettify/prettify.css');
+				}
+			}
+			$doc->addScript(JURI::root(true) . '/libraries/gantry/libs/google-code-prettify/prettify.js');
+			$doc->addScriptDeclaration("\nwindow.addEvent('domready', function() { prettyPrint();});\n");
+			self::$prettyprint = true;
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	public function onBeforeCompileHead()
+	{
+		$doc = JFactory::getDocument();
+		$app = JFactory::getApplication();
+		if (!$app->isAdmin()) {
+			$template_info = $app->getTemplate(true);
+			// If its a gantry template dont load up
+			if ($this->isGantryTemplate($template_info->id) && isset($doc->_styleSheets[JURI::root(true) . '/templates/' . $app->getTemplate() . '/css-compiled/bootstrap.css'])) {
+				unset($doc->_styleSheets[JUri::base(true) . '/media/jui/css/bootstrap.css']);
+				unset($doc->_styleSheets[JUri::base(true) . '/media/jui/css/bootstrap.min.css']);
+				unset($doc->_styleSheets[JUri::base(true) . '/media/jui/css/bootstrap-responsive.css']);
+				unset($doc->_styleSheets[JUri::base(true) . '/media/jui/css/bootstrap-responsive.min.css']);
+				unset($doc->_styleSheets[JUri::base(true) . '/media/jui/css/bootstrap-extended.css']);
+				unset($doc->_styleSheets[JUri::base(true) . '/media/jui/css/bootstrap-rtl.css']);
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function onAfterRender()
+	{
+		$app = JFactory::getApplication();
+
+		if (!$app->isAdmin()) return;
+
+		$option = $app->input->getString('option', '');
+		$view   = $app->input->getString('view', '');
+		$task   = $app->input->getString('task', '');
+
+		if ($option == 'com_templates' && (($view == 'styles') || (empty($view) && empty($task)))) {
+			$master_templates = $this->getMasters();
+			$gantry_templates = $this->getGantryTemplates();
+			if (!class_exists('phpQuery')) {
+				require_once(JPATH_LIBRARIES . "/gantry/libs/phpQuery.php");
+			}
+			$document = JFactory::getDocument();
+			$doctype  = $document->getType();
+			if ($doctype == 'html') {
+				$body = JResponse::getBody();
+				$pq   = phpQuery::newDocument($body);
+
+				foreach ($gantry_templates as $gantry) {
+					if (in_array($gantry['id'], $master_templates)) {
+						pq('td > input[value=' . $gantry['id'] . ']')->parent()->next()->append('<span style="white-space:nowrap;margin:0 10px;background:#d63c1f;color:#fff;padding:2px 4px;font-family:Helvetica,Arial,sans-serif;border-radius:3px;">&#10029; Master</span>');
+					} else {
+						pq('td > input[value=' . $gantry['id'] . ']')->parent()->next()->append('<span style="white-space:nowrap;margin:0 10px;background:#999;color:#fff;padding:2px 4px;font-family:Helvetica,Arial,sans-serif;border-radius:3px;">Override</span>');
+					}
+
+					$link  = pq('td > input[value=' . $gantry['id'] . ']')->parent()->next()->find('a[href*="com_templates"');
+					$value = str_replace('style.edit', 'template.edit', str_replace('com_templates', 'com_gantry', $link->attr('href')));
+					$link->attr('href', $value);
+				}
+
+
+				$body = $pq->getDocument()->htmlOuter();
+				JResponse::setBody($body);
+			}
+		}
+
+		if ($option == 'com_gantry') {
+
+
+			if (!class_exists('phpQuery')) {
+				require_once(JPATH_LIBRARIES . "/gantry/libs/phpQuery.php");
+			}
+
+			$body = JResponse::getBody();
+			$pq   = phpQuery::newDocument($body);
+
+			// default system message
+			pq('div#toolbar-box')->after('<div class="clr"></div><dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl>');
+			// adminpraise3
+			pq('#system-message-container')->append('<dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl></div><div class="clear">');
+
+			pq('#mc-title')->before('<div class="clr"></div><dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl>');
+			pq('div#content > .pagetitle')->after('<div class="clr"></div><dl id="system-message"><dt class="message"></dt><dd class="message message fade"><ul><li></li></ul></dd><span class="close"><span>x</span></span></dl>');
+
+
+			$body = $pq->getDocument()->htmlOuter();
+			JResponse::setBody($body);
+		}
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getMasters()
+	{
+		$templates = $this->getTemplates();
+		$masters   = array();
+		foreach ($templates as $template) {
+			if ($template->params->get('master') == 'true') {
+				$masters[] = $template->id;
+			}
+		}
+		return $masters;
+	}
+
+	/**
 	 * @return mixed
 	 */
 	private function getTemplates()
@@ -378,21 +365,6 @@ class plgSystemGantry extends JPlugin
 	/**
 	 * @return array
 	 */
-	private function getMasters()
-	{
-		$templates = $this->getTemplates();
-		$masters   = array();
-		foreach ($templates as $template) {
-			if ($template->params->get('master') == 'true') {
-				$masters[] = $template->id;
-			}
-		}
-		return $masters;
-	}
-
-	/**
-	 * @return array
-	 */
 	private function getGantryTemplates()
 	{
 		$templates = $this->getTemplates();
@@ -407,6 +379,38 @@ class plgSystemGantry extends JPlugin
 	}
 
 	/**
+	 *
+	 */
+	public function onAfterDispatch()
+	{
+		$app = JFactory::getApplication();
+
+		if ($app->isAdmin()) return;
+
+		$document = JFactory::getDocument();
+		$doctype  = $document->getType();
+		$messages = JFactory::getSession()->get('application.queue');
+
+		if ($doctype == 'html') {
+			$buffer      = "";
+			$tmp_buffers = $document->getBuffer();
+			if (is_array($tmp_buffers)) {
+				foreach ($document->getBuffer() as $key => $value) {
+					$buffer .= $document->getBuffer($key);
+				}
+			}
+
+			if (empty($buffer) && !count($messages)) return;
+
+			// wether to load bootstrap jui or not
+			if (($this->_contains($buffer, $this->bootstrapTriggers) || count($messages)) && version_compare(JVERSION, '3.0.0') >= 0) {
+				JHtml::_('bootstrap.framework');
+			}
+		}
+
+	}
+
+	/**
 	 * @param       $string
 	 * @param array $search
 	 * @param bool  $caseInsensitive
@@ -417,6 +421,14 @@ class plgSystemGantry extends JPlugin
 	{
 		$exp = '/' . implode('|', array_map('preg_quote', $search)) . ($caseInsensitive ? '/i' : '/');
 		return preg_match($exp, $string) ? true : false;
+	}
+
+	/**
+	 *
+	 */
+	public function onSearch()
+	{
+
 	}
 
 }

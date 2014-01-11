@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantry.php 8277 2013-03-13 20:06:16Z btowles $
+ * @version   $Id: gantry.php 12533 2013-08-08 17:30:05Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -19,7 +19,7 @@ if (!defined('GANTRY_VERSION')) {
 	/**
 	 * @name GANTRY_VERSION
 	 */
-	define('GANTRY_VERSION', '4.1.12');
+	define('GANTRY_VERSION', '4.1.20');
 
 	if (!defined('DS')) {
 		define('DS', DIRECTORY_SEPARATOR);
@@ -58,7 +58,7 @@ if (!defined('GANTRY_VERSION')) {
 		foreach ($url_file_checks as $url_file) {
 			$full_path = realpath($url_file);
 			if ($full_path !== false && file_exists($full_path)) {
-				$document->addScript($relative_path . '/' . basename($full_path) . '?ver=4.1.12');
+				$document->addScript($relative_path . '/' . basename($full_path) . '?ver=4.1.20');
 				break;
 			}
 		}
@@ -98,7 +98,7 @@ if (!defined('GANTRY_VERSION')) {
 		foreach ($url_file_checks as $url_file) {
 			$full_path = realpath($url_file);
 			if ($full_path !== false && file_exists($full_path)) {
-				$document->addStyleSheet($relative_path . '/' . basename($full_path) . '?ver=4.1.12');
+				$document->addStyleSheet($relative_path . '/' . basename($full_path) . '?ver=4.1.20');
 			}
 		}
 	}
@@ -437,7 +437,6 @@ if (!defined('GANTRY_VERSION')) {
 			$dispatcher->register('onGantryTemplateInit', 'gantry_run_alternate_template');
 		} else {
 			gantry_template_initialize();
-			gantry_run_alternate_template($filename);
 		}
 		if (!isset($gantry_calling_file))
 		{
@@ -448,3 +447,7 @@ if (!defined('GANTRY_VERSION')) {
 	}
 }
 
+// let run on the main template page
+if (gantry_is_template_include()) {
+	gantry_run_alternate_template($filename);
+}

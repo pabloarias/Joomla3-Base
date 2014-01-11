@@ -1,0 +1,112 @@
+/* rockettheme */
+.rokinstall-logo {background-image: url('data:image/png;base64,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');
+}
+
+.rokinstall-icon > span {background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAABfCAMAAADMH1dkAAABjFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADy8vK/v78AAAAAAAAAAACJiYnj4+P7+/sAAAAAAAD39/f6+voAAAAAAABBQUEAAAAAAAAAAAA/Pz8AAAAAAADo6OgAAAAAAACLi4sAAAAAAADAwMC4uLj6+voAAACysrIAAAAAAADt7e3h4eEAAAC9vb0AAADi4uI9PT0AAADJyckAAABpaWmxsbHp6ekAAAAAAAC8vLzi4uIAAACGhoY5OTk8PDwAAADm5uZiYmIAAAAAAABvb2/l5eVsbGze3t5ERESOjo7u7u7j4+Ps7Ozx8fEAAACDg4M3NzcAAACZmZnQ0ND39/fHx8fz8/NycnLd3d22trY7OzsAAADk5OQAAAAAAADa2trExMSrq6sAAACYmJh+fn4AAAAAAAAAAADT09PPz89kZGSIiIhGRkYAAAAAAADCwsKRkZG6urqVlZXDw8Pg4ODg4OD29vbs7Ozh4eHy8vLe3t7Dw8P////6xlMmAAAAg3RSTlMAAAgmGAYWDyEqFR8OJQHbgCMRMVmy8yco5/MaCT4LExBABy7BNBxYJCB/hfQechQszrUKgQWzQheOPE1zwB0tgrQvW0dEDMNTKQ1Jsku3PFbNs8/cN11JEmqJ5o/aR6WGRSvEOhuokV8Ca2E2OzKanVFaOjA/k1SDUpK2tejOtNqkfR5eDHUAAALkSURBVHhe7dbXc9pMEADwCBWQhASSCKBQTTU1gB33uHfHcfyl9t57L18t+49Ht0J3wvgtL/GM9+lmfnNFe3d7OvETwR0MMWgGRY47FANSSAtJAYZ+E/hz+xlNEodRTwv8bwCRTCiISGchDbOSdAzgrGYi0llIw1hYInaq2u+Js8TrvJDNCnymhxbj+3OeOT1KRoomVTU5Eumb0F/tmPAMSIxb1qTPOK/nSdTGqt84OqerTWYUqTJjyJQZQ6bMGKLeBbhZZcYQs5SQE5gnP9JdzCk5zDDFoxjH4V2hQj6nKEouX9CHNls0U0ZCluWEkTLFAcQr1Jmd7nVL07MdY2pMP3D6dkvgRnc3MT/lHBgPRYmPxcGL+Mryg0RNEV3UTaPqmH1rpXzlaROguXl9/0Yr7GIh1bkNcHFyIcEXL1+9hN3btT6Ga22AyEiyIuX48swXHLpYCbiYN+Zs+NaZz+rXjFmbGCxtKTqivj1annn5Sn6c1sOtO70mQVoTCoJc2rh339KmxtKKUVxrPARbFgouBkNVcKJUN5RA4XTIevR5pjy6rSPqytYTwPiaWueeV4ovmn/EjDyHGKgUcRHnN5db62klZHUB6rWwi3kjBoiv32jzFa3YA7A7qYKLpvY2/q7h6MZ7a6H4oUsyYJi6i8Hax8wna9xRsLuY4SgvefVWVFq1lpqc8zJvz/nrkBgOp0nZmy7FwS4tZtCGawIJrAuH1QQSWBcQj2wcVwVyGnAbadOHAUlV8QDQJkVy6y/s4dHB5k7/xfbewTpERnghTZ7sKMS9O+a+oN8BiKbyKcfoi01fUFSZl4lBG3uyOVHXyoveiWdI9Xc0sjSGRJMT4MZ40rEB5LKq9Sdaw1Kz3DA2iP21StE/7DhgRCYHhyWG3wd/4xcNLIjaYvkfVP+niJJrUScJmI2MLwlhdQcN00cU00dx719imHiidV9PUdIyE226Zf/9798y+rd06Gaz/yx2TH7J+AE2SMy25fgy+AAAAABJRU5ErkJggg==);}
+
+body table.adminform {
+	width: 100%;
+}
+
+body table.adminform th {
+	text-align:center !important;
+	font-size:18px;
+	padding-bottom:20px;
+	color:#555;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+	font-weight: 300;
+}
+
+.rokinstall-logo {
+	display:block;
+	width: 106px;
+	height: 40px;
+	margin: 15px auto;
+}
+
+#rokinstall-status {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+	font-weight: 300;
+	font-size:14px;
+	color:#fff;
+	padding: 25px 25px 10px 25px;
+	border:1px solid #ddd;
+	background:#f9f9f9;
+	border-radius:4px
+}
+
+#rokinstall-status li {
+	border-radius:4px;
+	margin-bottom:15px;
+	padding: 10px;
+}
+
+.rokinstall-icon > span {
+	display:block;
+	width:32px;
+	height:32px
+}
+
+#rokinstall-status .rokinstall-row {
+	display:block;
+	margin-left: 55px;
+}
+
+.rokinstall-icon {
+	display:block;
+	float:left;
+	vertical-align: middle;
+	background-repeat:no-repeat;
+	height:32px;
+	width:32px;
+	margin-left: 10px;
+	margin-top: -6px;
+}
+
+#rokinstall-status {
+	list-style:none
+}
+
+
+
+
+/* SUCCESS */
+.rokinstall-success {
+	background:#7db947
+}
+
+.rokinstall-success .rokinstall-icon > span {
+	background-position:3px 6px
+}
+
+#rokinstall-status {
+	list-style:none
+}
+
+/* UPDATE */
+.rokinstall-update {
+	background:#0088CC
+}
+
+.rokinstall-update .rokinstall-icon > span {
+	background-position:3px -29px
+}
+
+/* FAILURE */
+.rokinstall-failure {
+	background:#c93130;
+}
+
+.rokinstall-failure .rokinstall-icon > span {
+	background-position:3px -64px
+}
+
+.rokinstall-failure .rokinstall-errormsg {
+	text-indent:0;
+	margin-left:55px;
+	display:block;
+	color:#eee;
+	font-weight: normal;
+	font-size: 13px;
+
+}

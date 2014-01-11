@@ -5,8 +5,8 @@
 8a3edb0428f11a404535d9134c90063f fields/debuglink/index.html
 8a3edb0428f11a404535d9134c90063f fields/index.html
 357dd365352da3b689535db68cc2355d functions.php
-be7228355b1ed0bdb453a6a27d7bb6a2 gantry.php
-720db290273689765967b8e99a8becf8 gantry.xml
+bcba000d9455f482258131b0d3070019 gantry.php
+2c463440a18885b3dd6558465a94d856 gantry.xml
 8a3edb0428f11a404535d9134c90063f index.html
 a46e79d587e1dc6fca23d48211010d80 language/en-GB/en-GB.plg_system_gantry.ini
 8a3edb0428f11a404535d9134c90063f language/en-GB/index.html
@@ -32,7 +32,7 @@ c946d37e83fd5eee0f1742cb5bd16d40 overrides/3.0/2.5/com_contact/contact/default_f
 86e9b16ac3f66b480e8b411fb829f25a overrides/3.0/2.5/com_content/archive/default.php
 da996e1610ffd0f24e784d7fa3ed877f overrides/3.0/2.5/com_content/archive/default_items.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_content/archive/index.html
-77aca09e17fee54871fac3c25bb404b8 overrides/3.0/2.5/com_content/article/default.php
+d7d6cf8d3a73b5e777c814a81ee90258 overrides/3.0/2.5/com_content/article/default.php
 616c5ba6a137f5cb45e82ae56f62e60d overrides/3.0/2.5/com_content/article/default_links.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_content/article/index.html
 52376420d076cba95f39fe3d972abce0 overrides/3.0/2.5/com_content/categories/default.php
@@ -43,7 +43,7 @@ a48a10bf2c09a026c4bc75873b33fdb7 overrides/3.0/2.5/com_content/category/blog_chi
 e8a4fbdec8787092616dcc9ffee3d45d overrides/3.0/2.5/com_content/category/blog_item.php
 f60df6afb21927d329f898b82c8f336f overrides/3.0/2.5/com_content/category/blog_links.php
 4f79da3b8603b923de43218fdb1db115 overrides/3.0/2.5/com_content/category/default.php
-34b8c1899ebd4b2d36804cc97c1de74f overrides/3.0/2.5/com_content/category/default_articles.php
+d7864b46603ea3f1a0fa88f0a6fa7f5e overrides/3.0/2.5/com_content/category/default_articles.php
 cc0ac636b3c4e441bfff2a3b70b8de77 overrides/3.0/2.5/com_content/category/default_children.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_content/category/index.html
 1bb132f238e8e7dea0e24be1acb23c91 overrides/3.0/2.5/com_content/featured/default.php
@@ -72,7 +72,7 @@ b06dd50ce394cc54b8904710d7189c6d overrides/3.0/2.5/com_newsfeeds/categories/defa
 ed8ad08fbcd3cd331163a4c5f0cfcce7 overrides/3.0/2.5/com_newsfeeds/category/default_items.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_newsfeeds/category/index.html
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_newsfeeds/index.html
-f51725081ce1b426314b2b495abbf40d overrides/3.0/2.5/com_newsfeeds/newsfeed/default.php
+e9e1984c73d4e58259fb76c3fb491d4d overrides/3.0/2.5/com_newsfeeds/newsfeed/default.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_newsfeeds/newsfeed/index.html
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/com_search/index.html
 87fc6fd732af964c327eb489d3cfd291 overrides/3.0/2.5/com_search/search/default.php
@@ -169,4 +169,11 @@ b891109cd3b0b696b314aebbeac20082 overrides/3.0/2.5/mod_whosonline/default.php
 e1a2c55be85d48a7b6f77f6c73c6fda0 overrides/3.0/2.5/mod_wrapper/default.php
 8a3edb0428f11a404535d9134c90063f overrides/3.0/2.5/mod_wrapper/index.html
 8a3edb0428f11a404535d9134c90063f overrides/3.0/index.html
+ee0e87973d9fdc61c5c6013435f2f042 overrides/3.2/2.5/com_content/category/blog.php
+8a3edb0428f11a404535d9134c90063f overrides/3.2/2.5/com_content/category/index.html
+8a3edb0428f11a404535d9134c90063f overrides/3.2/2.5/com_content/index.html
+8a3edb0428f11a404535d9134c90063f overrides/3.2/2.5/index.html
+f2a69a2682be84aa3e56fce9f65d0dcc overrides/3.2/2.5/mod_login/default.php
+8a3edb0428f11a404535d9134c90063f overrides/3.2/2.5/mod_login/index.html
+8a3edb0428f11a404535d9134c90063f overrides/3.2/index.html
 8a3edb0428f11a404535d9134c90063f overrides/index.html

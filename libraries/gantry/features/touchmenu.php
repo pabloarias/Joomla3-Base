@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: touchmenu.php 11497 2013-06-15 04:57:41Z steph $
+ * @version   $Id: touchmenu.php 12549 2013-08-09 16:52:04Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -74,6 +74,7 @@ class GantryFeatureTouchMenu extends GantryFeature
 		/** @var $gantry Gantry */
 		global $gantry;
 
+		JHTML::_('behavior.framework', true);
 
 		if ($gantry->browser->platform != 'iphone' && $gantry->browser->platform != 'ipad' && $gantry->browser->platform != 'android') return false;
 		gantry_import('facets.menu.gantrymenu');

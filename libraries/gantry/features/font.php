@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: font.php 3103 2012-09-03 16:58:49Z djamil $
+ * @version   $Id: font.php 15532 2013-11-13 22:20:30Z kevin $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -110,7 +110,7 @@ class GantryFeatureFont extends GantryFeature
 
 		$variant = $variant ? $variant : '';
 
-		$gantry->addStyle('//fonts.googleapis.com/css?family=' . str_replace(" ", "+", $name) . $variant);
+		$gantry->addStyle('//fonts.googleapis.com/css?family=' . str_replace(" ", "+", $name) . "&subset=latin,latin-ext" .$variant);
 		$gantry->addInlineStyle("h1, h2 { font-family: '" . $name . "', 'Helvetica', arial, serif; }");
 	}
 

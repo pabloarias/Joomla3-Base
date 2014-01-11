@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: cache.php 6306 2013-01-05 05:39:57Z btowles $
+ * @version   $Id: cache.php 15520 2013-11-13 21:19:56Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -32,6 +32,7 @@ function gantryAjaxClearGantryCache()
 	$admincache = GantryCache::getCache(GantryCache::ADMIN_GROUP_NAME, null, true);
 	$admincache->clearGroupCache();
 	$sitecache = GantryCache::getCache(GantryCache::GROUP_NAME, null, true);
+	$sitecache->getCacheLib()->getDriver()->getCache()->cache->_options['cachebase'] = JPATH_ROOT.'/cache';
 	$sitecache->clearGroupCache();
 	return JText::_('Gantry caches cleared.');
 }

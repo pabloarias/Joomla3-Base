@@ -11,24 +11,41 @@
 defined('_JEXEC') or die;
 ?>
 <?php
-
+if (!empty($this->msg))
+{
+	echo $this->msg;
+}
+else
+{
 $lang = JFactory::getLanguage();
 $myrtl = $this->newsfeed->rtl;
 $direction = " ";
 
-if ($lang->isRTL() && $myrtl == 0) {
+		if ($lang->isRTL() && $myrtl == 0)
+		{
 	$direction = " redirect-rtl";
-} elseif ($lang->isRTL() && $myrtl == 1) {
+		}
+		elseif ($lang->isRTL() && $myrtl == 1)
+		{
 		$direction = " redirect-ltr";
-	} elseif ($lang->isRTL() && $myrtl == 2) {
+		}
+		elseif ($lang->isRTL() && $myrtl == 2)
+		{
 			$direction = " redirect-rtl";
-		} elseif ($myrtl == 0) {
+		}
+		elseif ($myrtl == 0)
+		{
 				$direction = " redirect-ltr";
-			} elseif ($myrtl == 1) {
+		}
+		elseif ($myrtl == 1)
+		{
 					$direction = " redirect-ltr";
-				} elseif ($myrtl == 2) {
+		}
+		elseif ($myrtl == 2)
+		{
 						$direction = " redirect-rtl";
 					}
+		$images  = json_decode($this->item->images);
 ?>
 <div class="newsfeed<?php echo $this->pageclass_sfx?><?php echo $direction; ?>">
 <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -44,29 +61,37 @@ if ($lang->isRTL() && $myrtl == 0) {
 <!-- Show Description -->
 <?php if ($this->params->get('show_feed_description')) : ?>
 	<div class="feed-description">
-		<?php echo str_replace('&apos;', "'", $this->newsfeed->channel['description']); ?>
+			<?php echo str_replace('&apos;', "'", $this->rssDoc->description); ?>
 	</div>
 <?php endif; ?>
 
 <!-- Show Image -->
-<?php if (isset($this->newsfeed->image['url']) && isset($this->newsfeed->image['title']) && $this->params->get('show_feed_image')) : ?>
+	<?php if (isset($this->rssDoc->image) && isset($this->rssDoc->imagetitle) && $this->params->get('show_feed_image')) : ?>
 <div>
-		<img src="<?php echo $this->newsfeed->image['url']; ?>" alt="<?php echo $this->newsfeed->image['title']; ?>" />
+			<img src="<?php echo $this->rssDoc->image; ?>" alt="<?php echo $this->rssDoc->image->decription; ?>" />
 </div>
 <?php endif; ?>
 
 <!-- Show items -->
+	<?php if (!empty($this->rssDoc[0])) { ?>
 <ol>
-	<?php foreach ($this->newsfeed->items as $item) :  ?>
+		<?php for ($i = 0; $i < $this->item->numarticles; $i++) { ?>
+
+	<?php
+		$uri = !empty($this->rssDoc[$i]->guid) || !is_null($this->rssDoc[$i]->guid) ? $this->rssDoc[$i]->guid : $this->rssDoc[$i]->uri;
+		$uri = substr($uri, 0, 4) != 'http' ? $this->item->link : $uri;
+		$text = !empty($this->rssDoc[$i]->content) || !is_null($this->rssDoc[$i]->content) ? $this->rssDoc[$i]->content : $this->rssDoc[$i]->description;
+	?>
 		<li>
-			<?php if (!is_null($item->get_link())) : ?>
-				<a href="<?php echo $item->get_link(); ?>" target="_blank">
-					<?php echo $item->get_title(); ?></a>
+				<?php if (!empty($this->rssDoc[$i]->uri)) : ?>
+					<a href="<?php echo $this->rssDoc[$i]->uri; ?>" target="_blank">
+					<?php  echo $this->rssDoc[$i]->title; ?></a>
+				<?php else : ?>
+					<h3><?php  echo '<a target="_blank" href="' .$this->rssDoc[$i]->uri . '">' .$this->rssDoc[$i]->title. '</a>'; ?></h3>
 			<?php endif; ?>
-			<?php if ($this->params->get('show_item_description') && $item->get_description()) : ?>
+				<?php if ($this->params->get('show_item_description') && !empty($text)) : ?>
 				<div class="feed-item-description">
-				<?php $text = $item->get_description();
-				if($this->params->get('show_feed_image', 0) == 0)
+					<?php if ($this->params->get('show_feed_image', 0) == 0)
 				{
 					$text = JFilterOutput::stripImages($text);
 				}
@@ -77,6 +102,8 @@ if ($lang->isRTL() && $myrtl == 0) {
 				</div>
 			<?php endif; ?>
 			</li>
-		<?php endforeach; ?>
+			<?php } ?>
 		</ol>
+		<?php } ?>
 </div>
+<?php } ?>

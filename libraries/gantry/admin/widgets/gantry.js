@@ -15,7 +15,7 @@ if(Gantry.defaults){var i,h;Gantry.defaults.each(function(m,k){i=document.id(k);
 }}}else{if(i.hasClass("slider")||i.hasClass("layouts-input")){var l=window.sliders[(i.id.replace(/-/,"_")).replace("-","_")];l.hiddenEl.fireEvent("set",m);
 }else{if(i.id.contains("_font_family")){if(!m.contains(":")){m="s:"+m;}i.set("value",m);}else{if(i.className.contains("picker-input")){document.getElement("[data-moorainbow-trigger="+i.id+"] .overlay").setStyle("background-color",m);
 }}}}}});Scroller.involved.setStyle("display","none");document.getElements(".preset-info").dispose();growl.alert("Gantry","Fields have been reset to default values.",{duration:6000});
-}});}},notices:function(){Gantry.NoticeBox=document.id("system-message");var b=Gantry.NoticeBox.getElement(".close");if(b){Gantry.NoticeBoxFx=new Fx.Tween(Gantry.NoticeBox,{duration:200,link:"ignore",onStart:function(){Gantry.NoticeBox.setStyle("display","block");
+}});}},notices:function(){Gantry.NoticeBox=document.id("system-message");var b=Gantry.NoticeBox?Gantry.NoticeBox.getElement(".close"):false;if(b){Gantry.NoticeBoxFx=new Fx.Tween(Gantry.NoticeBox,{duration:200,link:"ignore",onStart:function(){Gantry.NoticeBox.setStyle("display","block");
 }});b.addEvent("click",function(){Gantry.NoticeBoxFx.start("opacity",0).chain(function(){Gantry.NoticeBox.setStyle("display","none");});});}var a=$$(".overrides-button.button-del");
 a.addEvent("click",function(d){var c=confirm(GantryLang.are_you_sure);if(!c){d.preventDefault();}});},dropdown:function(){var b=document.id("overrides-inside"),e=document.id("overrides-first"),c=null;
 var a=new Fx.Slide("overrides-inside",{duration:100,onStart:function(){var g=document.id("overrides-actions").getSize().x-4;b.setStyle("width",g);this.wrapper.setStyle("width",g+4);
@@ -71,5 +71,5 @@ Browser.Engine.version=a;};if(Browser.ie){Browser.Engine.trident=true;switch(Bro
 break;case 8:setEngine("trident",6);}}if(Browser.firefox){Browser.Engine.gecko=true;if(Browser.version>=3){setEngine("gecko",19);}else{setEngine("gecko",18);
 }}if(Browser.safari||Browser.chrome){Browser.Engine.webkit=true;switch(Browser.version){case 2:setEngine("webkit",419);break;case 3:setEngine("webkit",420);
 break;case 4:setEngine("webkit",525);}}if(Browser.opera){Browser.Engine.presto=true;if(Browser.version>=9.6){setEngine("presto",960);}else{if(Browser.version>=9.5){setEngine("presto",950);
-}else{setEngine("presto",925);}}}if(Browser.name=="unknown"){switch((ua.match(/(?:webkit|khtml|gecko)/)||[])[0]){case"webkit":case"khtml":Browser.Engine.webkit=true;
-break;case"gecko":Browser.Engine.gecko=true;}}}window.addEvent("domready",Gantry.init);
+}else{setEngine("presto",925);}}}if(Browser.name=="unknown"){var ua=navigator.userAgent;switch((ua.match(/(?:webkit|khtml|gecko|trident)/)||[])[0]){case"trident":Browser.Engine.trident=true;
+break;case"webkit":case"khtml":Browser.Engine.webkit=true;break;case"gecko":Browser.Engine.gecko=true;}}}window.addEvent("domready",Gantry.init);

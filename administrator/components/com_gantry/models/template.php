@@ -2,7 +2,7 @@
 /**
  * @package    gantry
  * @subpackage core
- * @version    4.1.12 July 3, 2013
+ * @version    4.1.20 December 5, 2013
  * @author     RocketTheme http://www.rockettheme.com
  * @copyright  Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license    http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -493,6 +493,7 @@ class GantryModelTemplate extends GantryModelTemplateIntermediate
 		$cache = JFactory::getCache();
 		$cache->clean('com_templates');
 		$gcache = GantryCache::getCache(GantryCache::GROUP_NAME);
+		$gcache->getCacheLib()->getDriver()->getCache()->cache->_options['cachebase'] = JPATH_ROOT.'/cache';
 		$gcache->clearGroupCache();
 		$gacache = GantryCache::getCache(GantryCache::ADMIN_GROUP_NAME);
 		$gacache->clearGroupCache();

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: joomlaCacheDriver.class.php 2325 2012-08-13 17:46:48Z btowles $
+ * @version   $Id: joomlaCacheDriver.class.php 15520 2013-11-13 21:19:56Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -129,6 +129,14 @@ class JoomlaCacheDriver implements GantryCacheLibDriver
 	{
 		$this->lifeTime = $lifeTime;
 		$this->cache->setLifeTime($this->lifeTime);
+	}
+
+	/**
+	 * @return JCache|JCacheController
+	 */
+	public function getCache()
+	{
+		return $this->cache;
 	}
 
 }

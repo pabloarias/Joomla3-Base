@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantryjson.class.php 3757 2012-09-18 20:01:40Z btowles $
+ * @version   $Id: gantryjson.class.php 15716 2013-11-18 00:40:25Z rhuk $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -365,7 +365,7 @@ class GantryJSON
 		} while ($position !== false && GantryJSON::_slashedChar($encode, $position - 1));
 
 		if ($position === false) {
-			JError::raiseWorning(500, 'Invalid JSON');
+			JError::raiseWarning(500, 'Invalid JSON');
 		}
 		return $position - $pos;
 	}

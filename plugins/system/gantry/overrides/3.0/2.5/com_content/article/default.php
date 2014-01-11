@@ -9,14 +9,17 @@
 
 defined('_JEXEC') or die;
 
+// Create shortcut to parameters.
+$params		= $this->item->params;
+
 $app = JFactory::getApplication();
 $templateparams = $app->getTemplate(true)->params;
 $images = json_decode($this->item->images);
 $urls = json_decode($this->item->urls);
+$canEdit = $params->get('access-edit');
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 
-// Create shortcut to parameters.
-$params		= $this->item->params;
+
 
 ?>
 <article class="item-page<?php echo $this->pageclass_sfx?>">
@@ -48,7 +51,7 @@ if ($params->get('show_title')) : ?>
 </hgroup>
 <?php endif; ?>
 
-<?php if ($params->get('access-edit') ||  $params->get('show_print_icon') || $params->get('show_email_icon')) : ?>
+<?php if ($canEdit ||  $params->get('show_print_icon') || $params->get('show_email_icon')) : ?>
 	<ul class="actions">
 	<?php if (!$this->print) : ?>
 		<?php if ($params->get('show_print_icon')) : ?>
@@ -62,7 +65,7 @@ if ($params->get('show_title')) : ?>
 			<?php echo JHtml::_('icon.email',  $this->item, $params); ?>
 			</li>
 		<?php endif; ?>
-				<?php if ($this->user->authorise('core.edit', 'com_content.article.'.$this->item->id)) : ?>
+		<?php if ($canEdit) : ?>
 			<li class="edit-icon">
 			<?php echo JHtml::_('icon.edit', $this->item, $params); ?>
 			</li>
