@@ -43,8 +43,8 @@ class AEUtilScanner
 		}
 
 		$registry = AEFactory::getConfiguration();
-		$dereferencesymlinks = $registry->get('engine.archiver.common.dereference_symlinks');		
-		
+		$dereferencesymlinks = $registry->get('engine.archiver.common.dereference_symlinks');
+
 		while ( (($file = @readdir($handle)) !== false) )
 		{
 			if (($file != '.') && ($file != '..'))
@@ -55,7 +55,8 @@ class AEUtilScanner
 				$dir = "$folder/$file";
 				$isDir = @is_dir($dir);
 				$isLink = @is_link($dir);
-				if (!$isDir || ($isDir && $isLink && !$dereferencesymlinks) ) {
+				//if (!$isDir || ($isDir && $isLink && !$dereferencesymlinks) ) {
+				if (!$isDir) {
 					if($fullpath) {
 						$data = _AKEEBA_IS_WINDOWS ? AEUtilFilesystem::TranslateWinPath($dir) : $dir;
 					} else {
@@ -88,8 +89,8 @@ class AEUtilScanner
 		}
 
 		$registry = AEFactory::getConfiguration();
-		$dereferencesymlinks = $registry->get('engine.archiver.common.dereference_symlinks');		
-		
+		$dereferencesymlinks = $registry->get('engine.archiver.common.dereference_symlinks');
+
 		while ( (($file = @readdir($handle)) !== false) )
 		{
 			if (($file != '.') && ($file != '..'))
@@ -98,7 +99,7 @@ class AEUtilScanner
 				$isDir = @is_dir($dir);
 				$isLink = @is_link($dir);
 				if ($isDir) {
-					if(!$dereferencesymlinks && $isLink) continue;
+					//if(!$dereferencesymlinks && $isLink) continue;
 					if($fullpath) {
 						$data = _AKEEBA_IS_WINDOWS ? AEUtilFilesystem::TranslateWinPath($dir) : $dir;
 					} else {

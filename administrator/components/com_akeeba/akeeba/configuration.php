@@ -22,13 +22,13 @@ class AEConfiguration {
 	private $directory_containing_keys = array(
 		'akeeba.basic.output_directory'
 	);
-	
+
 	/** @var array Keys whose default values should never be overridden */
 	private $protected_nodes = array();
 
 	/** @var array The registry data */
 	private $registry = array();
-	
+
 	/** @var int The currently loaded profile */
 	public $activeProfile = null;
 
@@ -148,7 +148,7 @@ class AEConfiguration {
 		if(in_array($regpath, $this->protected_nodes)) {
 			return $this->get($regpath);
 		}
-		
+
 		// Explode the registry path into an array
 		$nodes = explode('.', $regpath);
 
@@ -208,11 +208,15 @@ class AEConfiguration {
 		}
 
 		// This is executed if any of the previous two if's is false
+		if (empty($nodes[$i]))
+		{
+			return false;
+		}
 
 		$ns->$nodes[$i] = $value;
 		return $ns->$nodes[$i];
 	}
-	
+
 	/**
 	 * Unset (remove) a registry value
 	 * @param	string	$regpath 	Registry Path (e.g. global.directory.temporary)
@@ -289,7 +293,7 @@ class AEConfiguration {
 			$plugin_path.$ds.'filters'.$ds.'stack'
 			/**/
 		);
-		
+
 		$platform_paths = AEPlatform::getInstance()->getPlatformDirectories();
 		foreach($platform_paths as $p) {
 			$paths[] = $p.'/filters/stack';
@@ -302,7 +306,7 @@ class AEConfiguration {
 			if( is_dir($root) || is_link($root) ) {
 				if(is_readable($root)) {
 					$handle =  @opendir($root);
-				} 
+				}
 			}
 			//$handle =  @opendir($root);
 			if($handle !== false)
@@ -410,7 +414,7 @@ class AEConfiguration {
 					if(array_key_exists('protected', $nodes)) {
 						$protected = $nodes['protected'];
 					}
-					
+
 					// If overrides are allowed, unprotect until we can set the value
 					if(!$noOverride) {
 						if(in_array($section, $this->protected_nodes)) {
@@ -418,7 +422,7 @@ class AEConfiguration {
 							unset($this->protected_nodes[$pnk]);
 						}
 					}
-					
+
 					if(array_key_exists('remove', $nodes)) {
 						// Remove a node if it has "remove" set
 						$this->remove($section);
@@ -431,7 +435,7 @@ class AEConfiguration {
 							$this->set($section, $nodes['default']);
 						}
 					}
-					
+
 					// Finally, if it's a protected node, enable the protection
 					if($protected) {
 						$this->protected_nodes[] = $section;
@@ -494,11 +498,11 @@ class AEConfiguration {
 		}
 		return $data;
 	}
-	
+
 	/**
 	 * Sets the protection status for a specific configuration key
 	 * @param string|array $node
-	 * @param bool $protect 
+	 * @param bool $protect
 	 */
 	public function setKeyProtection($node, $protect = false)
 	{
@@ -525,17 +529,17 @@ class AEConfiguration {
 			}
 		}
 	}
-	
+
 	public function getProtectedKeys()
 	{
 		return $this->protected_nodes;
 	}
-	
+
 	public function resetProtectedKeys()
 	{
 		$this->protected_nodes = array();
 	}
-	
+
 	public function setProtectedKeys($keys)
 	{
 		$this->protected_nodes = $keys;

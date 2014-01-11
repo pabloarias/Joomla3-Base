@@ -26,6 +26,9 @@ class AEFilterTabledata extends AEAbstractFilter
 		$this->method	= 'direct';
 
 		if(empty($this->filter_name)) $this->filter_name = strtolower(basename(__FILE__,'.php'));
+
+		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+
 		parent::__construct();
 	}
 }

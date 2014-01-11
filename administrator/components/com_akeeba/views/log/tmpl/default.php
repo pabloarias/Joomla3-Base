@@ -20,14 +20,14 @@ JHtml::_('behavior.framework');
 	<fieldset>
 		<label for="tag"><?php echo JText::_('LOG_CHOOSE_FILE_TITLE'); ?></label>
 		<?php echo JHTML::_('select.genericlist', $this->logs, 'tag', 'onchange=submitform()', 'value', 'text', $this->tag, 'tag') ?>
-		
+
 		<?php if(!empty($this->tag)): ?>
 		<button class="btn btn-primary" onclick="window.location='<?php echo JURI::base(); ?>index.php?option=com_akeeba&view=log&task=download&tag=<?php echo urlencode($this->tag); ?>'; return false;">
 			<i class="icon-download-alt icon-white"></i>
 			<?php echo JText::_('LOG_LABEL_DOWNLOAD'); ?>
 		</button>
 		<?php endif; ?>
-		
+
 		<?php if(!empty($this->tag)): ?>
 		<br/>
 		<hr/>
@@ -35,8 +35,8 @@ JHtml::_('behavior.framework');
 			src="<?php echo JURI::base(); ?>index.php?option=com_akeeba&view=log&task=iframe&layout=raw&tag=<?php echo urlencode($this->tag); ?>"
 			width="99%" height="400px">
 		</iframe>
-		<?php endif; ?>		
-				
+		<?php endif; ?>
+
 	</fieldset>
 </form>
 <?php else: ?>

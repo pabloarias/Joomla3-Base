@@ -13,8 +13,8 @@ defined('AKEEBAENGINE') or die();
 
 /**
  * Microsoft SQL Server query building class.
- * 
- * Based on Joomla! Platform 11.2 
+ *
+ * Based on Joomla! Platform 11.3
  */
 class AEQuerySqlsrv extends AEAbstractQuery
 {
@@ -25,8 +25,6 @@ class AEQuerySqlsrv extends AEAbstractQuery
 	 * used for the opening quote and the second for the closing quote.
 	 *
 	 * @var    string
-	 *
-	 * @since  11.1
 	 */
 	protected $name_quotes = '`';
 
@@ -35,8 +33,6 @@ class AEQuerySqlsrv extends AEAbstractQuery
 	 * defined in child classes to hold the appropriate value for the engine.
 	 *
 	 * @var    string
-	 *
-	 * @since  11.1
 	 */
 	protected $null_date = '1900-01-01 00:00:00';
 
@@ -44,8 +40,6 @@ class AEQuerySqlsrv extends AEAbstractQuery
 	 * Magic function to convert the query to a string.
 	 *
 	 * @return  string	The completed query.
-	 *
-	 * @since   11.1
 	 */
 	public function __toString()
 	{
@@ -112,15 +106,27 @@ class AEQuerySqlsrv extends AEAbstractQuery
 	}
 
 	/**
-	 * Gets the function to determine the length of a character string.
+	 * Gets the number of characters in a string.
 	 *
-	 * @param   string  $field  A value.
+	 * Note, use 'length' to find the number of bytes in a string.
+	 *
+	 * Usage:
+	 * $query->select($query->charLength('a'));
+	 *
+	 * @param   string  $field      A value.
+	 * @param   string  $operator   Comparison operator between charLength integer value and $condition
+	 * @param   string  $condition  Integer value to compare charLength with.
 	 *
 	 * @return  string  The required char length call.
 	 */
-	public function charLength($field)
+	public function charLength($field, $operator = null, $condition = null)
 	{
-		return 'DATALENGTH(' . $field . ') IS NOT NULL';
+		if (empty($operator) && empty($condition))
+		{
+			$operator = 'IS NOT';
+			$condition = 'NULL';
+		}
+		return 'DATALENGTH(' . $field . ')' . (isset($operator) && isset($condition) ? ' ' . $operator . ' ' . $condition : '');
 	}
 
 	/**
@@ -147,8 +153,6 @@ class AEQuerySqlsrv extends AEAbstractQuery
 	 * Gets the current date and time.
 	 *
 	 * @return  string
-	 *
-	 * @since   11.1
 	 */
 	public function currentTimestamp()
 	{
@@ -161,11 +165,29 @@ class AEQuerySqlsrv extends AEAbstractQuery
 	 * @param   string  $value  The string to measure.
 	 *
 	 * @return  integer
-	 *
-	 * @since   11.1
 	 */
 	public function length($value)
 	{
 		return 'LEN(' . $value . ')';
+	}
+
+	/**
+	 * Add to the current date and time.
+	 * Usage:
+	 * $query->select($query->dateAdd());
+	 * Prefixing the interval with a - (negative sign) will cause subtraction to be used.
+	 *
+	 * @param   datetime  $date      The date to add to; type may be time or datetime.
+	 * @param   string    $interval  The string representation of the appropriate number of units
+	 * @param   string    $datePart  The part of the date to perform the addition on
+	 *
+	 * @return  string  The string with the appropriate sql for addition of dates
+	 *
+	 * @note Not all drivers support all units.
+	 * @link http://msdn.microsoft.com/en-us/library/ms186819.aspx for more information
+	 */
+	public function dateAdd($date, $interval, $datePart)
+	{
+		return "DATEADD('" . $datePart . "', '" . $interval . "', '" . $date . "'" . ')';
 	}
 }

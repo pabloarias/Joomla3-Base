@@ -21,10 +21,13 @@ class AEFilterTables extends AEAbstractFilter
 		$this->object	= 'dbobject';
 		$this->subtype	= 'all';
 		$this->method	= 'direct';
-		
+
 		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
 
 		if(empty($this->filter_name)) $this->filter_name = strtolower(basename(__FILE__,'.php'));
+
+		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+
 		parent::__construct();
 	}
 }

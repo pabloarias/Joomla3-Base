@@ -101,10 +101,16 @@ class AkeebaViewBackup extends FOFViewHtml
 		{
 			$this->assign('showjpskey', 0);
 		}
+
 		if (AKEEBA_PRO)
 		{
 			$this->assign('showangiekey', 1);
 			$this->assign('angiekey', $aeconfig->get('engine.installer.angie.key', ''));
+		}
+		else
+		{
+			$this->assign('showangiekey', 0);
+			$this->assign('angiekey', '');
 		}
 		$this->assign('autostart', $model->getState('autostart'));
 

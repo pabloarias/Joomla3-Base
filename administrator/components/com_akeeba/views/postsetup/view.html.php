@@ -19,10 +19,30 @@ class AkeebaViewPostsetup extends FOFViewHtml
 	{
 		$this->_setSRPStatus();
 		$this->_setAutoupdateStatus();
+		$this->_setBackuponupdateStatus();
 		$this->_setConfWizStatus();
 		$this->assign('showsrp', $this->isMySQL());
 
 		return true;
+	}
+
+	private function _setBackuponupdateStatus()
+	{
+		$db = JFactory::getDBO();
+
+		$query = $db->getQuery(true)
+			->select($db->qn('enabled'))
+			->from($db->qn('#__extensions'))
+			->where($db->qn('element').' = '.$db->q('backuponupdate'))
+			->where($db->qn('folder').' = '.$db->q('system'));
+		$db->setQuery($query);
+		$enabledBOU = $db->loadResult();
+
+		if(!AKEEBA_PRO) {
+			$enabledBOU = false;
+		}
+
+		$this->assign('enablebackuponupdate', $enabledBOU);
 	}
 
 	private function _setAutoupdateStatus()

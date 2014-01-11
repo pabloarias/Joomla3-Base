@@ -154,6 +154,17 @@ class AEDumpNativeMysql extends AEAbstractDump
 				$outData = '';
 				$numRows = 0;
 			}
+
+			// Output any data preamble commands, e.g. SET IDENTITY_INSERT for SQL Server
+			if ($dump_records && AEUtilScripting::getScriptingParameter('db.dropstatements',0))
+			{
+				AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Writing data dump preamble for " . $tableAbstract);
+				$preamble = $this->getDataDumpPreamble($tableAbstract, $tableName, $this->maxRange);
+				if (!empty($preamble))
+				{
+					if(!$this->writeDump($preamble)) return;
+				}
+			}
 		}
 
 		// Check if we have more work to do on this table
@@ -165,8 +176,11 @@ class AEDumpNativeMysql extends AEAbstractDump
 			$timer = AEFactory::getTimer();
 
 			// Get the number of rows left to dump from the current table
-			$sql = "SELECT * FROM " . $db->nameQuote($tableAbstract);
-			if( $this->nextRange == 0 )
+			$sql = $db->getQuery(true)
+				->select('*')
+				->from($db->nameQuote($tableAbstract));
+
+			if ($this->nextRange == 0)
 			{
 				// First run, get a cursor to all records
 				$db->setQuery( $sql, 0, $batchsize );
@@ -186,7 +200,15 @@ class AEDumpNativeMysql extends AEAbstractDump
 			$filters = AEFactory::getFilters();
 			$mustFilter = $filters->hasFilterType('dbobject', 'children');
 
-			$cursor = $db->query();
+			try
+			{
+				$cursor = $db->query();
+			}
+			catch (Exception $exc)
+			{
+				$cursor = null;
+			}
+
 			while( is_array($myRow = $db->fetchAssoc()) && ( $numRows < ($this->maxRange - $this->nextRange) ) ) {
 				$this->createNewPartIfRequired();
 				$numRows++;
@@ -216,7 +238,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 				)
 				{
 					$newQuery = true;
-					if( $numOfFields > 0 ) $this->query = "INSERT INTO " . $db->nameQuote((!$use_abstract ? $tableName : $tableAbstract)) . " VALUES ";
+					$fieldList = $this->getFieldListSQL(array_keys($myRow), $numOfFields);
+					if( $numOfFields > 0 ) $this->query = "INSERT INTO " . $db->nameQuote((!$use_abstract ? $tableName : $tableAbstract)) . " $fieldList VALUES ";
 				}
 				else
 				{
@@ -267,7 +290,12 @@ class AEDumpNativeMysql extends AEAbstractDump
 					} else {
 						// Accommodate for runtime magic quotes
 						$value = @get_magic_quotes_runtime() ? stripslashes( $value ) : $value;
-						$outData .= $db->Quote($value);
+						$value = $db->Quote($value);
+						if ($this->postProcessValues)
+						{
+							$value = $this->postProcessQuotedValue($value);
+						}
+						$outData .= $value;
 					}
 					if( $fieldID < $numOfFields ) $outData .= ', ';
 				} // foreach
@@ -361,6 +389,17 @@ class AEDumpNativeMysql extends AEAbstractDump
 			// Tell the user we are done with the table
 			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Done dumping " . $tableAbstract);
 
+			// Output any data preamble commands, e.g. SET IDENTITY_INSERT for SQL Server
+			if ($dump_records && AEUtilScripting::getScriptingParameter('db.dropstatements',0))
+			{
+				AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Writing data dump epilogue for " . $tableAbstract);
+				$epilogue = $this->getDataDumpEpilogue($tableAbstract, $tableName, $this->maxRange);
+				if (!empty($epilogue))
+				{
+					if(!$this->writeDump($epilogue)) return;
+				}
+			}
+
 			if(count($this->tables) == 0)
 			{
 				// We have finished dumping the database!
@@ -394,7 +433,10 @@ class AEDumpNativeMysql extends AEAbstractDump
 		$db = $this->getDB();
 		if($this->getError()) return;
 
-		$sql = "SELECT COUNT(*) FROM " . $db->nameQuote($tableAbstract);
+		$sql = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->nameQuote($tableAbstract));
+
 		$db->setQuery( $sql );
 		$this->maxRange = $db->loadResult();
 		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Rows on " . $tableAbstract . " : " . $this->maxRange);

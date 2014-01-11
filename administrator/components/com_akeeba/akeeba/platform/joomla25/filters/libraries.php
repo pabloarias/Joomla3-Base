@@ -13,7 +13,7 @@ defined('AKEEBAENGINE') or die();
 
 /**
  * Joomla! 1.6 libraries off-site relocation workaround
- * 
+ *
  * After the application of patch 23377
  * (http://joomlacode.org/gf/project/joomla/tracker/?action=TrackerItemEdit&tracker_item_id=23377)
  * it is possible for the webmaster to move the libraries directory of his Joomla!
@@ -28,12 +28,14 @@ class AEFilterPlatformLibraries extends AEAbstractFilter
 		$this->subtype	= 'inclusion';
 		$this->method	= 'direct';
 		$this->filter_name	= 'PlatformLibraries';
-		
+
+		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+
 		// FIXME This filter doesn't work very well on many live hosts. Disabled for now.
 		parent::__construct();
 		return;
-		
-		
+
+
 
 		if(empty($this->filter_name)) $this->filter_name = strtolower(basename(__FILE__,'.php'));
 
@@ -41,18 +43,18 @@ class AEFilterPlatformLibraries extends AEAbstractFilter
 		$jlibdir = AEPlatform::getInstance()->get_platform_configuration_option('jlibrariesdir', '');
 		if(empty($jlibdir)) {
 			if(defined('JPATH_LIBRARIES')) {
-				$jlibdir = JPATH_LIBRARIES;	
+				$jlibdir = JPATH_LIBRARIES;
 			} elseif(defined('JPATH_PLATFORM')) {
-				$jlibdir = JPATH_PLATFORM;	
+				$jlibdir = JPATH_PLATFORM;
 			} else {
 				$jlibdir = false;
 			}
 		}
-		
+
 		if($jlibdir !== false) {
 			$jlibdir = AEUtilFilesystem::TranslateWinPath($jlibdir);
 			$defaultLibraries = AEUtilFilesystem::TranslateWinPath(JPATH_SITE.'/libraries');
-			
+
 			if($defaultLibraries != $jlibdir)
 			{
 				// The path differs, add it here

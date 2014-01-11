@@ -23,6 +23,7 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 	{
 		$enableSRP = $this->input->get('srp', 0, 'bool');
 		$enableAutoupdate = $this->input->get('autoupdate', 0, 'bool');
+		$enableBackuponupdate = $this->input->get('backuponupdate', 0, 'bool');
 		$runConfwiz = $this->input->get('confwiz', 0, 'bool');
 		$angieupgrade = $this->input->get('angieupgrade', 0, 'bool');
 		$minStability = $this->input->get('minstability', 'stable', 'cmd');
@@ -52,6 +53,25 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 				->update($db->qn('#__extensions'))
 				->set($db->qn('enabled').' = '.$db->q('0'))
 				->where($db->qn('element').' = '.$db->q('srp'))
+				->where($db->qn('folder').' = '.$db->q('system'));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		if ($enableBackuponupdate)
+		{
+			$query = $db->getQuery(true)
+				->update($db->qn('#__extensions'))
+				->set($db->qn('enabled').' = '.$db->q('1'))
+				->where($db->qn('element').' = '.$db->q('backuponupdate'))
+				->where($db->qn('folder').' = '.$db->q('system'));
+			$db->setQuery($query);
+			$db->execute();
+		} else {
+			$query = $db->getQuery(true)
+				->update($db->qn('#__extensions'))
+				->set($db->qn('enabled').' = '.$db->q('0'))
+				->where($db->qn('element').' = '.$db->q('backuponupdate'))
 				->where($db->qn('folder').' = '.$db->q('system'));
 			$db->setQuery($query);
 			$db->execute();

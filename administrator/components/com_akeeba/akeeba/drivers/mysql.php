@@ -12,7 +12,7 @@ defined('AKEEBAENGINE') or die();
 
 /**
  * MySQL classic driver for Akeeba Engine
- * 
+ *
  * Based on Joomla! Platform 11.2
  */
 class AEDriverMysql extends AEAbstractDriver
@@ -44,7 +44,7 @@ class AEDriverMysql extends AEAbstractDriver
 	 * @since  11.1
 	 */
 	protected $nullDate = '0000-00-00 00:00:00';
-	
+
 	/**
 	 * Database object constructor
 	 * @param	array	List of options used to configure the connection
@@ -52,7 +52,7 @@ class AEDriverMysql extends AEAbstractDriver
 	public function __construct( $options )
 	{
 		$this->driverType = 'mysql';
-		
+
 		// Init
 		$this->nameQuote = '`';
 
@@ -75,7 +75,7 @@ class AEDriverMysql extends AEAbstractDriver
 		$this->password = $password;
 		$this->_database = $database;
 		$this->selectDatabase = $select;
-		
+
 		if(!is_resource($this->connection) || is_null($this->connection)) $this->open();
 	}
 
@@ -86,7 +86,7 @@ class AEDriverMysql extends AEAbstractDriver
 		} else {
 			$this->close();
 		}
-		
+
 		// perform a number of fatality checks, then return gracefully
 		if (!function_exists( 'mysql_connect' )) {
 			$this->errorNum = 1;
@@ -99,18 +99,16 @@ class AEDriverMysql extends AEAbstractDriver
 			$this->errorMsg = 'Could not connect to MySQL';
 			return;
 		}
-		
+
 		// Set sql_mode to non_strict mode
 		mysql_query("SET @@SESSION.sql_mode = '';", $this->connection);
-
-		parent::open();
 
 		// If auto-select is enabled select the given database.
 		if ($this->selectDatabase && !empty($this->_database))
 		{
 			$this->select($this->_database);
 		}
-		
+
 		$this->setUTF();
 	}
 
@@ -153,6 +151,18 @@ class AEDriverMysql extends AEAbstractDriver
 	 * @return  boolean  True on success, false otherwise.
 	 */
 	public static function test()
+	{
+		return (function_exists('mysql_connect'));
+	}
+
+	/**
+	 * Test to see if the MySQL connector is available.
+	 *
+	 * @return  boolean  True on success, false otherwise.
+	 *
+	 * @since   12.1
+	 */
+	public static function isSupported()
 	{
 		return (function_exists('mysql_connect'));
 	}
@@ -389,32 +399,73 @@ class AEDriverMysql extends AEAbstractDriver
 	 */
 	public function query()
 	{
+		$this->open();
+
 		if (!is_resource($this->connection))
 		{
-			return false;
+			throw new RuntimeException($this->errorMsg, $this->errorNum);
 		}
 
 		// Take a local copy so that we don't modify the original query and cause issues later
-		$sql = $this->replacePrefix((string) $this->sql);
+		$query = $this->replacePrefix((string) $this->sql);
 		if ($this->limit > 0 || $this->offset > 0)
 		{
-			$sql .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
+			$query .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
+		}
+
+		// Increment the query counter.
+		$this->count++;
+
+		// If debugging is enabled then let's log the query.
+		if ($this->debug)
+		{
+			// Add the query to the object queue.
+			$this->log[] = $query;
 		}
 
 		// Reset the error values.
 		$this->errorNum = 0;
 		$this->errorMsg = '';
 
-		// Execute the query.
-		$this->cursor = mysql_query($sql, $this->connection);
+		// Execute the query. Error suppression is used here to prevent warnings/notices that the connection has been lost.
+		$this->cursor = @mysql_query($query, $this->connection);
 
 		// If an error occurred handle it.
 		if (!$this->cursor)
 		{
-			$this->errorNum = (int) mysql_errno($this->connection);
-			$this->errorMsg = (string) mysql_error($this->connection) . ' SQL=' . $sql;
+			// Check if the server was disconnected.
+			if (!$this->connected())
+			{
+				try
+				{
+					// Attempt to reconnect.
+					$this->connection = null;
+					$this->connect();
+				}
+				// If connect fails, ignore that exception and throw the normal exception.
+				catch (RuntimeException $e)
+				{
+					// Get the error number and message.
+					$this->errorNum = (int) mysql_errno($this->connection);
+					$this->errorMsg = (string) mysql_error($this->connection) . ' SQL=' . $query;
 
-			return false;
+					// Throw the normal query exception.
+					throw new RuntimeException($this->errorMsg, $this->errorNum);
+				}
+
+				// Since we were able to reconnect, run the query again.
+				return $this->execute();
+			}
+			// The server was not disconnected.
+			else
+			{
+				// Get the error number and message.
+				$this->errorNum = (int) mysql_errno($this->connection);
+				$this->errorMsg = (string) mysql_error($this->connection) . ' SQL=' . $query;
+
+				// Throw the normal query exception.
+				throw new RuntimeException($this->errorMsg, $this->errorNum);
+			}
 		}
 
 		return $this->cursor;
@@ -453,11 +504,10 @@ class AEDriverMysql extends AEAbstractDriver
 
 		if (!mysql_select_db($database, $this->connection))
 		{
-			$this->errorNum = 3;
-			$this->errorMsg = JText::_('JLIB_DATABASE_ERROR_DATABASE_CONNECT');
+			throw new RuntimeException('Could not connect to database');
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -468,7 +518,7 @@ class AEDriverMysql extends AEAbstractDriver
 	 */
 	public function setUTF()
 	{
-		return mysql_query("SET NAMES 'utf8'", $this->connection);
+		return mysql_set_charset('utf8', $this->connection);
 	}
 
 	/**
@@ -479,7 +529,7 @@ class AEDriverMysql extends AEAbstractDriver
 	public function transactionCommit()
 	{
 		$this->setQuery('COMMIT');
-		$this->query();
+		$this->execute();
 	}
 
 	/**
@@ -490,7 +540,7 @@ class AEDriverMysql extends AEAbstractDriver
 	public function transactionRollback()
 	{
 		$this->setQuery('ROLLBACK');
-		$this->query();
+		$this->execute();
 	}
 
 	/**
@@ -501,7 +551,7 @@ class AEDriverMysql extends AEAbstractDriver
 	public function transactionStart()
 	{
 		$this->setQuery('START TRANSACTION');
-		$this->query();
+		$this->execute();
 	}
 
 	/**
@@ -563,11 +613,11 @@ class AEDriverMysql extends AEAbstractDriver
 	 */
 	public function unlockTables()
 	{
-		$this->setQuery('UNLOCK TABLES')->query();
+		$this->setQuery('UNLOCK TABLES')->execute();
 
 		return $this;
 	}
-	
+
 	/**
 	 * Returns an array with the names of tables, views, procedures, functions and triggers
 	 * in the database. The table names are the keys of the tables, whereas the value is
@@ -577,7 +627,7 @@ class AEDriverMysql extends AEAbstractDriver
 	 * ever, have their data dumped in the SQL dump file.
 	 *
 	 * @param bool $abstract Return abstract or normal names? Defaults to true (abstract names)
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getTables($abstract = true)

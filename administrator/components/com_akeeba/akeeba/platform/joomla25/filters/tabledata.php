@@ -30,6 +30,8 @@ class AEFilterPlatformTabledata extends AEAbstractFilter
 			'#__guardxt_runs'	// Guard XT's run log (bloated to the bone)
 		);
 
+		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+
 		parent::__construct();
 	}
 

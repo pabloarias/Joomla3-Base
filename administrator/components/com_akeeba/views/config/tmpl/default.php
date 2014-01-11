@@ -49,6 +49,25 @@ JHtml::_('behavior.modal');
 	</div>
 </div>
 
+<div class="akeeba-bootstrap" id="sftpdialog" title="<?php echo JText::_('CONFIG_UI_SFTPBROWSER_TITLE') ?>" style="display:none;">
+	<p class="instructions alert alert-info">
+		<button class="close" data-dismiss="alert">×</button>
+		<?php echo JText::_('SFTPBROWSER_LBL_INSTRUCTIONS'); ?>
+	</p>
+	<div class="error alert alert-error" id="sftpBrowserErrorContainer">
+		<button class="close" data-dismiss="alert">×</button>
+		<h2><?php echo JText::_('SFTPBROWSER_LBL_ERROR'); ?></h2>
+		<p id="sftpBrowserError"></p>
+	</div>
+	<ul id="ak_scrumbs" class="breadcrumb"></ul>
+	<div class="row-fluid">
+		<div class="span12">
+			<table id="sftpBrowserFolderList" class="table table-striped">
+			</table>
+		</div>
+	</div>
+</div>
+
 <form name="adminForm" id="adminForm" method="post" action="index.php" class="form-horizontal form-horizontal-wide">
 
 <div id="dialog" title="<?php echo JText::_('CONFIG_UI_BROWSER_TITLE') ?>">
@@ -111,6 +130,7 @@ JHtml::_('behavior.modal');
 	var akeeba_postprocftp_init_browser = null;
 
 	var akeeba_ftpbrowser_hook = null;
+	var akeeba_sftpbrowser_hook = null;
 
 	var akeeba_ftpbrowser_host = null;
 	var akeeba_ftpbrowser_port = 21;
@@ -119,6 +139,14 @@ JHtml::_('behavior.modal');
 	var akeeba_ftpbrowser_passive = 1;
 	var akeeba_ftpbrowser_ssl = 0;
 	var akeeba_ftpbrowser_directory = '';
+
+	var akeeba_sftpbrowser_host = null;
+	var akeeba_sftpbrowser_port = 21;
+	var akeeba_sftpbrowser_username = null;
+	var akeeba_sftpbrowser_password = null;
+	var akeeba_sftpbrowser_pubkey = null;
+	var akeeba_sftpbrowser_privkey = null;
+	var akeeba_sftpbrowser_directory = '';
 
 	akeeba.jQuery(document).ready(function($){
 		// Push some translations
@@ -328,6 +356,58 @@ JHtml::_('behavior.modal');
 			});
 		}
 
+		// Create the SFTP upload post-proc engine test hook
+		postprocsftp_test_connection = function()
+		{
+			var button = $(document.getElementById('engine.postproc.sftp.sftp_test'));
+			button.addClass('ui-state-disabled');
+			button.removeClass('ui-state-default');
+
+			// Get the values the user has entered
+			var data = new Object();
+			data['host'] = $(document.getElementById('var[engine.postproc.sftp.host]')).val();
+			data['port'] = $(document.getElementById('var[engine.postproc.sftp.port]')).val();
+			data['user'] = $(document.getElementById('var[engine.postproc.sftp.user]')).val();
+			data['pass'] = $(document.getElementById('var[engine.postproc.sftp.pass]')).val();
+			data['privkey'] = $(document.getElementById('var[engine.postproc.sftp.privkey]')).val();
+			data['pubkey'] = $(document.getElementById('var[engine.postproc.sftp.pubkey]')).val();
+			data['initdir'] = $(document.getElementById('var[engine.postproc.ftp.initial_directory]')).val();
+
+			// Construct the query
+			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS('index.php?option=com_akeeba&view=config&task=testsftp') ?>';
+			doAjax(data, function(res){
+				var button = $(document.getElementById('engine.postproc.sftp.sftp_test'));
+				button.removeClass('ui-state-disabled');
+				button.addClass('ui-state-default');
+
+				var dialog_element = new Element('div');
+
+				var dlgHead = new Element('h3');
+				dlgHead.set('html','<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_POSTPROCSFTP_TEST_DIALOG_TITLE')) ?>');
+				dlgHead.inject(dialog_element);
+
+				if( res === true )
+				{
+					var dlgPara = new Element('p');
+					dlgPara.set('html','<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_POSTPROCSFTP_TEST_OK')) ?>');
+					dlgPara.inject(dialog_element);
+				}
+				else
+				{
+					var dlgPara = new Element('p');
+					dlgPara.set('html','<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_POSTPROCSFTP_TEST_FAIL')) ?>');
+					dlgPara.inject(dialog_element);
+					var dlgPara2 = new Element('p');
+					dlgPara2.set('html', res);
+					dlgPara2.inject(dialog_element);
+				}
+				SqueezeBox.open(new Element(dialog_element), {
+					handler:	'adopt',
+					size:		{x: 400, y: 200}
+				});
+			});
+		}
+
 		// Create the FTP Post-Processing browser directory loader hook
 		akeeba_postprocftp_init_browser = function( )
 		{
@@ -348,7 +428,28 @@ JHtml::_('behavior.modal');
 			
 			akeeba_ftpbrowser_hook( akeeba_postprocftp_callback );
 		}
-		
+
+		// Create the SFTP Post-Processing browser directory loader hook
+		akeeba_postprocsftp_init_browser = function( )
+		{
+			akeeba_sftpbrowser_host = $(document.getElementById('var[engine.postproc.sftp.host]')).val();
+			akeeba_sftpbrowser_port = $(document.getElementById('var[engine.postproc.sftp.port]')).val();
+			akeeba_sftpbrowser_username = $(document.getElementById('var[engine.postproc.sftp.user]')).val();
+			akeeba_sftpbrowser_password = $(document.getElementById('var[engine.postproc.sftp.pass]')).val();
+			akeeba_sftpbrowser_directory = $(document.getElementById('var[engine.postproc.sftp.initial_directory]')).val();
+			akeeba_sftpbrowser_privkey = $(document.getElementById('var[engine.postproc.sftp.privkey]')).val();
+			akeeba_sftpbrowser_pubkey = $(document.getElementById('var[engine.postproc.sftp.pubkey]')).val();
+
+			var akeeba_postprocsftp_callback = function(path) {
+				var charlist = ('/').replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
+			    var re = new RegExp('^[' + charlist + ']+', 'g');
+			    path = '/' + (path+'').replace(re, '');
+				$(document.getElementById('var[engine.postproc.sftp.initial_directory]')).val(path);
+			}
+
+			akeeba_sftpbrowser_hook( akeeba_postprocsftp_callback );
+		}
+
 <?php endif; ?>
 
 		akeeba_browser_hook = function( folder, element )
@@ -555,5 +656,176 @@ JHtml::_('behavior.modal');
 			akeeba.jQuery('div.popover').remove();
 			akeeba.jQuery(this).popover('show');
 		});
+
+
+
+
+		// FTP browser function
+		akeeba_sftpbrowser_hook = function( callback )
+		{
+			var sftp_dialog_element = $("#sftpdialog");
+			var sftp_callback = function() {
+				callback(akeeba_sftpbrowser_directory);
+				sftp_dialog_element.dialog("close");
+			};
+
+			sftp_dialog_element.css('display','block');
+			sftp_dialog_element.removeClass('ui-state-error');
+			sftp_dialog_element.dialog({
+				autoOpen	: false,
+				'title'		: '<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_UI_SFTPBROWSER_TITLE')) ?>',
+				draggable	: false,
+				height		: 500,
+				width		: 500,
+				modal		: true,
+				resizable	: false,
+				buttons		: {
+					"OK": sftp_callback,
+					"Cancel": function() {
+						sftp_dialog_element.dialog("close");
+					}
+				}
+			});
+
+			$('#sftpBrowserErrorContainer').css('display','none');
+			$('#sftpBrowserFolderList').html('');
+			$('#sftpBrowserCrumbs').html('');
+
+			sftp_dialog_element.dialog('open');
+
+			// URL to load the browser
+			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS(JURI::base().'index.php?option=com_akeeba&view=sftpbrowser' ) ?>';
+
+			if(empty(akeeba_sftpbrowser_directory)) akeeba_sftpbrowser_directory = '';
+
+			var data = {
+				'host'		: akeeba_sftpbrowser_host,
+				'port'		: akeeba_sftpbrowser_port,
+				'username'	: akeeba_sftpbrowser_username,
+				'password'	: akeeba_sftpbrowser_password,
+				'pubkey'	: akeeba_sftpbrowser_pubkey,
+				'privkey'	: akeeba_sftpbrowser_privkey,
+				'directory'	: akeeba_sftpbrowser_directory
+			};
+
+			// Ugly, ugly, UGLY hack...
+			//$.data($('#sftpdialog'), 'directory', akeeba_sftpbrowser_directory);
+
+			// Do AJAX call & Render results
+			doAjax(
+				data,
+				function(data) {
+					if(data.error != false) {
+						// An error occured
+						$('#sftpBrowserError').html(data.error);
+						$('#sftpBrowserErrorContainer').css('display','block');
+						$('#sftpBrowserFolderList').css('display','none');
+						$('#ak_scrumbs').css('display','none');
+					} else {
+						// Create the interface
+						$('#sftpBrowserErrorContainer').css('display','none');
+
+						// Display the crumbs
+						if(!empty(data.breadcrumbs)) {
+							$('#ak_scrumbs').css('display','block');
+							$('#ak_scrumbs').html('');
+							var relativePath = '/';
+
+							akeeba_sftpbrowser_addcrumb(akeeba_translations['UI-ROOT'], '/', callback);
+
+							$.each(data.breadcrumbs, function(i, crumb) {
+								relativePath += '/'+crumb;
+
+								akeeba_sftpbrowser_addcrumb(crumb, relativePath, callback);
+							});
+						} else {
+							$('#sftpBrowserCrumbs').css('display','none');
+						}
+
+						// Display the list of directories
+						if(!empty(data.list)) {
+							$('#sftpBrowserFolderList').css('display','block');
+							//akeeba_sftpbrowser_directory = $.data($('#sftpdialog'), 'directory');
+							//if(empty(akeeba_sftpbrowser_directory)) akeeba_sftpbrowser_directory = '';
+
+							$.each(data.list, function(i, item) {
+								akeeba_sftpbrowser_create_link(akeeba_sftpbrowser_directory+'/'+item, item, $('#sftpBrowserFolderList'), callback );
+							});
+						} else {
+							$('#sftpBrowserFolderList').css('display','none');
+						}
+					}
+				},
+				function(message) {
+					$('#sftpBrowserError').html(message);
+					$('#sftpBrowserErrorContainer').css('display','block');
+					$('#sftpBrowserFolderList').css('display','none');
+					$('#sftpBrowserCrumbs').css('display','none');
+				},
+				false
+			);
+		}
+
+		/**
+		 * Creates a directory link for the SFTP browser UI
+		 */
+		function akeeba_sftpbrowser_create_link(path, label, container, callback)
+		{
+			var row = $(document.createElement('tr'));
+			var cell = $(document.createElement('td')).appendTo(row);
+
+			var myElement = $(document.createElement('a'))
+				.text(label)
+				.click(function(){
+					akeeba_sftpbrowser_directory = path;
+					akeeba_sftpbrowser_hook(callback);
+				})
+				.appendTo(cell);
+			row.appendTo($(container));
+		}
+
+		/**
+		 * Adds a breadcrumb to the SFTP browser
+		 */
+		function akeeba_sftpbrowser_addcrumb(crumb, relativePath, callback, last)
+		{
+			if(empty(last)) last = false;
+			var li = $(document.createElement('li'));
+
+			$(document.createElement('a'))
+				.html(crumb)
+				.click(function(e){
+					akeeba_sftpbrowser_directory = relativePath;
+					akeeba_sftpbrowser_hook(callback);
+					e.preventDefault();
+				})
+				.appendTo(li);
+
+			if(!last) {
+				$(document.createElement('span'))
+					.text('/')
+					.addClass('divider')
+					.appendTo(li);
+			}
+
+			li.appendTo('#ak_scrumbs');
+		}
+
+		// Enable popovers
+		akeeba.jQuery('[rel="popover"]').popover({
+			trigger: 'manual',
+			animate: false,
+			html: true,
+			placement: 'bottom',
+			template: '<div class="popover akeeba-bootstrap-popover" onmouseover="akeeba.jQuery(this).mouseleave(function() {akeeba.jQuery(this).hide(); });"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+		})
+		.click(function(e) {
+			e.preventDefault();
+		})
+		.mouseenter(function(e) {
+			akeeba.jQuery('div.popover').remove();
+			akeeba.jQuery(this).popover('show');
+		});
+
 	});
 </script>

@@ -27,7 +27,7 @@ window.addEvent( 'domready' ,  function() {
 function showChangelog()
 {
 	var akeebaChangelogElement = $('akeeba-changelog').clone();
-	
+
     SqueezeBox.fromElement(
         akeebaChangelogElement, {
             handler: 'adopt',
@@ -89,7 +89,7 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 	<p><strong><?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_HEADER') ?></strong><br/>
 	<?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_BODY') ?>
 	</p>
-	
+
 	<p>
 		<a class="btn btn-small btn-primary" href="index.php?option=com_akeeba&view=cpanel&task=disablephpwarning&<?php echo JFactory::getSession()->getFormToken() ?>=1">
 			<?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_BUTTON'); ?>
@@ -97,10 +97,14 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 	</p>
 </div>
 <?php endif; ?>
-	
+
 <?php if($this->needsdlid): ?>
 <div class="alert">
 	<?php echo JText::sprintf('COM_AKEEBA_LBL_CPANEL_NEEDSDLID','https://www.akeebabackup.com/instructions/1435-akeeba-backup-download-id.html'); ?>
+</div>
+<?php elseif ($this->needscoredlidwarning): ?>
+<div class="alert alert-danger">
+	<?php echo JText::sprintf('COM_AKEEBA_LBL_CPANEL_NEEDSUPGRADE','https://www.akeebabackup.com/videos/63-video-tutorials/1505-abt03-upgrade-core-to-pro.html'); ?>
 </div>
 <?php endif; ?>
 
@@ -120,7 +124,7 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 				<?php echo JText::_('CPANEL_PROFILE_BUTTON'); ?>
 			</button>
 		</form>
-	
+
 		<h3><?php echo JText::_('CPANEL_HEADER_BASICOPS'); ?></h3>
 
 		<?php foreach($this->icondefs['operations'] as $icon): ?>
@@ -140,7 +144,7 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 				<span><?php echo JText::_('AKEEBA_SCHEDULE'); ?></span>
 			</a>
 		</div>
-		
+
 		<div class="icon">
 			<?php if(version_compare(JVERSION, '3.0', 'lt')): ?>
 			<a href="index.php?option=com_config&view=component&component=com_akeeba&path=&tmpl=component"
@@ -158,7 +162,7 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 		</div>
 
 		<?php echo LiveUpdate::getIcon(); ?>
-		
+
 		<div class="ak_clr"></div>
 
 		<?php if(!empty($this->icondefs['inclusion'])): ?>
@@ -190,9 +194,9 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 		<div class="ak_clr"></div>
 
 	</div>
-	
+
 	<div class="span4">
-	
+
 		<h3><?php echo JText::_('CPANEL_LABEL_STATUSSUMMARY')?></h3>
 		<div>
 			<?php echo $this->statuscell ?>
@@ -249,9 +253,9 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 			<?php echo JText::_('LICENSE'); ?>
 			<?php if(AKEEBA_PRO != 1): ?>
 			<br/>If you use Akeeba Backup Core, please post a rating and a review at the <a href="http://extensions.joomla.org/extensions/access-a-security/site-security/backup/1606">Joomla! Extensions Directory</a>.
-			<?php endif; ?>	
+			<?php endif; ?>
 			<br/><br/>
-			<strong><?php echo JText::_('TRANSLATION_CREDITS')?></strong>: 
+			<strong><?php echo JText::_('TRANSLATION_CREDITS')?></strong>:
 			<em><?php echo JText::_('TRANSLATION_LANGUAGE') ?></em> &bull;
 			<a href="<?php echo JText::_('TRANSLATION_AUTHOR_URL') ?>"><?php echo JText::_('TRANSLATION_AUTHOR') ?></a>
 		</p>

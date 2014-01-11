@@ -60,7 +60,7 @@ class AkeebaHelperIncludes
 		$label = 'JTOOLBAR_HELP';
 		$bar->appendButton( 'Popup', 'help', $label, 'https://www.akeebabackup.com/documentation/akeeba-backup-documentation/'.$page, 960, 500 );
 		if(version_compare(JVERSION, '3.0', 'ge')) {
-			$css = '#modal-help { width: 1000px; margin: -250px 0 0 -500px; }';
+			$css = '#modal-help { width: 1000px; margin: 0 0 0 -500px; }';
 			JFactory::getDocument()->addStyleDeclaration($css);
 		}
 	}

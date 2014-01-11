@@ -98,11 +98,11 @@ class AEUtilInihelper {
 		$path_list = array(
 			AEFactory::getAkeebaRoot().'/core'
 		);
-		
+
 		if(AKEEBA_PRO) {
 			$path_list[] = AEFactory::getAkeebaRoot().'/plugins/core';
 		}
-		
+
 		// Add platform configuration files
 		$platform_paths = AEPlatform::getInstance()->getPlatformDirectories();
 		foreach($platform_paths as $p) {
@@ -157,9 +157,9 @@ class AEUtilInihelper {
 				} // if readable
 			} // if is_dir
 		}
-		
+
 		ksort($gui_list);
-		
+
 		// Push stack filter settings to the 03.filters section
 		$path_list = array(
 			AEFactory::getAkeebaRoot().$ds.'platform'.$ds.'filters'.$ds.'stack',
@@ -225,11 +225,11 @@ class AEUtilInihelper {
 				} // if readable
 			} // if is_dir
 		}
-		
+
 		return $gui_list;
 	}
 
-	public static function getInstallerList()
+	public static function getInstallerList($forDisplay = false)
 	{
 		// This is a static cache which persists between subsequent calls, but not
 		// between successive page loads.
@@ -264,6 +264,20 @@ class AEUtilInihelper {
 							if( (strtolower(substr($filename, -4)) == '.ini') && @is_file($path.$ds.$filename) )
 							{
 								$data = AEUtilINI::parse_ini_file($path.$ds.$filename, true);
+
+								if ($forDisplay)
+								{
+									$innerData = reset($data);
+
+									if (array_key_exists('listinoptions', $innerData))
+									{
+										if ($innerData['listinoptions'] == 0)
+										{
+											continue;
+										}
+									}
+								}
+
 								foreach($data as $key => $values)
 								{
 									$installer_list[$key] = array();
@@ -397,7 +411,7 @@ class AEUtilInihelper {
 		}
 
 		// Get data for the installers
-		$json_array['installers'] = self::getInstallerList();
+		$json_array['installers'] = self::getInstallerList(true);
 
 		$json = json_encode($json_array);
 

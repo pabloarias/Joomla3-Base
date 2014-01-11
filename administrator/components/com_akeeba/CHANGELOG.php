@@ -1,4 +1,91 @@
 <?php die();?>
+Akeeba Backup 3.9.2
+================================================================================
++ SFTP authentication with key files in the "Upload to Remote SFTP (SSH) Server" post-processing engine
++ SFTP connection testing for the "Upload to Remote SFTP (SSH) Server" post-processing engine
++ SFTP directory browser for the "Upload to Remote SFTP (SSH) Server" post-processing engine
++ Hybrid file writing engine for the integrated restoration feature
+~ Forbit the browsers to autocomplete the fields in the Backup Now page. Many browsers auto-filled the ANGIE password (usually with the Super User's password), catching users by surprise when restoring their sites.
+~ Changed the wording of the update email to make it abundantly clear that it's not sent by Akeeba Ltd
+~ Improved detection of administrator email addresses
+~ Warn users of the Core release that entering the Download ID doesn't magically "unlock" the Professional features
+~ Better layout for the Component Parameters in Joomla! 3
+# [MEDIUM] The Extension Manager: Update page displays wrong when the System Restore Points feature is enabled on Joomla! 2.5, using Firefox (other Joomla! versions / browsers are not affected)
+# [MEDIUM] The alternate CRON backup script (akeeba-altbackup.php) would go on forever
+# [LOW] Untranslated strings when using the SRP feature
+# [LOW] Dropbox chunked upload would kick in for files less than 150Mb, causing problems in some low quality, yet popular, hosts.
+# [LOW] Link to retry uploading of failed remote transfer not shown in Manage Backups page
+
+Akeeba Backup 3.9.1
+================================================================================
+! [PRO] System Restore Points causing a fatal error when the (broken!) Joomla! cache is enabled.
+! [CORE] The Core version would throw a white page
+
+Akeeba Backup 3.9.0
+================================================================================
++ [PRO] Massively updated System Restore Points feature, now works without replacing Joomla! extensions installer *and* it also works with extension updates
++ [PRO] You can enter a custom S3 endpoint URL, allowing you to use third party storage services with an S3-compatible API
++ [PRO] ANGIE is now embedded in "All configured databases" backup archives to let you restore them easily on your server.
++ [PRO] Easily troubleshoot your backup issues using Akeeba Log Inspection and Cause Elimination (ALICE) feature. It's like asking the developers for support, only faster.
+- [PRO] Removing Box.com integration. PLEASE READ THE DOCUMENTATION FOR THE EXPLANATION.
+- The old lazy scheduling plugin is now completely removed (for the last year it would only show an error message to remind you to disable it)
+~ S3: Make sure that the directory uses forward slashes instead of backslashes; remove trailing slashes from the directory name
+~ Better layout in back-end views under Joomla! 3
+# [LOW] Incremental files only backup was broken
+# [LOW] J3 Help toolbar modal window was not shown correctly
+
+Akeeba Backup 3.8.2
+================================================================================
++ [PRO] SFTP post-processing engine, allows you to upload backup archives to an SFTP (SSH) server
+# [HIGH] CLI backup script: the connection is not set to UTF-8, causing backup issues on some servers
+# [HIGH] System Restore Points: Upgrading Akeeba Backup leads to a huge restore point or a failure if you are using the component's default output directory for your backups
+# [LOW] A non-existent JS file is attempted to be loaded in the Core release (the file only exists in the Pro release)
+
+Akeeba Backup 3.8.1
+================================================================================
+! An annoying –but harmless– fatal error was shown on upgrade from older versions
+
+Akeeba Backup 3.8.0
+================================================================================
++ [PRO] DreamObjects support (an S3-compatible cloud storage solution by DreamHost)
++ Backup on update plugin: allows you to automatically backup your site before applying an update using the Joomla! Update component built into Joomla! itself
++ [PRO] Experimental support for PostgreSQL, SQL Server and Microsoft Azure SQL database technologies (installation and basic backups)
+- Removed JMonitoring integration plugin as this software is no longer available
+# [LOW] [PRO] CLI CRON scripts not fully compatible with PHP CGI
+
+Akeeba Backup 3.7.10
+================================================================================
+~ No change compared to version 3.7.9. This is released due to what appears to be a CDN caching issue preventing some users from seeing the correct package. Please read the release notes for more information.
+
+Akeeba Backup 3.7.9
+================================================================================
+! Wrong ANGIE package included in 3.7.8
+
+Akeeba Backup 3.7.8
+================================================================================
++ Option for full site backup with incremental files (kudos to Brian Teeman for the suggestion)
+~ ANGIE: Improved database error reporting
+~ ANGIE: Removing absolute URLs in favour of relative URLs, trying to make it compatible with temporary URLs (which are still not encouraged as they'll break Joomla's SEF URLs)
++ Box.net: you can now use remote quotas with this post-processing method
++ Box.net: you can now download backup archives directly to your browser with this post-processing method
+# [MEDIUM] ANGIE: Restoration would fail if the original site's database password contains certain special characters
+# [MEDIUM] Could not exclude symlinks to directories when dereference symlinks was disabled
+# [MEDIUM] ANGIE: Default log and tmp path would still not work properly on Windows hosts. Now tested against WAMPServer, XAMPP, EasyPHP and IIS.
+# [LOW] PHP Notice thrown in Backup Now page of Core release
+# [LOW] Compatibility issue with FOF 2.1
+# [LOW] ANGIE: Throw the correct error message when the database key is invalid
+# [LOW] Pre-installation script would run the wrong SQL files on upgrade (normally not causing a problem, but still it's not the intended behaviour)
+# [LOW] System Restore Points wouldn't work with plugins
+# [LOW] ANGIE: Relative paths in template may result to restoration failure on certain hosts with similar named files in the default PHP include path (thank you, Damian)
+# [LOW] Box.net: backups would appear as Obsolete instead of Remote
+
+Akeeba Backup 3.7.7
+================================================================================
++ Added "Robert button" (accept the mandatory information in the post-setup page without ticking each box)
+~ Making MySQLi the default database engine in ANGIE
+# [LOW] ANGIE: Division by zero on dead slow servers
+# [LOW] ANGIE: The FTP layer's status sticks to the value of the backed up site
+
 Akeeba Backup 3.7.6
 ================================================================================
 ! [HIGH] 403, memory outage errors (all Joomla! versions) and lack of system messages (Joomla! 3.x)

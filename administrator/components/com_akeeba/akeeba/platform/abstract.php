@@ -12,28 +12,33 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 {
 	/** @var int Priority of this platform. A lower number denotes higher priority. */
 	public $priority = 50;
-	
+
 	/** @var string The name of the platform (same as the directory name) */
 	public $platformName = null;
-	
+
 	public $configOverrides = array();
-	
+
 	/** @var string The name of the table where backup profiles are stored */
 	public $tableNameProfiles = '#__ak_profiles';
-	
+
 	/** @var string The name of the table where backup records are stored */
 	public $tableNameStats = '#__ak_stats';
-	
+
 	public function getPlatformDirectories()
 	{
 		return array(dirname(__FILE__).'/'.$this->platformName);
 	}
-	
+
 	public function isThisPlatform()
 	{
 		return true;
 	}
-	
+
+	public function register_autoloader()
+	{
+
+	}
+
 	/**
 	 * Saves the current configuration to the database table
 	 * @param	int		$profile_id	The profile where to save the configuration to, defaults to current profile
@@ -53,7 +58,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 		// Get an INI format registry dump
 		$registry = AEFactory::getConfiguration();
 		$dump_profile = $registry->exportAsINI();
-		
+
 		// Encrypt the registry dump if required
 		$dump_profile = AEUtilSecuresettings::encryptSettings($dump_profile);
 
@@ -62,15 +67,19 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->set($db->qn('configuration').' = '.$db->q($dump_profile))
 			->where($db->qn('id').' = '.	$db->q($profile_id));
 		$db->setQuery($sql);
-		if($db->query() === false)
+
+		try
+		{
+			$db->query();
+		}
+		catch (Exception $exc)
 		{
 			return false;
-			//JError::raiseError(500,'Can\'t save Akeeba Configuration','SQL Query<br/>'.$db->getQuery().'<br/>SQL Error:'.$db->getError());
 		}
 
 		return true;
 	}
-	
+
 	/**
 	 * Loads the current configuration off the database table
 	 * @param	int		$profile_id	The profile where to read the configuration from, defaults to current profile
@@ -134,7 +143,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			// Import the configuration array
 			$registry->mergeArray($ini_data, false, false);
 		}
-		
+
 		// Apply config overrides
 		if(is_array($this->configOverrides) && !empty($this->configOverrides)) {
 			$registry->mergeArray($this->configOverrides, false, false);
@@ -142,62 +151,62 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 
 		$registry->activeProfile = $profile_id;
 	}
-	
+
 	public function get_stock_directories()
 	{
 		return array();
 	}
-	
+
 	public function get_site_root()
 	{
 		return '';
 	}
-	
+
 	public function get_installer_images_path()
 	{
 		return '';
 	}
-	
+
 	public function get_active_profile()
 	{
 		return 1;
 	}
-	
+
 	public function get_profile_name($id = null)
 	{
 		return '';
 	}
-	
+
 	public function get_backup_origin()
 	{
 		return 'backend';
 	}
-	
+
 	public function get_timestamp_database($date = 'now')
 	{
 		return '';
 	}
-	
+
 	public function get_local_timestamp($format)
 	{
 		return '';
 	}
-	
+
 	public function get_host()
 	{
 		return '';
 	}
-	
+
 	public function get_site_name()
 	{
 		return '';
 	}
-	
+
 	public function get_default_database_driver( $use_platform = true )
 	{
 		return 'AEDriverMysqli';
 	}
-	
+
 	/**
 	 * Creates or updates the statistics record of the current backup attempt
 	 * @param int $id Backup record ID, use null for new record
@@ -227,11 +236,16 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 				->columns($sql_fields)
 				->values($sql_values);
 			$db->setQuery($sql);
-			if($db->query() == false)
+			try
 			{
-				$db->propagateToObject($caller);
+				$db->query();
+			}
+			catch (Exception $exc)
+			{
+				$caller->setError($exc->getMessage());
 				return false;
 			}
+
 			return $db->insertid();
 		}
 		else
@@ -240,7 +254,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			foreach($data as $key => $value)
 			{
 				if($key == 'id') continue;
-				
+
 				$sql_set[] = $db->qn($key).'='.$db->q($value);
 			}
 			$sql = $db->getQuery(true)
@@ -248,13 +262,21 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 				->set($sql_set)
 				->where($db->qn('id').'='.$db->q($id));
 			$db->setQuery($sql);
-			$ret = $db->query();
 
-			$db->propagateToObject($caller);
+			try
+			{
+				$db->query();
+			}
+			catch (Exception $exc)
+			{
+				$caller->setError($exc->getMessage());
+				return false;
+			}
+
 			return null;
 		}
 	}
-	
+
 
 	/**
 	 * Loads and returns a backup statistics record as a hash array
@@ -285,20 +307,30 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->delete($db->qn($this->tableNameStats))
 			->where($db->qn('id').' = '.$db->q($id));
 		$db->setQuery($query);
-		$result = $db->query();
-		return !($result === false);
+
+		$result = true;
+		try
+		{
+			$db->query();
+		}
+		catch (Exception $exc)
+		{
+			$result = false;
+		}
+
+		return $result;
 	}
 
 
 	/**
 	 * Returns a list of backup statistics records, respecting the pagination
-	 * 
+	 *
 	 * The $config array allows the following options to be set:
 	 * limitstart	int		Offset in the recordset to start from
 	 * limit		int		How many records to return at once
 	 * filters		array	An array of filters to apply to the results. Alternatively you can just pass a profile ID to filter by that profile.
-	 * order		array	Record ordering information (by and ordering) 
-	 * 
+	 * order		array	Record ordering information (by and ordering)
+	 *
 	 * @return array
 	 */
 	function &get_statistics_list($config = array())
@@ -310,9 +342,9 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			'order'			=> null
 		);
 		$config = (object)array_merge($defaultConfiguration, $config);
-		
+
 		$db = AEFactory::getDatabase( $this->get_platform_database_options() );
-		
+
 		$query = $db->getQuery(true);
 
 		if(!empty($config->filters))
@@ -335,7 +367,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 						} else {
 							$clause .= ' = ' . $db->q($f['value']);
 						}
-						
+
 						$query->where($clause);
 					}
 				}
@@ -344,38 +376,38 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 				$query->where($db->qn('profile_id').' = '.$db->q($config->filters));
 			}
 		}
-		
+
 		if(empty($config->order) || !is_array($config->order)) {
 			$config->order = array(
 				'by'		=> 'id',
 				'order'		=> 'DESC'
 			);
 		}
-		
+
 		$query->select('*')
 			->from($db->qn($this->tableNameStats))
 			->order($db->qn($config->order['by'])." ".strtoupper($config->order['order']));
-		
+
 		$db->setQuery($query, $config->limitstart, $config->limit);
 
 		$list = $db->loadAssocList();
 
 		return $list;
 	}
-	
+
 	/**
 	 * Return the total number of statistics records
-	 * 
+	 *
 	 * @param	array	$filters	An array of filters to apply to the results. Alternatively you can just pass a profile ID to filter by that profile.
-	 * 
+	 *
 	 * @return int
 	 */
 	function get_statistics_count($filters = null)
 	{
 		$db = AEFactory::getDatabase( $this->get_platform_database_options() );
-		
+
 		$query = $db->getQuery(true);
-		
+
 		if(!empty($filters))
 		{
 			if(is_array($filters)) {
@@ -443,14 +475,14 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 	public function &get_valid_backup_records($useprofile = false, $tagFilters = array(), $ordering = 'DESC')
 	{
 		$db = AEFactory::getDatabase( $this->get_platform_database_options() );
-		
+
 		$query2 = $db->getQuery(true)
 			->select('MAX('.$db->qn('id').') AS '.$db->qn('id'))
 			->from($db->qn($this->tableNameStats))
 			->where($db->qn('status').' = '.$db->q('complete'))
 			->group($db->qn('absolute_path'));
 		;
-		
+
 		$query = $db->getQuery(true)
 			->select($db->qn('id'))
 			->from($db->qn($this->tableNameStats))
@@ -472,7 +504,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			} else {
 				array_unshift($tagFilters, $first);
 			}
-			
+
 			$quotedTags = array();
 			foreach($tagFilters as $tag) $quotedTags[] = $db->q($tag);
 			$filter = implode(', ', $quotedTags);
@@ -485,7 +517,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 		} else {
 			$array = $db->loadResultArray();
 		}
-		
+
 
 		return $array;
 	}
@@ -504,7 +536,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->from($db->qn($this->tableNameStats))
 			->where($db->qn('archivename').' = '.$db->q($archivename))
 			->order($db->qn('id').' DESC');
-		
+
 		$db->setQuery($query);
 		if(version_compare(JVERSION, '3.0', 'ge')) {
 			$array = $db->loadColumn();
@@ -545,13 +577,23 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->where($db->qn('id').' IN ('.$list.')');
 			;
 		$db->setQuery($sql);
-		return $db->query();
+
+		try
+		{
+			$db->query();
+		}
+		catch (Exception $exc)
+		{
+			return false;
+		}
+
+		return true;
 	}
-	
+
 	/**
 	 * Gets a list of records with remotely stored files in the selected remote storage
 	 * provider and profile.
-	 * 
+	 *
 	 * @param $profile int (optional) The profile to use. Skip or use null for active profile.
 	 * @param $engine string (optional) The remote engine to looks for. Skip or use null for the active profile's engine.
 	 * @return array
@@ -560,12 +602,12 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 	{
 		$config = AEFactory::getConfiguration();
 		$result = array();
-		
+
 		if(is_null($profile)) $profile = $this->get_active_profile();
 		if(is_null($engine)) $engine = $config->get('akeeba.advanced.proc_engine','');
-		
+
 		if(empty($engine)) return $result;
-		
+
 		$db = AEFactory::getDatabase( $this->get_platform_database_options() );
 		$sql = $db->getQuery(true)
 			->select('*')
@@ -574,7 +616,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->where($db->qn('remote_filename').' LIKE '.$db->q($engine.'://%'))
 			->order($db->qn('id').' ASC')
 		;
-		
+
 		$db->setQuery($sql);
 		return $db->loadAssocList();
 	}
@@ -632,27 +674,34 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->set($db->qn('filters').'='.$db->q(serialize($filter_data)))
 			->where($db->qn('id').' = '.$db->q($profile_id));
 		$db->setQuery($sql);
-		$db->query();
 
-		$errors = $db->getError();
-		return empty($errors);
+		try
+		{
+			$db->query();
+		}
+		catch (Exception $exc)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	public function get_platform_database_options()
 	{
 		return array();
 	}
-	
+
 	public function translate($key)
 	{
 		return '';
 	}
-	
+
 	public function load_version_defines()
 	{
-		
+
 	}
-	
+
 	public function getPlatformVersion()
 	{
 		return array(
@@ -660,32 +709,32 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			'version'	=> 'unknown'
 		);
 	}
-	
+
 	public function log_platform_special_directories()
 	{
-		
+
 	}
-	
+
 	public function get_platform_configuration_option($key, $default)
 	{
 		return '';
 	}
-	
+
 	public function get_administrator_emails()
 	{
 		return array();
 	}
-	
+
 	public function send_email($to, $subject, $body, $attachFile = null)
 	{
 		return false;
 	}
-	
+
 	public function unlink($file)
 	{
 		return @unlink($file);
 	}
-	
+
 	public function move($from, $to)
 	{
 		$result = @rename($from, $to);
@@ -695,7 +744,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 				$result = $this->unlink($from);
 			}
 		}
-		
+
 		return $result;
 	}
 }

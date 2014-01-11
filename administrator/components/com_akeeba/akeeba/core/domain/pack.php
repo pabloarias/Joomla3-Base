@@ -466,17 +466,18 @@ ENDVCONTENT;
 						{
 							if(is_link($subdir))
 							{
-								// Symlink detected; apply file filters to it
+								// Symlink detected; apply directory filters to it
 								if(empty($dir)) {
 									$dirSlash = $dir;
 								} else {
 									$dirSlash = $dir.'/';
 								}
-								$check = $dir.basename($subdir);
+								$check = $dirSlash . basename($subdir);
+								AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "XO Directory symlink: $check");
 								if(_AKEEBA_IS_WINDOWS) $check = AEUtilFilesystem::TranslateWinPath ($check);
 								// Do I need this? $dir contains a path relative to the root anyway...
 								$check = ltrim(str_replace($translated_root, '', $check),'/');
-								if($filters->isFiltered($check, $root, 'file', 'all') ) {
+								if($filters->isFiltered($check, $root, 'dir', 'all') ) {
 									AEUtilLogger::WriteLog(_AE_LOG_INFO, "Skipping directory symlink ".$check);
 								} else {
 									AEUtilLogger::WriteLog(_AE_LOG_DEBUG, 'Adding symlink to folder as file: '.$check);
@@ -569,9 +570,10 @@ ENDVCONTENT;
 						if(_AKEEBA_IS_WINDOWS) $check = AEUtilFilesystem::TranslateWinPath ($check);
 						// Do I need this? $dir contains a path relative to the root anyway...
 						$check = ltrim(str_replace($translated_root, '', $check),'/');
-						$skipThisFile = $filters->isFiltered($check, $root, 'file', 'all');
+						$byFilter = '';
+						$skipThisFile = $filters->isFilteredExtended($check, $root, 'file', 'all', $byFilter);
 						if ($skipThisFile) {
-							AEUtilLogger::WriteLog(_AE_LOG_INFO, "Skipping file $fileName");
+							AEUtilLogger::WriteLog(_AE_LOG_INFO, "Skipping file $fileName (filter: $byFilter)");
 						} else {
 							$this->file_list[] = $fileName;
 							$this->processed_files_counter++;

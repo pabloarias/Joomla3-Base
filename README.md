@@ -14,11 +14,11 @@ Archivos a eliminar antes del despliegue en producción:
 
 Paquetes incluidos:
 - Joomla 3.2.1
-- Idioma español 3.1.0.1
-- Editor JCE 2.3.2.4 + traducción al español
+- Idioma español 3.2.1
+- Editor JCE 2.3.4.4 + traducción al español
 - Xmap 2.3.3
-- Akeeba Backup 3.7.6 + traducción al español
-- Framework y plantilla Gantry 4.1.20 + Roknavmenu 2.0.3
+- Akeeba Backup 3.9.2 + traducción al español
+- Framework y plantilla Gantry 4.1.20 + Roknavmenu 2.0.7
 - Title Manager 3.0
 
 Contenidos incluidos:

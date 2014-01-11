@@ -27,15 +27,15 @@ BEGIN
 CREATE TABLE [#__ak_stats] (
 	[id] [BIGINT] IDENTITY(1,1) NOT NULL,
 	[description] [NVARCHAR](255) NOT NULL,
-	[comment] [TEXT] NULL,
+	[comment] [NVARCHAR](4000) NULL,
 	[backupstart] [DATETIME] NOT NULL DEFAULT ('1900-01-01 00:00:00'),
 	[backupend] [DATETIME] NOT NULL DEFAULT ('1900-01-01 00:00:00'),
 	[status] [NVARCHAR](8) NOT NULL DEFAULT ('run'),
 	[origin] [NVARCHAR](30) NOT NULL DEFAULT ('backend'),
 	[type] [NVARCHAR](30) NOT NULL DEFAULT ('full'),
 	[profile_id] [BIGINT] NOT NULL DEFAULT ('1'),
-	[archivename] [TEXT],
-	[absolute_path] [TEXT],
+	[archivename] [NVARCHAR](4000),
+	[absolute_path] [NVARCHAR](4000),
 	[multipart] [INT] NOT NULL DEFAULT ('0'),
 	[tag] [NVARCHAR](255) NULL,
 	[filesexist] [TINYINT] NOT NULL DEFAULT ('1'),
@@ -50,7 +50,7 @@ END;
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[#__ak_stats]') AND name = N'idx_fullstatus')
 BEGIN
-CREATE NONCLUSTERED INDEX [idx_fullstatus] ON [#__ak_stats] 
+CREATE NONCLUSTERED INDEX [idx_fullstatus] ON [#__ak_stats]
 (
 	[filesexist] ASC,
 	[status] ASC
@@ -59,7 +59,7 @@ END;
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[#__ak_stats]') AND name = N'idx_stale')
 BEGIN
-CREATE NONCLUSTERED INDEX [idx_stale] ON [#__ak_stats] 
+CREATE NONCLUSTERED INDEX [idx_stale] ON [#__ak_stats]
 (
 	[status] ASC,
 	[origin] ASC

@@ -23,6 +23,15 @@ interface AEAbstractDriverInterface
 	 * @return  boolean  True on success, false otherwise.
 	 */
 	public static function test();
+
+	/**
+	 * Test to see if the connector is available.
+	 *
+	 * @return  boolean  True on success, false otherwise.
+	 *
+	 * @since   11.2
+	 */
+	public static function isSupported();
 }
 
 
@@ -41,11 +50,20 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	/** @var resource The db conenction resource */
 	protected $connection = '';
 
+	/** @var    integer  The number of SQL statements executed by the database driver. */
+	protected $count = 0;
+
 	/** @var resource The database connection cursor from the last query. */
 	protected $cursor;
 
+	/** @var    boolean  The database driver debugging state. */
+	protected $debug = false;
+
 	/** @var int Query's limit */
 	protected $limit = 0;
+
+	/** @var    array  The log of executed SQL statements by the database driver. */
+	protected $log = array();
 
 	/** @var string Quote for named objects */
 	protected $nameQuote = '';
@@ -55,6 +73,9 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 
 	/** @var int Query's offset */
 	protected $offset = 0;
+
+	/** @var    array  Passed in upon instantiation and saved. */
+	protected $options;
 
 	/** @var mixed The SQL query string */
 	protected $sql = '';
@@ -71,8 +92,69 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	/** @var string The db server's error string */
 	protected $errorMsg = '';
 
+	/** @var    array  JDatabaseDriver instances container. */
+	protected static $instances = array();
+
+	/** @var    string  The minimum supported database version. */
+	protected static $dbMinimum;
+
 	/** @var string Driver type, e.g. mysql, mssql, pgsql and so on */
 	protected $driverType = '';
+
+	/**
+	 * Splits a string of multiple queries into an array of individual queries.
+	 *
+	 * @param   string  $query  Input SQL string with which to split into individual queries.
+	 *
+	 * @return  array  The queries from the input string separated into an array.
+	 */
+	public static function splitSql($query)
+	{
+		$start = 0;
+		$open = false;
+		$char = '';
+		$end = strlen($query);
+		$queries = array();
+
+		for ($i = 0; $i < $end; $i++)
+		{
+			$current = substr($query, $i, 1);
+			if (($current == '"' || $current == '\''))
+			{
+				$n = 2;
+
+				while (substr($query, $i - $n + 1, 1) == '\\' && $n < $i)
+				{
+					$n++;
+				}
+
+				if ($n % 2 == 0)
+				{
+					if ($open)
+					{
+						if ($current == $char)
+						{
+							$open = false;
+							$char = '';
+						}
+					}
+					else
+					{
+						$open = true;
+						$char = $current;
+					}
+				}
+			}
+
+			if (($current == ';' && !$open) || $i == $end - 1)
+			{
+				$queries[] = substr($query, $start, ($i - $start + 1));
+				$start = $i + 1;
+			}
+		}
+
+		return $queries;
+	}
 
 	/**
 	 * Magic method to provide method alias support for quote() and quoteName().
@@ -115,8 +197,9 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 		$this->_database	= $database;
 		$this->connection	= $connection;
 		$this->errorNum		= 0;
-
-		$this->setUTF();
+		$this->count		= 0;
+		$this->log			= array();
+		$this->options		= $options;
 	}
 
 	/**
@@ -142,6 +225,26 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	}
 
 	/**
+	 * Alter database's character set, obtaining query string from protected member.
+	 *
+	 * @param   string  $dbName  The database name that will be altered
+	 *
+	 * @return  string  The query that alter the database query string
+	 *
+	 * @throws  RuntimeException
+	 */
+	public function alterDbCharacterSet($dbName)
+	{
+		if (is_null($dbName))
+		{
+			throw new RuntimeException('Database name must not be null.');
+		}
+
+		$this->setQuery($this->getAlterDbCharacterSet($dbName));
+		return $this->execute();
+	}
+
+	/**
 	 * Opens a database connection. It MUST be overriden by children classes
 	 * @return AEAbstractDriver
 	 */
@@ -159,7 +262,7 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 		}
 
 		// Select the current database
-		$this->select($this->database);
+		$this->select($this->_database);
 
 		return $this;
 	}
@@ -175,6 +278,37 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 * @return  boolean  True if connected to the database engine.
 	 */
 	abstract public function connected();
+
+	/**
+	 * Create a new database using information from $options object, obtaining query string
+	 * from protected member.
+	 *
+	 * @param   stdClass  $options  Object used to pass user and database name to database driver.
+	 * 									This object must have "db_name" and "db_user" set.
+	 * @param   boolean   $utf      True if the database supports the UTF-8 character set.
+	 *
+	 * @return  string  The query that creates database
+	 *
+	 * @throws  RuntimeException
+	 */
+	public function createDatabase($options, $utf = true)
+	{
+		if (is_null($options))
+		{
+			throw new RuntimeException('$options object must not be null.');
+		}
+		elseif (empty($options->db_name))
+		{
+			throw new RuntimeException('$options object must have db_name set.');
+		}
+		elseif (empty($options->db_user))
+		{
+			throw new RuntimeException('$options object must have db_user set.');
+		}
+
+		$this->setQuery($this->getCreateDatabaseQuery($options, $utf));
+		return $this->execute();
+	}
 
 	/**
 	 * Drops a table from the database.
@@ -241,6 +375,44 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	abstract public function getAffectedRows();
 
 	/**
+	 * Return the query string to alter the database character set.
+	 *
+	 * @param   string  $dbName  The database name
+	 *
+	 * @return  string  The query that alter the database query string
+	 */
+	protected function getAlterDbCharacterSet($dbName)
+	{
+		$query = 'ALTER DATABASE ' . $this->quoteName($dbName) . ' CHARACTER SET `utf8`';
+
+		return $query;
+	}
+
+	/**
+	 * Return the query string to create new Database.
+	 * Each database driver, other than MySQL, need to override this member to return correct string.
+	 *
+	 * @param   stdClass  $options  Object used to pass user and database name to database driver.
+	 * 									This object must have "db_name" and "db_user" set.
+	 * @param   boolean   $utf      True if the database supports the UTF-8 character set.
+	 *
+	 * @return  string  The query that creates database
+	 */
+	protected function getCreateDatabaseQuery($options, $utf)
+	{
+		if ($utf)
+		{
+			$query = 'CREATE DATABASE ' . $this->quoteName($options->db_name) . ' CHARACTER SET `utf8`';
+		}
+		else
+		{
+			$query = 'CREATE DATABASE ' . $this->quoteName($options->db_name);
+		}
+
+		return $query;
+	}
+
+	/**
 	 * Method to get the database collation in use by sampling a text field of a table in the database.
 	 *
 	 * @return  mixed  The collation in use by the database or boolean false if not supported.
@@ -270,6 +442,18 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	}
 
 	/**
+	 * Get the total number of SQL statements executed by the database driver.
+	 *
+	 * @return  integer
+	 *
+	 * @since   11.1
+	 */
+	public function getCount()
+	{
+		return $this->count;
+	}
+
+	/**
 	 * Gets the name of the database used by this conneciton.
 	 *
 	 * @return  string
@@ -287,6 +471,30 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	public function getDateFormat()
 	{
 		return 'Y-m-d H:i:s';
+	}
+
+	/**
+	 * Get the database driver SQL statement log.
+	 *
+	 * @return  array  SQL statements executed by the database driver.
+	 *
+	 * @since   11.1
+	 */
+	public function getLog()
+	{
+		return $this->log;
+	}
+
+	/**
+	 * Get the minimum supported database version.
+	 *
+	 * @return  string  The minimum version number for the database driver.
+	 *
+	 * @since   12.1
+	 */
+	public function getMinimum()
+	{
+		return static::$dbMinimum;
 	}
 
 	/**
@@ -373,18 +581,31 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	}
 
 	/**
-	 * Get the version of the database connector
+	 * Determine whether or not the database engine supports UTF-8 character encoding.
 	 *
-	 * @return  string  The database connector version.
+	 * @return  boolean  True if the database engine supports UTF-8 character encoding.
 	 */
-	abstract public function getVersion();
+	public function hasUTFSupport()
+	{
+		return $this->utf;
+	}
 
 	/**
 	 * Determines if the database engine supports UTF-8 character encoding.
 	 *
 	 * @return  boolean  True if supported.
 	 */
-	abstract public function hasUTF();
+	public function hasUTF()
+	{
+		return $this->utf;
+	}
+
+	/**
+	 * Get the version of the database connector
+	 *
+	 * @return  string  The database connector version.
+	 */
+	abstract public function getVersion();
 
 	/**
 	 * Method to get the auto-incremented value from the last INSERT statement.
@@ -404,12 +625,8 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function insertObject($table, &$object, $key = null)
 	{
-		// Initialise variables.
 		$fields = array();
 		$values = array();
-
-		// Create the base insert statement.
-		$statement = 'INSERT INTO ' . $this->quoteName($table) . ' (%s) VALUES (%s)';
 
 		// Iterate over the object variables to build the query fields and values.
 		foreach (get_object_vars($object) as $k => $v)
@@ -431,21 +648,39 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 			$values[] = $this->quote($v);
 		}
 
+		// Create the base insert statement.
+		$query = $this->getQuery(true)
+			->insert($this->quoteName($table))
+				->columns($fields)
+				->values(implode(',', $values));
+
 		// Set the query and execute the insert.
-		$this->setQuery(sprintf($statement, implode(',', $fields), implode(',', $values)));
-		if (!$this->query())
+		$this->setQuery($query);
+		if (!$this->execute())
 		{
 			return false;
 		}
 
 		// Update the primary key if it exists.
 		$id = $this->insertid();
-		if ($key && $id)
+		if ($key && $id && is_string($key))
 		{
 			$object->$key = $id;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Method to check whether the installed database version is supported by the database driver
+	 *
+	 * @return  boolean  True if the database version is supported
+	 *
+	 * @since   12.1
+	 */
+	public function isMinimumVersion()
+	{
+		return version_compare($this->getVersion(), static::$dbMinimum) >= 0;
 	}
 
 	/**
@@ -456,11 +691,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadAssoc()
 	{
-		// Initialise variables.
 		$ret = null;
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -493,11 +727,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadAssocList($key = null, $column = null)
 	{
-		// Initialise variables.
 		$array = array();
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -532,11 +765,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadColumn($offset = 0)
 	{
-		// Initialise variables.
 		$array = array();
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -562,12 +794,15 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadNextObject($class = 'stdClass')
 	{
-		static $cursor;
+		static $cursor = null;
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if ( is_null($cursor) )
 		{
-			return $this->errorNum ? null : false;
+			if (!($cursor = $this->execute()))
+			{
+				return $this->errorNum ? null : false;
+			}
 		}
 
 		// Get the next row from the result set as an object of type $class.
@@ -590,12 +825,15 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadNextRow()
 	{
-		static $cursor;
+		static $cursor = null;
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if ( is_null($cursor) )
 		{
-			return $this->errorNum ? null : false;
+			if (!($cursor = $this->execute()))
+			{
+				return $this->errorNum ? null : false;
+			}
 		}
 
 		// Get the next row from the result set as an object of type $class.
@@ -620,11 +858,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadObject($class = 'stdClass')
 	{
-		// Initialise variables.
 		$ret = null;
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -655,11 +892,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadObjectList($key = '', $class = 'stdClass')
 	{
-		// Initialise variables.
 		$array = array();
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -690,11 +926,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadResult()
 	{
-		// Initialise variables.
 		$ret = null;
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -719,11 +954,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadRow()
 	{
-		// Initialise variables.
 		$ret = null;
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -753,11 +987,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function loadRowList($key = null)
 	{
-		// Initialise variables.
 		$array = array();
 
 		// Execute the query and get the result set cursor.
-		if (!($cursor = $this->query()))
+		if (!($cursor = $this->execute()))
 		{
 			return null;
 		}
@@ -856,7 +1089,8 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 			}
 			elseif (is_array($name) && (count($name) == count($as)))
 			{
-				for ($i = 0; $i < count($name); $i++)
+				$count = count($name);
+				for ($i = 0; $i < $count; $i++)
 				{
 					$fin[] = $this->quoteName($name[$i], $as[$i]);
 				}
@@ -902,32 +1136,31 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 * This function replaces a string identifier <var>$prefix</var> with the string held is the
 	 * <var>tablePrefix</var> class variable.
 	 *
-	 * @param   string  $sql     The SQL statement to prepare.
+	 * @param   string  $query   The SQL statement to prepare.
 	 * @param   string  $prefix  The common table prefix.
 	 *
 	 * @return  string  The processed SQL statement.
 	 */
-	public function replacePrefix($sql, $prefix = '#__')
+	public function replacePrefix($query, $prefix = '#__')
 	{
-		// Initialize variables.
 		$escaped = false;
 		$startPos = 0;
 		$quoteChar = '';
 		$literal = '';
 
-		$sql = trim($sql);
-		$n = strlen($sql);
+		$query = trim($query);
+		$n = strlen($query);
 
 		while ($startPos < $n)
 		{
-			$ip = strpos($sql, $prefix, $startPos);
+			$ip = strpos($query, $prefix, $startPos);
 			if ($ip === false)
 			{
 				break;
 			}
 
-			$j = strpos($sql, "'", $startPos);
-			$k = strpos($sql, '"', $startPos);
+			$j = strpos($query, "'", $startPos);
+			$k = strpos($query, '"', $startPos);
 			if (($k !== false) && (($k < $j) || ($j === false)))
 			{
 				$quoteChar = '"';
@@ -943,7 +1176,7 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 				$j = $n;
 			}
 
-			$literal .= str_replace($prefix, $this->tablePrefix, substr($sql, $startPos, $j - $startPos));
+			$literal .= str_replace($prefix, $this->tablePrefix, substr($query, $startPos, $j - $startPos));
 			$startPos = $j;
 
 			$j = $startPos + 1;
@@ -953,17 +1186,17 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 				break;
 			}
 
-			// quote comes first, find end of quote
+			// Quote comes first, find end of quote
 			while (true)
 			{
-				$k = strpos($sql, $quoteChar, $j);
+				$k = strpos($query, $quoteChar, $j);
 				$escaped = false;
 				if ($k === false)
 				{
 					break;
 				}
 				$l = $k - 1;
-				while ($l >= 0 && $sql{$l} == '\\')
+				while ($l >= 0 && $query{$l} == '\\')
 				{
 					$l--;
 					$escaped = !$escaped;
@@ -977,15 +1210,15 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 			}
 			if ($k === false)
 			{
-				// error in the query - no end quote; ignore it
+				// Error in the query - no end quote; ignore it
 				break;
 			}
-			$literal .= substr($sql, $startPos, $k - $startPos + 1);
+			$literal .= substr($query, $startPos, $k - $startPos + 1);
 			$startPos = $k + 1;
 		}
 		if ($startPos < $n)
 		{
-			$literal .= substr($sql, $startPos, $n - $startPos);
+			$literal .= substr($query, $startPos, $n - $startPos);
 		}
 
 		return $literal;
@@ -1011,6 +1244,21 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 * @return  boolean  True if the database was successfully selected.
 	 */
 	abstract public function select($database);
+
+	/**
+	 * Sets the database debugging state for the driver.
+	 *
+	 * @param   boolean  $level  True to enable debugging.
+	 *
+	 * @return  boolean  The old debugging level.
+	 */
+	public function setDebug($level)
+	{
+		$previous = $this->debug;
+		$this->debug = (bool) $level;
+
+		return $previous;
+	}
 
 	/**
 	 * Sets the SQL statement string for later execution.
@@ -1083,9 +1331,18 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	 */
 	public function updateObject($table, &$object, $key, $nulls = false)
 	{
-		// Initialise variables.
 		$fields = array();
-		$where = '';
+		$where = array();
+
+		if (is_string($key))
+		{
+			$key = array($key);
+		}
+
+		if (is_object($key))
+		{
+			$key = (array) $key;
+		}
 
 		// Create the base update statement.
 		$statement = 'UPDATE ' . $this->quoteName($table) . ' SET %s WHERE %s';
@@ -1100,9 +1357,9 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 			}
 
 			// Set the primary key to the WHERE clause instead of a field to update.
-			if ($k == $key)
+			if (in_array($k, $key))
 			{
-				$where = $this->quoteName($k) . '=' . $this->quote($v);
+				$where[] = $this->quoteName($k) . '=' . $this->quote($v);
 				continue;
 			}
 
@@ -1137,8 +1394,8 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 		}
 
 		// Set the query and execute the update.
-		$this->setQuery(sprintf($statement, implode(",", $fields), $where));
-		return $this->query();
+		$this->setQuery(sprintf($statement, implode(",", $fields), implode(' AND ', $where)));
+		return $this->execute();
 	}
 
 	/**
@@ -1268,5 +1525,10 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	public final function getDriverType()
 	{
 		return $this->driverType;
+	}
+
+	public static function test()
+	{
+		return self::isSupported();
 	}
 }

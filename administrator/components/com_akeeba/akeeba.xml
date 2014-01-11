@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="component" method="upgrade">
 	<name>Akeeba</name>
-	<creationDate>2013-04-23</creationDate>
+	<creationDate>2013-12-27</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@dionysopoulos.me</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2006-2012 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU GPL v3 or later</license>
-	<version>3.7.6</version>
+	<version>3.9.2</version>
 	<description>Akeeba Backup Core - Full Joomla! site backup solution, Core Edition.</description>
 
 	<!-- Public front end files -->
@@ -33,10 +33,13 @@
 			<file driver="mysqli" charset="utf8">sql/install/mysql/install.sql</file>
 			<file driver="mysqli">sql/install/mysql/install.sql</file>
 
-			<file driver="sqlazure">sql/install/sqlazure/install.sql</file>
-			<file driver="sqlazure" charset="utf8">sql/install/sqlazure/install.sql</file>
+			<file driver="sqlazure">sql/install/sqlsrv/install.sql</file>
+			<file driver="sqlazure" charset="utf8">sql/install/sqlsrv/install.sql</file>
 			<file driver="sqlsrv">sql/install/sqlsrv/install.sql</file>
 			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
+			
+			<file driver="postgresql">sql/install/postgresql/install.sql</file>
+			<file driver="postgresql" charset="utf8">sql/install/postgresql/install.sql</file>
 		</sql>
 	</install>
 
@@ -48,10 +51,13 @@
 			<file driver="mysqli" charset="utf8">sql/install/mysql/uninstall.sql</file>
 			<file driver="mysqli">sql/install/mysql/uninstall.sql</file>
 			
-			<file driver="sqlazure">sql/install/sqlazure/uninstall.sql</file>
-			<file driver="sqlazure" charset="utf8">sql/install/sqlazure/uninstall.sql</file>
+			<file driver="sqlazure">sql/install/sqlsrv/uninstall.sql</file>
+			<file driver="sqlazure" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
 			<file driver="sqlsrv">sql/install/sqlsrv/uninstall.sql</file>
 			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+			
+			<file driver="postgresql">sql/install/postgresql/uninstall.sql</file>
+			<file driver="postgresql" charset="utf8">sql/install/postgresql/uninstall.sql</file>
 		</sql>
 	</uninstall>
 	
@@ -60,7 +66,8 @@
 		<schemas>
 			<schemapath type="mysql">sql/updates/mysql</schemapath>
 			<schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
-			<schemapath type="sqlazure">sql/updates/sqlazure</schemapath>
+			<schemapath type="sqlazure">sql/updates/sqlsrv</schemapath>
+			<schemapath type="postgresql">sql/updates/postgresql</schemapath>
 		</schemas>
 	</update>
 	
@@ -113,6 +120,13 @@
 
 	<!-- Installation / uninstallation script file -->
 	<scriptfile>script.akeeba.php</scriptfile>
+	
+	<!-- Update servers -->
+	<!--
+	<updateservers>
+		<server type="extension" priority="1" name="Akeeba Backup Core"><![CDATA[https://www.akeebabackup.com/index.php?option=com_ars&view=update&task=stream&format=xml&id=1]]></server>
+	</updateservers>
+	-->
 
 	<restorepoint>
 		<customdirs>

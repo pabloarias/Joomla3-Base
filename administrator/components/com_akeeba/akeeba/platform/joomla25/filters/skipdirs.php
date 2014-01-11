@@ -24,6 +24,8 @@ class AEFilterPlatformSkipdirs extends AEAbstractFilter
 		$this->method	= 'direct';
 		$this->filter_name = 'PlatformSkipdirs';
 
+		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+
 		// We take advantage of the filter class magic to inject our custom filters
 		$configuration = AEFactory::getConfiguration();
 		$jreg = JFactory::getConfig();
@@ -32,7 +34,7 @@ class AEFilterPlatformSkipdirs extends AEAbstractFilter
 		} else {
 			$tmpdir = $jreg->getValue('config.tmp_path');
 		}
-		
+
 		// Get the site's root
 		if($configuration->get('akeeba.platform.override_root',0)) {
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');

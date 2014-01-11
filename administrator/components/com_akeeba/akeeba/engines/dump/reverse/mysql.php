@@ -88,14 +88,18 @@ class AEDumpReverseMysql extends AEDumpNativeMysql
 		$registry = AEFactory::getConfiguration();
 		$enable_entities = $registry->get('engine.dump.native.advanced_entitites', true);
 		$notracking = $registry->get('engine.dump.native.nodependencies', 0);
+
 		if ( $enable_entities && ($notracking == 0) )
 		{
 			// @todo Triggers
-			// @todo Functions
-			// @todo Porcedures
-		}
+			// AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: Reverse engineering Triggers");
 
-		// @todo
+			// @todo Functions
+			// AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: Reverse engineering Functions");
+
+			// @todo Procedures
+			// AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: Reverse engineering Procedures");
+		}
 
 		$dbi->select($this->database);
 	}

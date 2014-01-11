@@ -22,7 +22,11 @@ class AkeebaDispatcher extends FOFDispatcher
 			AkeebaStrapper::jQueryUI();
 			AkeebaStrapper::addJSfile('media://com_akeeba/js/gui-helpers.js');
 			AkeebaStrapper::addJSfile('media://com_akeeba/js/akeebaui.js');
-			AkeebaStrapper::addJSfile('media://com_akeeba/plugins/js/akeebaui.js');
+			jimport('joomla.filesystem.file');
+			if (JFile::exists(FOFTemplateUtils::parsePath('media://com_akeeba/plugins/js/akeebaui.js', true)))
+			{
+				AkeebaStrapper::addJSfile('media://com_akeeba/plugins/js/akeebaui.js');
+			}
 			AkeebaStrapper::addCSSfile('media://com_akeeba/theme/akeebaui.css');
 		}
 
@@ -52,6 +56,8 @@ class AkeebaDispatcher extends FOFDispatcher
 		$jlang->load('liveupdate', JPATH_COMPONENT_ADMINISTRATOR.'/liveupdate', $jlang->getDefault(), true);
 		$jlang->load('liveupdate', JPATH_COMPONENT_ADMINISTRATOR.'/liveupdate', null, true);
 
+		FOFInflector::addWord('alice', 'alices');
+
 		// Timezone fix; avoids errors printed out by PHP 5.3.3+ (thanks Yannick!)
 		if(function_exists('date_default_timezone_get') && function_exists('date_default_timezone_set')) {
 			if(function_exists('error_reporting')) {
@@ -69,6 +75,7 @@ class AkeebaDispatcher extends FOFDispatcher
 		if(!defined('AKEEBAENGINE')) {
 			define('AKEEBAENGINE', 1); // Required for accessing Akeeba Engine's factory class
 			define('AKEEBAROOT', dirname(__FILE__).'/akeeba');
+			define('ALICEROOT', dirname(__FILE__).'/alice');
 		}
 
 		// Setup Akeeba's ACLs, honoring laxed permissions in component's parameters, if set
@@ -89,6 +96,7 @@ class AkeebaDispatcher extends FOFDispatcher
 
 		// Load the factory
 		require_once JPATH_COMPONENT_ADMINISTRATOR.'/akeeba/factory.php';
+		@include_once JPATH_COMPONENT_ADMINISTRATOR.'/alice/factory.php';
 
 		// Load the Akeeba Backup configuration and check user access permission
 		$aeconfig = AEFactory::getConfiguration();

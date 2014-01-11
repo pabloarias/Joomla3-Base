@@ -19,7 +19,7 @@ class AkeebaControllerDefault extends FOFController
 	/**
 	 * Akeeba Backup-specific ACL checks. All views not listed here are
 	 * limited by the akeeba.configure privilege.
-	 * 
+	 *
 	 * @var array
 	 */
 	private static $viewACLMap = array(
@@ -34,17 +34,17 @@ class AkeebaControllerDefault extends FOFController
 		'remotefile'=> 'akeeba.download',
 		'discover'	=> 'akeeba.download',
 	);
-	
+
 	/**
 	 * Do our custom ACL checks for the back-end views
-	 * 
+	 *
 	 * @return boolean
 	 */
 	private function akeebaACLCheck()
 	{
 		// Get the view
 		$view = $this->input->getCmd('view', '');
-		
+
 		// Fetch the privilege to check, or use the default (akeeba.configure)
 		// privilege.
 		if (array_key_exists($view, self::$viewACLMap))
@@ -55,15 +55,15 @@ class AkeebaControllerDefault extends FOFController
 		{
 			$privilege = 'akeeba.configure';
 		}
-		
+
 		// If an empty privileve is defined do not do any ACL check
 		if (empty($privilege))
 		{
 			return true;
 		}
-		
+
 		// Throw an error if we are not allowed access to the view
-		if (!$this->checkACL($privilege))
+		if (!JFactory::getUser()->authorise($privilege, 'com_akeeba'))
 		{
 			$this->setRedirect('index.php?option=com_akeeba&view=cpanel');
 			JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
@@ -75,13 +75,13 @@ class AkeebaControllerDefault extends FOFController
 			return true;
 		}
 	}
-	
+
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 		$this->akeebaACLCheck();
 	}
-	
+
 	/**
 	 * ACL check before changing the access level; override to customise
 	 *

@@ -95,6 +95,8 @@ class AkeebaControllerConfig extends AkeebaControllerDefault
 		$model->setState('port',	$this->input->get('port', 21, 'int'));
 		$model->setState('user',	$this->input->get('user', '', 'raw', 2));
 		$model->setState('pass',	$this->input->get('pass', '', 'raw', 2));
+		$model->setState('privkey',	$this->input->get('privkey', '', 'raw', 2));
+		$model->setState('pubkey',	$this->input->get('pubkey', '', 'raw', 2));
 		$model->setState('initdir',	$this->input->get('initdir', '', 'raw', 2));
 
 		@ob_end_clean();

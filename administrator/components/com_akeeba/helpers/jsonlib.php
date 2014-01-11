@@ -1,6 +1,4 @@
 <?php
-defined('AKEEBAENGINE') or die();
-
 /**
  * Akeeba Backup's JSON compatibility layer
  *
@@ -9,6 +7,9 @@ defined('AKEEBAENGINE') or die();
  * A copy of this library is included in this file and will be used if and
  * only if it isn't already loaded, e.g. due to PEAR's auto-loading, or a
  * 3PD extension loading it for its own purposes.
+ *
+ * Suddenly became relevant again because Linux distros decided not to include
+ * the PHP JSON package with PHP 5.5 due to a stupid licensing cock-up.
  */
 
 /**
@@ -65,6 +66,8 @@ defined('AKEEBAENGINE') or die();
  * @license     http://www.opensource.org/licenses/bsd-license.php
  * @link        http://pear.php.net/pepr/pepr-proposal-show.php?id=198
  */
+
+defined('_JEXEC') or die();
 
 if(!defined('JSON_FORCE_OBJECT'))
 {

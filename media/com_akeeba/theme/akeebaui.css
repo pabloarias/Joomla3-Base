@@ -74,17 +74,17 @@ li.akeeba-changelog-fixed span		{ background-position: 0 -48px; }
 /**
  * Backup progress
  */
-#backup-steps div.label {
+#backup-steps div.label, #stepper-steps div.label{
 	display: block;
 	width: 100%;
 	margin-top: 1px;
 }
-#backup-step {
+#backup-step, #stepper-step{
 	font-weight: bold;
 	border-bottom: thin dotted #333333;
 }
 
-#backup-substep {
+#backup-substep, #stepper-substep {
 	font-style: italic;
 	color: #000066 !important;
 }
@@ -282,7 +282,7 @@ div.notok {
 	display: block;
 	height: 24px;
 	padding: 5px 4px 0px 32px;
-	background: transparent url(../icons/update.png) top left no-repeat;	
+	background: transparent url(../icons/update.png) top left no-repeat;
 }
 .updaterwarning { margin: 2em; padding: 1em; font-size: large; }
 /**/

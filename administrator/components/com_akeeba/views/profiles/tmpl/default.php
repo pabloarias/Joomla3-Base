@@ -9,6 +9,12 @@
 defined('_JEXEC') or die();
 
 JHtml::_('behavior.framework');
+JHtml::_('behavior.multiselect');
+if (version_compare(JVERSION, '3.0', 'gt'))
+{
+	JHtml::_('dropdown.init');
+	JHtml::_('formbehavior.chosen', 'select');
+}
 
 $configurl = base64_encode(JURI::base().'index.php?option=com_akeeba&view=config');
 $token = JFactory::getSession()->getFormToken();
@@ -24,7 +30,16 @@ $token = JFactory::getSession()->getFormToken();
 		<strong><?php echo JText::_('CPANEL_PROFILE_TITLE'); ?></strong>:
 		#<?php echo $this->profileid; ?> <?php echo $this->profilename; ?>
 	</div>
-	
+
+	<?php if(version_compare(JVERSION, '3.0', 'gt')): ?>
+		<div id="filter-bar" class="btn-toolbar">
+			<div class="btn-group pull-right hidden-phone">
+				<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC') ?></label>
+				<?php echo $this->getModel()->getPagination()->getLimitBox(); ?>
+			</div>
+		</div>
+	<?php endif; ?>
+
 	<table class="adminlist table table-striped">
 		<thead>
 			<tr>
@@ -35,7 +50,8 @@ $token = JFactory::getSession()->getFormToken();
 		</thead>
 		<tfoot>
 			<tr>
-				<td colspan="11"><?php echo $this->pagination->getListFooter(); ?></td>
+				<td colspan="11">
+					<?php echo $this->pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
 		<tbody>

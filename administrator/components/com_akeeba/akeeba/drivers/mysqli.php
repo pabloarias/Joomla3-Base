@@ -12,7 +12,7 @@ defined('AKEEBAENGINE') or die();
 
 /**
  * MySQL Improved (mysqli) database driver for Akeeba Engine
- * 
+ *
  * Based on Joomla! Platform 11.2
  */
 class AEDriverMysqli extends AEDriverMysql
@@ -24,7 +24,7 @@ class AEDriverMysqli extends AEDriverMysql
 	 * @since  11.1
 	 */
 	public $name = 'mysqli';
-	
+
 	/**
 	 * Database object constructor
 	 * @param	array	List of options used to configure the connection
@@ -32,7 +32,7 @@ class AEDriverMysqli extends AEDriverMysql
 	public function __construct( $options )
 	{
 		$this->driverType = 'mysql';
-		
+
 		// Init
 		$this->nameQuote = '`';
 
@@ -79,7 +79,7 @@ class AEDriverMysqli extends AEDriverMysql
 		$this->socket = $socket;
 		$this->_database = $database;
 		$this->selectDatabase = $select;
-		
+
 		if(!is_object($this->connection)) $this->open();
 	}
 
@@ -90,7 +90,7 @@ class AEDriverMysqli extends AEDriverMysql
 		} else {
 			$this->close();
 		}
-		
+
 		// perform a number of fatality checks, then return gracefully
 		if (!function_exists( 'mysqli_connect' )) {
 			$this->errorNum = 1;
@@ -104,14 +104,14 @@ class AEDriverMysqli extends AEDriverMysql
 			$this->errorMsg = 'Could not connect to MySQL';
 			return;
 		}
-		
+
 		// Set sql_mode to non_strict mode
 		mysqli_query($this->connection, "SET @@SESSION.sql_mode = '';");
-		
+
 		if ($this->selectDatabase && !empty($this->_database)) {
 			$this->select($this->_database);
 		}
-		
+
 		$this->setUTF();
 	}
 
@@ -153,7 +153,7 @@ class AEDriverMysqli extends AEDriverMysql
 	 *
 	 * @return  boolean  True on success, false otherwise.
 	 */
-	public static function test()
+	public static function isSupported()
 	{
 		return (function_exists('mysqli_connect'));
 	}
@@ -206,7 +206,7 @@ class AEDriverMysqli extends AEDriverMysql
 	{
 		if ($new)
 		{
-			return new AEQueryMysql($this);
+			return new AEQueryMysqli($this);
 		}
 		else
 		{
@@ -252,31 +252,66 @@ class AEDriverMysqli extends AEDriverMysql
 	 */
 	public function query()
 	{
+		$this->open();
+
 		if (!is_object($this->connection))
 		{
-			return false;
+			throw new RuntimeException($this->errorMsg, $this->errorNum);
 		}
 
 		// Take a local copy so that we don't modify the original query and cause issues later
-		$sql = $this->replacePrefix((string) $this->sql);
+		$query = $this->replacePrefix((string) $this->sql);
 		if ($this->limit > 0 || $this->offset > 0)
 		{
-			$sql .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
+			$query .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
+		}
+
+		// Increment the query counter.
+		$this->count++;
+
+		// If debugging is enabled then let's log the query.
+		if ($this->debug)
+		{
+			// Add the query to the object queue.
+			$this->log[] = $query;
 		}
 
 		// Reset the error values.
 		$this->errorNum = 0;
 		$this->errorMsg = '';
 
-		// Execute the query.
-		$this->cursor = mysqli_query($this->connection, $sql);
+		// Execute the query. Error suppression is used here to prevent warnings/notices that the connection has been lost.
+		$this->cursor = @mysqli_query($this->connection, $query);
 
 		// If an error occurred handle it.
 		if (!$this->cursor)
 		{
 			$this->errorNum = (int) mysqli_errno($this->connection);
-			$this->errorMsg = (string) mysqli_error($this->connection) . ' SQL=' . $sql;
-			return false;
+			$this->errorMsg = (string) mysqli_error($this->connection) . ' SQL=' . $query;
+
+			// Check if the server was disconnected.
+			if (!$this->connected())
+			{
+				try
+				{
+					// Attempt to reconnect.
+					$this->connection = null;
+					$this->connect();
+				}
+				// If connect fails, ignore that exception and throw the normal exception.
+				catch (RuntimeException $e)
+				{
+					throw new RuntimeException($this->errorMsg, $this->errorNum);
+				}
+
+				// Since we were able to reconnect, run the query again.
+				return $this->execute();
+			}
+			// The server was not disconnected.
+			else
+			{
+				throw new RuntimeException($this->errorMsg, $this->errorNum);
+			}
 		}
 
 		return $this->cursor;
@@ -311,7 +346,7 @@ class AEDriverMysqli extends AEDriverMysql
 	 */
 	public function setUTF()
 	{
-		mysqli_query($this->connection, "SET NAMES 'utf8'");
+		return mysqli_set_charset($this->connection, 'utf8');
 	}
 
 	/**

@@ -27,7 +27,7 @@ class AEFilterPlatformSitedb extends AEAbstractFilter
 		// Add a new record for the core Joomla! database
 		// Get core database options
 		$configuration = AEFactory::getConfiguration();
-		
+
 		if($configuration->get('akeeba.platform.override_db',0)) {
 			$options = array(
 				'port'		=> $configuration->get('akeeba.platform.dbport',''),
@@ -42,7 +42,7 @@ class AEFilterPlatformSitedb extends AEAbstractFilter
 			$options = AEPlatform::getInstance()->get_platform_database_options();
 			$driver = AEPlatform::getInstance()->get_default_database_driver(true);
 		}
-		
+
 
 		$host = $options['host'];
 		$port	= array_key_exists('port', $options) ? $options['port'] : NULL;

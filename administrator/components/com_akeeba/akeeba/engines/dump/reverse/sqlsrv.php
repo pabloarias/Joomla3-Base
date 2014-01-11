@@ -35,6 +35,8 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 		// DO NOT RUN THE PARENT::__CONSTRUCT; we are directly instanciating an AEAbstractObject here
 		// parent::__construct();
 		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: New instance");
+
+		$this->postProcessValues = true;
 	}
 
 	/**
@@ -80,17 +82,23 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 		// Get the list of all database tables and views
 		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: Reverse engineering Tables");
 		$this->reverse_engineer_tables($db);
-		//$this->reverse_engineer_views($db);
+		$this->reverse_engineer_views($db);
 
 		// Optional backup of triggers, functions and procedures
 		$registry = AEFactory::getConfiguration();
 		$enable_entities = $registry->get('engine.dump.native.advanced_entitites', true);
 		$notracking = $registry->get('engine.dump.native.nodependencies', 0);
+
 		if ( $enable_entities && ($notracking == 0) )
 		{
 			// @todo Triggers
+			// AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: Reverse engineering Triggers");
+
 			// @todo Functions
-			// @todo Porcedures
+			// AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: Reverse engineering Functions");
+
+			// @todo Procedures
+			// AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__." :: Reverse engineering Procedures");
 		}
 	}
 
@@ -187,16 +195,19 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 		// =====================================================================
 		// Get identity columns for this table
 		$sysObjectID = $table_object->object_id;
-		$query = 'SELECT COUNT(*) FROM sys.identity_columns WHERE object_id = ' . $dbi->quote($sysObjectID)
-			. ' ORDER BY column_id ASC';
+		$query = 'SELECT COUNT(*) FROM sys.identity_columns WHERE object_id = ' . $dbi->quote($sysObjectID);
 		$dbi->setQuery($query);
 		$countIdentityColumns = $dbi->loadResult();
 		if ($countIdentityColumns)
 		{
-			$query = 'SELECT * FROM sys.identity_columns WHERE object_id = ' . $dbi->quote($sysObjectID)
+			/**
+			$query = 'SELECT column_id, name, seed_value, increment_value FROM sys.identity_columns WHERE object_id = ' . $dbi->quote($sysObjectID)
 				. ' ORDER BY column_id ASC';
+			**/
+			$query = 'select * from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ' . $dbi->quote($table_name) .
+				'and COLUMNPROPERTY(object_id(TABLE_NAME), COLUMN_NAME, \'IsIdentity\') = 1';
 			$dbi->setQuery($query);
-			$identityColumns = $dbi->loadObjectList('name');
+			$identityColumns = $dbi->loadAssocList('COLUMN_NAME');
 		}
 		else
 		{
@@ -265,8 +276,18 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 
 			if (array_key_exists($oColumn->COLUMN_NAME, $identityColumns))
 			{
-				$seed = $identityColumns[$oColumn->COLUMN_NAME]->seed_value;
-				$increment = $identityColumns[$oColumn->COLUMN_NAME]->increment_value;
+				/**
+				$seed = $identityColumns[$oColumn->COLUMN_NAME]['seed_value'];
+				$increment = $identityColumns[$oColumn->COLUMN_NAME]['increment_value'];
+				**/
+				// fake the seed and increment because Microsoft sucks and their API is broken!
+
+				$qLala = 'SELECT MAX('. $oColumn->COLUMN_NAME . ') FROM ' . $dbi->quoteName($table_name);
+				$dbi->setQuery($qLala);
+				$seed = (int)($dbi->loadResult());
+
+				$increment = 1;
+
 				$line .= ' IDENTITY (' . $seed . ', ' . $increment . ')';
 			}
 
@@ -279,41 +300,54 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 		// ========== GENERATE SQL FOR KEYS AND INDICES
 		// =====================================================================
 		// Get the primary and unique key names
-		$query = 'SELECT select * from sys.indexes where object_id = ' . $dbi->quote($sysObjectID);
+		$query = 'SELECT * from sys.indexes where object_id = OBJECT_ID(' . $dbi->q($table_name) . ')';
 		$dbi->setQuery($query);
 		$allKeys = $dbi->loadObjectList('name');
 
 		// Get the columns per key and key information
 		$query = 'select c.name, ic.* from sys.index_columns as ic inner join sys.columns as c on(c.object_id = ic.object_id and c.column_id = ic.column_id) '
-		. 'where ic.object_id = ' . $dbi->nameQuote($sysObjectID) . ' order by index_id ASC, index_column_id ASC';
+		. 'where ic.object_id = OBJECT_ID(' . $dbi->q($table_name) . ') order by index_id ASC, index_column_id ASC';
 		$dbi->setQuery($query);
 		$allColumns = $dbi->loadObjectList();
 
 		$rawKeys = array();
 		if (!empty($allKeys)) foreach($allKeys as $currentKey)
 		{
-			$isUnique = strtoupper($currentKey->is_unique) == 'TRUE';
-			$isPrimary = strtoupper($currentKey->is_primary_key) == 'TRUE';
+			if (empty($currentKey->name))
+			{
+				continue;
+			}
+
+			$isUnique = $currentKey->is_unique == 1;
+			$isPrimary = $currentKey->is_primary_key == 1;
 
 			$keyName = $currentKey->name;
-			if (strlen($this->prefix) && substr($this->prefix, -1) == '_')
+			if ($useabstract && strlen($this->prefix) && substr($this->prefix, -1) == '_')
 			{
 				$keyName = str_replace($this->prefix, '#__', $keyName);
 			}
 
 			if ($isPrimary)
 			{
-				$line = 'CONSTRAINT [' . $this->getAbstract($currentKey->name) . '] ';
+				$line = 'CONSTRAINT [' . $keyName . '] ';
 				$line .= 'PRIMARY KEY ' . $currentKey->type_desc;
 			}
 			elseif ($isUnique)
 			{
-				$line = 'CONSTRAINT [' . $this->getAbstract($currentKey->name) . '] ';
+				$line = 'CONSTRAINT [' . $keyName . '] ';
 				$line .= 'UNIQUE ' . $currentKey->type_desc;
 			}
 			else
 			{
-				$line = 'CREATE ' . $currentKey->type_desc . ' INDEX [' . $this->getAbstract($currentKey->name) . '] ON [' . $table_abstract . ']';
+				//$line = 'CREATE ' . $currentKey->type_desc . ' INDEX [' . $this->getAbstract($currentKey->name) . '] ON [' . $table_abstract . ']';
+				if ($useabstract)
+				{
+					$line = 'CREATE INDEX [' . $keyName . '] ON [' . $table_abstract . ']';
+				}
+				else
+				{
+					$line = 'CREATE INDEX [' . $keyName . '] ON [' . $table_name . ']';
+				}
 			}
 			$line .= '(';
 
@@ -351,7 +385,7 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 			}
 			else
 			{
-				$indexes_sql[] = $line;
+				$indexes_sql[] = $line . ';';
 			}
 		}
 
@@ -364,7 +398,7 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 		$dbi->setQuery($query);
 		$foreignKeyInfo = $dbi->loadObjectList('name');
 
-		
+
 		$rawConstraints = array();
 
 		if (!empty($foreignKeyInfo)) foreach ($foreignKeyInfo as $oKey)
@@ -516,8 +550,12 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 		$table_sql .= ")";
 
 		$table_sql .= ";\n";
-		
+
 		$table_sql .= implode(";\n", $indexes_sql);
+		if (count($indexes_sql) >= 1)
+		{
+			$table_sql .= "\n";
+		}
 
 		return $table_sql;
 	}
@@ -529,10 +567,8 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 	 */
 	protected function reverse_engineer_views(&$dbi)
 	{
-		// @TODO - THIS IS NOT PORTED TO SQL SERVER YET!
-
 		$schema_name = $this->database;
-		$sql = 'SELECT * FROM `views` WHERE `table_schema` = ' . $dbi->quote($schema_name);
+		$sql = 'SELECT * FROM [INFORMATION_SCHEMA].[VIEWS] WHERE [table_catalog] = ' . $dbi->quote($schema_name);
 		$dbi->setQuery( $sql );
 		$all_views = $dbi->loadObjectList();
 
@@ -567,7 +603,7 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 			}
 			else
 			{
-				AEUtilLogger::WriteLog(_AE_LOG_INFO, __CLASS__." :: Backup table $table_name automatically skipped.");
+				AEUtilLogger::WriteLog(_AE_LOG_INFO, __CLASS__." :: Backup view $table_name automatically skipped.");
 				continue;
 			}
 		}
@@ -594,23 +630,26 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 			);
 
 			$dependencies = array();
-			$table_sql = 'CREATE OR REPLACE VIEW `' . $table_name . '` AS ' . $table_object->VIEW_DEFINITION;
+			$table_sql = $table_object->VIEW_DEFINITION;
 			$old_table_sql = $table_sql;
 			foreach($this->table_name_map as $ref_normal => $ref_abstract)
 			{
-				if( $pos = strpos($table_sql, "`$ref_normal`") )
+				if( $pos = strpos($table_sql, ".$ref_normal") )
 				{
 					// Add a reference hit
 					$this->dependencies[$ref_normal][] = $table_name;
 					// Add the dependency to this table's metadata
 					$dependencies[] = $ref_normal;
 					// Do the replacement
-					$table_sql = str_replace("`$ref_normal`", "`$ref_abstract`", $table_sql);
+					$table_sql = str_replace(".$ref_normal", ".$ref_abstract", $table_sql);
 				}
 			}
 
 			// On DB only backup we don't want any replacing to take place, do we?
-			if( !AEUtilScripting::getScriptingParameter('db.abstractnames',1) ) $table_sql = $old_table_sql;
+			if( !AEUtilScripting::getScriptingParameter('db.abstractnames',1) )
+			{
+				$table_sql = $old_table_sql;
+			}
 
 			// Replace newlines with spaces
 			$table_sql = str_replace( "\n", " ", $table_sql ) . ";\n";
@@ -682,5 +721,129 @@ class AEDumpReverseSqlsrv extends AEDumpNativeMysql
 		}
 
 		return $dropQuery;
+	}
+
+	/**
+	 * Post process a quoted value before it's written to the database dump.
+	 * So far it's only required for SQL Server which has a problem escaping
+	 * newline characters...
+	 *
+	 * @param   string  $value  The quoted value to post-process
+	 *
+	 * @return  string
+	 */
+	protected function postProcessQuotedValue($value)
+	{
+		$value = str_replace("\r\n", "' + CHAR(10) + CHAR(13) + N'", $value);
+		$value = str_replace("\r", "' + CHAR(13) + N'", $value);
+		$value = str_replace("\n", "' + CHAR(10) + N'", $value);
+
+		return $value;
+	}
+
+	/**
+	 * Returns a preamble for the data dump portion of the SQL backup. This is
+	 * used to output commands before the first INSERT INTO statement for a
+	 * table when outputting a plain SQL file.
+	 *
+	 * Practical use: the SET IDENTITY_INSERT sometable ON required for SQL Server
+	 *
+	 * @param   string   $tableAbstract  Abstract name of the table, e.g. #__foobar
+	 * @param   string   $tableName      Real name of the table, e.g. abc_foobar
+	 * @param   integer  $maxRange       Row count on this table
+	 *
+	 * @return  string   The SQL commands you want to be written in the dump file
+	 */
+	protected function getDataDumpPreamble($tableAbstract, $tableName, $maxRange)
+	{
+		if ($maxRange > 0)
+		{
+			// Do we have an identity column?
+			$db = $this->getDB();
+			$query = $db->getQuery(true)
+				->select('COUNT(*)')
+				->from('sys.identity_columns')
+				->where("object_id = OBJECT_ID(" . $db->q($tableName) . ")");
+			$db->setQuery($query);
+			$idColumns = $db->loadResult();
+
+			if ($idColumns < 1)
+			{
+				return '';
+			}
+
+			return "SET IDENTITY_INSERT [$tableName] ON;\n";
+		}
+
+		return '';
+	}
+
+	/**
+	 * Returns an epilogue for the data dump portion of the SQL backup. This is
+	 * used to output commands after the last INSERT INTO statement for a
+	 * table when outputting a plain SQL file.
+	 *
+	 * Practical use: the SET IDENTITY_INSERT sometable OFF required for SQL Server
+	 *
+	 * @param   string   $tableAbstract  Abstract name of the table, e.g. #__foobar
+	 * @param   string   $tableName      Real name of the table, e.g. abc_foobar
+	 * @param   integer  $maxRange       Row count on this table
+	 *
+	 * @return  string   The SQL commands you want to be written in the dump file
+	 */
+	protected function getDataDumpEpilogue($tableAbstract, $tableName, $maxRange)
+	{
+		if ($maxRange > 0)
+		{
+			// Do we have an identity column?
+			$db = $this->getDB();
+			$query = $db->getQuery(true)
+				->select('COUNT(*)')
+				->from('sys.identity_columns')
+				->where("object_id = OBJECT_ID(" . $db->q($tableName) . ")");
+			$db->setQuery($query);
+			$idColumns = $db->loadResult();
+
+			if ($idColumns < 1)
+			{
+				return '';
+			}
+
+			return "SET IDENTITY_INSERT [$tableName] OFF;\n";
+		}
+
+		return '';
+	}
+
+	/**
+	 * Return a list of field names for the INSERT INTO statements. This is only
+	 * required for Microsoft SQL Server because without it the SET IDENTITY_INSERT
+	 * has no effect.
+	 *
+	 * @param   array    $fieldNames   A list of field names in array format
+	 * @param   integer  $numOfFields  The number of fields we should be dumping
+	 *
+	 * @return  string
+	 */
+	protected function getFieldListSQL($fieldNames, $numOfFields)
+	{
+		if (count($fieldNames) < $numOfFields)
+		{
+			return '';
+		}
+		elseif (count($fieldNames) > $numOfFields)
+		{
+			$fieldNames = array_slice($fieldNames, 0, $numOfFields);
+		}
+
+		$db = $this->getDB();
+
+		$temp = array();
+		foreach ($fieldNames as $f)
+		{
+			$temp[] = $db->quoteName($f);
+		}
+
+		return '(' . implode(', ', $temp) . ')';
 	}
 }

@@ -30,7 +30,7 @@ class AEFilterPlatformSiteroot extends AEAbstractFilter
 
 		// We take advantage of the filter class magic to inject our custom filters
 		$configuration = AEFactory::getConfiguration();
-		
+
 		if($configuration->get('akeeba.platform.override_root',0)) {
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');
 		} else {

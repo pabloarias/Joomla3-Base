@@ -23,15 +23,17 @@ class AEFilterPlatformFolders extends AEAbstractFilter
 		$this->method	= 'direct';
 		$this->filter_name = 'PlatformFolders';
 
+		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+
 		// Get the site's root
 		$configuration = AEFactory::getConfiguration();
-		
+
 		if($configuration->get('akeeba.platform.override_root',0)) {
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');
 		} else {
 			$root = '[SITEROOT]';
 		}
-		
+
 		// We take advantage of the filter class magic to inject our custom filters
 		$this->filter_data[$root] = array (
 			'awstats',

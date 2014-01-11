@@ -23,17 +23,20 @@ class AEFilterPlatformSystemcachefiles extends AEAbstractFilter
 		$this->method	= 'regex';
 
 		if(empty($this->filter_name)) $this->filter_name = strtolower(basename(__FILE__,'.php'));
+
+		if(AEFactory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+
 		parent::__construct();
-		
+
 		// Get the site's root
 		$configuration = AEFactory::getConfiguration();
-		
+
 		if($configuration->get('akeeba.platform.override_root',0)) {
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');
 		} else {
 			$root = '[SITEROOT]';
 		}
-		
+
 		$this->filter_data[$root] = array(
 			'#/Thumbs.db$#',
 			'#^Thumbs.db$#',

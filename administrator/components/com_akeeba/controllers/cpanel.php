@@ -84,7 +84,7 @@ class AkeebaControllerCpanel extends FOFController
 		if(!is_numeric($newProfile) || ($newProfile <= 0))
 		{
 			$this->setRedirect(JURI::base().'index.php?option=com_akeeba', JText::_('PANEL_PROFILE_SWITCH_ERROR'), 'error' );
-			return;
+			return true;
 		}
 
 		$session = JFactory::getSession();
