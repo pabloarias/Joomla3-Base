@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<extension version="3.1" client="administrator" type="language" method="upgrade">
+<extension version="3.2" client="administrator" type="language" method="upgrade">
     <name>Spanish (ES)</name>
     <tag>es-ES</tag>
-    <version>3.1.5.1</version>
-    <creationDate>2013-8-1</creationDate>
+    <version>3.2.1.1</version>
+    <creationDate>2013-12-18</creationDate>
     <author>Spanish Translation Team: Comunidad Joomla</author>
     <authorEmail>info@comunidadjoomla.org</authorEmail>
     <authorUrl>www.comunidadjoomla.org</authorUrl>
     <copyright>Copyright (C) 2005 - 2013 Open Source Matters and comunidadjoomla.org. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <description>Spanish language pack for Joomla! 3.1.5 - Administrator</description>
+    <description>Spanish language pack for Joomla! 3.2.1 - Administrator</description>
 	<files>
 		<filename>index.html</filename>
-       		<filename>es-ES.com_admin.ini</filename>
+		<filename>es-ES.com_admin.ini</filename>
 		<filename>es-ES.com_admin.sys.ini</filename>
 		<filename>es-ES.com_banners.ini</filename>
 		<filename>es-ES.com_banners.sys.ini</filename>
+		<filename>es-ES.com_ajax.ini</filename>
+		<filename>es-ES.com_ajax.sys.ini</filename>
 		<filename>es-ES.com_cache.ini</filename>
 		<filename>es-ES.com_cache.sys.ini</filename>
 		<filename>es-ES.com_categories.ini</filename>
@@ -28,6 +30,8 @@
 		<filename>es-ES.com_contact.sys.ini</filename>
 		<filename>es-ES.com_content.ini</filename>
 		<filename>es-ES.com_content.sys.ini</filename>
+		<filename>es-ES.com_contenthistory.ini</filename>
+		<filename>es-ES.com_contenthistory.sys.ini</filename>
 		<filename>es-ES.com_cpanel.ini</filename>
 		<filename>es-ES.com_cpanel.sys.ini</filename>
 		<filename>es-ES.com_finder.ini</filename>
@@ -53,6 +57,8 @@
 		<filename>es-ES.com_newsfeeds.sys.ini</filename>
 		<filename>es-ES.com_plugins.ini</filename>
 		<filename>es-ES.com_plugins.sys.ini</filename>
+		<filename>es-ES.com_postinstall.ini</filename>
+		<filename>es-ES.com_postinstall.sys.ini</filename>
 		<filename>es-ES.com_redirect.ini</filename>
 		<filename>es-ES.com_redirect.sys.ini</filename>
 		<filename>es-ES.com_search.ini</filename>
@@ -67,8 +73,8 @@
 		<filename>es-ES.com_weblinks.sys.ini</filename>
 		<filename>es-ES.com_wrapper.ini</filename>
 		<filename>es-ES.com_wrapper.sys.ini</filename>
-		<filename>es-ES.lib_joomla.ini</filename>
 		<filename>es-ES.ini</filename>
+		<filename>es-ES.lib_joomla.ini</filename>
 		<filename>es-ES.localise.php</filename>
 		<filename>es-ES.mod_custom.ini</filename>
 		<filename>es-ES.mod_custom.sys.ini</filename>
@@ -82,8 +88,8 @@
 		<filename>es-ES.mod_login.sys.ini</filename>
 		<filename>es-ES.mod_menu.ini</filename>
 		<filename>es-ES.mod_menu.sys.ini</filename>
-       		<filename>es-ES.mod_multilangstatus.ini</filename>
-       		<filename>es-ES.mod_multilangstatus.sys.ini</filename>
+		<filename>es-ES.mod_multilangstatus.ini</filename>
+		<filename>es-ES.mod_multilangstatus.sys.ini</filename>
 		<filename>es-ES.mod_popular.ini</filename>
 		<filename>es-ES.mod_popular.sys.ini</filename>
 		<filename>es-ES.mod_quickicon.ini</filename>
@@ -100,18 +106,22 @@
 		<filename>es-ES.mod_toolbar.sys.ini</filename>
 		<filename>es-ES.mod_version.ini</filename>
 		<filename>es-ES.mod_version.sys.ini</filename>
+		<filename>es-ES.plg_authentication_cookie.ini</filename>
+		<filename>es-ES.plg_authentication_cookie.sys.ini</filename>
 		<filename>es-ES.plg_authentication_gmail.ini</filename>
 		<filename>es-ES.plg_authentication_gmail.sys.ini</filename>
 		<filename>es-ES.plg_authentication_joomla.ini</filename>
 		<filename>es-ES.plg_authentication_joomla.sys.ini</filename>
 		<filename>es-ES.plg_authentication_ldap.ini</filename>
 		<filename>es-ES.plg_authentication_ldap.sys.ini</filename>
-       		<filename>es-ES.plg_captcha_recaptcha.ini</filename>
-       		<filename>es-ES.plg_captcha_recaptcha.sys.ini</filename>
+		<filename>es-ES.plg_captcha_recaptcha.ini</filename>
+		<filename>es-ES.plg_captcha_recaptcha.sys.ini</filename>
 		<filename>es-ES.plg_content_emailcloak.ini</filename>
 		<filename>es-ES.plg_content_emailcloak.sys.ini</filename>
 		<filename>es-ES.plg_content_finder.ini</filename>
 		<filename>es-ES.plg_content_finder.sys.ini</filename>
+		<filename>es-ES.plg_content_geshi.ini</filename>
+		<filename>es-ES.plg_content_geshi.sys.ini</filename>
 		<filename>es-ES.plg_content_joomla.ini</filename>
 		<filename>es-ES.plg_content_joomla.sys.ini</filename>
 		<filename>es-ES.plg_content_loadmodule.ini</filename>
@@ -150,10 +160,12 @@
 		<filename>es-ES.plg_finder_tags.sys.ini</filename>
 		<filename>es-ES.plg_finder_weblinks.ini</filename>
 		<filename>es-ES.plg_finder_weblinks.sys.ini</filename>
-       		<filename>es-ES.plg_quickicon_extensionupdate.ini</filename>
-       		<filename>es-ES.plg_quickicon_extensionupdate.sys.ini</filename>
-       		<filename>es-ES.plg_quickicon_joomlaupdate.ini</filename>
-       		<filename>es-ES.plg_quickicon_joomlaupdate.sys.ini</filename>
+		<filename>es-ES.plg_installer_webinstaller.ini</filename>
+		<filename>es-ES.plg_installer_webinstaller.sys.ini</filename>
+		<filename>es-ES.plg_quickicon_extensionupdate.ini</filename>
+		<filename>es-ES.plg_quickicon_extensionupdate.sys.ini</filename>
+		<filename>es-ES.plg_quickicon_joomlaupdate.ini</filename>
+		<filename>es-ES.plg_quickicon_joomlaupdate.sys.ini</filename>
 		<filename>es-ES.plg_search_categories.ini</filename>
 		<filename>es-ES.plg_search_categories.sys.ini</filename>
 		<filename>es-ES.plg_search_contacts.ini</filename>
@@ -170,8 +182,8 @@
 		<filename>es-ES.plg_system_debug.sys.ini</filename>
 		<filename>es-ES.plg_system_highlight.ini</filename>
 		<filename>es-ES.plg_system_highlight.sys.ini</filename>
-       		<filename>es-ES.plg_system_languagecode.ini</filename>
-       		<filename>es-ES.plg_system_languagecode.sys.ini</filename>
+		<filename>es-ES.plg_system_languagecode.ini</filename>
+		<filename>es-ES.plg_system_languagecode.sys.ini</filename>
 		<filename>es-ES.plg_system_languagefilter.ini</filename>
 		<filename>es-ES.plg_system_languagefilter.sys.ini</filename>
 		<filename>es-ES.plg_system_log.ini</filename>
@@ -186,6 +198,10 @@
 		<filename>es-ES.plg_system_remember.sys.ini</filename>
 		<filename>es-ES.plg_system_sef.ini</filename>
 		<filename>es-ES.plg_system_sef.sys.ini</filename>
+		<filename>es-ES.plg_twofactorauth_totp.ini</filename>
+		<filename>es-ES.plg_twofactorauth_totp.sys.ini</filename>
+		<filename>es-ES.plg_twofactorauth_yubikey.ini</filename>
+		<filename>es-ES.plg_twofactorauth_yubikey.sys.ini</filename>
 		<filename>es-ES.plg_user_contactcreator.ini</filename>
 		<filename>es-ES.plg_user_contactcreator.sys.ini</filename>
 		<filename>es-ES.plg_user_joomla.ini</filename>
@@ -194,8 +210,8 @@
 		<filename>es-ES.plg_user_profile.sys.ini</filename>
 		<filename>es-ES.tpl_hathor.ini</filename>
 		<filename>es-ES.tpl_hathor.sys.ini</filename>
-		<filename>es-ES.tpl_isis.sys.ini</filename>
 		<filename>es-ES.tpl_isis.ini</filename>
+		<filename>es-ES.tpl_isis.sys.ini</filename>
 		<filename file="meta">install.xml</filename>
 		<filename file="meta">es-ES.xml</filename>
 	</files>

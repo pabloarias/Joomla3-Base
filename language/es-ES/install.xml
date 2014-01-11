@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<extension version="3.1" client="site" type="language" method="upgrade">
+<extension version="3.2" client="site" type="language" method="upgrade">
     <name>Spanish (ES)</name>
     <tag>es-ES</tag>
-    <version>3.1.5.1</version>
-    <creationDate>2013-8-1</creationDate>
+    <version>3.2.1.1</version>
+    <creationDate>2013-12-18</creationDate>
     <author>Spanish Translation Team: Comunidad Joomla</author>
     <authorEmail>info@comunidadjoomla.org</authorEmail>
     <authorUrl>www.comunidadjoomla.org</authorUrl>
     <copyright>Copyright (C) 2005 - 2013 Open Source Matters and comunidadjoomla.org. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <description>Spanish language pack for Joomla! 3.1.5 - Site</description>
+    <description>Spanish language pack for Joomla! 3.2.1 - Site</description>
     	<files>
-                <filename>index.html</filename>
-                <filename>es-ES.com_contact.ini</filename>
+		<filename>index.html</filename>
+		<filename>es-ES.com_ajax.ini</filename>
+		<filename>es-ES.com_config.ini</filename>
+		<filename>es-ES.com_contact.ini</filename>
 		<filename>es-ES.com_content.ini</filename>
-                <filename>es-ES.com_finder.ini</filename>
+		<filename>es-ES.com_finder.ini</filename>
 		<filename>es-ES.com_mailto.ini</filename>
 		<filename>es-ES.com_media.ini</filename>
 		<filename>es-ES.com_messages.ini</filename>
@@ -25,14 +27,15 @@
 		<filename>es-ES.com_weblinks.ini</filename>
 		<filename>es-ES.com_wrapper.ini</filename>
 		<filename>es-ES.files_joomla.sys.ini</filename>
-                <filename>es-ES.finder_cli.ini</filename>
-                <filename>es-ES.lib_idna_convert.sys.ini</filename>
+		<filename>es-ES.finder_cli.ini</filename>
+		<filename>es-ES.ini</filename>
+		<filename>es-ES.lib_fof.sys.ini</filename>
+		<filename>es-ES.lib_idna_convert.sys.ini</filename>
 		<filename>es-ES.lib_joomla.ini</filename>
 		<filename>es-ES.lib_joomla.sys.ini</filename>
 		<filename>es-ES.lib_phpmailer.sys.ini</filename>
 		<filename>es-ES.lib_phputf8.sys.ini</filename>
 		<filename>es-ES.lib_simplepie.sys.ini</filename>
-		<filename>es-ES.ini</filename>
 		<filename>es-ES.localise.php</filename>
 		<filename>es-ES.mod_articles_archive.ini</filename>
 		<filename>es-ES.mod_articles_archive.sys.ini</filename>
@@ -54,8 +57,8 @@
 		<filename>es-ES.mod_custom.sys.ini</filename>
 		<filename>es-ES.mod_feed.ini</filename>
 		<filename>es-ES.mod_feed.sys.ini</filename>
-                <filename>es-ES.mod_finder.ini</filename>
-                <filename>es-ES.mod_finder.sys.ini</filename>
+		<filename>es-ES.mod_finder.ini</filename>
+		<filename>es-ES.mod_finder.sys.ini</filename>
 		<filename>es-ES.mod_footer.ini</filename>
 		<filename>es-ES.mod_footer.sys.ini</filename>
 		<filename>es-ES.mod_languages.ini</filename>
@@ -74,10 +77,10 @@
 		<filename>es-ES.mod_stats.sys.ini</filename>
 		<filename>es-ES.mod_syndicate.ini</filename>
 		<filename>es-ES.mod_syndicate.sys.ini</filename>
-                <filename>es-ES.mod_tags_popular.ini</filename>
-                <filename>es-ES.mod_tags_popular.sys.ini</filename>
-                <filename>es-ES.mod_tags_similar.ini</filename>
-                <filename>es-ES.mod_tags_similar.sys.ini</filename>
+		<filename>es-ES.mod_tags_popular.ini</filename>
+		<filename>es-ES.mod_tags_popular.sys.ini</filename>
+		<filename>es-ES.mod_tags_similar.ini</filename>
+		<filename>es-ES.mod_tags_similar.sys.ini</filename>
 		<filename>es-ES.mod_users_latest.ini</filename>
 		<filename>es-ES.mod_users_latest.sys.ini</filename>
 		<filename>es-ES.mod_weblinks.ini</filename>
@@ -91,6 +94,6 @@
 		<filename>es-ES.tpl_protostar.ini</filename>
 		<filename>es-ES.tpl_protostar.sys.ini</filename>
 		<filename file="meta">install.xml</filename>
-                <filename file="meta">es-ES.xml</filename>
+		<filename file="meta">es-ES.xml</filename>
 	</files>
 </extension>
