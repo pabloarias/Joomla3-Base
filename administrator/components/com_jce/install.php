@@ -694,7 +694,9 @@ abstract class WFInstall {
             // remove build.xml files
             $site . '/editor/extensions/filesystem/build.xml',
             $site . '/editor/extensions/links/build.xml',
-            $site . '/editor/extensions/popups/build.xml'
+            $site . '/editor/extensions/popups/build.xml',
+            // remove legend.css
+            $admin . '/media/css/legend.css'
         );
 
         foreach ($files as $file) {
@@ -865,6 +867,8 @@ abstract class WFInstall {
 
     private static function getProfiles() {
         $db = JFactory::getDBO();
+        
+        $query = $db->getQuery();
 
         if (is_object($query)) {
             $query->select('id')->from('#__wf_profiles');
@@ -982,9 +986,13 @@ abstract class WFInstall {
                         JFile::move($installer->getPath('extension_root') . '/' . basename($manifest), $installer->getPath('extension_root') . '/jce.xml');
                     }
                 }
-
+                
                 // add index files
-                self::addIndexfiles(array($installer->getPath('extension_root')));
+                if ($folder == 'editor' && !defined('JPATH_PLATFORM')) {
+                    self::addIndexfiles(array($installer->getPath('extension_root') . '/jce'));
+                } else {
+                    self::addIndexfiles(array($installer->getPath('extension_root')));
+                }
             } else {
                 $result .= '<li class="error">' . JText::_($installer->message, $installer->message) . '</li>';
             }

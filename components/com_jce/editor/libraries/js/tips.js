@@ -1,4 +1,4 @@
-/* JCE Editor - 2.3.3.2 | 13 July 2013 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2013 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* JCE Editor - 2.3.4.4 | 12 December 2013 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2013 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 (function($){$.support.canvas=false;var isMobile={Android:function(){return navigator.userAgent.match(/Android/i);},BlackBerry:function(){return navigator.userAgent.match(/BlackBerry/i);},iOS:function(){return navigator.userAgent.match(/iPhone|iPad|iPod/i);},Opera:function(){return navigator.userAgent.match(/Opera Mini/i);},Windows:function(){return navigator.userAgent.match(/IEMobile/i);},any:function(){return(isMobile.Android()||isMobile.BlackBerry()||isMobile.iOS()||isMobile.Opera()||isMobile.Windows());}};$.widget("ui.tips",{options:{speed:150,position:'top center',opacity:0.9,className:'',offsets:{'x':16,'y':16},width:200,fixed:true,parent:'body',trigger:'hover',show:$.noop,hide:$.noop,disabled:':disabled, .disabled'},_init:function(options){var self=this;$.extend(this.options,options);if($(this.element).hasClass('wf-tooltip-cancel-ondrag')){this._cancelOnDrag();}
 $(this.element).click(function(e){if(self.options.trigger=='click'&&$(this).is(self.options.disabled)){return;}
 if(this.nodeName=='A'||$('a',this).length||$(this).hasClass('wf-tooltip-cancel-ondrag')){return;}
@@ -28,4 +28,4 @@ context.fill();context.stroke();context.closePath();},_locate:function(e){this._
 switch(position){case'top center':pos.x=(page.x-Math.round((tip.x/2)))+o.x;pos.y=(page.y-tip.y)-o.y;break;case'bottom center':pos.x=(page.x-(tip.x/2))+o.x;pos.y=page.y+o.y;break;}
 if(pos.x<0){pos.x=5;}
 if(pos.x>parseFloat($(window).width())){pos.x=parseFloat($(window).width())-(tip.x/2+5);}
-$tips.css({top:pos.y,left:pos.x});},destroy:function(){$.Widget.prototype.destroy.apply(this,arguments);}});$.extend($.ui.tips,{version:"2.3.3.2"});})(jQuery);
+$tips.css({top:pos.y,left:pos.x});},destroy:function(){$.Widget.prototype.destroy.apply(this,arguments);}});$.extend($.ui.tips,{version:"2.3.4.4"});})(jQuery);

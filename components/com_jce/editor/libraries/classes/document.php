@@ -300,8 +300,15 @@ class WFDocument extends JObject {
      */
     private function urlToPath($url) {
         jimport('joomla.filesystem.path');
-        $bool = strpos($url, JURI::root()) === false;
-        return WFUtility::makePath(JPATH_SITE, JPath::clean(ltrim($url, JURI::root($bool))));
+
+        $root = JURI::root(true);
+        
+        // remove root from url
+        if (!empty($root)) {            
+            $url = substr($url, strlen($root));
+        }
+        
+        return WFUtility::makePath(JPATH_SITE, JPath::clean($url));
     }
 
     /**
@@ -456,7 +463,7 @@ class WFDocument extends JObject {
 
     public function getQueryString($query = array()) {
         // get version
-        $version = $this->get('version', '000000');
+        //$version = $this->get('version', '000000');
         // get layout
         $layout = JRequest::getWord('layout');
 
@@ -486,10 +493,10 @@ class WFDocument extends JObject {
         // set token
         $query[$token] = 1;
 
-        if (preg_match('/\d+/', $version)) {
+        /*if (preg_match('/\d+/', $version)) {
             // set version
             $query['v'] = preg_replace('#[^a-z0-9]#i', '', $version);
-        }
+        }*/
 
         $output = array();
 
@@ -504,6 +511,7 @@ class WFDocument extends JObject {
      * Render document head data
      */
     private function getHead() {
+        // create version / etag hash
         $version = $this->get('version', '000000');
         // set title		
         $output = '<title>' . $this->getTitle() . '</title>' . "\n";
@@ -517,9 +525,10 @@ class WFDocument extends JObject {
             foreach ($this->_styles as $src => $type) {
                 
                 $stamp = '';
-                
-                if (strpos($src, '://') === false) {
-                    $stamp = strpos($src, '?') === false ? '?v=' . $version : '&v=' . $version;
+                // only add stamp to static stylesheets
+                if (strpos($src, '://') === false && strpos($src, 'index.php?option=com_jce') === false) {
+                    $version = md5(basename($src) . $version);
+                    $stamp = strpos($src, '?') === false ? '?' . $version : '&' . $version;
                 }
                 
                 $output .= "\t\t<link href=\"" . $src . $stamp . "\" rel=\"stylesheet\" type=\"" . $type . "\" />\n";
@@ -533,9 +542,10 @@ class WFDocument extends JObject {
         } else {
             foreach ($this->_scripts as $src => $type) {
                 $stamp = '';
-                
-                if (strpos($src, '://') === false) {
-                    $stamp = strpos($src, '?') === false ? '?v=' . $version : '&v=' . $version;
+                // only add stamp to static scripts
+                if (strpos($src, '://') === false && strpos($src, 'index.php?option=com_jce') === false) {
+                    $version = md5(basename($src) . $version);
+                    $stamp = strpos($src, '?') === false ? '?' . $version : '&' . $version;
                 }
                 
                 $output .= "\t\t<script data-cfasync=\"false\" type=\"" . $type . "\" src=\"" . $src . $stamp . "\"></script>\n";
@@ -622,8 +632,11 @@ class WFDocument extends JObject {
                     $data = '';
 
                     foreach ($this->getScripts() as $src => $type) {                        
-                        $src .= preg_match('/\.js$/', $src) ? '' : '.js';
-                        $files[] = $this->urlToPath($src);
+                        if (strpos($src, '://') === false && strpos($src, 'index.php') === false) {
+                            $src .= preg_match('/\.js$/', $src) ? '' : '.js';
+                            
+                            $files[] = $this->urlToPath($src);
+                        }
                     }
 
                     // parse ini language files
@@ -644,9 +657,11 @@ class WFDocument extends JObject {
                     break;
                 case 'css':
                     foreach ($this->getStyleSheets() as $style => $type) {
-                        $style .= preg_match('/\.css$/', $style) ? '' : '.css';
-
-                        $files[] = $this->urlToPath($style);
+                        if (strpos($style, '://') === false && strpos($style, 'index.php') === false) {
+                            $style .= preg_match('/\.css$/', $style) ? '' : '.css';
+                            
+                            $files[] = $this->urlToPath($style);
+                        }
                     }
 
                     break;
