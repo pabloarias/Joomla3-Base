@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: index.php 9769 2013-04-26 17:40:14Z kevin $
+* @version   $Id: index.php 15529 2013-11-13 22:04:39Z kevin $
  * @author RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -23,18 +23,19 @@ $gpreset = str_replace(' ','',strtolower($gantry->get('name')));
 <html xml:lang="<?php echo $gantry->language; ?>" lang="<?php echo $gantry->language;?>" >
 <head>
 	<?php if ($gantry->get('layout-mode') == '960fixed') : ?>
-	<meta name="viewport" content="width=960px">
+	<meta name="viewport" content="width=960px, initial-scale=1, minimum-scale=1, maximum-scale=1">
 	<?php elseif ($gantry->get('layout-mode') == '1200fixed') : ?>
-	<meta name="viewport" content="width=1200px">
+	<meta name="viewport" content="width=1200px, initial-scale=1, minimum-scale=1, maximum-scale=1">
 	<?php else : ?>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<?php endif; ?>
+<?php if ($gantry->browser->name == 'ie') : ?>
+	<meta content="IE=edge" http-equiv="X-UA-Compatible" />
+<?php endif; ?>	
     <?php
         $gantry->displayHead();
-
 		$gantry->addStyle('grid-responsive.css', 5);
 		$gantry->addLess('bootstrap.less', 'bootstrap.css', 6);
-
         if ($gantry->browser->name == 'ie'){
         	if ($gantry->browser->shortversion == 9){
         		$gantry->addInlineScript("if (typeof RokMediaQueries !== 'undefined') window.addEvent('domready', function(){ RokMediaQueries._fireEvent(RokMediaQueries.getQuery()); });");

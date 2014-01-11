@@ -8,9 +8,15 @@
 body {
 	padding-left: 0;
 	padding-right: 0;
-
-	#rt-page-surround {
-		overflow: visible;
+	overflow: visible;
+	min-width: 960px !important;
+	
+	// Responsive Classes
+	.visible-large, .hidden-desktop {
+		display: none !important;
+	}
+	.hidden-large, .visible-desktop {
+		display: inherit !important;
 	}
 
 	/* Grid Layout */
@@ -164,4 +170,8 @@ body .rt-container [class*="rt-grid"] {
 
 .rt-menu-mobile {
 	display: none !important;
+}
+
+.gf-menu-device-container.responsive-type-panel ~ ul.gf-menu {
+	display: inherit !important;
 }

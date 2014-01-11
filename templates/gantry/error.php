@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: error.php 9775 2013-04-26 18:11:22Z kevin $
+* @version   $Id: error.php 15753 2013-11-18 18:49:43Z btowles $
 * @author    RocketTheme http://www.rockettheme.com
 * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
 * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -14,13 +14,17 @@ if (!isset($this->error)) {
 	$this->debug = false;
 }
 
+$doc = JFactory::getDocument();
+if ($doc->_type === 'raw'){
+	$output = "{$this->error->getCode()} {$this->error->getMessage()}";
+	return;
+}
+$doc->setTitle($this->error->getCode() . ' - '.$this->title);
+
 // load and inititialize gantry class
 global $gantry;
 require_once(dirname(__FILE__) . '/lib/gantry/gantry.php');
 $gantry->init();
-
-$doc = JFactory::getDocument();
-$doc->setTitle($this->error->getCode() . ' - '.$this->title);
 
 $gantry->addStyle('grid-responsive.css', 5);
 $gantry->addLess('bootstrap.less', 'bootstrap.css', 6);
@@ -34,6 +38,8 @@ if ($gantry->browser->name == 'ie') {
 	}
 }
 $gantry->addScript('rokmediaqueries.js');
+
+
 
 ob_start();
 ?>
@@ -54,16 +60,16 @@ ob_start();
 					<div class="rt-error-content">
 						<h1 class="error-title title">Error: <span><?php echo $this->error->getCode(); ?></span> - <?php echo $this->error->getMessage(); ?></h1>
 						<div class="error-content">
-						<p><strong>You may not be able to visit this page because of:</strong></p>
-						<ol>
-							<li>an out-of-date bookmark/favourite</li>
-							<li>a search engine that has an out-of-date listing for this site</li>
-							<li>a mistyped address</li>
-							<li>you have no access to this page</li>
-							<li>The requested resource was not found.</li>
-							<li>An error has occurred while processing your request.</li>
-						</ol>
-						<p><a href="<?php echo $gantry->baseUrl; ?>" class="readon"><span>&larr; Home</span></a></p>
+							<p><strong><?php echo JText::_('JERROR_LAYOUT_NOT_ABLE_TO_VISIT'); ?></strong></p>
+								<ol>
+									<li><?php echo JText::_('JERROR_LAYOUT_AN_OUT_OF_DATE_BOOKMARK_FAVOURITE'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_SEARCH_ENGINE_OUT_OF_DATE_LISTING'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_MIS_TYPED_ADDRESS'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_YOU_HAVE_NO_ACCESS_TO_THIS_PAGE'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_REQUESTED_RESOURCE_WAS_NOT_FOUND'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_ERROR_HAS_OCCURRED_WHILE_PROCESSING_YOUR_REQUEST'); ?></li>
+								</ol>
+							<p><a href="<?php echo $gantry->baseUrl; ?>" class="readon" title="<?php echo JText::_('JERROR_LAYOUT_GO_TO_THE_HOME_PAGE'); ?>"><span>&larr; <?php echo JText::_('JERROR_LAYOUT_HOME_PAGE'); ?></span></a></p>
 					</div>
 				</div>
 			</div>

@@ -1,5 +1,5 @@
 /**
-* @version   $Id: joomla-core.less 9229 2013-04-09 15:22:00Z kat $
+* @version   $Id: joomla-core.less 15538 2013-11-13 23:21:30Z kevin $
 * @author    RocketTheme http://www.rockettheme.com
 * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
 * @license   http://www.rockettheme.com/legal/license.php RocketTheme Proprietary Use License
@@ -564,13 +564,6 @@
 
 // Member Access
 .component-content {
-	#password-lbl, #username-lbl {
-		width: 130px;
-		display: block;
-		float: left;
-		font-size: 1.2em;
-		line-height: 2em;
-	}
 	.login {
 		.control-label {
 			padding-top: 0;
@@ -1268,4 +1261,40 @@ input[type="radio"], input[type="checkbox"] {
 // Icon Overrides
 .icon-file-add:before, .icon-cancel:before, .icon-eye:before, .icon-location:before {
 	font-family: 'IcoMoon' !important;
+}
+
+// Third Party Overrides
+body {
+	#k2Container table {
+		tr, th, td {
+			background: none !important;
+			border: 0 !important;
+		}
+		td.key {
+			padding-right: 15px;
+		}
+		input[type="file"] {
+			margin: 5px 0;
+		}
+	}
+	.k2AccountPage table tr td label {
+		display: inline;
+	}
+	.k2AccountPage div.k2AccountPageUpdate {
+		border: none;
+	}	
+	#k2Container {
+		input.inputbox, select, input[type="file"] {
+			border: 1px solid #D9D9D9;
+			background: #ffffff;
+			box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+		}	
+		input#genderf, input#genderm {
+			float: none;
+			margin: 0 5px 5px 0;
+		}
+		.defaultSkin table.mceLayout {
+			border: 1px solid rgba(0,0,0,0.1);
+		}	
+	}	
 }

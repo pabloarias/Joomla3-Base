@@ -25,6 +25,7 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
         parent::__construct($args);
 
 		global $gantry;
+
         $theme_rel_path = "/html/mod_roknavmenu/themes/gantry-dropdown";
         $this->theme_path = $gantry->templatePath . $theme_rel_path;
         $this->args['theme_path'] = $this->theme_path;
@@ -41,8 +42,12 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
 		if (!self::$jsLoaded && $gantry->get('layout-mode', 'responsive') == 'responsive'){
             if (!($gantry->browser->name == 'ie' && $gantry->browser->shortver < 9)){
                 $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/rokmediaqueries.js');
-                $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive.js');
-                if ($this->args['responsive-menu'] == 'selectbox') $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive-selectbox.js');
+                if ($this->args['responsive-menu'] == 'selectbox') {
+                    $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive.js');
+                    $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive-selectbox.js');
+                } else if (file_exists($gantry->basePath . '/modules/mod_roknavmenu/themes/default/js/sidemenu.js') && ($this->args['responsive-menu'] == 'panel')) {
+                    $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/sidemenu.js');
+                }
             }
 			self::$jsLoaded = true;
         }
@@ -217,7 +222,7 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
                                                 <div class="module-title">
                                                     <h2 class="title"><?php echo $module->title; ?></h2>
                                                 </div>
-                                            <?php endif; ?>                                            
+                                            <?php endif; ?>
                                             <div class="module-content">
                                                 <?php echo ($child); ?>
                                             </div>
@@ -241,7 +246,7 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
                                         <div class="module-title">
                                             <h2 class="title"><?php echo $module->title; ?></h2>
                                         </div>
-                                    <?php endif; ?>                                       
+                                    <?php endif; ?>
                                     <div class="module-content">
                                         <?php echo ($child); ?>
                                     </div>
@@ -358,7 +363,7 @@ class GantryDropdownLayout extends AbstractRokMenuLayout
     public function renderMenu(&$menu) {
         ob_start();
 ?>
-<div class="gf-menu-device-container"></div>
+<div class="gf-menu-device-container responsive-type-<?php echo $this->args['responsive-menu'];?>"></div>
 <ul class="gf-menu l1 " <?php if (array_key_exists('tag_id',$this->args)): ?>id="<?php echo $this->args['tag_id'];?>"<?php endif;?>>
     <?php foreach ($menu->getChildren() as $item) : ?>
         <?php $this->renderItem($item, $menu); ?>

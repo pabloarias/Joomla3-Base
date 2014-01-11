@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: styledeclaration.php 10003 2013-05-02 15:11:18Z kevin $
+* @version   $Id: styledeclaration.php 15522 2013-11-13 21:47:07Z kevin $
  * @author		RocketTheme http://www.rockettheme.com
  * @copyright 	Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -82,6 +82,8 @@ class GantryFeatureStyleDeclaration extends GantryFeature {
 		{
 			$source = JURI::root(true).'/'.$source;
 		}
+
+        $source = str_replace(' ', '%20', $source);
 
 		$output = "";
 		$output .= "#rt-logo {background: url(".$source.") 50% 0 no-repeat !important;}"."\n";

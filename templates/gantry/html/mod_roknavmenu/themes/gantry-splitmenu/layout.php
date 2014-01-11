@@ -1,6 +1,6 @@
 <?php
 /**
-* @version   $Id: layout.php 9775 2013-04-26 18:11:22Z kevin $
+* @version   $Id: layout.php 15522 2013-11-13 21:47:07Z kevin $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -46,8 +46,12 @@ class GantrySplitmenuLayout extends AbstractRokMenuLayout
 		if (!self::$jsLoaded && $gantry->get('layout-mode', 'responsive') == 'responsive'){
             if (!($gantry->browser->name == 'ie' && $gantry->browser->shortver < 9)){
                 $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/rokmediaqueries.js');
+                if ($this->args['responsive-menu'] == 'selectbox') {
                 $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive.js');
-                if ($this->args['responsive-menu'] == 'selectbox') $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive-selectbox.js');
+                    $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/responsive-selectbox.js');
+                } else if (file_exists($gantry->basePath . '/modules/mod_roknavmenu/themes/default/js/sidemenu.js') && ($this->args['responsive-menu'] == 'panel')) {
+                    $gantry->addScript($gantry->baseUrl . 'modules/mod_roknavmenu/themes/default/js/sidemenu.js');
+                }
             }
 			self::$jsLoaded = true;
 		}

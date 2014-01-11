@@ -304,8 +304,8 @@
 
         <field name="layout-mode" type="selectbox" default="responsive" label="LAYOUT_MODE" description="LAYOUT_MODE_DESC" setbyurl="true" setinsession="true" setbysession="true" setincookie="true" setbycookie="true" isbodyclass="true">
             <option value="responsive">RESPONSIVE</option>
-            <option value="1200fixed">1200FIXED</option>
-            <option value="960fixed">960FIXED</option>
+            <option value="1200fixed">L1200FIXED</option>
+            <option value="960fixed">L960FIXED</option>
         </field>
 
         <field name="loadtransition" type="toggle" default="0" label="LOAD_TRANSITION" description="LOAD_TRANSITION_DESC"/>
