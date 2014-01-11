@@ -61,6 +61,14 @@ class PlgSystemDebug extends JPlugin
 	private $explains = array();
 
 	/**
+	 * Holds total amount of executed queries
+	 *
+	 * @var    int
+	 * @since  3.2
+	 */
+	private $totalQueries = 0;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   object  &$subject  The object to observe
@@ -873,6 +881,8 @@ class PlgSystemDebug extends JPlugin
 					$htmlTiming .= ' ' . JText::sprintf('PLG_DEBUG_QUERY_AFTER_LAST', sprintf('<span class="label">%.2f&nbsp;ms</span>', $timing[$id]['1']));
 				}
 
+				$htmlTiming .= '</span>';
+
 				if (isset($callStacks[$id][0]['memory']))
 				{
 					$memoryUsed = $callStacks[$id][0]['memory'][1] - $callStacks[$id][0]['memory'][0];
@@ -1044,7 +1054,7 @@ class PlgSystemDebug extends JPlugin
 
 		$html = array();
 
-		$html[] = '<h4>' . JText::sprintf('PLG_DEBUG_QUERIES_LOGGED', $db->getCount())
+		$html[] = '<h4>' . JText::sprintf('PLG_DEBUG_QUERIES_LOGGED', $this->totalQueries)
 			. sprintf(' <span class="label ' . $labelClass . '">%.1f&nbsp;ms</span>', ($totalQueryTime)) . '</h4><br />';
 
 		if ($total_duplicates)
@@ -1292,6 +1302,8 @@ class PlgSystemDebug extends JPlugin
 	public function mysqlDisconnectHandler(&$db)
 	{
 		$db->setDebug(false);
+
+		$this->totalQueries = $db->getCount();
 
 		$dbVersion5037 = (strncmp($db->name, 'mysql', 5) == 0) && version_compare($db->getVersion(), '5.0.37', '>=');
 

@@ -14,7 +14,7 @@ class JConfig {
 	public $dbtype = 'mysqli';
 	public $host = 'localhost';
 	public $user = 'root';
-	public $password = '';
+	public $password = 'bleras';
 	public $db = 'joomla3-base';
 	public $dbprefix = 'nj65v_';
 	public $live_site = '';
@@ -53,8 +53,8 @@ class JConfig {
 	public $sef_suffix = '0';
 	public $unicodeslugs = '0';
 	public $feed_limit = '10';
-	public $log_path = 'C:\\xampp\\htdocs\\Joomla3-Base/logs';
-	public $tmp_path = 'C:\\xampp\\htdocs\\Joomla3-Base/tmp';
+	public $log_path = '/home/pablo/public_html/Joomla3-Base/logs';
+	public $tmp_path = '/home/pablo/public_html/Joomla3-Base/tmp';
 	public $lifetime = '480';
 	public $session_handler = 'database';
 	public $MetaRights = '';

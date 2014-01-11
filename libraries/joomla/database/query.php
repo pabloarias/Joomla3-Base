@@ -138,8 +138,8 @@ class JDatabaseQueryElement
  * @since       11.1
  *
  * @method      string  q()   q($text, $escape = true)  Alias for quote method
- * @method      string  qn()  qs($name, $as = null)     Alias for quoteName method
- * @method      string  e()   e($text, $extra = false)   Alias for escape method
+ * @method      string  qn()  qn($name, $as = null)     Alias for quoteName method
+ * @method      string  e()   e($text, $extra = false)  Alias for escape method
  * @property-read   JDatabaseQueryElement  $type
  * @property-read   JDatabaseQueryElement  $select
  * @property-read   JDatabaseQueryElement  $group
@@ -554,7 +554,7 @@ abstract class JDatabaseQuery
 	 *
 	 * @return  string  The required char length call.
 	 *
-	 * @since 11.1
+	 * @since   11.1
 	 */
 	public function charLength($field, $operator = null, $condition = null)
 	{

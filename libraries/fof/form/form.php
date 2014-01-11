@@ -1,15 +1,23 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage form
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
+/**
+ * FOFForm is an extension to JForm which support not only edit views but also
+ * browse (record list) and read (single record display) views based on XML
+ * forms.
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.0
+ */
 class FOFForm extends JForm
 {
-
 	/**
 	 * The model attached to this view
 	 *
@@ -27,12 +35,12 @@ class FOFForm extends JForm
 	/**
 	 * Method to get an instance of a form.
 	 *
-	 * @param   string  $name     The name of the form.
-	 * @param   string  $data     The name of an XML file or string to load as the form definition.
-	 * @param   array   $options  An array of form options.
-	 * @param   string  $replace  Flag to toggle whether form fields should be replaced if a field
-	 *                            already exists with the same group/name.
-	 * @param   string  $xpath    An optional xpath to search for the fields.
+	 * @param   string  	$name		The name of the form.
+	 * @param   string  	$data		The name of an XML file or string to load as the form definition.
+	 * @param   array   	$options	An array of form options.
+	 * @param   bool  		$replace	Flag to toggle whether form fields should be replaced if a field
+	 *                      	      	already exists with the same group/name.
+	 * @param   bool|string $xpath		An optional xpath to search for the fields.
 	 *
 	 * @return  object  FOFForm instance.
 	 *
@@ -70,7 +78,7 @@ class FOFForm extends JForm
 			{
 				if ($forms[$name]->loadFile($data, $replace, $xpath) == false)
 				{
-					throw new RuntimeException('FOFForm::getInstance could not load file');
+					throw new RuntimeException('FOFForm::getInstance could not load file ' . $data . '.xml');
 				}
 			}
 		}
@@ -91,6 +99,7 @@ class FOFForm extends JForm
 	public function getAttribute($attribute, $default = null)
 	{
 		$value = $this->xml->attributes()->$attribute;
+
 		if (is_null($value))
 		{
 			return $default;
@@ -104,6 +113,8 @@ class FOFForm extends JForm
 	/**
 	 * Loads the CSS files defined in the form, based on its cssfiles attribute
 	 *
+	 * @return  void
+	 *
 	 * @since 2.0
 	 */
 	public function loadCSSFiles()
@@ -114,6 +125,7 @@ class FOFForm extends JForm
 		if (!empty($cssfiles))
 		{
 			$cssfiles = explode(',', $cssfiles);
+
 			foreach ($cssfiles as $cssfile)
 			{
 				FOFTemplateUtils::addCSS(trim($cssfile));
@@ -126,6 +138,7 @@ class FOFForm extends JForm
 		if (!empty($lessfiles))
 		{
 			$lessfiles = explode(',', $lessfiles);
+
 			foreach ($lessfiles as $def)
 			{
 				$parts = explode('||', $def, 2);
@@ -139,6 +152,8 @@ class FOFForm extends JForm
 	/**
 	 * Loads the Javascript files defined in the form, based on its jsfiles attribute
 	 *
+	 * @return  void
+	 *
 	 * @since 2.0
 	 */
 	public function loadJSFiles()
@@ -151,6 +166,7 @@ class FOFForm extends JForm
 		}
 
 		$jsfiles = explode(',', $jsfiles);
+
 		foreach ($jsfiles as $jsfile)
 		{
 			FOFTemplateUtils::addJS(trim($jsfile));
@@ -173,7 +189,9 @@ class FOFForm extends JForm
 	/**
 	 * Attaches a FOFModel to this form
 	 *
-	 * @param   FOFModel  $model  The model to attach to the form
+	 * @param   FOFModel  &$model  The model to attach to the form
+	 *
+	 * @return  void
 	 */
 	public function setModel(FOFModel &$model)
 	{
@@ -193,7 +211,9 @@ class FOFForm extends JForm
 	/**
 	 * Attaches a FOFView to this form
 	 *
-	 * @param   FOFView  $view  The view to attach to the form
+	 * @param   FOFView  &$view  The view to attach to the form
+	 *
+	 * @return  void
 	 */
 	public function setView(FOFView &$view)
 	{
@@ -224,12 +244,14 @@ class FOFForm extends JForm
 		$elements = $this->findHeadersByGroup();
 
 		// If no field elements were found return empty.
+
 		if (empty($elements))
 		{
 			return $fields;
 		}
 
 		// Build the result array from the found field elements.
+
 		foreach ($elements as $element)
 		{
 			// Get the field groups for the element.
@@ -274,27 +296,26 @@ class FOFForm extends JForm
 		// Get only fields in a specific group?
 		if ($group)
 		{
-
 			// Get the fields elements for a given group.
 			$elements = &$this->findHeader($group);
 
 			// Get all of the field elements for the fields elements.
 			foreach ($elements as $element)
 			{
-
 				// If there are field elements add them to the return result.
 				if ($tmp = $element->xpath('descendant::header'))
 				{
-
 					// If we also want fields in nested groups then just merge the arrays.
 					if ($nested)
 					{
 						$fields = array_merge($fields, $tmp);
 					}
+
 					// If we want to exclude nested groups then we need to check each field.
 					else
 					{
 						$groupNames = explode('.', $group);
+
 						foreach ($tmp as $field)
 						{
 							// Get the names of the groups that the field is in.
@@ -380,7 +401,6 @@ class FOFForm extends JForm
 		// Let's get the appropriate field element based on the method arguments.
 		if ($group)
 		{
-
 			// Get the fields elements for a given group.
 			$elements = &$this->findGroup($group);
 
@@ -402,6 +422,7 @@ class FOFForm extends JForm
 
 			// Use the first correct match in the given group.
 			$groupNames = explode('.', $group);
+
 			foreach ($fields as &$field)
 			{
 				// Get the group names as strings for ancestor fields elements.
@@ -435,6 +456,7 @@ class FOFForm extends JForm
 				{
 					continue;
 				}
+
 				// Found it!
 				else
 				{
@@ -594,5 +616,4 @@ class FOFForm extends JForm
 	{
 		return FOFFormHelper::addRulePath($new);
 	}
-
 }

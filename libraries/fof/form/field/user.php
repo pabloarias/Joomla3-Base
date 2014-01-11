@@ -1,11 +1,12 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage form
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 if (!class_exists('JFormFieldUser'))
 {
@@ -21,10 +22,15 @@ if (!class_exists('JFormFieldUser'))
  */
 class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 {
-
 	protected $static;
 
 	protected $repeatable;
+	
+	/** @var   FOFTable  The item being rendered in a repeatable form field */
+	public $item;
+	
+	/** @var int A monotonically increasing number, denoting the row number in a repeatable view */
+	public $rowid;
 
 	/**
 	 * Method to get certain otherwise inaccessible properties from the form field object.
@@ -84,18 +90,22 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 		{
 			$class = ' class="' . (string) $this->element['class'] . '"';
 		}
+
 		if ($this->element['show_username'] == 'false')
 		{
 			$show_username = false;
 		}
+
 		if ($this->element['show_email'] == 'true')
 		{
 			$show_email = true;
 		}
+
 		if ($this->element['show_name'] == 'true')
 		{
 			$show_name = true;
 		}
+
 		if ($this->element['show_id'] == 'true')
 		{
 			$show_id = true;
@@ -111,18 +121,22 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 		{
 			$html .= '<span class="fof-userfield-username">' . $user->username . '</span>';
 		}
+
 		if ($show_id)
 		{
 			$html .= '<span class="fof-userfield-id">' . $user->id . '</span>';
 		}
+
 		if ($show_name)
 		{
 			$html .= '<span class="fof-userfield-name">' . $user->name . '</span>';
 		}
+
 		if ($show_email)
 		{
 			$html .= '<span class="fof-userfield-email">' . $user->email . '</span>';
 		}
+
 		$html .= '</div>';
 
 		return $html;
@@ -158,47 +172,54 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 		{
 			$class = ' class="' . (string) $this->element['class'] . '"';
 		}
+
 		if ($this->element['show_username'] == 'false')
 		{
 			$show_username = false;
 		}
+
 		if ($this->element['show_email'] == 'false')
 		{
 			$show_email = false;
 		}
+
 		if ($this->element['show_name'] == 'false')
 		{
 			$show_name = false;
 		}
+
 		if ($this->element['show_id'] == 'false')
 		{
 			$show_id = false;
 		}
+
 		if ($this->element['show_avatar'] == 'false')
 		{
 			$show_avatar = false;
 		}
+
 		if ($this->element['avatar_method'])
 		{
 			$avatar_method = strtolower($this->element['avatar_method']);
 		}
+
 		if ($this->element['avatar_size'])
 		{
 			$avatar_size = $this->element['avatar_size'];
 		}
+
 		if ($this->element['show_link'] == 'true')
 		{
 			$show_link = true;
 		}
+
 		if ($this->element['link_url'])
 		{
 			$link_url = $this->element['link_url'];
 		}
 		else
 		{
-			list($isCli, $isAdmin) = FOFDispatcher::isCliAdmin();
-
-			if ($isAdmin)
+			if (FOFPlatform::getInstance()->isBackend())
 			{
 				// If no link is defined in the back-end, assume the user edit
 				// link in the User Manager component
@@ -211,6 +232,7 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 				$show_link = false;
 			}
 		}
+
 		// Post-process the link URL
 		if ($show_link)
 		{
@@ -235,9 +257,8 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 			if ($avatar_method == 'plugin')
 			{
 				// Use the user plugins to get an avatar
-				JPluginHelper::importPlugin('user');
-				$dispatcher = JDispatcher::getInstance();
-				$jResponse  = $dispatcher->trigger('onUserAvatar', array($user, $avatar_size));
+				FOFPlatform::getInstance()->importPlugin('user');
+				$jResponse = FOFPlatform::getInstance()->runPlugins('onUserAvatar', array($user, $avatar_size));
 
 				if (!empty($jResponse))
 				{
@@ -259,9 +280,8 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 			{
 				// Fall back to the Gravatar method
 				$md5 = md5($user->email);
-				list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
 
-				if ($isCLI)
+				if (FOFPlatform::getInstance()->isCli())
 				{
 					$scheme = 'http';
 				}
@@ -272,12 +292,12 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 
 				if ($scheme == 'http')
 				{
-					$url = 'http://www.gravatar.com/avatar/' . $md5 . '.jpg?s='
+					$avatar_url = 'http://www.gravatar.com/avatar/' . $md5 . '.jpg?s='
 						. $avatar_size . '&d=mm';
 				}
 				else
 				{
-					$url = 'https://secure.gravatar.com/avatar/' . $md5 . '.jpg?s='
+					$avatar_url = 'https://secure.gravatar.com/avatar/' . $md5 . '.jpg?s='
 						. $avatar_size . '&d=mm';
 				}
 			}
@@ -329,5 +349,4 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 
 		return $html;
 	}
-
 }

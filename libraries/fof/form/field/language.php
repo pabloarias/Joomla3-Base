@@ -1,11 +1,12 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage form
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 if (!class_exists('JFormFieldLanguage'))
 {
@@ -21,10 +22,15 @@ if (!class_exists('JFormFieldLanguage'))
  */
 class FOFFormFieldLanguage extends JFormFieldLanguage implements FOFFormField
 {
-
 	protected $static;
 
 	protected $repeatable;
+	
+	/** @var   FOFTable  The item being rendered in a repeatable form field */
+	public $item;
+	
+	/** @var int A monotonically increasing number, denoting the row number in a repeatable view */
+	public $rowid;
 
 	/**
 	 * Method to get certain otherwise inaccessible properties from the form field object.
@@ -116,5 +122,4 @@ class FOFFormFieldLanguage extends JFormFieldLanguage implements FOFFormField
 			htmlspecialchars(FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
-
 }

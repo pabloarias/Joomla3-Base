@@ -1,19 +1,22 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage form
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 /**
  * An interface for FOFFormHeader fields, used to define the filters and the
  * elements of the header row in repeatable (browse) views
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 abstract class FOFFormHeader
 {
-
 	/**
 	 * The description text for the form field.  Usually used in tooltips.
 	 *
@@ -338,9 +341,11 @@ abstract class FOFFormHeader
 		$id = '';
 
 		// If the field is in a group add the group control to the field id.
+
 		if ($this->group)
 		{
 			// If we already have an id segment add the group control as another level.
+
 			if ($id)
 			{
 				$id .= '_' . str_replace('.', '_', $this->group);
@@ -352,6 +357,7 @@ abstract class FOFFormHeader
 		}
 
 		// If we already have an id segment add the field id/name as another level.
+
 		if ($id)
 		{
 			$id .= '_' . ($fieldId ? $fieldId : $fieldName);
@@ -381,10 +387,12 @@ abstract class FOFFormHeader
 		$name = '';
 
 		// If the field is in a group add the group control to the field name.
+
 		if ($this->group)
 		{
 			// If we already have a name segment add the group control as another level.
 			$groups = explode('.', $this->group);
+
 			if ($name)
 			{
 				foreach ($groups as $group)
@@ -395,6 +403,7 @@ abstract class FOFFormHeader
 			else
 			{
 				$name .= array_shift($groups);
+
 				foreach ($groups as $group)
 				{
 					$name .= '[' . $group . ']';
@@ -403,6 +412,7 @@ abstract class FOFFormHeader
 		}
 
 		// If we already have a name segment add the field name as another level.
+
 		if ($name)
 		{
 			$name .= '[' . $fieldName . ']';
@@ -438,8 +448,6 @@ abstract class FOFFormHeader
 	 */
 	protected function getLabel()
 	{
-		$title = '';
-
 		// Get the label text from the XML element, defaulting to the element name.
 		$title = $this->element['label'] ? (string) $this->element['label'] : '';
 
@@ -464,6 +472,8 @@ abstract class FOFFormHeader
 
 	/**
 	 * Get the filter value for this header field
+	 *
+	 * @return  mixed  The filter value
 	 */
 	protected function getValue()
 	{
@@ -472,6 +482,14 @@ abstract class FOFFormHeader
 		return $model->getState($this->filterSource);
 	}
 
+	/**
+	 * Return the key of the filter value in the model state or, if it's not set,
+	 * the name of the field.
+	 *
+	 * @param   string  $filterSource  The filter source value to return
+	 *
+	 * @return  string
+	 */
 	protected function getFilterSource($filterSource)
 	{
 		if ($filterSource)
@@ -484,15 +502,22 @@ abstract class FOFFormHeader
 		}
 	}
 
+	/**
+	 * Is this a sortable field?
+	 *
+	 * @return  boolean  True if it's sortable
+	 */
 	protected function getSortable()
 	{
 		$sortable = ($this->element['sortable'] != 'false');
+
 		if ($sortable)
 		{
 			if (empty($this->header))
 			{
 				$this->header = $this->getHeader();
 			}
+
 			$sortable = !empty($this->header);
 		}
 
@@ -543,11 +568,12 @@ abstract class FOFFormHeader
 	 * Returns the JHtml options for a drop-down filter. Do not include an
 	 * empty option, it is added automatically.
 	 *
+	 * @return  array  The JHtml options for a drop-down filter
+	 *
 	 * @since 2.0
 	 */
 	protected function getOptions()
 	{
 		return array();
 	}
-
 }

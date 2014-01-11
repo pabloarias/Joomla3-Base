@@ -1,17 +1,26 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage form
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 JLoader::import('joomla.form.helper');
 
+/**
+ * FOFForm's helper class.
+ * Provides a storage for filesystem's paths where FOFForm's entities reside and
+ * methods for creating those entities. Also stores objects with entities'
+ * prototypes for further reusing.
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.0
+ */
 class FOFFormHelper extends JFormHelper
 {
-
 	/**
 	 * Method to load a form field object given a type.
 	 *
@@ -69,10 +78,12 @@ class FOFFormHelper extends JFormHelper
 		}
 
 		$class = self::loadClass($entity, $type);
+
 		if ($class !== false)
 		{
 			// Instantiate a new type object.
 			$types[$key] = new $class;
+
 			return $types[$key];
 		}
 		else
@@ -154,7 +165,6 @@ class FOFFormHelper extends JFormHelper
 		// If the type is complex, add the base type to the paths.
 		if ($pos = strpos($type, '_'))
 		{
-
 			// Add the complex type prefix to the paths.
 			for ($i = 0, $n = count($paths); $i < $n; $i++)
 			{
@@ -167,17 +177,20 @@ class FOFFormHelper extends JFormHelper
 					$paths[] = $path;
 				}
 			}
+
 			// Break off the end of the complex type.
 			$type = substr($type, $pos + 1);
 		}
 
 		// Try to find the class file.
 		$type = strtolower($type) . '.php';
+
 		foreach ($paths as $path)
 		{
 			if ($file = JPath::find($path, $type))
 			{
 				require_once $file;
+
 				if (class_exists($class))
 				{
 					break;
@@ -215,5 +228,4 @@ class FOFFormHelper extends JFormHelper
 	{
 		return self::addPath('header', $new);
 	}
-
 }

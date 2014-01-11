@@ -10,8 +10,12 @@ defined('FOF_INCLUDED') or die();
 
 /**
  * The main class autoloader for FOF itself
+ *
+ * @package     FrameworkOnFramework
+ * @subpackage  autoloader
+ * @since       2.1
  */
-class FOFAutloaderFof
+class FOFAutoloaderFof
 {
 	/**
 	 * An instance of this autoloader
@@ -30,13 +34,13 @@ class FOFAutloaderFof
 	/**
 	 * Initialise this autoloader
 	 *
-	 * @return  FOFAutloaderFof
+	 * @return  FOFAutoloaderFof
 	 */
 	public static function init()
 	{
-		if (self::$autoloader == NULL)
+		if (self::$autoloader == null)
 		{
-			self::$autoloader = new self();
+			self::$autoloader = new self;
 		}
 
 		return self::$autoloader;
@@ -44,8 +48,6 @@ class FOFAutloaderFof
 
 	/**
 	 * Public constructor. Registers the autoloader with PHP.
-	 *
-	 * @return  void
 	 */
 	public function __construct()
 	{
@@ -64,46 +66,51 @@ class FOFAutloaderFof
 	public function autoload_fof_core($class_name)
 	{
 		// Make sure the class has a FOF prefix
-        if (substr($class_name, 0, 3) != 'FOF')
+		if (substr($class_name, 0, 3) != 'FOF')
 		{
-            return;
+			return;
 		}
 
 		// Remove the prefix
-        $class = substr($class_name, 3);
+		$class = substr($class_name, 3);
 
 		// Change from camel cased (e.g. ViewHtml) into a lowercase array (e.g. 'view','html')
-        $class = preg_replace('/(\s)+/', '_', $class);
-        $class = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class));
-        $class = explode('_', $class);
+		$class = preg_replace('/(\s)+/', '_', $class);
+		$class = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class));
+		$class = explode('_', $class);
 
-        // First try finding in structured directory format (preferred)
-        $path = self::$fofPath . '/' . implode('/', $class) . '.php';
-        if (@file_exists($path))
-        {
-            include_once $path;
-        }
+		// First try finding in structured directory format (preferred)
+		$path = self::$fofPath . '/' . implode('/', $class) . '.php';
 
-        // Then try the duplicate last name structured directory format (not recommended)
-        if (!class_exists($class_name, false))
-        {
+		if (@file_exists($path))
+		{
+			include_once $path;
+		}
+
+		// Then try the duplicate last name structured directory format (not recommended)
+
+		if (!class_exists($class_name, false))
+		{
 			reset($class);
-            $lastPart = end($class);
-            $path = self::$fofPath . '/' . implode('/', $class) . '/' . $lastPart . '.php';
-            if (@file_exists($path))
-            {
-                include_once $path;
-            }
-        }
+			$lastPart = end($class);
+			$path = self::$fofPath . '/' . implode('/', $class) . '/' . $lastPart . '.php';
 
-        // If it still fails, try looking in the legacy folder (used for backwards compatibility)
-        if (!class_exists($class_name, false))
-        {
-            $path = self::$fofPath . '/legacy/' . implode('/', $class) . '.php';
-            if (@file_exists($path))
-            {
-                include_once $path;
-            }
-        }
+			if (@file_exists($path))
+			{
+				include_once $path;
+			}
+		}
+
+		// If it still fails, try looking in the legacy folder (used for backwards compatibility)
+
+		if (!class_exists($class_name, false))
+		{
+			$path = self::$fofPath . '/legacy/' . implode('/', $class) . '.php';
+
+			if (@file_exists($path))
+			{
+				include_once $path;
+			}
+		}
 	}
 }

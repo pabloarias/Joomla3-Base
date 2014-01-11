@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 if (!defined('FOF_INCLUDED'))
 {
-    define('FOF_INCLUDED', 'rev40A6B41-1366646702');
+    define('FOF_INCLUDED', '2.1.1');
 
 	// Register a debug log
 	if (defined('JDEBUG') && JDEBUG)
@@ -22,5 +22,5 @@ if (!defined('FOF_INCLUDED'))
 
 	// Register the FOF autoloader
     require_once __DIR__ . '/autoloader/fof.php';
-	FOFAutloaderFof::init();
+	FOFAutoloaderFof::init();
 }

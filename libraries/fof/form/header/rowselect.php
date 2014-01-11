@@ -1,11 +1,12 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage form
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 /**
  * Row selection checkbox
@@ -15,7 +16,6 @@ defined('_JEXEC') or die();
  */
 class FOFFormHeaderRowselect extends FOFFormHeader
 {
-
 	/**
 	 * Get the header
 	 *
@@ -27,5 +27,4 @@ class FOFFormHeaderRowselect extends FOFFormHeader
 			. JText::_('JGLOBAL_CHECK_ALL')
 			. '" onclick="Joomla.checkAll(this)" />';
 	}
-
 }

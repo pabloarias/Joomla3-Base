@@ -1,10 +1,11 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage encrypt
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 /**
  * FOFEncryptBase32
@@ -20,7 +21,6 @@ class FOFEncryptBase32
 	 * The character set as defined by RFC3548
 	 * @link http://www.ietf.org/rfc/rfc3548.txt
 	 */
-
 	const CSRFC3548 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
 	/**
@@ -53,9 +53,14 @@ class FOFEncryptBase32
 	private function bin2str($str)
 	{
 		if (strlen($str) % 8 > 0)
+		{
 			throw new Exception('Length must be divisible by 8');
+		}
+
 		if (!preg_match('/^[01]+$/', $str))
+		{
 			throw new Exception('Only 0\'s and 1\'s are permitted');
+		}
 
 		preg_match_all('/.{8}/', $str, $chrs);
 		$chrs = array_map('bindec', $chrs[0]);
@@ -80,9 +85,14 @@ class FOFEncryptBase32
 	private function fromBin($str)
 	{
 		if (strlen($str) % 8 > 0)
+		{
 			throw new Exception('Length must be divisible by 8');
+		}
+
 		if (!preg_match('/^[01]+$/', $str))
+		{
 			throw new Exception('Only 0\'s and 1\'s are permitted');
+		}
 
 		// Base32 works on the first 5 bits of a byte, so we insert blanks to pad it out
 		$str = preg_replace('/(.{5})/', '000$1', $str);
@@ -113,6 +123,8 @@ class FOFEncryptBase32
 	 * @param   string  $str  The base32 string to convert
 	 *
 	 * @return  string  Ascii binary string
+	 *
+	 * @throws  Exception
 	 */
 	private function toBin($str)
 	{
@@ -130,8 +142,11 @@ class FOFEncryptBase32
 		// Unpad if nessicary
 		$length = strlen($str);
 		$rbits = $length & 7;
+
 		if ($rbits > 0)
+		{
 			$str = substr($str, 0, $length - $rbits);
+		}
 
 		return $str;
 	}
@@ -176,7 +191,7 @@ class FOFEncryptBase32
 	 *
 	 * @param   string  $str  The string of 0's and 1's you want to convert
 	 *
-	 * @return  char  Resulting base32 character
+	 * @return  string  Resulting base32 character
 	 *
 	 * @access private
 	 */
@@ -194,9 +209,9 @@ class FOFEncryptBase32
 	 * Used with array_map to map the characters from a base32
 	 * character set directly into a binary string
 	 *
-	 * @param   char  $chr  The caracter to map
+	 * @param   string  $chr  The caracter to map
 	 *
-	 * @return  str  String of 0's and 1's
+	 * @return  string  String of 0's and 1's
 	 *
 	 * @access private
 	 */

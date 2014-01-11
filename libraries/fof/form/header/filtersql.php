@@ -1,11 +1,12 @@
 <?php
 /**
  * @package    FrameworkOnFramework
+ * @subpackage form
  * @copyright  Copyright (C) 2010 - 2012 Akeeba Ltd. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 /**
  * Generic filter, drop-down based on SQL query
@@ -15,7 +16,6 @@ defined('_JEXEC') or die();
  */
 class FOFFormHeaderFiltersql extends FOFFormHeaderFieldsql
 {
-
 	/**
 	 * Get the header
 	 *
@@ -25,5 +25,4 @@ class FOFFormHeaderFiltersql extends FOFFormHeaderFieldsql
 	{
 		return '';
 	}
-
 }

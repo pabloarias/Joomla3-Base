@@ -121,7 +121,7 @@ class JFormFieldTag extends JFormFieldList
 			->join('LEFT', $db->quoteName('#__tags') . ' AS b ON a.lft > b.lft AND a.rgt < b.rgt');
 
 		// Ajax tag only loads assigned values
-		if (!$this->isNested())
+		if (!$this->isNested() && !empty($this->value))
 		{
 			// Only item assigned values
 			$values = (array) $this->value;
@@ -161,6 +161,19 @@ class JFormFieldTag extends JFormFieldList
 		catch (RuntimeException $e)
 		{
 			return false;
+		}
+
+		// Block the possibility to set a tag as it own parent
+		if ($this->form->getName() == 'com_tags.tag')
+		{
+			$id   = (int) $this->form->getValue('id', 0);
+			foreach ($options as $option)
+			{
+				if ($option->value == $id)
+				{
+					$option->disable = true;
+				}
+			}
 		}
 
 		// Merge any additional options in the XML definition.
