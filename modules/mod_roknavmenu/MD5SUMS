@@ -5,7 +5,7 @@ f33f9454c71f32c0911755c3847620b6 fields/break.php
 8cbec2c50545adb9161038cd0a93230b fields/moduleposition.php
 8aa91cb1192068d5efdab35ee2b89eaa fields/modules.php
 dc33c26fef52ca53f643d574ac2a6da1 fields/moduletypejs.php
-2ae570eaa5c7433ec2b4f3b79bb10a42 fields/themelist.php
+fc1fbd17743efd24d48788d076894964 fields/themelist.php
 964289f7878b3aec19941a9aab2d1c8a fields/themeoptions.php
 8a3edb0428f11a404535d9134c90063f index.html
 ee57d1f1763934ddacfeeb576233b80f install.script.php
@@ -57,7 +57,7 @@ a482bf2ea8e9e0d07e058a53a6cf82b5 lib/providers/includes.php
 38935db4fbe757d5b83439e0c7105ba2 lib/renderers/includes.php
 8a3edb0428f11a404535d9134c90063f lib/renderers/index.html
 d312dfa949c422aba4c9e2010ab3ec89 mod_roknavmenu.php
-6f2b5c8075bfef01ee18513d65ada95f mod_roknavmenu.xml
+b36b160a3a63b90a86ea00248e8dddc1 mod_roknavmenu.xml
 5803410e38932f5ff143f42467016ba8 themes/catalog.php
 f118251cf5c96a01056ad8714b8280f4 themes/default/formatter.php
 8a3edb0428f11a404535d9134c90063f themes/default/index.html
@@ -65,6 +65,7 @@ f118251cf5c96a01056ad8714b8280f4 themes/default/formatter.php
 52d64ebaa4f1d5df331342ecaa801c54 themes/default/js/responsive-selectbox.js
 a92d185f928bbb0131e8d513446e3dcc themes/default/js/responsive.js
 1c156bfd4c86b1e6217ac5fabad17019 themes/default/js/rokmediaqueries.js
+f8e8e4122f220092400149e025336b1a themes/default/js/sidemenu.js
 e51ae8d6b15cc1a20b7534d8ebbf3330 themes/default/layout.php
 4c9afc2eaccac77433289e7d4f81744d themes/default/theme.php
 66a15d1b590d52e3e99d17149fda8e1a themes/fusion/css/fusion-ie6.css
@@ -83,7 +84,7 @@ e51ae8d6b15cc1a20b7534d8ebbf3330 themes/default/layout.php
 b402562d11ee33ae10ae81744b20b511 themes/fusion/images/top-dark.png
 6299b32b2b413ad976ac72f52cedffbf themes/fusion/images/top-light.png
 8a3edb0428f11a404535d9134c90063f themes/fusion/index.html
-3c856edab509aba2318b1e53dc3d1aaa themes/fusion/js/fusion.js
+09c085954925ba21a7ddb0c290210198 themes/fusion/js/fusion.js
 8a3edb0428f11a404535d9134c90063f themes/fusion/js/index.html
 9d36561e22698c4a0d2679e6257958b9 themes/fusion/js/sfhover-ie.js
 23cbfec362772c8774e073d9c5994f3c themes/fusion/js/sfhover.js
