@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: font.php 15532 2013-11-13 22:20:30Z kevin $
+ * @version   $Id: font.php 20344 2014-04-09 19:07:40Z kevin $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2014 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -89,7 +89,6 @@ class GantryFeatureFont extends GantryFeature
 				if ($this->_isStandardFont($name)) break;
 				if ($this->_searchForGoogleFont($name)) $this->_addGoogleFont($name, $variant);
 		}
-
 	}
 
 	function _isStandardFont($name)
@@ -110,10 +109,10 @@ class GantryFeatureFont extends GantryFeature
 
 		$variant = $variant ? $variant : '';
 
-		$gantry->addStyle('//fonts.googleapis.com/css?family=' . str_replace(" ", "+", $name) . "&subset=latin,latin-ext" .$variant);
+		$protocol = JUri::getInstance()->isSSL() ? 'https' : 'http';
+		$gantry->addStyle("{$protocol}://fonts.googleapis.com/css?family=" . str_replace(" ", "+", $name) . $variant . "&amp;subset=latin,latin-ext");
 		$gantry->addInlineStyle("h1, h2 { font-family: '" . $name . "', 'Helvetica', arial, serif; }");
 	}
-
 
 	function _searchForGoogleFont($name)
 	{

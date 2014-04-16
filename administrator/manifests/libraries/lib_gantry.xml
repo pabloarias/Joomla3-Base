@@ -2,14 +2,14 @@
 <extension method="upgrade" type="library" version="1.6">
 	<name>Gantry</name>
 	<libraryname>gantry</libraryname>
-	<description>Gantry Starting Template for Joomla! v4.1.20</description>
-    <creationDate>December 5, 2013</creationDate>
+	<description>Gantry Starting Template for Joomla! v4.1.24</description>
+    <creationDate>April 12, 2014</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <copyright>(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.</copyright>
+    <copyright>(C) 2005 - 2014 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-    <version>4.1.20</version>
+    <version>4.1.24</version>
 	<files folder=".">
         <folder>admin</folder>
         <folder>assets</folder>

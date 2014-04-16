@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2014 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 var RokSlider=new Class({Implements:[Events,Options],options:{onTick:function(a){if(this.options.snap){a=this.toPosition(this.step);}if(isNaN(a)){a=this.options.offset;

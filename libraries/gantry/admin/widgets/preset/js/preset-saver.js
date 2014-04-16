@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2014 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 Gantry.PresetsSaver={init:function(){var a=document.id("toolbar-save-preset");Gantry.PresetsSaver.bounds={show:Gantry.PresetsSaver.build.bind(Gantry.PresetsSaver)};
@@ -38,5 +38,5 @@ Gantry.PresetsSaver.savePreset.setStyle("display","none");a.inject(Gantry.Preset
 i.setStyle("display","block");Gantry.PresetsSaver.savePreset.setStyle("display","");a.dispose();});}},center:function(d){var c=window.getSize();var a=d.getSize();
 var b={left:(c.x/2)+window.getScroll().x-a.x/2,top:(c.y/2)+window.getScroll().y-a.y/2};d.setStyles(b);},getPresets:function(c){var b=new Hash(Presets);
 var e=1,d=0;var a={};b.each(function(g,f){if(!Gantry.PresetsSaver.wrapper.getElement(".valid-preset-"+f)){return;}var h=b.get(f);a[f]={};a[f][c[d][1].value]={};
-a[f][c[d][1].value].name=c[d][0].value;e=1;h.each(function(i,j){i=new Hash(i);if(e>1){return;}else{i.each(function(n,m){var l=m.replace(/-/,"_"),k=m.replace(/_/,"-");
+a[f][c[d][1].value].name=c[d][0].value;e=1;h.each(function(i,j){i=new Hash(i);if(e>1){return;}else{i.each(function(n,m){var l=m.replace(/-/g,"_"),k=m.replace(/_/g,"-");
 if(document.id(GantryParamsPrefix+l)){a[f][c[d][1].value][k]=document.id(GantryParamsPrefix+l).get("value")||"";}});}e++;});d++;});return a;}};window.addEvent("domready",Gantry.PresetsSaver.init);

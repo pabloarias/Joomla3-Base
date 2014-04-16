@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2014 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 (function(a){a.JSortableList=function(n,k,i,h,o,f){var j=this;var l="";var g="";var c;var m;var e;if(i!="desc"){i="asc";}var d=a.extend({orderingIcon:"add-on",orderingWrapper:"input-prepend",orderingGroup:"sortable-group-id",sortableClassName:"dndlist-sortable",placeHolderClassName:"dnd-list-highlight dndlist-place-holder",sortableHandle:".sortable-handler"},o);

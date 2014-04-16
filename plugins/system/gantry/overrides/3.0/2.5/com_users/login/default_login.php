@@ -2,13 +2,15 @@
 /**
  * @package		Joomla.Site
  * @subpackage	com_users
- * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ *
+ * @copyright   Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
- * @since		1.5
  */
 
 defined('_JEXEC') or die;
+
 JHtml::_('behavior.keepalive');
+JHtml::_('behavior.noframes');
 ?>
 <div class="login<?php echo $this->pageclass_sfx?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -42,10 +44,24 @@ JHtml::_('behavior.keepalive');
 					<?php echo $field->input; ?></div>
 				<?php endif; ?>
 			<?php endforeach; ?>
+
+			<?php $tfa = JPluginHelper::getPlugin('twofactorauth'); ?>
+
+			<?php if (!is_null($tfa) && $tfa != array()): ?>
+				<div class="control-group">
+					<div class="control-label">
+						<?php echo $this->form->getField('secretkey')->label; ?>
+					</div>
+					<div class="controls">
+						<?php echo $this->form->getField('secretkey')->input; ?>
+					</div>
+				</div>
+			<?php endif; ?>
+
 			<?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
 			<div class="login-fields">
-				<label id="remember-lbl" for="remember"><?php echo JText::_('JGLOBAL_REMEMBER_ME') ?></label>
-				<input id="remember" type="checkbox" name="remember" class="inputbox" value="yes"  alt="<?php echo JText::_('JGLOBAL_REMEMBER_ME') ?>" />
+				<label id="remember-lbl" for="remember"><?php echo JText::_('COM_USERS_LOGIN_REMEMBER_ME') ?></label>
+				<input id="remember" type="checkbox" name="remember" class="inputbox" value="yes" />
 			</div>
 			<?php endif; ?>
 			<button type="submit" class="button"><?php echo JText::_('JLOGIN'); ?></button>

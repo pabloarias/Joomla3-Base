@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: gantry.class.php 13269 2013-09-05 01:37:10Z djamil $
+ * @version   $Id: gantry.class.php 20298 2014-04-08 14:19:00Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2014 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -411,7 +411,7 @@ class Gantry
 		// Init all features
 		foreach ($this->getFeatures() as $feature) {
 			$feature_instance = $this->getFeature($feature);
-			if ($feature_instance->isEnabled() && method_exists($feature_instance, 'init')) {
+			if ($feature_instance && $feature_instance->isEnabled() && method_exists($feature_instance, 'init')) {
 				$feature_instance->init();
 			}
 		}
@@ -509,7 +509,7 @@ class Gantry
 			// Finalize all features
 			foreach ($this->getFeatures() as $feature) {
 				$feature_instance = $this->getFeature($feature);
-				if ($feature_instance->isEnabled() && method_exists($feature_instance, 'finalize')) {
+				if ($feature_instance && $feature_instance->isEnabled() && method_exists($feature_instance, 'finalize')) {
 					$feature_instance->finalize();
 				}
 			}
@@ -1866,7 +1866,7 @@ class Gantry
 		// Init all features
 		foreach ($this->getFeatures() as $feature) {
 			$feature_instance = $this->getFeature($feature);
-			if ($feature_instance->isEnabled() && $feature_instance->isInPosition($position) && method_exists($feature_instance, 'render')) {
+			if ($feature_instance && $feature_instance->isEnabled() && $feature_instance->isInPosition($position) && method_exists($feature_instance, 'render')) {
 				$return[] = $feature;
 			}
 		}

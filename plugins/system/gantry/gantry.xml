@@ -2,12 +2,12 @@
 <extension group="system" method="upgrade" type="plugin" version="1.6">
     <name>System - Gantry</name>
     <author>RocketTheme, LLC</author>
-    <creationDate>December 5, 2013</creationDate>
-    <copyright>(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.</copyright>
+    <creationDate>April 12, 2014</creationDate>
+    <copyright>(C) 2005 - 2014 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <version>4.1.20</version>
+    <version>4.1.24</version>
     <description>Gantry System Plugin for Joomla</description>
     <files>
         <folder>overrides</folder>

@@ -1,24 +1,26 @@
 <?php
 /**
  * @package		Joomla.Site
- * @subpackage	mod_login
- * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @subpackage  Templates.beez3
+ *
+ * @copyright   Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
+
 JHtml::_('behavior.keepalive');
 ?>
 <?php if ($type == 'logout') : ?>
 <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" id="login-form">
 <?php if ($params->get('greeting')) : ?>
 	<div class="login-greeting">
-	<?php if($params->get('name') == 0) : {
-		echo JText::sprintf('MOD_LOGIN_HINAME', htmlspecialchars($user->get('name')));
-	} else : {
-		echo JText::sprintf('MOD_LOGIN_HINAME', htmlspecialchars($user->get('username')));
-	} endif; ?>
+		<?php if ($params->get('name') == 0) : ?>
+			<?php echo JText::sprintf('MOD_LOGIN_HINAME', htmlspecialchars($user->get('name'))); ?>
+		<?php else : ?>
+		 	<?php echo JText::sprintf('MOD_LOGIN_HINAME', htmlspecialchars($user->get('username'))); ?>
+		<?php endif; ?>
 	</div>
 <?php endif; ?>
 	<div class="logout-button">
@@ -45,13 +47,13 @@ JHtml::_('behavior.keepalive');
 		<label for="modlgn-passwd"><?php echo JText::_('JGLOBAL_PASSWORD') ?></label>
 		<input id="modlgn-passwd" type="password" name="password" class="inputbox" size="18"  />
 	</p>
-	<?php if (isset($twofactormethods) && ($twofactormethods) > 1): ?>
-	<p id="form-login-secretkey">
-			<label for="modlgn-secretkey"><?php echo JText::_('JGLOBAL_SECRETKEY') ?> <span class="icon-help hasTooltip" title="<?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?>"></span></label> 
+	<?php if (count($twofactormethods) > 1) : ?>
+	<div id="form-login-secretkey">
+			<label for="modlgn-secretkey"><?php echo JText::_('JGLOBAL_SECRETKEY') ?></label> 
 
-			<input id="modlgn-secretkey" type="text" name="secretkey" class="inputbox" tabindex="0" size="18" placeholder="<?php echo JText::_('JGLOBAL_SECRETKEY') ?>" />
+			<input id="modlgn-secretkey" autocomplete="off" type="text" name="secretkey" class="inputbox" tabindex="0" size="18" />
 
-	</p>
+	</div>
 	<?php endif; ?>
 	<?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
 	<p id="form-login-remember">
@@ -64,7 +66,6 @@ JHtml::_('behavior.keepalive');
 	<input type="hidden" name="task" value="user.login" />
 	<input type="hidden" name="return" value="<?php echo $return; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
-	</fieldset>
 	<ul>
 		<li>
 			<a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
@@ -74,9 +75,8 @@ JHtml::_('behavior.keepalive');
 			<a href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
 			<?php echo JText::_('MOD_LOGIN_FORGOT_YOUR_USERNAME'); ?></a>
 		</li>
-		<?php
-		$usersConfig = JComponentHelper::getParams('com_users');
-		if ($usersConfig->get('allowUserRegistration')) : ?>
+		<?php $usersConfig = JComponentHelper::getParams('com_users'); ?>
+		<?php if ($usersConfig->get('allowUserRegistration')) : ?>
 		<li>
 			<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
 				<?php echo JText::_('MOD_LOGIN_REGISTER'); ?></a>
@@ -88,5 +88,6 @@ JHtml::_('behavior.keepalive');
 		<p><?php echo $params->get('posttext'); ?></p>
 		</div>
 	<?php endif; ?>
+	</fieldset>
 </form>
 <?php endif; ?>

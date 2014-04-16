@@ -1,6 +1,6 @@
 /*
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2014 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 (function(){var k=this.document;var h=k.window=this;var a=navigator.userAgent.toLowerCase(),b=navigator.platform.toLowerCase(),i=a.match(/(opera|ie|trident|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|rv:(\d.?)|$)/)||[null,"unknown",0],f=(i[1]=="ie"||i[1]=="trident")&&k.documentMode;
