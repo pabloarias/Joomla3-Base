@@ -45,3 +45,13 @@
 2014-04-16T09:33:09+00:00	INFO	update	Borrando los archivos y carpetas que han sido eliminados.
 2014-04-16T09:33:10+00:00	INFO	update	Limpieza posterior a la instalación.
 2014-04-16T09:33:10+00:00	INFO	update	La actualización a la versión 3.2.3 se ha completado.
+2014-05-07T22:53:44+00:00	INFO	update	Actualización inciciadoa por el usuario Super User (868). La versión antigua es la 3.2.3.
+2014-05-07T22:53:45+00:00	INFO	update	Descargando el archivo desde .
+2014-05-07T22:54:07+00:00	INFO	update	El archivoe Joomla_3.3.0-Stable-Update_Package.zip se ha descargado correctamente.
+2014-05-07T22:54:07+00:00	INFO	update	Iniciando la instalación de la versión nueva.
+2014-05-07T22:54:15+00:00	INFO	update	Finalizando la instalación.
+2014-05-07T22:54:15+00:00	INFO	update	Consulta ejecutada desde el archivo 3.3.0-2014-02-16. Texto de la consulta: ALTER TABLE `#__users` ADD COLUMN `requireReset` tinyint(4) NOT NULL DEFAULT 0 C.
+2014-05-07T22:54:15+00:00	INFO	update	Consulta ejecutada desde el archivo 3.3.0-2014-04-02. Texto de la consulta: INSERT INTO `#__extensions` (`extension_id`, `name`, `type`, `element`, `folder`.
+2014-05-07T22:54:15+00:00	INFO	update	Borrando los archivos y carpetas que han sido eliminados.
+2014-05-07T22:54:16+00:00	INFO	update	Limpieza posterior a la instalación.
+2014-05-07T22:54:16+00:00	INFO	update	La actualización a la versión 3.3.0 se ha completado.
