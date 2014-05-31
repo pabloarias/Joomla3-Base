@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="file" version="1.6" method="upgrade" client="site">
+    <name><![CDATA[akeebabackup - es-ES]]></name>
+    <author><![CDATA[AkeebaBackup.com]]></author>
+    <authorurl>http://www.akeebabackup.com</authorurl>
+	<copyright>Copyright (C)2014 AkeebaBackup.com. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+    <version>/Users/nicholas/Projects/akeeba/abcore/build/..</version>
+    <creationDate>06 May 2014</creationDate>
+    <description><![CDATA[Spanish (Spain) translation file for Akeeba Backup]]></description>
+	<fileset>
+		<files folder="backend" target="administrator/language/es-ES">
+			<filename>es-ES.com_akeeba.ini</filename>
+			<filename>es-ES.com_akeeba.sys.ini</filename>
+			<filename>es-ES.plg_installer_akeebabackup.ini</filename>
+			<filename>es-ES.plg_installer_akeebabackup.sys.ini</filename>
+			<filename>es-ES.plg_quickicon_akeebabackup.ini</filename>
+			<filename>es-ES.plg_quickicon_akeebabackup.sys.ini</filename>
+			<filename>es-ES.plg_system_akeebaupdatecheck.ini</filename>
+			<filename>es-ES.plg_system_akeebaupdatecheck.sys.ini</filename>
+			<filename>es-ES.plg_system_backuponupdate.ini</filename>
+			<filename>es-ES.plg_system_backuponupdate.sys.ini</filename>
+			<filename>es-ES.plg_system_srp.ini</filename>
+			<filename>es-ES.plg_system_srp.sys.ini</filename>
+		</files>
+		<files folder="frontend" target="language/es-ES">
+			<filename>es-ES.com_akeeba.ini</filename>
+		</files>
+	</fileset>
+</extension>
