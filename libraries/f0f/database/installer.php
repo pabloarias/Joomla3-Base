@@ -1,7 +1,7 @@
 <?php
 /**
  * @package		fof
- * @copyright	2014 Nicholas K. Dionysopoulos / Akeeba Ltd 
+ * @copyright	2014 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license		GNU GPL version 3 or later
  */
 
@@ -426,7 +426,7 @@ class F0FDatabaseInstaller
 		// Get the condition's attributes
 		$attributes = $node->attributes();
 		$type = $attributes->type ? $attributes->type : null;
-		$value = $attributes->value ? $attributes->value : null;
+		$value = $attributes->value ? (string) $attributes->value : null;
 
 		switch ($type)
 		{
@@ -458,7 +458,7 @@ class F0FDatabaseInstaller
 					if (!empty($coltype))
 					{
 						$coltype = strtolower($coltype);
-						$currentType = strtolower($tableColumns[$value]['Type']);
+						$currentType = strtolower($tableColumns[$value]->Type);
 
 						$condition = ($coltype == $currentType);
 					}

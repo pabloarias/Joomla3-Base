@@ -57,7 +57,7 @@ class F0FFormFieldUser extends JFormFieldUser implements F0FFormField
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

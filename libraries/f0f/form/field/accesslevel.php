@@ -58,7 +58,7 @@ class F0FFormFieldAccesslevel extends JFormFieldAccessLevel implements F0FFormFi
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

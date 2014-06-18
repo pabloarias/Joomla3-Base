@@ -417,7 +417,7 @@ abstract class F0FUtilsInstallscript
 
 			if (JFile::exists($src . '/cli/' . $script))
 			{
-				JFile::move($src . '/' . $this->cliSourcePath . '/' . $script, JPATH_ROOT . '/cli/' . $script);
+				JFile::copy($src . '/cli/' . $script, JPATH_ROOT . '/cli/' . $script);
 			}
 		}
 	}
@@ -903,11 +903,6 @@ abstract class F0FUtilsInstallscript
 						{
 							// A. Position and state
 							list($modulePosition, $modulePublished) = $modulePreferences;
-
-							if ($modulePosition == 'cpanel')
-							{
-								$modulePosition = 'icon';
-							}
 
 							$sql = $db->getQuery(true)
 								->update($db->qn('#__modules'))

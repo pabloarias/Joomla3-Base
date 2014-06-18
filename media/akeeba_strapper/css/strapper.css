@@ -21,6 +21,9 @@ div.akeeba-bootstrap form.form-horizontal-wide div.controls {
 div.akeeba-bootstrap form.form-horizontal-wide textarea {
   width: 450px;
 }
+div.akeeba-bootstrap td.order {
+  width: 12px;
+}
 div.akeeba-bootstrap td.order span {
   line-height: 16px;
   height: 16px;
@@ -45,6 +48,13 @@ div.akeeba-bootstrap td.order .sortable-handler {
   margin: 1px 0 0 0;
   padding: 5px 5px;
 }
+div.akeeba-bootstrap td.order .order-enabled {
+  width: 60px;
+}
+div.akeeba-bootstrap td.order .order-disabled .sortable-handler {
+  margin: 0;
+  padding: 0;
+}
 div.akeeba-bootstrap th a.save-order {
   height: 19px;
 }
@@ -64,6 +74,9 @@ div.akeeba-bootstrap div.icon a.modal {
 }
 div.akeeba-bootstrap div [class^="icon-wrapper"] {
   display: inline;
+}
+#akeeba-bootstrap:not(.joomla-version-25) input[name="cid[]"] {
+  margin: -3px 0 0 0;
 }
 div.icon-wrapper {
   display: inline;

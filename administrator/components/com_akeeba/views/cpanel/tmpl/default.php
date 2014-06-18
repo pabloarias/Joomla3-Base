@@ -19,26 +19,30 @@ $icons_root = JURI::base().'components/com_akeeba/assets/images/';
 JHTML::_('behavior.framework');
 JHtml::_('behavior.modal');
 
-$script = <<<ENDSCRIPT
-window.addEvent( 'domready' ,  function() {
-    $('btnchangelog').addEvent('click', showChangelog);
-});
+$script = <<<JS
 
-function showChangelog()
-{
-	var akeebaChangelogElement = $('akeeba-changelog').clone();
+(function($){
+	$(document).ready(function(){
+		$('#btnchangelog').click(showChangelog);
+	});
 
-    SqueezeBox.fromElement(
-        akeebaChangelogElement, {
-            handler: 'adopt',
-            size: {
-                x: 550,
-                y: 500
-            }
-        }
-    );
-}
-ENDSCRIPT;
+	function showChangelog()
+	{
+		var akeebaChangelogElement = $('#akeeba-changelog').clone().appendTo('body').attr('id', 'akeeba-changelog-clone');
+
+		SqueezeBox.fromElement(
+			document.getElementById('akeeba-changelog-clone'), {
+				handler: 'adopt',
+				size: {
+					x: 550,
+					y: 500
+				}
+			}
+		);
+	}
+})(akeeba.jQuery);
+
+JS;
 JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 
 ?>

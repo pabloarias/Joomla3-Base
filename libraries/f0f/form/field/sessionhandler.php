@@ -57,7 +57,7 @@ class F0FFormFieldSessionhandler extends JFormFieldSessionHandler implements F0F
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

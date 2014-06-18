@@ -602,8 +602,16 @@ class F0FModel extends F0FUtilsObject
 		}
 		else
 		{
-			$eliminatePart = ucfirst($bareComponent) . 'Model';
-			$view = strtolower(str_replace($eliminatePart, '', $className));
+            if (array_key_exists('view', $config))
+            {
+                $view = $config['view'];
+            }
+
+            if (empty($view))
+            {
+                $eliminatePart = ucfirst($bareComponent) . 'Model';
+                $view = strtolower(str_replace($eliminatePart, '', $className));
+            }
 		}
 
 		if (array_key_exists('name', $config))
@@ -2278,8 +2286,6 @@ class F0FModel extends F0FUtilsObject
 	{
 		$this->_formData = $data;
 
-		$name = $this->input->getCmd('option', 'com_foobar') . '.' . $this->name;
-
 		if (empty($source))
 		{
 			$source = $this->getState('form_name', null);
@@ -2289,6 +2295,8 @@ class F0FModel extends F0FUtilsObject
 		{
 			$source = 'form.' . $this->name;
 		}
+
+		$name = $this->input->getCmd('option', 'com_foobar') . '.' . $this->name . '.' . $source;
 
 		$options = array(
 			'control'	 => false,
@@ -2317,6 +2325,8 @@ class F0FModel extends F0FUtilsObject
      * @param   bool|string     $xpath      An optional xpath to search for the fields.
      *
      * @return  mixed  F0FForm object on success, False on error.
+	 *
+	 * @throws  Exception
      *
      * @see     F0FForm
      * @since   2.0

@@ -57,7 +57,7 @@ class F0FFormFieldHidden extends JFormFieldHidden implements F0FFormField
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

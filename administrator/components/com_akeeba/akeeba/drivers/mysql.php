@@ -457,9 +457,9 @@ class AEDriverMysql extends AEAbstractDriver
 				{
 					// Attempt to reconnect.
 					$this->connection = null;
-					$this->connect();
+					$this->open();
 				}
-					// If connect fails, ignore that exception and throw the normal exception.
+				// If connect fails, ignore that exception and throw the normal exception.
 				catch (RuntimeException $e)
 				{
 					// Get the error number and message.

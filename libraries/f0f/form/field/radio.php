@@ -57,7 +57,7 @@ class F0FFormFieldRadio extends JFormFieldRadio implements F0FFormField
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

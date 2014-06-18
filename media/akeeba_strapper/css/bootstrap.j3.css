@@ -13,12 +13,10 @@ div.akeeba-bootstrap {
 	 * If your template already includes Bootstrap CSS styling please comment
 	 * out this line and uncomment the include below.
      */
-
   /**
 	 * If your template already includes Bootstrap CSS styling please uncomment
 	 * out this line and comment out the include above.
      */
-
   /**
  * Akeeba Strapper
  * A handy distribution of namespaced jQuery, jQuery UI and Twitter
@@ -26,36 +24,7 @@ div.akeeba-bootstrap {
  *
  * This file includes the minimal Bootstrap markup only for Joomla! 3.0/3.1 templates which include Bootstrap CSS styling
  */
-
-  /* White icons with optional class, or on hover/active states of certain elements */
-
-}
-div.akeeba-bootstrap .clearfix {
-  *zoom: 1;
-}
-div.akeeba-bootstrap .clearfix:before,
-div.akeeba-bootstrap .clearfix:after {
-  display: table;
-  content: "";
-  line-height: 0;
-}
-div.akeeba-bootstrap .clearfix:after {
-  clear: both;
-}
-div.akeeba-bootstrap .hide-text {
-  font: 0/0 a;
-  color: transparent;
-  text-shadow: none;
-  background-color: transparent;
-  border: 0;
-}
-div.akeeba-bootstrap .input-block-level {
-  display: block;
-  width: 100%;
-  min-height: 30px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+  /* White icons with optional class, or on hover/focus/active states of certain elements */
 }
 div.akeeba-bootstrap [class^="icon-"],
 div.akeeba-bootstrap [class*=" icon-"] {
@@ -78,11 +47,15 @@ div.akeeba-bootstrap .nav-list > .active > a > [class*=" icon-"],
 div.akeeba-bootstrap .navbar-inverse .nav > .active > a > [class^="icon-"],
 div.akeeba-bootstrap .navbar-inverse .nav > .active > a > [class*=" icon-"],
 div.akeeba-bootstrap .dropdown-menu > li > a:hover > [class^="icon-"],
+div.akeeba-bootstrap .dropdown-menu > li > a:focus > [class^="icon-"],
 div.akeeba-bootstrap .dropdown-menu > li > a:hover > [class*=" icon-"],
+div.akeeba-bootstrap .dropdown-menu > li > a:focus > [class*=" icon-"],
 div.akeeba-bootstrap .dropdown-menu > .active > a > [class^="icon-"],
 div.akeeba-bootstrap .dropdown-menu > .active > a > [class*=" icon-"],
 div.akeeba-bootstrap .dropdown-submenu:hover > a > [class^="icon-"],
-div.akeeba-bootstrap .dropdown-submenu:hover > a > [class*=" icon-"] {
+div.akeeba-bootstrap .dropdown-submenu:focus > a > [class^="icon-"],
+div.akeeba-bootstrap .dropdown-submenu:hover > a > [class*=" icon-"],
+div.akeeba-bootstrap .dropdown-submenu:focus > a > [class*=" icon-"] {
   background-image: url("../img/glyphicons-halflings-white.png");
 }
 div.akeeba-bootstrap .icon-glass {
@@ -380,7 +353,7 @@ div.akeeba-bootstrap .icon-fullscreen {
   left: 0;
   z-index: 1010;
   display: none;
-  width: 236px;
+  max-width: 276px;
   padding: 1px;
   text-align: left;
   background-color: #ffffff;
@@ -420,6 +393,9 @@ div.akeeba-bootstrap .icon-fullscreen {
   -webkit-border-radius: 5px 5px 0 0;
   -moz-border-radius: 5px 5px 0 0;
   border-radius: 5px 5px 0 0;
+}
+.popover-title:empty {
+  display: none;
 }
 .popover-content {
   padding: 9px 14px;
@@ -499,7 +475,7 @@ div.akeeba-bootstrap .icon-fullscreen {
 /*
  * Akeeba Strapper overrides
  */
-/**
+/*!
  * Akeeba Strapper
  * A handy distribution of namespaced jQuery, jQuery UI and Twitter
  * Bootstrapper for use with Akeeba components.
@@ -522,6 +498,9 @@ div.akeeba-bootstrap form.form-horizontal-wide div.controls {
 div.akeeba-bootstrap form.form-horizontal-wide textarea {
   width: 450px;
 }
+div.akeeba-bootstrap td.order {
+  width: 12px;
+}
 div.akeeba-bootstrap td.order span {
   line-height: 16px;
   height: 16px;
@@ -536,8 +515,25 @@ div.akeeba-bootstrap td.order a.jgrid span.state {
 div.akeeba-bootstrap td.order a.jgrid span.state span.text {
   line-height: 16px;
 }
-div.akeeba-bootstrap td.order input.text_area {
+div.akeeba-bootstrap td.order input.text-area-order {
+  margin-bottom: 0;
   width: 20px;
+}
+div.akeeba-bootstrap td.order .sortable-handler {
+  display: block;
+  float: left;
+  margin: 1px 0 0 0;
+  padding: 5px 5px;
+}
+div.akeeba-bootstrap td.order .order-enabled {
+  width: 60px;
+}
+div.akeeba-bootstrap td.order .order-disabled .sortable-handler {
+  margin: 0;
+  padding: 0;
+}
+div.akeeba-bootstrap th a.save-order {
+  height: 19px;
 }
 div.akeeba-bootstrap div.ak_clr_left {
   clear: left;
@@ -555,6 +551,9 @@ div.akeeba-bootstrap div.icon a.modal {
 }
 div.akeeba-bootstrap div [class^="icon-wrapper"] {
   display: inline;
+}
+#akeeba-bootstrap:not(.joomla-version-25) input[name="cid[]"] {
+  margin: -3px 0 0 0;
 }
 div.icon-wrapper {
   display: inline;

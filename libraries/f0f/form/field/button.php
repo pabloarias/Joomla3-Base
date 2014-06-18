@@ -51,7 +51,7 @@ class F0FFormFieldButton extends F0FFormFieldText implements F0FFormField
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

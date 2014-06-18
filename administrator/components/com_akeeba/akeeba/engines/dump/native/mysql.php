@@ -43,28 +43,24 @@ class AEDumpNativeMysql extends AEAbstractDump
 	{
 		$configuration = AEFactory::getConfiguration();
 		$db = $this->getDB();
+
 		if ($this->getError())
 		{
 			return;
 		}
 
+		// This was required when we still supported MySQL 4 and wanted backwards compatibility with it
+		/**
 		$sql = "SET sql_mode='HIGH_NOT_PRECEDENCE'";
 		$db->setQuery($sql);
 		$db->query();
+		/**/
+
 		// Try to enforce SQL_BIG_SELECTS option
 		try
 		{
 			$dbVersion = $db->getVersion();
-			if (version_compare($dbVersion, '5.6', 'lt'))
-			{
-				// Pre-5.6 MySQL
-				$db->setQuery('SET OPTION SQL_BIG_SELECTS=1');
-			}
-			else
-			{
-				// MySQL 5.6 or later
-				$db->setQuery('SET SQL_BIG_SELECTS=1');
-			}
+			$db->setQuery('SET sql_big_selects=1');
 			$db->query();
 		}
 		catch (Exception $e)
@@ -248,6 +244,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			}
 			catch (Exception $exc)
 			{
+				$db->resetErrors();
 				$cursor = null;
 			}
 
@@ -1093,6 +1090,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			case 'table':
 			case 'merge':
 			case 'view':
+			default:
 				$sql = "SHOW CREATE TABLE `$table_abstract`";
 				break;
 
@@ -1110,7 +1108,22 @@ class AEDumpNativeMysql extends AEAbstractDump
 		}
 
 		$db->setQuery($sql);
-		$temp = $db->loadRowList();
+		try
+		{
+			$temp = $db->loadRowList();
+		}
+		catch (Exception $e)
+		{
+			// If the query failed we don't have the necessary SHOW privilege. Log the error and fake an empty reply.
+			$entityType = ($type == 'merge') ? 'table' : $type;
+			$msg = $e->getMessage();
+			AEUtilLogger::WriteLog(_AE_LOG_WARNING, "Cannot get the structure of $entityType $table_abstract. Database returned error $msg running $sql  Please check your database privileges. Your database backup may be incomplete.");
+			$db->resetErrors();
+
+			$temp = array(
+				array('','','')
+			);
+		}
 
 		if (in_array($type, array('procedure', 'function', 'trigger')))
 		{
@@ -1394,7 +1407,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 		}
 
 		// Add to the _tables array
-		if (count($this->tables) && !($insertpos === false))
+		if (count($this->tables) && ($insertpos !== false))
 		{
 			array_splice($this->tables, $insertpos + 1, 0, $table_name);
 		}
@@ -1437,6 +1450,12 @@ class AEDumpNativeMysql extends AEAbstractDump
 						if ($currentRecursionDepth < 19)
 						{
 							$this->push_table($depended_table, $stack, ++$currentRecursionDepth);
+						}
+						else
+						{
+							// We're hitting a circular dependency. We'll add the removed $depended_table
+							// in the penultimate position of the table and cross our virtual fingers...
+							array_splice($this->tables, count($this->tables) - 1, 0, $depended_table);
 						}
 					}
 				}

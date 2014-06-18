@@ -57,7 +57,7 @@ class F0FFormFieldGroupedlist extends JFormFieldGroupedList implements F0FFormFi
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

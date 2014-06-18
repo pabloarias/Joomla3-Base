@@ -57,7 +57,7 @@ class F0FFormFieldPassword extends JFormFieldPassword implements F0FFormField
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

@@ -55,7 +55,7 @@ class AkeebaModelUpdates extends F0FUtilsUpdate
         if(!$updateInfo->hasUpdate)
         {
             return array(
-                'message' => "No available updates found"
+                'message' => array("No available updates found")
             );
         }
 

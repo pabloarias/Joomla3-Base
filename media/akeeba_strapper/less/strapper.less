@@ -34,13 +34,17 @@ div.akeeba-bootstrap {
 	
 	// Table layout fixes
 	td.order {
+        & {
+          width: 12px;
+        }
+
 		span {
 			line-height: 16px;
 			height: 16px;
 			margin: 0;
 			padding: 0;
 		}
-		
+
 		a.jgrid span.state {
 			background-repeat: no-repeat;
 			height: 12px;
@@ -60,6 +64,17 @@ div.akeeba-bootstrap {
           float: left;
           margin: 1px 0 0 0;
           padding: 5px 5px;
+        }
+
+        .order-enabled {
+          width: 60px;
+        }
+
+        .order-disabled {
+          .sortable-handler {
+            margin: 0;
+            padding: 0;
+          }
         }
 	}
 
@@ -92,6 +107,14 @@ div.akeeba-bootstrap {
 			display: inline;
 		}
 	}
+}
+
+#akeeba-bootstrap {
+  &:not(.joomla-version-25) {
+    input[name="cid[]"] {
+      margin: -3px 0 0 0;
+    }
+  }
 }
 
 // Icon wrapper fix

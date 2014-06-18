@@ -57,7 +57,7 @@ class F0FFormFieldCaptcha extends JFormFieldCaptcha implements F0FFormField
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:

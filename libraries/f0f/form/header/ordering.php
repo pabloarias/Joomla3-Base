@@ -58,9 +58,14 @@ class F0FFormHeaderOrdering extends F0FFormHeader
 				'JGRID_HEADING_ORDERING'
 			);
 
-			$html .= '<a href="javascript:saveorder(' . (count($model->getList()) - 1) . ', \'saveorder\')" ' .
-				'rel="tooltip" class="save-order btn btn-micro pull-right" title="' . JText::_('JLIB_HTML_SAVE_ORDER') . '">'
-				. '<span class="icon-ok"></span></a>';
+			$ordering = $view->getLists()->order == 'ordering';
+
+			if ($ordering)
+			{
+				$html .= '<a href="javascript:saveorder(' . (count($model->getList()) - 1) . ', \'saveorder\')" ' .
+					'rel="tooltip" class="save-order btn btn-micro pull-right" title="' . JText::_('JLIB_HTML_SAVE_ORDER') . '">'
+					. '<span class="icon-ok"></span></a>';
+			}
 
 			return $html;
 		}

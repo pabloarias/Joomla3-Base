@@ -658,6 +658,20 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	}
 
 	/**
+	 * Does the specified field exist?
+	 *
+	 * @param   string  $fieldName  The field name to search (it's OK to use aliases)
+	 *
+	 * @return  bool
+	 */
+	public function hasField($fieldName)
+	{
+		$search = $this->getColumnAlias($fieldName);
+
+		return in_array($search, $this->knownFields);
+	}
+
+	/**
 	 * Add a field to the known fields array
 	 *
 	 * @param   string   $field       The name of the field to add
@@ -1048,7 +1062,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
     /**
      * Clones the current object, after resetting it
      *
-     * @return F0FTable
+     * @return static
      */
     public function getClone()
     {
@@ -3401,6 +3415,18 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 	public function getKeyName()
 	{
 		return $this->_tbl_key;
+	}
+
+	/**
+	 * Returns the identity value of this record
+	 *
+	 * @return mixed
+	 */
+	public function getId()
+	{
+		$key = $this->getKeyName();
+
+		return $this->$key;
 	}
 
 	/**

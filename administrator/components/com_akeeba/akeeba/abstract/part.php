@@ -162,35 +162,35 @@ abstract class AEAbstractPart extends AEAbstractObject
 				$this->isPrepared = false;
 				$this->isRunning = false;
 				$this->isFinished = false;
-				$this->hasRun = false;
+				$this->hasRan = false;
 				break;
 
 			case 'prepared':
 				$this->isPrepared = true;
 				$this->isRunning = false;
 				$this->isFinished = false;
-				$this->hasRun = false;
+				$this->hasRan = false;
 				break;
 
 			case 'running':
 				$this->isPrepared = true;
 				$this->isRunning = true;
 				$this->isFinished = false;
-				$this->hasRun = false;
+				$this->hasRan = false;
 				break;
 
 			case 'postrun':
 				$this->isPrepared = true;
 				$this->isRunning = false;
 				$this->isFinished = false;
-				$this->hasRun = true;
+				$this->hasRan = true;
 				break;
 
 			case 'finished':
 				$this->isPrepared = true;
 				$this->isRunning = false;
 				$this->isFinished = true;
-				$this->hasRun = false;
+				$this->hasRan = false;
 				break;
 
 			case 'error':
@@ -329,17 +329,17 @@ abstract class AEAbstractPart extends AEAbstractObject
 			return "init";
 		}
 
-		if (!($this->isFinished) && !($this->isRunning) && !($this->hasRun) && ($this->isPrepared))
+		if (!($this->isFinished) && !($this->isRunning) && !($this->hasRan) && ($this->isPrepared))
 		{
 			return "prepared";
 		}
 
-		if (!($this->isFinished) && $this->isRunning && !($this->hasRun))
+		if (!($this->isFinished) && $this->isRunning && !($this->hasRan))
 		{
 			return "running";
 		}
 
-		if (!($this->isFinished) && !($this->isRunning) && $this->hasRun)
+		if (!($this->isFinished) && !($this->isRunning) && $this->hasRan)
 		{
 			return "postrun";
 		}

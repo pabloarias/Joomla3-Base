@@ -1,4 +1,17 @@
 <?php die();?>
+Akeeba Backup 3.11.2
+================================================================================
+! Backup before update resulting in 403 error when updating Joomla!
+
+Akeeba Backup 3.11.1
+================================================================================
+! CLI scripts were not being copied over
+! [PRO] ALICE will suggest to use the Large Site Scanner, if required
++ The 'Backup on Update' plugin now allows you to select which backup profile to use for taking a full site backup before updating Joomla!
++ ANGIE now allows you to restore tables with zero-value auto_increment columns (used by Magento, Drupal, possibly others)
+~ Replacing legacy mooTools code with jQuery
+# [LOW] Disabling the System Restore Points with the "Back to standard installer" link wasn't always respected
+
 Akeeba Backup 3.11.0
 ================================================================================
 + Show update information in the component's control panel page

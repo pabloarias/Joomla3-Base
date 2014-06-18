@@ -13,9 +13,9 @@ JHtml::_('behavior.framework');
 
 $disabled = AKEEBA_PRO ? '' : 'disabled = "disabled"';
 
-$script = <<<ENDSCRIPT
-window.addEvent('domready', function(){
-	(function($) {
+$script = <<<JS
+(function($){
+	$(document).ready(function(){
 		$('#akeeba-postsetup-apply').click(function(e){
 			$('#adminForm').submit();
 		});
@@ -23,10 +23,10 @@ window.addEvent('domready', function(){
 			$('#acceptlicense, #acceptsupport, #acceptbackuptest').attr('checked','checked');
 			$('#adminForm').submit();
 		});
-	})(akeeba.jQuery);
-});
+	})
+})(akeeba.jQuery)
 
-ENDSCRIPT;
+JS;
 JFactory::getDocument()->addScriptDeclaration($script);
 
 ?>

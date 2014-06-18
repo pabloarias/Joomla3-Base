@@ -2777,7 +2777,21 @@ class F0FController extends F0FUtilsObject
 			}
 		}
 
-		$result = new $viewClass($config);
+		/**
+		 * Some stupid administrative templates force format=utf (yeah, I know, what the fuck, right?) when a format
+		 * URL parameter does not exist in the URL. Of course there is no such thing as F0FViewUtf (why the hell would
+		 * it be, there is no such thing as a format=utf in Joomla! for crying out loud) which causes a Fatal Error. So
+		 * we have to detect that and force $type='html'...
+		 */
+		if (!class_exists($viewClass) && ($type != 'html'))
+		{
+			$type = 'html';
+			$result = $this->createView($name, $prefix, $type, $config);
+		}
+		else
+		{
+			$result = new $viewClass($config);
+		}
 
 		return $result;
 	}

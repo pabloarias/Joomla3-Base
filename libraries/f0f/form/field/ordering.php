@@ -55,7 +55,7 @@ class F0FFormFieldOrdering extends JFormField implements F0FFormField
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:
@@ -105,18 +105,18 @@ class F0FFormFieldOrdering extends JFormField implements F0FFormField
 
 		$html = '';
 
-		$viewObject = $this->form->getView();
+		$view = $this->form->getView();
 
-		$ordering = $viewObject->getLists()->order == 'ordering';
+		$ordering = $view->getLists()->order == 'ordering';
 
-		if (!$viewObject->hasAjaxOrderingSupport())
+		if (!$view->hasAjaxOrderingSupport())
 		{
 			// Ye olde Joomla! 2.5 method
 			$disabled = $ordering ? '' : 'disabled="disabled"';
 			$html .= '<span>';
-			$html .= $viewObject->pagination->orderUpIcon($this->rowid, true, 'orderup', 'Move Up', $ordering);
+			$html .= $view->pagination->orderUpIcon($this->rowid, true, 'orderup', 'Move Up', $ordering);
 			$html .= '</span><span>';
-			$html .= $viewObject->pagination->orderDownIcon($this->rowid, $viewObject->pagination->total, true, 'orderdown', 'Move Down', $ordering);
+			$html .= $view->pagination->orderDownIcon($this->rowid, $view->pagination->total, true, 'orderdown', 'Move Down', $ordering);
 			$html .= '</span>';
 			$html .= '<input type="text" name="order[]" size="5" value="' . $this->value . '" ' . $disabled;
 			$html .= 'class="text-area-order" style="text-align: center" />';
@@ -124,12 +124,12 @@ class F0FFormFieldOrdering extends JFormField implements F0FFormField
 		else
 		{
 			// The modern drag'n'drop method
-			if ($viewObject->getPerms()->editstate)
+			if ($view->getPerms()->editstate)
 			{
 				$disableClassName = '';
 				$disabledLabel = '';
 
-				$hasAjaxOrderingSupport = $viewObject->hasAjaxOrderingSupport();
+				$hasAjaxOrderingSupport = $view->hasAjaxOrderingSupport();
 
 				if (!$hasAjaxOrderingSupport['saveOrder'])
 				{
@@ -137,17 +137,26 @@ class F0FFormFieldOrdering extends JFormField implements F0FFormField
 					$disableClassName = 'inactive tip-top';
 				}
 
+				$class = $ordering ? 'order-enabled' : 'order-disabled';
+
+				$html .= '<div class="' . $class . '">';
 				$html .= '<span class="sortable-handler ' . $disableClassName . '" title="' . $disabledLabel . '" rel="tooltip">';
 				$html .= '<i class="icon-menu"></i>';
 				$html .= '</span>';
-				$html .= '<input type="text" name="order[]" size="5" class="input-mini text-area-order" ';
 
-				if (!$hasAjaxOrderingSupport)
+				if ($ordering)
 				{
-					$html .= 'disabled="disabled" ';
+					$html .= '<input type="text" name="order[]" size="5" class="input-mini text-area-order" ';
+
+					if (!$hasAjaxOrderingSupport)
+					{
+						$html .= 'disabled="disabled" ';
+					}
+
+					$html .= 'value="' . $this->value . '"  class="' . 'input-mini text-area-order' . ' " />';
 				}
 
-				$html .= 'value="' . $this->value . '"  class="input-mini text-area-order " />';
+				$html .= '</div>';
 			}
 			else
 			{

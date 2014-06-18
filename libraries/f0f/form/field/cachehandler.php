@@ -58,7 +58,7 @@ class F0FFormFieldCachehandler extends JFormFieldCacheHandler implements F0FForm
 					$this->repeatable = $this->getRepeatable();
 				}
 
-				return $this->static;
+				return $this->repeatable;
 				break;
 
 			default:
