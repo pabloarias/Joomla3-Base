@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 defined('JPATH_BASE') or die('RESTRICTED');
+
+require_once(dirname(dirname(__FILE__)) . '/helpers/extension.php');
+require_once(dirname(dirname(__FILE__)) . '/helpers/encrypt.php');
 
 class WFTableProfiles extends JTable {
 
@@ -121,5 +124,53 @@ class WFTableProfiles extends JTable {
     public function __construct(& $db) {
         parent::__construct('#__wf_profiles', 'id', $db);
     }
+
+    /**
+     * Overridden JTable::load to decrypt parameters
+     *
+     * @param   integer  $id  An optional profile id.
+     * @param   boolean  $reset   False if row not found or on error
+     * (internal error state set in that case).
+     *
+     * @return  boolean  True on success, false on failure.
+     *
+     * @since   2.4
+     */
+    public function load($id = null, $reset = true) {
+        $return = parent::load($id, $reset);
+
+        if ($return !== false && !empty($this->params)) {
+            $this->params = WFEncryptHelper::decrypt($this->params);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Overridden JTable::store to encrypt parameters
+     *
+     * @param   boolean  $updateNulls  True to update fields even if they are null.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   2.4
+     */
+    public function store($updateNulls = false) {
+
+        if ($this->id && $this->params) {
+            $component = WFExtensionHelper::getComponent();
+
+            // get params definitions
+            $params = new WFParameter($component->params, '', 'preferences');
+
+            if ($params->get('secureparams', 0)) {
+                $this->params = WFEncryptHelper::encrypt($this->params);
+            }
+        }
+
+        return parent::store($updateNulls);
+    }
+
 }
+
 ?>

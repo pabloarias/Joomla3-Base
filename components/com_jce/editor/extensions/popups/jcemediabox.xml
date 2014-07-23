@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <install version="1.5" type="extension" extension="jcemediabox" folder="popups" core="1">
 	<name>WF_POPUPS_JCEMEDIABOX_TITLE</name>
-	<version>2.3.4.4</version>
-	<creationDate>12 December 2013</creationDate>
+	<version>2.4.1</version>
+	<creationDate>19 July 2014</creationDate>
 	<author>Ryan Demmer</author>
 	<authorEmail>info@joomlacontenteditor.net</authorEmail>
 	<authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
-	<copyright>Copyright (C) 2006 - 2013 Ryan Demmer. All rights reserved</copyright>
+	<copyright>Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved</copyright>
 	<license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>
 	<description>WF_POPUPS_JCEMEDIABOX_DESC</description>
 	<files>

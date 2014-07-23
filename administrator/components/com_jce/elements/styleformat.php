@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -32,6 +32,8 @@ class WFElementStyleFormat extends WFElement {
     var $_name = 'StyleFormat';
 
     public function fetchElement($name, $value, &$node, $control_name) {
+        $wf = WFEditor::getInstance();
+
         $output = array();
         
         // default item list (remove "attributes" for now)
@@ -39,7 +41,21 @@ class WFElementStyleFormat extends WFElement {
         
         // pass to items
         $items = json_decode($value, true);
+
+        /* Convert legacy styles */
+        $theme_advanced_styles = $wf->getParam('editor.theme_advanced_styles', '');
         
+        if (!empty($theme_advanced_styles)) {
+            foreach(explode(',', $theme_advanced_styles) as $styles) {
+                $style = json_decode("{" . preg_replace('#([^=]+)=([^=]+)#', '"title":"$1","classes":"$2"', $styles) . "}", true);  
+                
+                if ($style) {
+                    $items[] = $style;
+                }
+            }
+        }
+        
+        // create default array if no items
         if (empty($items)) {
             $items = array($default);
             $value = array();
@@ -94,6 +110,11 @@ class WFElementStyleFormat extends WFElement {
         
         // hidden field
         $output[] = '<input type="hidden" name="' . $control_name . '[' . $name . ']" value="" />';
+        
+        if (!empty($theme_advanced_styles)) {
+            $output[] = '<input type="hidden" name="params[editor][theme_advanced_styles]" value="" class="isdirty" />';
+        }
+        
         $output[] = '</div>';
         return implode("\n", $output);
     }
@@ -101,7 +122,7 @@ class WFElementStyleFormat extends WFElement {
     protected function getElementOptions() {
         // create elements list
         $options = array(
-            JHTML::_('select.option', '', WFText::_('WF_OPTION_NOT_SET'))
+            JHTML::_('select.option', '', WFText::_('WF_OPTION_SELECTED_ELEMENT'))
         );
         
         $options[] = JHTML::_('select.option',  '<OPTGROUP>', WFText::_('WF_OPTION_SECTION_ELEMENTS'));

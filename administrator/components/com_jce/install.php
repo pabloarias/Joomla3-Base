@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -630,7 +630,9 @@ abstract class WFInstall {
             // remove tinymce langs
             $site . '/editor/tiny_mce/langs',
             // remove dragupload folder (ranamed to upload)
-            $site . '/editor/tiny_mce/plugins/dragupload'
+            $site . '/editor/tiny_mce/plugins/dragupload',
+            // remove googlemaps
+            $site . '/editor/extensions/aggregator/googlemaps'
         );
 
         foreach ($folders as $folder) {
@@ -696,7 +698,10 @@ abstract class WFInstall {
             $site . '/editor/extensions/links/build.xml',
             $site . '/editor/extensions/popups/build.xml',
             // remove legend.css
-            $admin . '/media/css/legend.css'
+            $admin . '/media/css/legend.css',
+            // remove googlemaps
+            $site . '/editor/extensions/aggregator/googlemaps.php',
+            $site . '/editor/extensions/aggregator/googlemaps.xml'
         );
 
         foreach ($files as $file) {
@@ -861,6 +866,44 @@ abstract class WFInstall {
                 }
             }
         }
+        
+        // transfer styleselect, fontselect, fontsize etc. to a plugin
+        if (version_compare($version, '2.3.5', '<')) {
+            $profiles = self::getProfiles();
+            $table = JTable::getInstance('Profiles', 'WFTable');
+
+            if (!empty($profiles)) {
+                foreach ($profiles as $item) {
+                    $table->load($item->id);
+                    
+                    $plugins = explode(',', $table->plugins);
+
+                    if (strpos($table->rows, 'formatselect') !== false) {
+                        $plugins[] = 'formatselect';
+                    }
+                    
+                    if (strpos($table->rows, 'styleselect') !== false) {
+                        $plugins[] = 'styleselect';
+                    }
+                    
+                    if (strpos($table->rows, 'fontselect') !== false) {
+                        $plugins[] = 'fontselect';
+                    }
+                    
+                    if (strpos($table->rows, 'fontsizeselect') !== false) {
+                        $plugins[] = 'fontsizeselect';
+                    }
+                    
+                    if (strpos($table->rows, 'forecolor') !== false || strpos($table->rows, 'backcolor') !== false) {
+                        $plugins[] = 'fontcolor';
+                    }
+                    
+                    $table->plugins = implode(',', $plugins);
+                    
+                    $table->store();
+                }
+            }
+        }
 
         return true;
     }
@@ -868,7 +911,7 @@ abstract class WFInstall {
     private static function getProfiles() {
         $db = JFactory::getDBO();
         
-        $query = $db->getQuery();
+        $query = $db->getQuery(true);
 
         if (is_object($query)) {
             $query->select('id')->from('#__wf_profiles');

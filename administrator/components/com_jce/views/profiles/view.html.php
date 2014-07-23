@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -95,14 +95,13 @@ class WFViewProfiles extends WFView {
 
                 $where = array();
 
-                if ($search) {
-                    if (method_exists($db, 'escape')) {
-                        $search = $db->escape($search, true);
+                if (!empty($search)) {
+                    if (defined('JPATH_PLATFORM')) {
+                        $quoted = $db->quote('%' . $search . '%', false);
                     } else {
-                        $search = $db->getEscaped($search, true);
+                        $quoted = $db->Quote('%' . $search . '%', false);
                     }
-                    
-                    $where[] = 'LOWER( p.name ) LIKE ' . $db->Quote('%' . $search . '%', false);
+                    $where[] = 'LOWER( p.name ) LIKE ' . $quoted;
                 }
                 if ($filter_state) {
                     if ($filter_state == 'P') {
@@ -182,8 +181,10 @@ class WFViewProfiles extends WFView {
                 if (count($rows) > 1) {
                     WFToolbarHelper::publishList();
                     WFToolbarHelper::unpublishList();
-                    WFToolbarHelper::deleteList('', 'remove', 'WF_PROFILES_DELETE');
                 }
+                
+                WFToolbarHelper::deleteList('', 'remove', 'WF_PROFILES_DELETE');
+               
                 WFToolbarHelper::help('profiles.about');
 
                 $options = array(
@@ -339,7 +340,7 @@ class WFViewProfiles extends WFView {
                     'com_cache',
                     'com_checkin',
                     'com_config',
-                    'com_cpanel',
+                    //'com_cpanel',
                     'com_finder',
                     'com_installer',
                     'com_languages',

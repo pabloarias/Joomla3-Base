@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -96,8 +96,9 @@ abstract class WFToolbarHelper {
                 $html  = '<a href="' . $link . '" target="_blank" onclick="' . self::createClick($link, $w, $h) . '" class="updates" title="' . WFText::_('WF_UPDATES') . '">';
                 $html .= '<span class="icon-32-default icon-32-update" title="' . WFText::_('WF_HELP') . '"></span>' . WFText::_('WF_UPDATES') . '</a>';
             }
+            
+            $bar->appendButton('Custom', $html, 'updates');
         }    
-        $bar->appendButton('Custom', $html, 'updates');
     }
 
     /*public static function access() {

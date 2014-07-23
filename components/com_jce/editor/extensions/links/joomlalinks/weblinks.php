@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -20,7 +20,7 @@ class JoomlalinksWeblinks extends JObject {
      *
      * @access	protected
      */
-    function __construct($options = array()) {
+    public function __construct($options = array()) {
         
     }
 
@@ -34,7 +34,7 @@ class JoomlalinksWeblinks extends JObject {
      * @return	JCE  The editor object.
      * @since	1.5
      */
-    function getInstance() {
+    public static function getInstance() {
         static $instance;
 
         if (!is_object($instance)) {
@@ -43,11 +43,11 @@ class JoomlalinksWeblinks extends JObject {
         return $instance;
     }
 
-    function getOption() {
+    public function getOption() {
         return $this->_option;
     }
 
-    function getList() {
+    public function getList() {
         $wf = WFEditorPlugin::getInstance();
 
         if ($wf->checkAccess('links.joomlalinks.weblinks', 1)) {
@@ -64,6 +64,8 @@ class JoomlalinksWeblinks extends JObject {
             require_once(JPATH_SITE . '/includes/application.php');
         }
         require_once(JPATH_SITE . '/components/com_weblinks/helpers/route.php');
+        
+        $language = '';
 
         switch ($args->view) {
             // Get all WebLink categories
@@ -76,7 +78,12 @@ class JoomlalinksWeblinks extends JObject {
                     $url = '';
 
                     if (method_exists('WeblinksHelperRoute', 'getCategoryRoute')) {
-                        $id = WeblinksHelperRoute::getCategoryRoute($category->id);
+                        // language
+                        if (isset($category->language)) {
+                            $language = $category->language;
+                        }
+                        
+                        $id = WeblinksHelperRoute::getCategoryRoute($category->id, $language);
 
                         if (strpos($id, 'index.php?Itemid=') !== false) {
                             $url = $id;
@@ -110,7 +117,12 @@ class JoomlalinksWeblinks extends JObject {
                                 $id = 'index.php?option=com_weblinks&view=category&id=' . $category->id;
                             } else {
                                 if (method_exists('WeblinksHelperRoute', 'getCategoryRoute')) {
-                                    $id = WeblinksHelperRoute::getCategoryRoute($category->id);
+                                    // language
+                                    if (isset($category->language)) {
+                                        $language = $category->language;
+                                    }
+                                    
+                                    $id = WeblinksHelperRoute::getCategoryRoute($category->id, $language);
 
                                     if (strpos($id, 'index.php?Itemid=') !== false) {
                                         $url = $id;
@@ -135,7 +147,12 @@ class JoomlalinksWeblinks extends JObject {
                 $weblinks = self::_weblinks($args->id);
 
                 foreach ($weblinks as $weblink) {
-                    $id = WeblinksHelperRoute::getWeblinkRoute($weblink->slug, $weblink->catslug);
+                    // language
+                    if (isset($weblink->language)) {
+                        $language = $weblink->language;
+                    }
+                    
+                    $id = WeblinksHelperRoute::getWeblinkRoute($weblink->slug, $weblink->catslug, $language);
 
                     if (defined('JPATH_PLATFORM')) {
                         $id .= '&task=weblink.go';
@@ -156,6 +173,9 @@ class JoomlalinksWeblinks extends JObject {
         $wf = WFEditorPlugin::getInstance();
         $db = JFactory::getDBO();
         $user = JFactory::getUser();
+        
+        $version    = new JVersion();
+        $language   = $version->isCompatible('3.0') ? ', a.language' : '';
 
         $dbquery = $db->getQuery(true);
 
@@ -165,6 +185,8 @@ class JoomlalinksWeblinks extends JObject {
 
         if ($wf->getParam('links.joomlalinks.weblinks_alias', 1) == 1) {
             if (is_object($dbquery) && method_exists($dbquery, 'charLength')) {
+                $query .= $language;
+                
                 //sqlsrv changes
                 $case_when1 = ' CASE WHEN ';
                 $case_when1 .= $dbquery->charLength('a.alias', '!=', '0');

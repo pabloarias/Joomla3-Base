@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -172,7 +172,7 @@ class WFModelEditor extends WFModelBase {
             $settings['toggle_state'] = $wf->getParam('editor.toggle_state', 1, 1);
         }// end profile
         // set compression states
-        $compress = array('javascript' => intval($wf->getParam('editor.compress_javascript', 0)), 'css' => intval($wf->getParam('editor.compress_css', 0)));
+        $compress = array('javascript' => intval($wf->getParam('editor.compress_javascript', 1)), 'css' => intval($wf->getParam('editor.compress_css', 1)));
 
         // set compression
         if ($compress['css']) {
@@ -180,8 +180,6 @@ class WFModelEditor extends WFModelBase {
         } else {
             // CSS
             $this->addStyleSheet($this->getURL(true) . '/libraries/css/editor.css');
-
-            //$this->addStyleSheet($this->getURL(true) . '/libraries/bootstrap/css/bootstrap.css?version=' . $version);
             // get plugin styles
             $this->getPluginStyles($settings);
         }
@@ -451,25 +449,28 @@ class WFModelEditor extends WFModelBase {
         }
 
         // get plugins
-        $plugins = $model->getPlugins();
+        $plugins    = $model->getPlugins();
         // get core commands
-        $commands = $model->getCommands();
+        $commands   = $model->getCommands();
 
         // merge plugins and commands
         $icons = array_merge($commands, $plugins);
+        
         // create an array of rows
         $lists = explode(';', $this->profile->rows);
 
         // backwards compatability map
         $map = array(
             'paste'     => 'clipboard',
-            'spacer'    => '|'
+            'spacer'    => '|',
+            'forecolor' => 'fontcolor',
+            'backcolor' => 'backcolor'
         );
 
         $x = 0;
         for ($i = 1; $i <= count($lists); $i++) {
-            $buttons = array();
-            $items = explode(',', $lists[$x]);
+            $buttons    = array();
+            $items      = explode(',', $lists[$x]);
 
             foreach ($items as $item) {
                 // set the plugin/command name
@@ -485,7 +486,7 @@ class WFModelEditor extends WFModelBase {
                     if (array_key_exists($item, $icons) === false) {
                         continue;
                     }
-                    
+
                     // assign icon
                     $item = $icons[$item]->icon;
                 }
@@ -549,6 +550,36 @@ class WFModelEditor extends WFModelBase {
 
                 $plugins = explode(',', $this->profile->plugins);
                 $plugins = array_unique(array_merge(array('autolink', 'cleanup', 'core', 'code', 'colorpicker', 'upload', 'format'), $plugins));
+
+                // add formatselect
+                if (in_array('formatselect', $plugins) === false && strpos($this->profile->rows, 'formatselect') !== false) {
+                    $plugins[] = 'formatselect';
+                }
+
+                // add styleselect
+                if (in_array('styleselect', $plugins) === false && strpos($this->profile->rows, 'styleselect') !== false) {
+                    $plugins[] = 'styleselect';
+                }
+
+                // add fontselect
+                if (in_array('fontselect', $plugins) === false && strpos($this->profile->rows, 'fontselect') !== false) {
+                    $plugins[] = 'fontselect';
+                }
+
+                // add formatselect
+                if (in_array('fontsizeselect', $plugins) === false && strpos($this->profile->rows, 'fontsizeselect') !== false) {
+                    $plugins[] = 'fontsizeselect';
+                }
+                
+                // add font colours
+                if (in_array('fontcolor', $plugins) === false && preg_match('#(forecolor|backcolor)#', $this->profile->rows)) {
+                    $plugins[] = 'fontcolor';
+                }
+
+                // add importcss
+                if (in_array('styleselect', $plugins) || in_array('fontselect', $plugins)) {
+                    $plugins[] = 'importcss';
+                }
 
                 // add advlists plugin if lists are loaded
                 if (in_array('lists', $plugins)) {
@@ -722,6 +753,23 @@ class WFModelEditor extends WFModelBase {
         return $assigned;
     }
 
+    private static function getYoothemePath($template) {
+        $warp7 = JPATH_SITE . '/templates/' . $template . '/warp.php';
+
+        if (is_file($warp7)) {
+            // get warp
+            $warp       = require($warp7);
+            $layouts    = $warp['config']->get('layouts');            
+            $style      = $layouts['default']['style'];
+
+            if (!empty($style)) {
+                return "templates/" . $template . "/styles/" . $style . "/css";
+            }
+        }
+        
+        return "templates/" . $template . "/css";
+    }
+
     private static function getStyleSheetsList($absolute = false) {
         jimport('joomla.filesystem.folder');
         jimport('joomla.filesystem.file');
@@ -748,8 +796,15 @@ class WFModelEditor extends WFModelBase {
             if (is_dir($path)) {
                 // assign template
                 $template = $item;
-                // assign url
-                $url = "templates/" . $template . "/css";
+
+                if (substr($template, 0, 4) === "yoo_") {
+                    $url  = self::getYoothemePath($template);
+                    $path = JPATH_SITE . '/' . $url;
+                } else {
+                    // assign url
+                    $url = "templates/" . $template . "/css";
+                }
+
                 break;
             }
         }
@@ -776,7 +831,7 @@ class WFModelEditor extends WFModelBase {
                 $css = array();
 
                 if (JFolder::exists($path)) {
-                    $css = JFolder::files($path, '(base|core|template|template_css)\.(css|less)$', false, true);
+                    $css = JFolder::files($path, '(base|core|theme|template|template_css)\.(css|less)$', false, true);
                 }
 
                 if (!empty($css)) {

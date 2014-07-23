@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2013 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -38,7 +38,7 @@ class WFElementBlockformats extends WFElement {
     }
 
     public function fetchElement($name, $value, &$node, $control_name) {
-
+        
         if (empty($value)) {
             $data = array_keys(self::$formats);
             $value = array();
@@ -54,6 +54,10 @@ class WFElementBlockformats extends WFElement {
 
         // create default font structure
         foreach ($data as $format) {
+            if (array_key_exists($format, self::$formats) === false) {
+                continue;
+            }
+            
             if (empty($value) || in_array($format, $value)) {
                 $output[] = '<li><input type="checkbox" value="' . $format . '" checked="checked" /><span class="blockformat-' . $format . '">' . self::$formats[$format] . '</span></li>';
             } else {
