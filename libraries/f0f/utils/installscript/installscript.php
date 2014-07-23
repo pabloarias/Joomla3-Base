@@ -307,14 +307,18 @@ abstract class F0FUtilsInstallscript
 		// Install subextensions
 		$status = $this->installSubextensions($parent);
 
-		// Uninstall obsolete subextensions
-		$uninstall_status = $this->uninstallObsoleteSubextensions($parent);
-
 		// Install FOF
 		$fofInstallationStatus = $this->installFOF($parent);
 
 		// Install Akeeba Straper
 		$strapperInstallationStatus = $this->installStrapper($parent);
+
+		// Make sure menu items are installed
+		$this->_createAdminMenus($parent);
+
+		// Make sure menu items are published (surprise goal in the 92' by JInstaller wins the cup for "most screwed up
+		// bug in the history of Joomla!")
+		$this->_reallyPublishAdminMenuItems($parent);
 
 		// Which files should I remove?
 		if ($this->isPaid)
@@ -360,6 +364,7 @@ abstract class F0FUtilsInstallscript
 			}
 		}
 
+		// Remove obsolete files and folders
 		$this->removeFilesAndFolders($removeFiles);
 
 		// Copy the CLI files (if any)
@@ -368,6 +373,9 @@ abstract class F0FUtilsInstallscript
 		// Show the post-installation page
 		$this->renderPostInstallation($status, $fofInstallationStatus, $strapperInstallationStatus, $parent);
 
+		// Uninstall obsolete subextensions
+		$uninstall_status = $this->uninstallObsoleteSubextensions($parent);
+
 		// Clear the FOF cache
 		$platform = F0FPlatform::getInstance();
 
@@ -375,6 +383,9 @@ abstract class F0FUtilsInstallscript
 		{
 			F0FPlatform::getInstance()->clearCache();
 		}
+
+		// Make sure the Joomla! menu structure is correct
+		$this->_rebuildMenu();
 	}
 
 	/**
@@ -415,9 +426,9 @@ abstract class F0FUtilsInstallscript
 				JFile::delete(JPATH_ROOT . '/cli/' . $script);
 			}
 
-			if (JFile::exists($src . '/cli/' . $script))
+			if (JFile::exists($src . '/' . $this->cliSourcePath . '/' . $script))
 			{
-				JFile::copy($src . '/cli/' . $script, JPATH_ROOT . '/cli/' . $script);
+				JFile::copy($src . '/' . $this->cliSourcePath . '/' . $script, JPATH_ROOT . '/cli/' . $script);
 			}
 		}
 	}
@@ -1553,5 +1564,402 @@ abstract class F0FUtilsInstallscript
 		}
 
 		return $status;
+	}
+
+	/**
+	 * @param JInstallerAdapterComponent $parent
+	 *
+	 * @return bool
+	 *
+	 * @throws Exception When the Joomla! menu is FUBAR
+	 */
+	private function _createAdminMenus($parent)
+	{
+		$db = $parent->getParent()->getDbo();
+		/** @var JTableMenu $table */
+		$table = JTable::getInstance('menu');
+		$option = $parent->get('element');
+
+		// If a component exists with this option in the table then we don't need to add menus
+		$query = $db->getQuery(true)
+			->select('m.id, e.extension_id')
+			->from('#__menu AS m')
+			->join('LEFT', '#__extensions AS e ON m.component_id = e.extension_id')
+			->where('m.parent_id = 1')
+			->where('m.client_id = 1')
+			->where('e.element = ' . $db->quote($option));
+
+		$db->setQuery($query);
+
+		$componentrow = $db->loadObject();
+
+		// Check if menu items exist
+		if ($componentrow)
+		{
+			// @todo Return if the menu item already exists to save some time
+			//return true;
+		}
+
+		// Let's find the extension id
+		$query->clear()
+			->select('e.extension_id')
+			->from('#__extensions AS e')
+			->where('e.element = ' . $db->quote($option));
+		$db->setQuery($query);
+		$component_id = $db->loadResult();
+
+		// Ok, now its time to handle the menus.  Start with the component root menu, then handle submenus.
+		$menuElement = $parent->get('manifest')->administration->menu;
+
+		// We need to insert the menu item as the last child of Joomla!'s menu root node. By default this is the
+		// menu item with ID=1. However, some crappy upgrade scripts enjoy screwing it up. Hey, ho, the workaround
+		// way I go.
+		$query = $db->getQuery(true)
+			->select($db->qn('id'))
+			->from($db->qn('#__menu'))
+			->where($db->qn('id') . ' = ' . $db->q(1));
+		$rootItemId = $db->setQuery($query)->loadResult();
+
+		if (is_null($rootItemId))
+		{
+			// Guess what? The Problem has happened. Let's find the root node by title.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->where($db->qn('title') . ' = ' . $db->q('Menu_Item_Root'));
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// For crying out loud, did that idiot changed the title too?! Let's find it by alias.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->where($db->qn('alias') . ' = ' . $db->q('root'));
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// Dude. Dude! Duuuuuuude! The alias is screwed up, too?! Find it by component ID.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->where($db->qn('component_id') . ' = ' . $db->q('0'));
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// Your site is more of a "shite" than a "site". Let's try with minimum lft value.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->order($db->qn('lft') . ' ASC');
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// I quit. Your site is broken. What the hell are you doing with it? I'll just throw an error.
+			throw new Exception("Your site is broken. There is no root menu item. As a result it is impossible to create menu items. The installation of this component has failed. Please fix your database and retry!", 500);
+		}
+
+		if ($menuElement)
+		{
+			$data = array();
+			$data['menutype'] = 'main';
+			$data['client_id'] = 1;
+			$data['title'] = (string) trim($menuElement);
+			$data['alias'] = (string) $menuElement;
+			$data['link'] = 'index.php?option=' . $option;
+			$data['type'] = 'component';
+			$data['published'] = 0;
+			$data['parent_id'] = 1;
+			$data['component_id'] = $component_id;
+			$data['img'] = ((string) $menuElement->attributes()->img) ? (string) $menuElement->attributes()->img : 'class:component';
+			$data['home'] = 0;
+		}
+		// No menu element was specified, Let's make a generic menu item
+		else
+		{
+			$data = array();
+			$data['menutype'] = 'main';
+			$data['client_id'] = 1;
+			$data['title'] = $option;
+			$data['alias'] = $option;
+			$data['link'] = 'index.php?option=' . $option;
+			$data['type'] = 'component';
+			$data['published'] = 0;
+			$data['parent_id'] = 1;
+			$data['component_id'] = $component_id;
+			$data['img'] = 'class:component';
+			$data['home'] = 0;
+		}
+
+		try
+		{
+			$table->setLocation($rootItemId, 'last-child');
+		}
+		catch (InvalidArgumentException $e)
+		{
+			JLog::add($e->getMessage(), JLog::WARNING, 'jerror');
+
+			return false;
+		}
+
+		if (!$table->bind($data) || !$table->check() || !$table->store())
+		{
+			// The menu item already exists. Delete it and retry instead of throwing an error.
+			$query->clear()
+				->select('id')
+				->from('#__menu')
+				->where('menutype = ' . $db->quote('main'))
+				->where('client_id = 1')
+				->where('link = ' . $db->quote('index.php?option=' . $option))
+				->where('type = ' . $db->quote('component'))
+				->where('parent_id = 1')
+				->where('home = 0');
+
+			$db->setQuery($query);
+			$menu_id = $db->loadResult();
+
+			if (!$menu_id)
+			{
+				// Oops! Could not get the menu ID. Go back and rollback changes.
+				JError::raiseWarning(1, $table->getError());
+
+				return false;
+			}
+			else
+			{
+				// Remove the old menu item
+				$query->clear()
+					->delete('#__menu')
+					->where('id = ' . (int) $menu_id);
+
+				$db->setQuery($query);
+				$db->query();
+
+				// Retry creating the menu item
+				$table->setLocation($rootItemId, 'last-child');
+
+				if (!$table->bind($data) || !$table->check() || !$table->store())
+				{
+					// Install failed, warn user and rollback changes
+					JError::raiseWarning(1, $table->getError());
+
+					return false;
+				}
+			}
+		}
+
+		/*
+		 * Since we have created a menu item, we add it to the installation step stack
+		 * so that if we have to rollback the changes we can undo it.
+		 */
+		$parent->getParent()->pushStep(array('type' => 'menu', 'id' => $component_id));
+
+		/*
+		 * Process SubMenus
+		 */
+
+		if (!$parent->get('manifest')->administration->submenu)
+		{
+			return true;
+		}
+
+		$parent_id = $table->id;
+
+		foreach ($parent->get('manifest')->administration->submenu->menu as $child)
+		{
+			$data = array();
+			$data['menutype'] = 'main';
+			$data['client_id'] = 1;
+			$data['title'] = (string) trim($child);
+			$data['alias'] = (string) $child;
+			$data['type'] = 'component';
+			$data['published'] = 0;
+			$data['parent_id'] = $parent_id;
+			$data['component_id'] = $component_id;
+			$data['img'] = ((string) $child->attributes()->img) ? (string) $child->attributes()->img : 'class:component';
+			$data['home'] = 0;
+
+			// Set the sub menu link
+			if ((string) $child->attributes()->link)
+			{
+				$data['link'] = 'index.php?' . $child->attributes()->link;
+			}
+			else
+			{
+				$request = array();
+
+				if ((string) $child->attributes()->act)
+				{
+					$request[] = 'act=' . $child->attributes()->act;
+				}
+
+				if ((string) $child->attributes()->task)
+				{
+					$request[] = 'task=' . $child->attributes()->task;
+				}
+
+				if ((string) $child->attributes()->controller)
+				{
+					$request[] = 'controller=' . $child->attributes()->controller;
+				}
+
+				if ((string) $child->attributes()->view)
+				{
+					$request[] = 'view=' . $child->attributes()->view;
+				}
+
+				if ((string) $child->attributes()->layout)
+				{
+					$request[] = 'layout=' . $child->attributes()->layout;
+				}
+
+				if ((string) $child->attributes()->sub)
+				{
+					$request[] = 'sub=' . $child->attributes()->sub;
+				}
+
+				$qstring = (count($request)) ? '&' . implode('&', $request) : '';
+				$data['link'] = 'index.php?option=' . $option . $qstring;
+			}
+
+			$table = JTable::getInstance('menu');
+
+			try
+			{
+				$table->setLocation($parent_id, 'last-child');
+			}
+			catch (InvalidArgumentException $e)
+			{
+				return false;
+			}
+
+			if (!$table->bind($data) || !$table->check() || !$table->store())
+			{
+				// Install failed, rollback changes
+				return false;
+			}
+
+			/*
+			 * Since we have created a menu item, we add it to the installation step stack
+			 * so that if we have to rollback the changes we can undo it.
+			 */
+			$parent->getParent()->pushStep(array('type' => 'menu', 'id' => $component_id));
+		}
+
+		return true;
+	}
+
+	/**
+	 * Make sure the Component menu items are really published!
+	 *
+	 * @param JInstallerAdapterComponent $parent
+	 *
+	 * @return bool
+	 */
+	private function _reallyPublishAdminMenuItems($parent)
+	{
+		$db = $parent->getParent()->getDbo();
+		$option = $parent->get('element');
+
+		$query = $db->getQuery(true)
+			->update('#__menu AS m')
+			->join('LEFT', '#__extensions AS e ON m.component_id = e.extension_id')
+			->set($db->qn('published') . ' = ' . $db->q(1))
+			->where('m.parent_id = 1')
+			->where('m.client_id = 1')
+			->where('e.element = ' . $db->quote($option));
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			// If it fails, it fails. Who cares.
+		}
+	}
+
+	/**
+	 * Tells Joomla! to rebuild its menu structure to make triple-sure that the Components menu items really do exist
+	 * in the correct place and can really be rendered.
+	 */
+	private function _rebuildMenu()
+	{
+		/** @var JTableMenu $table */
+		$table = JTable::getInstance('menu');
+		$db = $table->getDbo();
+
+		// We need to rebuild the menu based on its root item. By default this is the menu item with ID=1. However, some
+		// crappy upgrade scripts enjoy screwing it up. Hey, ho, the workaround way I go.
+		$query = $db->getQuery(true)
+			->select($db->qn('id'))
+			->from($db->qn('#__menu'))
+			->where($db->qn('id') . ' = ' . $db->q(1));
+		$rootItemId = $db->setQuery($query)->loadResult();
+
+		if (is_null($rootItemId))
+		{
+			// Guess what? The Problem has happened. Let's find the root node by title.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->where($db->qn('title') . ' = ' . $db->q('Menu_Item_Root'));
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// For crying out loud, did that idiot changed the title too?! Let's find it by alias.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->where($db->qn('alias') . ' = ' . $db->q('root'));
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// Dude. Dude! Duuuuuuude! The alias is screwed up, too?! Find it by component ID.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->where($db->qn('component_id') . ' = ' . $db->q('0'));
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// Your site is more of a "shite" than a "site". Let's try with minimum lft value.
+			$rootItemId = null;
+			$query = $db->getQuery(true)
+				->select($db->qn('id'))
+				->from($db->qn('#__menu'))
+				->order($db->qn('lft') . ' ASC');
+			$rootItemId = $db->setQuery($query, 0, 1)->loadResult();
+		}
+
+		if (is_null($rootItemId))
+		{
+			// I quit. Your site is broken.
+			return false;
+		}
+
+		$table->rebuild($rootItemId);
 	}
 } 

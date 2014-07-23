@@ -351,7 +351,7 @@ class F0FTemplateUtils
 			if (strlen($file) > 4 && strrpos($file, '.min', '-4'))
 			{
 				$position = strrpos($file, '.min', '-4');
-				$filename = str_replace('.min', '.', $file, $position);
+				$filename = str_replace('.min', '.', $file, $position) . $ext;
 			}
 			else
 			{

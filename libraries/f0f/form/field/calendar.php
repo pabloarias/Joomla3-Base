@@ -44,6 +44,7 @@ class F0FFormFieldCalendar extends JFormFieldCalendar implements F0FFormField
 		{
 			// ATTENTION: Redirected getInput() to getStatic()
 			case 'input':
+			case 'static':
 				if (empty($this->static))
 				{
 					$this->static = $this->getStatic();

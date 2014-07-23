@@ -72,7 +72,37 @@ class F0FFormFieldOrdering extends JFormField implements F0FFormField
 	 */
 	protected function getInput()
 	{
-		throw new Exception(__CLASS__ . ' cannot be used in input forms');
+		$html = array();
+		$attr = '';
+
+		// Initialize some field attributes.
+		$attr .= !empty($this->class) ? ' class="' . $this->class . '"' : '';
+		$attr .= $this->disabled ? ' disabled' : '';
+		$attr .= !empty($this->size) ? ' size="' . $this->size . '"' : '';
+
+		// Initialize JavaScript field attributes.
+		$attr .= !empty($this->onchange) ? ' onchange="' . $this->onchange . '"' : '';
+
+		$this->item = $this->form->getModel()->getItem();
+
+		$keyfield = $this->item->getKeyName();
+		$itemId   = $this->item->$keyfield;
+
+		$query = $this->getQuery();
+
+		// Create a read-only list (no name) with a hidden input to store the value.
+		if ($this->readonly)
+		{
+			$html[] = JHtml::_('list.ordering', '', $query, trim($attr), $this->value, $itemId ? 0 : 1);
+			$html[] = '<input type="hidden" name="' . $this->name . '" value="' . $this->value . '"/>';
+		}
+		else
+		{
+			// Create a regular list.
+			$html[] = JHtml::_('list.ordering', $this->name, $query, trim($attr), $this->value, $itemId ? 0 : 1);
+		}
+
+		return implode($html);
 	}
 
 	/**
@@ -167,5 +197,26 @@ class F0FFormFieldOrdering extends JFormField implements F0FFormField
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Builds the query for the ordering list.
+	 *
+	 * @since 2.3.2
+	 *
+	 * @return JDatabaseQuery  The query for the ordering form field
+	 */
+	protected function getQuery()
+	{
+		$ordering = $this->name;
+		$title    = $this->element['ordertitle'] ? (string) $this->element['ordertitle'] : $this->item->getColumnAlias('title');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select(array($db->quoteName($ordering, 'value'), $db->quoteName($title, 'text')))
+				->from($db->quoteName($this->item->getTableName()))
+				->order($ordering);
+	
+		return $query;
 	}
 }

@@ -2178,11 +2178,11 @@ class F0FController extends F0FUtilsObject
 
 			// Try to check-in the record if it's not a new one
 			$status = $model->checkin();
+		}
 
-			if ($status)
-			{
-				$status = $this->onAfterApplySave();
-			}
+		if ($status)
+		{
+			$status = $this->onAfterApplySave();
 		}
 
 		$this->input->set('id', $model->getId());

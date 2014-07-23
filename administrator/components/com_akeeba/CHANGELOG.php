@@ -1,4 +1,16 @@
 <?php die();?>
+Akeeba Backup 3.11.3
+================================================================================
++ [PRO] You can now select the backup profile for System Restore Point backups
+~ Working around badly written system plugins which output Javascript without a trailing semicolon and/or newline, leading to Javascript errors. This is not a bug in our software, it's a bug in those badly written plugins and WE have to work around THEIR bad code!
+~ Forcing HTTP 302 for legacy front-end backup mode
+# [HIGH] [PRO] Azure post-processing engine wouldn't apply remote quotas
+# [HIGH] [PRO] CLI backup check script would fail to execute
+# [HIGH] [PRO] System Restore Points would fail if the currently active backup profile isn't of the type "Full site backup"
+# [HIGH] [PRO] System Restore Points would cause a download failure when applying updates of commercial components on Joomla! 2.5
+# [HIGH] [PRO] ANGIE: restoring off-site directories leads to unworkable permissions (0341) in their subdirectories due to a typo
+# [LOW] Exception thrown on unreadable directories under PHP 5.5, resulting to backup failure unless they are excluded from the backup
+
 Akeeba Backup 3.11.2
 ================================================================================
 ! Backup before update resulting in 403 error when updating Joomla!

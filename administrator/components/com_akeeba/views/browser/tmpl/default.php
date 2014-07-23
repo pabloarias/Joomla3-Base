@@ -13,7 +13,10 @@ defined('_JEXEC') or die();
 JHtml::_('behavior.framework');
 
 $rootDirWarning = AkeebaHelperEscape::escapeJS(JText::_('CONFIG_UI_ROOTDIR'));
-JFactory::getDocument()->addScriptDeclaration(<<<ENDJS
+JFactory::getDocument()->addScriptDeclaration(<<<JS
+
+	// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
+	// due to missing trailing semicolon and/or newline in their code.
 	function akeeba_browser_useThis()
 	{
 		var rawFolder = document.forms.adminForm.folderraw.value;
@@ -24,7 +27,8 @@ JFactory::getDocument()->addScriptDeclaration(<<<ENDJS
 		}
 		window.parent.akeeba_browser_callback( rawFolder );
 	}
-ENDJS
+
+JS
 , 'text/javascript');
 
 ?>

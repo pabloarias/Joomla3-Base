@@ -100,22 +100,6 @@ class AECoreDomainInit extends AEAbstractPart
 		$registry->set('volatile.core.description', $this->description);
 		$registry->set('volatile.core.comment', $this->comment);
 
-		// Apply the configuration overrides
-		$overrides = AEPlatform::getInstance()->configOverrides;
-
-		if (is_array($overrides) && @count($overrides))
-		{
-			$protected_keys = $registry->getProtectedKeys();
-			$registry->resetProtectedKeys();
-
-			foreach ($overrides as $k => $v)
-			{
-				$registry->set($k, $v);
-			}
-
-			$registry->setProtectedKeys($protected_keys);
-		}
-
 		$this->setState('prepared');
 	}
 

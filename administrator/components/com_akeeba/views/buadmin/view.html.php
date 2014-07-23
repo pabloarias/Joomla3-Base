@@ -80,7 +80,10 @@ class AkeebaViewBuadmin extends F0FViewHtml
 		// "Show warning first" download button. Joomlantastic!
 		$confirmationText = AkeebaHelperEscape::escapeJS( JText::_('STATS_LOG_DOWNLOAD_CONFIRM'), "'\n" );
 		$baseURI = JURI::base();
-		$js = <<<ENDSCRIPT
+		$js = <<<JS
+
+// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
+// due to missing trailing semicolon and/or newline in their code.
 function confirmDownloadButton()
 {
 	var answer = confirm('$confirmationText');
@@ -98,7 +101,7 @@ function confirmDownload(id, part)
 	}
 }
 
-ENDSCRIPT;
+JS;
 
 		$document = JFactory::getDocument();
 		$document->addScriptDeclaration($js);

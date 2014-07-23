@@ -60,7 +60,16 @@ class AEScanLarge extends AEAbstractScan
 			return $false;
 		}
 
-		$di = new DirectoryIterator($folder);
+		try
+		{
+			$di = new DirectoryIterator($folder);
+		}
+		catch (Exception $e)
+		{
+			$this->setWarning('Unreadable directory ' . $folder);
+
+			return $false;
+		}
 
 		if (!$di->valid())
 		{

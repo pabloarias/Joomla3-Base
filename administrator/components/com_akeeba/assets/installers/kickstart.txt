@@ -34,6 +34,8 @@ define('KICKSTARTPRO', '##KICKSTARTPRO##');
 // Uncomment the following line to enable Kickstart's debug mode
 //define('KSDEBUG', 1);
 
+define('KSWINDOWS', substr(PHP_OS, 0, 3) == 'WIN');
+
 if(!defined('KSROOTDIR'))
 {
 	define('KSROOTDIR', dirname(__FILE__));
@@ -2643,7 +2645,7 @@ class AKPostprocFTP extends AKAbstractPostproc
 		$restorePerms = AKFactory::get('kickstart.setup.restoreperms', false);
 		if($restorePerms)
 		{
-			@ftp_chmod($this->_handle, $perms, $remoteName);
+			@ftp_chmod($this->_handle, $this->perms, $remoteName);
 		}
 		else
 		{
@@ -3180,7 +3182,7 @@ class AKPostprocSFTP extends AKAbstractPostproc
 
 		if($restorePerms)
 		{
-            $this->chmod($remoteName, $perms);
+            $this->chmod($remoteName, $this->perms);
 		}
 		else
 		{
@@ -3541,49 +3543,82 @@ class AKPostprocSFTP extends AKAbstractPostproc
  */
 class AKPostprocHybrid extends AKAbstractPostproc
 {
+
 	/** @var bool Should I use the FTP layer? */
 	public $useFTP = false;
+
 	/** @var bool Should I use FTP over implicit SSL? */
 	public $useSSL = false;
+
 	/** @var bool use Passive mode? */
 	public $passive = true;
+
 	/** @var string FTP host name */
 	public $host = '';
+
 	/** @var int FTP port */
 	public $port = 21;
+
 	/** @var string FTP user name */
 	public $user = '';
+
 	/** @var string FTP password */
 	public $pass = '';
+
 	/** @var string FTP initial directory */
 	public $dir = '';
+
 	/** @var resource The FTP handle */
 	private $handle = null;
+
 	/** @var string The temporary directory where the data will be stored */
 	private $tempDir = '';
 
+	/** @var null The FTP connection handle */
+	private $_handle = null;
+
+	/**
+	 * Public constructor. Tries to connect to the FTP server.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
 
-		$this->useFTP = AKFactory::get('kickstart.ftp.enable', false);
+		$this->useFTP = true;
 		$this->useSSL = AKFactory::get('kickstart.ftp.ssl', false);
 		$this->passive = AKFactory::get('kickstart.ftp.passive', true);
 		$this->host = AKFactory::get('kickstart.ftp.host', '');
 		$this->port = AKFactory::get('kickstart.ftp.port', 21);
-		if(trim($this->port) == '') $this->port = 21;
 		$this->user = AKFactory::get('kickstart.ftp.user', '');
 		$this->pass = AKFactory::get('kickstart.ftp.pass', '');
 		$this->dir = AKFactory::get('kickstart.ftp.dir', '');
 		$this->tempDir = AKFactory::get('kickstart.ftp.tempdir', '');
 
+		if (trim($this->port) == '')
+		{
+			$this->port = 21;
+		}
+
+		// If FTP is not configured, skip it altogether
+		if (empty($this->host) || empty($this->user) || empty($this->pass))
+		{
+			$this->useFTP = false;
+		}
+
+		// Try to connect to the FTP server
 		$connected = $this->connect();
 
-		if($connected)
+		// If the connection fails, skip FTP altogether
+		if (!$connected)
 		{
-			if(!empty($this->tempDir))
+			$this->useFTP = false;
+		}
+
+		if ($connected)
+		{
+			if (!empty($this->tempDir))
 			{
-				$tempDir = rtrim($this->tempDir, '/\\').'/';
+				$tempDir = rtrim($this->tempDir, '/\\') . '/';
 				$writable = $this->isDirWritable($tempDir);
 			}
 			else
@@ -3592,26 +3627,30 @@ class AKPostprocHybrid extends AKAbstractPostproc
 				$writable = false;
 			}
 
-			if(!$writable) {
+			if (!$writable)
+			{
 				// Default temporary directory is the current root
 				$tempDir = KSROOTDIR;
-				if(empty($tempDir))
+				if (empty($tempDir))
 				{
 					// Oh, we have no directory reported!
 					$tempDir = '.';
 				}
 				$absoluteDirToHere = $tempDir;
-				$tempDir = rtrim(str_replace('\\','/',$tempDir),'/');
-				if(!empty($tempDir)) $tempDir .= '/';
+				$tempDir = rtrim(str_replace('\\', '/', $tempDir), '/');
+				if (!empty($tempDir))
+				{
+					$tempDir .= '/';
+				}
 				$this->tempDir = $tempDir;
 				// Is this directory writable?
 				$writable = $this->isDirWritable($tempDir);
 			}
 
-			if(!$writable)
+			if (!$writable)
 			{
 				// Nope. Let's try creating a temporary directory in the site's root.
-				$tempDir = $absoluteDirToHere.'/kicktemp';
+				$tempDir = $absoluteDirToHere . '/kicktemp';
 				$this->createDirRecursive($tempDir, 0777);
 				// Try making it writable...
 				$this->fixPermissions($tempDir);
@@ -3619,21 +3658,21 @@ class AKPostprocHybrid extends AKAbstractPostproc
 			}
 
 			// Was the new directory writable?
-			if(!$writable)
+			if (!$writable)
 			{
 				// Let's see if the user has specified one
 				$userdir = AKFactory::get('kickstart.ftp.tempdir', '');
-				if(!empty($userdir))
+				if (!empty($userdir))
 				{
 					// Is it an absolute or a relative directory?
 					$absolute = false;
-					$absolute = $absolute || ( substr($userdir,0,1) == '/' );
-					$absolute = $absolute || ( substr($userdir,1,1) == ':' );
-					$absolute = $absolute || ( substr($userdir,2,1) == ':' );
-					if(!$absolute)
+					$absolute = $absolute || (substr($userdir, 0, 1) == '/');
+					$absolute = $absolute || (substr($userdir, 1, 1) == ':');
+					$absolute = $absolute || (substr($userdir, 2, 1) == ':');
+					if (!$absolute)
 					{
 						// Make absolute
-						$tempDir = $absoluteDirToHere.$userdir;
+						$tempDir = $absoluteDirToHere . $userdir;
 					}
 					else
 					{
@@ -3641,7 +3680,7 @@ class AKPostprocHybrid extends AKAbstractPostproc
 						$tempDir = $userdir;
 					}
 					// Does the directory exist?
-					if( is_dir($tempDir) )
+					if (is_dir($tempDir))
 					{
 						// Yeah. Is it writable?
 						$writable = $this->isDirWritable($tempDir);
@@ -3650,7 +3689,7 @@ class AKPostprocHybrid extends AKAbstractPostproc
 			}
 			$this->tempDir = $tempDir;
 
-			if(!$writable)
+			if (!$writable)
 			{
 				// No writable directory found!!!
 				$this->setError(AKText::_('FTP_TEMPDIR_NOT_WRITABLE'));
@@ -3663,6 +3702,9 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		}
 	}
 
+	/**
+	 * Called after unserialisation, tries to reconnect to FTP
+	 */
 	function __wakeup()
 	{
 		if ($this->useFTP)
@@ -3671,43 +3713,62 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		}
 	}
 
+	function __destruct()
+	{
+		if (!$this->useFTP)
+		{
+			@ftp_close($this->handle);
+		}
+	}
+
+	/**
+	 * Tries to connect to the FTP server
+	 *
+	 * @return bool
+	 */
 	public function connect()
 	{
 		if (!$this->useFTP)
 		{
-			return true;
+			return false;
 		}
 
 		// Connect to server, using SSL if so required
-		if($this->useSSL) {
+		if ($this->useSSL)
+		{
 			$this->handle = @ftp_ssl_connect($this->host, $this->port);
-		} else {
+		}
+		else
+		{
 			$this->handle = @ftp_connect($this->host, $this->port);
 		}
-		if($this->handle === false)
+		if ($this->handle === false)
 		{
 			$this->setError(AKText::_('WRONG_FTP_HOST'));
+
 			return false;
 		}
 
 		// Login
-		if(! @ftp_login($this->handle, $this->user, $this->pass))
+		if (!@ftp_login($this->handle, $this->user, $this->pass))
 		{
 			$this->setError(AKText::_('WRONG_FTP_USER'));
 			@ftp_close($this->handle);
+
 			return false;
 		}
 
 		// Change to initial directory
-		if(! @ftp_chdir($this->handle, $this->dir))
+		if (!@ftp_chdir($this->handle, $this->dir))
 		{
 			$this->setError(AKText::_('WRONG_FTP_PATH1'));
 			@ftp_close($this->handle);
+
 			return false;
 		}
 
 		// Enable passive mode if the user requested it
-		if( $this->passive )
+		if ($this->passive)
 		{
 			@ftp_pasv($this->handle, true);
 		}
@@ -3719,6 +3780,7 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		// Try to download ourselves
 		$testFilename = defined('KSSELFNAME') ? KSSELFNAME : basename(__FILE__);
 		$tempHandle = fopen('php://temp', 'r+');
+
 		if (@ftp_fget($this->handle, $tempHandle, $testFilename, FTP_ASCII, 0) === false)
 		{
 			$this->setError(AKText::_('WRONG_FTP_PATH2'));
@@ -3727,14 +3789,20 @@ class AKPostprocHybrid extends AKAbstractPostproc
 
 			return false;
 		}
+
 		fclose($tempHandle);
 
 		return true;
 	}
 
+	/**
+	 * Post-process an extracted file, using FTP or direct file writes to move it
+	 *
+	 * @return bool
+	 */
 	public function process()
 	{
-		if( is_null($this->tempFilename) )
+		if (is_null($this->tempFilename))
 		{
 			// If an empty filename is passed, it means that we shouldn't do any post processing, i.e.
 			// the entity was a directory or symlink
@@ -3742,14 +3810,16 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		}
 
 		$remotePath = dirname($this->filename);
-		$removePath = AKFactory::get('kickstart.setup.destdir','');
+		$removePath = AKFactory::get('kickstart.setup.destdir', '');
 		$root = rtrim($removePath, '/\\');
-		if(!empty($removePath))
+
+		if (!empty($removePath))
 		{
 			$removePath = ltrim($removePath, "/");
 			$remotePath = ltrim($remotePath, "/");
 			$left = substr($remotePath, 0, strlen($removePath));
-			if($left == $removePath)
+
+			if ($left == $removePath)
 			{
 				$remotePath = substr($remotePath, strlen($removePath));
 			}
@@ -3757,23 +3827,25 @@ class AKPostprocHybrid extends AKAbstractPostproc
 
 		$absoluteFSPath = dirname($this->filename);
 		$relativeFTPPath = trim($remotePath, '/');
-		$absoluteFTPPath = '/'.trim( $this->dir, '/' ).'/'.trim($remotePath, '/');
+		$absoluteFTPPath = '/' . trim($this->dir, '/') . '/' . trim($remotePath, '/');
 		$onlyFilename = basename($this->filename);
 
-		$remoteName = $absoluteFTPPath.'/'.$onlyFilename;
+		$remoteName = $absoluteFTPPath . '/' . $onlyFilename;
 
 		// Does the directory exist?
 		if (!is_dir($root . '/' . $absoluteFSPath))
 		{
-			$ret = $this->createDirRecursive( $absoluteFSPath, 0755);
-			if(($ret === false) && ($this->useFTP))
+			$ret = $this->createDirRecursive($absoluteFSPath, 0755);
+
+			if (($ret === false) && ($this->useFTP))
 			{
 				$ret = @ftp_chdir($this->handle, $absoluteFTPPath);
 			}
 
-			if($ret === false)
+			if ($ret === false)
 			{
 				$this->setError(AKText::sprintf('FTP_COULDNT_UPLOAD', $this->filename));
+
 				return false;
 			}
 		}
@@ -3797,14 +3869,15 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		if ($this->useFTP && ($ret === false))
 		{
 			$ret = @ftp_put($this->handle, $remoteName, $this->tempFilename, FTP_BINARY);
-			if($ret === false)
+
+			if ($ret === false)
 			{
 				// If we couldn't create the file, attempt to fix the permissions in the PHP level and retry!
 				$this->fixPermissions($this->filename);
 				$this->unlink($this->filename);
 
 				$fp = @fopen($this->tempFilename, 'rb');
-				if($fp !== false)
+				if ($fp !== false)
 				{
 					$ret = @ftp_fput($this->handle, $remoteName, $fp, FTP_BINARY);
 					@fclose($fp);
@@ -3818,16 +3891,18 @@ class AKPostprocHybrid extends AKAbstractPostproc
 
 		@unlink($this->tempFilename);
 
-		if($ret === false)
+		if ($ret === false)
 		{
 			$this->setError(AKText::sprintf('FTP_COULDNT_UPLOAD', $this->filename));
+
 			return false;
 		}
 
 		$restorePerms = AKFactory::get('kickstart.setup.restoreperms', false);
-		$perms = $restorePerms ? $perms : 0644;
+		$perms = $restorePerms ? $this->perms : 0644;
 
 		$ret = @chmod($root . '/' . $this->filename, $perms);
+
 		if ($this->useFTP && ($ret === false))
 		{
 			@ftp_chmod($this->_handle, $perms, $remoteName);
@@ -3836,29 +3911,40 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		return true;
 	}
 
+	/**
+	 * Create a temporary filename
+	 *
+	 * @param string $filename The original filename
+	 * @param int    $perms    The file permissions
+	 *
+	 * @return string
+	 */
 	public function processFilename($filename, $perms = 0755)
 	{
 		// Catch some error conditions...
-		if($this->getError())
+		if ($this->getError())
 		{
 			return false;
 		}
 
 		// If a null filename is passed, it means that we shouldn't do any post processing, i.e.
 		// the entity was a directory or symlink
-		if(is_null($filename))
+		if (is_null($filename))
 		{
 			$this->filename = null;
 			$this->tempFilename = null;
+
 			return null;
 		}
 
 		// Strip absolute filesystem path to website's root
-		$removePath = AKFactory::get('kickstart.setup.destdir','');
-		if(!empty($removePath))
+		$removePath = AKFactory::get('kickstart.setup.destdir', '');
+
+		if (!empty($removePath))
 		{
 			$left = substr($filename, 0, strlen($removePath));
-			if($left == $removePath)
+
+			if ($left == $removePath)
 			{
 				$filename = substr($filename, strlen($removePath));
 			}
@@ -3871,66 +3957,91 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		$this->tempFilename = tempnam($this->tempDir, 'kickstart-');
 		$this->perms = $perms;
 
-		if( empty($this->tempFilename) )
+		if (empty($this->tempFilename))
 		{
 			// Oops! Let's try something different
-			$this->tempFilename = $this->tempDir.'/kickstart-'.time().'.dat';
+			$this->tempFilename = $this->tempDir . '/kickstart-' . time() . '.dat';
 		}
 
 		return $this->tempFilename;
 	}
 
+	/**
+	 * Is the directory writeable?
+	 *
+	 * @param string $dir The directory ti check
+	 *
+	 * @return bool
+	 */
 	private function isDirWritable($dir)
 	{
-		$fp = @fopen($dir.'/kickstart.dat', 'wb');
-		if($fp === false)
+		$fp = @fopen($dir . '/kickstart.dat', 'wb');
+
+		if ($fp === false)
 		{
 			return false;
 		}
-		else
-		{
-			@fclose($fp);
-			unlink($dir.'/kickstart.dat');
-			return true;
-		}
+
+		@fclose($fp);
+		unlink($dir . '/kickstart.dat');
+
+		return true;
 	}
 
-	public function createDirRecursive( $dirName, $perms )
+	/**
+	 * Create a directory, recursively
+	 *
+	 * @param string $dirName The directory to create
+	 * @param int    $perms   The permissions to give to the directory
+	 *
+	 * @return bool
+	 */
+	public function createDirRecursive($dirName, $perms)
 	{
 		// Strip absolute filesystem path to website's root
-		$removePath = AKFactory::get('kickstart.setup.destdir','');
-		if(!empty($removePath))
+		$removePath = AKFactory::get('kickstart.setup.destdir', '');
+
+		if (!empty($removePath))
 		{
 			// UNIXize the paths
-			$removePath = str_replace('\\','/',$removePath);
-			$dirName = str_replace('\\','/',$dirName);
+			$removePath = str_replace('\\', '/', $removePath);
+			$dirName = str_replace('\\', '/', $dirName);
 			// Make sure they both end in a slash
-			$removePath = rtrim($removePath,'/\\').'/';
-			$dirName = rtrim($dirName,'/\\').'/';
+			$removePath = rtrim($removePath, '/\\') . '/';
+			$dirName = rtrim($dirName, '/\\') . '/';
 			// Process the path removal
 			$left = substr($dirName, 0, strlen($removePath));
-			if($left == $removePath)
+
+			if ($left == $removePath)
 			{
 				$dirName = substr($dirName, strlen($removePath));
 			}
 		}
-		if(empty($dirName)) $dirName = ''; // 'cause the substr() above may return FALSE.
 
-		$check = '/'.trim($this->dir,'/').'/'.trim($dirName, '/');
+		// 'cause the substr() above may return FALSE.
+		if (empty($dirName))
+		{
+			$dirName = '';
+		}
+
+		$check = '/' . trim($this->dir, '/') . '/' . trim($dirName, '/');
 		$checkFS = $removePath . trim($dirName, '/');
 
-		if($this->is_dir($check)) return true;
+		if ($this->is_dir($check))
+		{
+			return true;
+		}
 
 		$alldirs = explode('/', $dirName);
-		$previousDir = '/'.trim($this->dir);
+		$previousDir = '/' . trim($this->dir);
 		$previousDirFS = rtrim($removePath, '/\\');
 
-		foreach($alldirs as $curdir)
+		foreach ($alldirs as $curdir)
 		{
-			$check = $previousDir.'/'.$curdir;
+			$check = $previousDir . '/' . $curdir;
 			$checkFS = $previousDirFS . '/' . $curdir;
 
-			if(!is_dir($checkFS) && !$this->is_dir($check))
+			if (!is_dir($checkFS) && !$this->is_dir($check))
 			{
 				// Proactively try to delete a file by the same name
 				if (!@unlink($checkFS) && $this->useFTP)
@@ -3939,12 +4050,13 @@ class AKPostprocHybrid extends AKAbstractPostproc
 				}
 
 				$createdDir = @mkdir($checkFS, 0755);
+
 				if (!$createdDir && $this->useFTP)
 				{
 					$createdDir = @ftp_mkdir($this->handle, $check);
 				}
 
-				if($createdDir === false)
+				if ($createdDir === false)
 				{
 					// If we couldn't create the directory, attempt to fix the permissions in the PHP level and retry!
 					$this->fixPermissions($checkFS);
@@ -3955,9 +4067,10 @@ class AKPostprocHybrid extends AKAbstractPostproc
 						$createdDir = @ftp_mkdir($this->handle, $check);
 					}
 
-					if($createdDir === false)
+					if ($createdDir === false)
 					{
 						$this->setError(AKText::sprintf('FTP_CANT_CREATE_DIR', $check));
+
 						return false;
 					}
 				}
@@ -3975,6 +4088,9 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		return true;
 	}
 
+	/**
+	 * Closes the FTP connection
+	 */
 	public function close()
 	{
 		if (!$this->useFTP)
@@ -3983,66 +4099,88 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		}
 	}
 
-	/*
+	/**
 	 * Tries to fix directory/file permissions in the PHP level, so that
 	 * the FTP operation doesn't fail.
+	 *
 	 * @param $path string The full path to a directory or file
 	 */
-	private function fixPermissions( $path )
+	private function fixPermissions($path)
 	{
 		// Turn off error reporting
-		if(!defined('KSDEBUG')) {
+		if (!defined('KSDEBUG'))
+		{
 			$oldErrorReporting = @error_reporting(E_NONE);
 		}
 
 		// Get UNIX style paths
-		$relPath = str_replace('\\','/',$path);
-		$basePath = rtrim(str_replace('\\','/',KSROOTDIR),'/');
-		$basePath = rtrim($basePath,'/');
-		if(!empty($basePath)) $basePath .= '/';
-		// Remove the leading relative root
-		if( substr($relPath,0,strlen($basePath)) == $basePath )
-			$relPath = substr($relPath,strlen($basePath));
-		$dirArray = explode('/', $relPath);
-		$pathBuilt = rtrim($basePath,'/');
-		foreach( $dirArray as $dir )
+		$relPath = str_replace('\\', '/', $path);
+		$basePath = rtrim(str_replace('\\', '/', KSROOTDIR), '/');
+		$basePath = rtrim($basePath, '/');
+
+		if (!empty($basePath))
 		{
-			if(empty($dir)) continue;
-			$oldPath = $pathBuilt;
-			$pathBuilt .= '/'.$dir;
-			if(is_dir($oldPath.$dir))
+			$basePath .= '/';
+		}
+
+		// Remove the leading relative root
+		if (substr($relPath, 0, strlen($basePath)) == $basePath)
+		{
+			$relPath = substr($relPath, strlen($basePath));
+		}
+
+		$dirArray = explode('/', $relPath);
+		$pathBuilt = rtrim($basePath, '/');
+
+		foreach ($dirArray as $dir)
+		{
+			if (empty($dir))
 			{
-				@chmod($oldPath.$dir, 0777);
+				continue;
+			}
+
+			$oldPath = $pathBuilt;
+			$pathBuilt .= '/' . $dir;
+
+			if (is_dir($oldPath . $dir))
+			{
+				@chmod($oldPath . $dir, 0777);
 			}
 			else
 			{
-				if(@chmod($oldPath.$dir, 0777) === false)
+				if (@chmod($oldPath . $dir, 0777) === false)
 				{
-					@unlink($oldPath.$dir);
+					@unlink($oldPath . $dir);
 				}
 			}
 		}
 
 		// Restore error reporting
-		if(!defined('KSDEBUG')) {
+		if (!defined('KSDEBUG'))
+		{
 			@error_reporting($oldErrorReporting);
 		}
 	}
 
-	public function chmod( $file, $perms )
+	public function chmod($file, $perms)
 	{
-		if( AKFactory::get('kickstart.setup.dryrun','0') ) return true;
+		if (AKFactory::get('kickstart.setup.dryrun', '0'))
+		{
+			return true;
+		}
 
 		$ret = @chmod($file, $perms);
 
 		if (!$ret && $this->useFTP)
 		{
 			// Strip absolute filesystem path to website's root
-			$removePath = AKFactory::get('kickstart.setup.destdir','');
-			if(!empty($removePath))
+			$removePath = AKFactory::get('kickstart.setup.destdir', '');
+
+			if (!empty($removePath))
 			{
 				$left = substr($file, 0, strlen($removePath));
-				if($left == $removePath)
+
+				if ($left == $removePath)
 				{
 					$file = substr($file, strlen($removePath));
 				}
@@ -4057,60 +4195,65 @@ class AKPostprocHybrid extends AKAbstractPostproc
 		return $ret;
 	}
 
-	private function is_dir( $dir )
+	private function is_dir($dir)
 	{
-		return @ftp_chdir( $this->handle, $dir );
+		if ($this->useFTP)
+		{
+			return @ftp_chdir($this->handle, $dir);
+		}
+
+		return false;
 	}
 
-	public function unlink( $file )
+	public function unlink($file)
 	{
 		$ret = @unlink($file);
 
 		if (!$ret && $this->useFTP)
 		{
-			$removePath = AKFactory::get('kickstart.setup.destdir','');
-			if(!empty($removePath))
+			$removePath = AKFactory::get('kickstart.setup.destdir', '');
+			if (!empty($removePath))
 			{
 				$left = substr($file, 0, strlen($removePath));
-				if($left == $removePath)
+				if ($left == $removePath)
 				{
 					$file = substr($file, strlen($removePath));
 				}
 			}
 
-			$check = '/'.trim($this->dir,'/').'/'.trim($file, '/');
+			$check = '/' . trim($this->dir, '/') . '/' . trim($file, '/');
 
-			$ret = @ftp_delete( $this->handle, $check );
+			$ret = @ftp_delete($this->handle, $check);
 		}
 
 		return $ret;
 	}
 
-	public function rmdir( $directory )
+	public function rmdir($directory)
 	{
 		$ret = @rmdir($directory);
 
 		if (!$ret && $this->useFTP)
 		{
-			$removePath = AKFactory::get('kickstart.setup.destdir','');
-			if(!empty($removePath))
+			$removePath = AKFactory::get('kickstart.setup.destdir', '');
+			if (!empty($removePath))
 			{
 				$left = substr($directory, 0, strlen($removePath));
-				if($left == $removePath)
+				if ($left == $removePath)
 				{
 					$directory = substr($directory, strlen($removePath));
 				}
 			}
 
-			$check = '/'.trim($this->dir,'/').'/'.trim($directory, '/');
+			$check = '/' . trim($this->dir, '/') . '/' . trim($directory, '/');
 
-			$ret = @ftp_rmdir( $this->handle, $check );
+			$ret = @ftp_rmdir($this->handle, $check);
 		}
 
 		return $ret;
 	}
 
-	public function rename( $from, $to )
+	public function rename($from, $to)
 	{
 		$ret = @rename($from, $to);
 
@@ -4119,28 +4262,28 @@ class AKPostprocHybrid extends AKAbstractPostproc
 			$originalFrom = $from;
 			$originalTo = $to;
 
-			$removePath = AKFactory::get('kickstart.setup.destdir','');
-			if(!empty($removePath))
+			$removePath = AKFactory::get('kickstart.setup.destdir', '');
+			if (!empty($removePath))
 			{
 				$left = substr($from, 0, strlen($removePath));
-				if($left == $removePath)
+				if ($left == $removePath)
 				{
 					$from = substr($from, strlen($removePath));
 				}
 			}
-			$from = '/'.trim($this->dir,'/').'/'.trim($from, '/');
+			$from = '/' . trim($this->dir, '/') . '/' . trim($from, '/');
 
-			if(!empty($removePath))
+			if (!empty($removePath))
 			{
 				$left = substr($to, 0, strlen($removePath));
-				if($left == $removePath)
+				if ($left == $removePath)
 				{
 					$to = substr($to, strlen($removePath));
 				}
 			}
-			$to = '/'.trim($this->dir,'/').'/'.trim($to, '/');
+			$to = '/' . trim($this->dir, '/') . '/' . trim($to, '/');
 
-			$ret = @ftp_rename( $this->handle, $from, $to );
+			$ret = @ftp_rename($this->handle, $from, $to);
 		}
 
 		return $ret;
@@ -6141,7 +6284,8 @@ class AKText extends AKAbstractObject
 		'UPDATE_NOTICE' => 'You are advised to always use the latest version of Akeeba Kickstart available. Older versions may be subject to bugs and will not be supported.',
 		'UPDATE_DLNOW' => 'Download now',
 		'UPDATE_MOREINFO' => 'More information',
-		'IGNORE_MOST_ERRORS' => 'Ignore most errors'
+		'IGNORE_MOST_ERRORS' => 'Ignore most errors',
+		'WRONG_FTP_PATH2' => 'Wrong FTP initial directory - the directory doesn\'t correspond to your site\'s web root',
 	);
 
 	/**
@@ -6176,7 +6320,7 @@ class AKText extends AKAbstractObject
 
 	/**
 	 * Singleton pattern for Language
-	 * @return Language The global Language instance
+	 * @return AKText The global AKText instance
 	 */
 	public static function &getInstance()
 	{
@@ -7906,6 +8050,34 @@ function callExtraFeature($method = null, array $params = array())
  * @subpackage  kickstart
  */
 
+function TranslateWinPath($p_path)
+{
+	$is_unc = false;
+
+	if (KSWINDOWS)
+	{
+		// Is this a UNC path?
+		$is_unc = (substr($p_path, 0, 2) == '\\\\') || (substr($p_path, 0, 2) == '//');
+		// Change potential windows directory separator
+		if ((strpos($p_path, '\\') > 0) || (substr($p_path, 0, 1) == '\\'))
+		{
+			$p_path = strtr($p_path, '\\', '/');
+		}
+	}
+
+	// Remove multiple slashes
+	$p_path = str_replace('///', '/', $p_path);
+	$p_path = str_replace('//', '/', $p_path);
+
+	// Fix UNC paths
+	if ($is_unc)
+	{
+		$p_path = '//' . ltrim($p_path, '/');
+	}
+
+	return $p_path;
+}
+
 function echoCSS() {
 	echo <<<ENDCSS
 html {
@@ -8642,7 +8814,7 @@ function echoPage()
 <script type="text/javascript" language="javascript">
 	var akeeba_automation = <?php echo $automation->hasAutomation() ? 'true' : 'false' ?>;
 	var akeeba_debug = <?php echo defined('KSDEBUG') ? 'true' : 'false' ?>;
-    var sftp_path = '<?php echo defined('KSROOTDIR') ? KSROOTDIR : __DIR__; ?>/';
+    var sftp_path = '<?php echo TranslateWinPath(defined('KSROOTDIR') ? KSROOTDIR : __DIR__); ?>/';
 	var isJoomla = true;
 
 	/**

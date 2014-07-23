@@ -988,6 +988,8 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
         $known        = $this->getKnownFields();
         $skipFields[] = $this->_tbl_key;
 
+		if(in_array($this->getColumnAlias('title'), $known)
+			&& in_array($this->getColumnAlias('slug'), $known))      $skipFields[] = $this->getColumnAlias('slug');
         if(in_array($this->getColumnAlias('hits'), $known))         $skipFields[] = $this->getColumnAlias('hits');
         if(in_array($this->getColumnAlias('created_on'), $known))   $skipFields[] = $this->getColumnAlias('created_on');
         if(in_array($this->getColumnAlias('created_by'), $known))   $skipFields[] = $this->getColumnAlias('created_by');
@@ -1697,7 +1699,6 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 				}
 			}
 
-			// TODO Should we notify the user that we had a problem with this record?
 			if (!$this->onBeforeCopy($item))
 			{
 				continue;
@@ -1710,10 +1711,8 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 			$this->$modified_by = null;
 
 			// Let's fire the event only if everything is ok
-			// TODO Should we notify the user that we had a problem with this record?
 			if ($this->store())
 			{
-				// TODO Should we notify the user that we had a problem with this record?
 				$this->onAfterCopy($item);
 			}
 
@@ -1787,7 +1786,6 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 			);
 		}
 
-		//Why this crazy statement?
 		// TODO Rewrite this statment using IN. Check if it work in SQLServer and PostgreSQL
 		$cids = $this->_db->qn($k) . ' = ' . implode(' OR ' . $this->_db->qn($k) . ' = ', $cid);
 
@@ -1820,7 +1818,6 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 		{
 			if ($this->_db->getAffectedRows() == 1)
 			{
-				// TODO should we check for its return value?
 				$this->checkin($cid[0]);
 
 				if ($this->$k == $cid[0])
@@ -1873,7 +1870,6 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 		$query->where($this->_tbl_key . ' = ' . $this->_db->q($pk));
 		$this->_db->setQuery($query);
 
-		// @TODO Check for a database error.
 		$this->_db->execute();
 
 		$result = $this->onAfterDelete($oid);
@@ -3731,8 +3727,8 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 			$contentType->table = json_encode(
 				array(
 					'special' => array(
-						'dbtable' => $table->getTableName(),
-						'key'     => $table->getKeyName(),
+						'dbtable' => $this->getTableName(),
+						'key'     => $this->getKeyName(),
 						'type'    => $name,
 						'prefix'  => $this->_tablePrefix,
 						'class'   => 'F0FTable',
@@ -3752,7 +3748,7 @@ class F0FTable extends F0FUtilsObject implements JTableInterface
 				array(
 					'common' => array(
 						0 => array(
-							"core_content_item_id" => $table->getKeyName(),
+							"core_content_item_id" => $this->getKeyName(),
 							"core_title"           => $this->getUcmCoreAlias('title'),
 							"core_state"           => $this->getUcmCoreAlias('enabled'),
 							"core_alias"           => $this->getUcmCoreAlias('alias'),

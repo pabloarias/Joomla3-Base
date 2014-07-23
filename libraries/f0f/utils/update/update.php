@@ -302,21 +302,25 @@ class F0FUtilsUpdate extends F0FModel
 					continue;
 				}
 
-				// Does the name and location match?
-				if (($aSite->name == $update_site['name']) && ($aSite->location == $update_site['location']))
+				// Is it enabled (Joomla! seriously sucks: IT DISABLES UPDATE SITES WITHOUT THE POSSIBILITY TO RE-ENABLE THEM!)
+				if ($aSite->enabled)
 				{
-					// Do we have the extra_query property (J 3.2+) and does it match?
-					if (property_exists($aSite, 'extra_query') && isset($update_site['extra_query']))
+					// Does the name and location match?
+					if (($aSite->name == $update_site['name']) && ($aSite->location == $update_site['location']))
 					{
-						if ($aSite->extra_query == $update_site['extra_query'])
+						// Do we have the extra_query property (J 3.2+) and does it match?
+						if (property_exists($aSite, 'extra_query') && isset($update_site['extra_query']))
 						{
+							if ($aSite->extra_query == $update_site['extra_query'])
+							{
+								continue;
+							}
+						}
+						else
+						{
+							// Joomla! 3.1 or earlier. Updates may or may not work.
 							continue;
 						}
-					}
-					else
-					{
-						// Joomla! 3.1 or earlier. Updates may or may not work.
-						continue;
 					}
 				}
 

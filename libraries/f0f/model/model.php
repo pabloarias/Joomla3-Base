@@ -422,7 +422,7 @@ class F0FModel extends F0FUtilsObject
 			$config = array();
 		}
 
-		if (!array_key_exists('savesate', $config))
+		if (!array_key_exists('savestate', $config))
 		{
 			$config['savestate'] = false;
 		}

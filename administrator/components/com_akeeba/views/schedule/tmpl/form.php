@@ -31,12 +31,16 @@ JHtml::_('behavior.framework');
 ?>
     </div>
 <?php
-JFactory::getDocument()->addScriptDeclaration( <<<ENDJS
+JFactory::getDocument()->addScriptDeclaration( <<<JS
+
+	// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
+	// due to missing trailing semicolon and/or newline in their code.
     (function($) {
         $(document).ready(function(){
             $('#runCheckTabs a:first').tab('show');
         });
     })(akeeba.jQuery);
-ENDJS
+
+JS
 );
 ?>

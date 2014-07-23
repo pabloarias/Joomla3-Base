@@ -109,7 +109,6 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->select($db->qn('configuration'))
 			->from($db->qn($this->tableNameProfiles))
 			->where($db->qn('id') . ' = ' . $db->q($profile_id));
-
 		$db->setQuery($sql);
 		$ini_data_local = $db->loadResult();
 		if (empty($ini_data_local) || is_null($ini_data_local))

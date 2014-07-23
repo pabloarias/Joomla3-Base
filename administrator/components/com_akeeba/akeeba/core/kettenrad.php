@@ -77,6 +77,23 @@ final class AECoreKettenrad extends AEAbstractPart
 		// Reset the storage
 		AEUtilTempvars::reset($this->tag);
 
+		// Apply the configuration overrides
+		$overrides = AEPlatform::getInstance()->configOverrides;
+
+		if (is_array($overrides) && @count($overrides))
+		{
+			$registry = AEFactory::getConfiguration();
+			$protected_keys = $registry->getProtectedKeys();
+			$registry->resetProtectedKeys();
+
+			foreach ($overrides as $k => $v)
+			{
+				$registry->set($k, $v);
+			}
+
+			$registry->setProtectedKeys($protected_keys);
+		}
+
 		// Get the domain chain
 		$this->domain_chain = AEUtilScripting::getDomainChain();
 		$this->total_steps = count($this->domain_chain) - 1; // Init shouldn't count in the progress bar

@@ -18,6 +18,7 @@ class AkeebaViewBackup extends F0FViewHtml
 	 */
 	public function onAdd($tpl = null)
 	{
+		/** @var AkeebaModelBackups $model */
 		$model = $this->getModel();
 
 		// Load the Status Helper
@@ -48,6 +49,7 @@ class AkeebaViewBackup extends F0FViewHtml
 		// If a return URL is set *and* the profile's name is "Site Transfer
 		// Wizard", we are running the Site Transfer Wizard
 		if(!class_exists('AkeebaModelProfiles')) JLoader::import('models.profiles', JPATH_COMPONENT_ADMINISTRATOR);
+		/** @var AkeebaModelCpanels $cpanelmodel */
 		$cpanelmodel = F0FModel::getAnInstance('Cpanels','AkeebaModel');
 		$profilemodel = new AkeebaModelProfiles();
 		$profilemodel->setId($cpanelmodel->getProfileID());
@@ -57,8 +59,9 @@ class AkeebaViewBackup extends F0FViewHtml
 		$this->isSTW = $isSTW;
 
 		// Get the domain details from scripting facility
-		$aeconfig = AEFactory::getConfiguration();
-		$script = $aeconfig->get('akeeba.basic.backup_type','full');
+		$registry = AEFactory::getConfiguration();
+		$tag = $model->getState('tag');
+		$script = ($tag == 'restorepoint') ? 'full' : $registry->get('akeeba.basic.backup_type','full');
 		$scripting = AEUtilScripting::loadScripting();
 		$domains = array();
 		if(!empty($scripting)) foreach( $scripting['scripts'][$script]['chain'] as $domain )
@@ -73,8 +76,8 @@ class AkeebaViewBackup extends F0FViewHtml
 		$json_domains = AkeebaHelperEscape::escapeJS(json_encode($domains),'"\\');
 
 		// Get the maximum execution time and bias
-		$maxexec = $aeconfig->get('akeeba.tuning.max_exec_time',14) * 1000;
-		$bias = $aeconfig->get('akeeba.tuning.run_time_bias',75);
+		$maxexec = $registry->get('akeeba.tuning.max_exec_time',14) * 1000;
+		$bias = $registry->get('akeeba.tuning.run_time_bias',75);
 
 		// Check if the output directory is writable
 		$quirks = AEUtilQuirks::get_quirks();
@@ -90,14 +93,14 @@ class AkeebaViewBackup extends F0FViewHtml
 		$this->domains = $json_domains;
 		$this->maxexec = $maxexec;
 		$this->bias = $bias;
-		$this->useiframe = $aeconfig->get('akeeba.basic.useiframe',0) ? 'true' : 'false';
+		$this->useiframe = $registry->get('akeeba.basic.useiframe',0) ? 'true' : 'false';
 		$this->returnurl = $returnurl;
 		$this->unwritableoutput =  $unwritableOutput;
 
-		if($aeconfig->get('akeeba.advanced.archiver_engine','jpa') == 'jps')
+		if($registry->get('akeeba.advanced.archiver_engine','jpa') == 'jps')
 		{
 			$this->showjpskey =  1;
-			$this->jpskey =  $aeconfig->get('engine.archiver.jps.key','');
+			$this->jpskey =  $registry->get('engine.archiver.jps.key','');
 		}
 		else
 		{
@@ -107,7 +110,7 @@ class AkeebaViewBackup extends F0FViewHtml
 		if (AKEEBA_PRO)
 		{
 			$this->showangiekey = 1;
-			$this->angiekey = $aeconfig->get('engine.installer.angie.key', '');
+			$this->angiekey = $registry->get('engine.installer.angie.key', '');
 		}
 		else
 		{
