@@ -24,8 +24,14 @@ var akeeba_ui_theme_root = "";
 /** @var The AJAX proxy URL */
 var akeeba_ajax_url = "";
 
+/** @var The log viewer URL */
+var akeeba_logview_url = "";
+
 /** @var Current backup job's tag */
 var akeeba_backup_tag = 'backend';
+
+/** @var Current backup job's unique ID */
+var akeeba_backup_id = null;
 
 /** @var The callback function to call on error */
 var akeeba_error_callback = dummy_error_handler;
@@ -38,6 +44,20 @@ var akeeba_is_stw = false;
 
 /** @var System restore point setup information */
 var akeeba_srp_info = {};
+
+/** @var Should I auto resume backups with AJAX errors? */
+var akeeba_autoresume_enabled = true;
+
+/** @var Tiemout before automatically resuming the backup after an error */
+var akeeba_autoresume_timeout = 10;
+
+/** @var Maximum auto-resume attempts */
+var akeeba_autoresume_maxretries = 3;
+
+/** @var Current auto-retry attempt */
+var akeeba_autoresume_try = 0;
+
+var akeeba_config_passwordfields = {};
 
 /** @var The translation strings used in the GUI */
 var akeeba_translations = new Array();
@@ -217,10 +237,7 @@ function doAjax(data, successCallback, errorCallback, useCaching, timeout)
 	if(useCaching == null) useCaching = true;
 
 	if(!useCaching) {
-		var now = new Date().getTime() / 1000;
-		var s = parseInt(now, 10);
-		var microtime = Math.round((now - s) * 1000) / 1000;
-		data._utterUselessCrapRequiredByStupidBrowsersToStopCachingXHR = microtime;
+		data.xhrcachebust = new Date().getTime();
 	}
 
 	if(timeout == null) timeout = 600000;
@@ -240,6 +257,7 @@ function doAjax(data, successCallback, errorCallback, useCaching, timeout)
 				// Get rid of junk before the data
 				var valid_pos = msg.indexOf('###');
 				if( valid_pos == -1 ) {
+					msg = sanitize_error_message(msg);
 					// Valid data not found in the response
 					msg = 'Invalid AJAX data: ' + msg;
 					if(errorCallback == null)
@@ -272,6 +290,7 @@ function doAjax(data, successCallback, errorCallback, useCaching, timeout)
 				try {
 					var data = JSON.parse(message);
 				} catch(err) {
+					message = sanitize_error_message(message);
 					var msg = err.message + "\n<br/>\n<pre>\n" + message + "\n</pre>";
 					if(errorCallback == null)
 					{
@@ -294,7 +313,7 @@ function doAjax(data, successCallback, errorCallback, useCaching, timeout)
 				var message = '<strong>AJAX Loading Error</strong><br/>HTTP Status: '+Request.status+' ('+Request.statusText+')<br/>';
 				message = message + 'Internal status: '+textStatus+'<br/>';
 				message = message + 'XHR ReadyState: ' + Request.readyState + '<br/>';
-				message = message + 'Raw server response:<br/>'+Request.responseText;
+				message = message + 'Raw server response:<br/>' + sanitize_error_message(Request.responseText);
 
 				if(errorCallback == null)
 				{
@@ -318,6 +337,26 @@ function doAjax(data, successCallback, errorCallback, useCaching, timeout)
 			$.ajax( structure );
 		}
 	})(akeeba.jQuery);
+}
+
+/**
+ * Sanitize a message before displaying it in an error dialog. Some servers return an HTML page with DOM modifying
+ * JavaScript when they block the backup script for any reason (usually with a 5xx HTTP error code). Displaying the
+ * raw response in the error dialog has the side-effect of killing our backup resumption JavaScript or even completely
+ * destroy the page, making backup restart impossible.
+ *
+ * @param {string} msg The message to sanitize
+ *
+ * @returns {string}
+ */
+function sanitize_error_message(msg)
+{
+	if (msg.indexOf("<script") > -1)
+	{
+		msg = "(HTML containing script tags)";
+	}
+
+	return msg;
 }
 
 //=============================================================================
@@ -713,6 +752,8 @@ function parse_config_gui_data(data, rootnode)
 
 					// A simple single-line, unvalidated password box
 					case 'password':
+						akeeba_config_passwordfields[current_id] = defdata['default'];
+
 						var editor = $(document.createElement('input')).attr({
 							type:			'password',
 							id:				current_id,
@@ -879,18 +920,28 @@ function parse_config_gui_data(data, rootnode)
 //Akeeba Backup -- Backup Now page
 //=============================================================================
 
-function set_ajax_timer()
+function set_ajax_timer(waitTime)
 {
-	setTimeout('akeeba_ajax_timer_tick()', 10);
+	if (waitTime <= 0)
+	{
+		waitTime = 10;
+	}
+
+	setTimeout('akeeba_ajax_timer_tick()', waitTime);
 }
 
 function akeeba_ajax_timer_tick()
 {
+	// Reset the timer
+	reset_timeout_bar();
+	start_timeout_bar(akeeba_max_execution_time, akeeba_time_bias);
+
 	(function($){
 		doAjax({
 			// Data to send to AJAX
 			'ajax'	: 'step',
-			'tag'	: akeeba_backup_tag
+			'tag'	: akeeba_backup_tag,
+			'backupid' : akeeba_backup_id
 		}, backup_step, backup_error, false );
 	})(akeeba.jQuery);
 }
@@ -922,6 +973,31 @@ function reset_timeout_bar()
 		*/
 		var lastText = akeeba_translations['UI-LASTRESPONSE'].replace('%s', '0');
 		$('#response-timer div.text').html(lastText);
+	})(akeeba.jQuery);
+}
+
+function start_retry_timeout()
+{
+	(function($) {
+		var remainingSeconds = akeeba_autoresume_timeout;
+		$('#akeeba-retry-timeout').everyTime(1000, 'retryTimeout', function() {
+			remainingSeconds--;
+			$('#akeeba-retry-timeout').html(remainingSeconds.toFixed(0));
+
+			if (remainingSeconds == 0)
+			{
+				$('#akeeba-retry-timeout').stopTime();
+				akeeba_resume_backup();
+			}
+		});
+	})(akeeba.jQuery);
+}
+
+function reset_retry_timeout()
+{
+	(function($){
+		$('#akeeba-retry-timeout').stopTime();
+		$('#akeeba-retry-timeout').html(akeeba_autoresume_timeout.toFixed(0));
 	})(akeeba.jQuery);
 }
 
@@ -1006,18 +1082,20 @@ function backup_start()
 		// Start the response timer
 		start_timeout_bar(akeeba_max_execution_time, akeeba_time_bias);
 		// Perform Ajax request
+		akeeba_backup_id = null;
 		akeeba_backup_tag = akeeba_srp_info.tag;
 
-                var ajax_request = {
-                    // Data to send to AJAX
-                    'ajax': 'start',
-                    description: $('#backup-description').val(),
-                    comment: $('#comment').val(),
-                    jpskey: jpskey,
-                    angiekey: angiekey
-                };
+		var ajax_request = {
+			// Data to send to AJAX
+			'ajax': 'start',
+			description: $('#backup-description').val(),
+			comment: $('#comment').val(),
+			jpskey: jpskey,
+			angiekey: angiekey,
+			tag: akeeba_backup_tag
+		};
 
-                ajax_request = array_merge(ajax_request, akeeba_srp_info);
+		ajax_request = array_merge(ajax_request, akeeba_srp_info);
 
 		doAjax(ajax_request, backup_step, backup_error, false );
 	})(akeeba.jQuery);
@@ -1032,7 +1110,6 @@ function backup_step(data)
 	}
 
 	// Update visual step progress from active domain data
-	reset_timeout_bar();
 	render_backup_steps(data.Domain);
 	(function($){
 		// Update percentage display
@@ -1089,13 +1166,25 @@ function backup_step(data)
 			}
 			else
 			{
-				// No. Set the backup tag
-				akeeba_backup_tag = akeeba_backup_tag;
+				// No. Reset the backup retries.
+				akeeba_autoresume_try = 0;
+
+				// Set the backup ID
+				akeeba_backup_id = data.backupid;
 				if(empty(akeeba_backup_tag)) akeeba_backup_tag = 'backend';
-				// Start the response timer...
-				start_timeout_bar(akeeba_max_execution_time, akeeba_time_bias);
-				// ...and send an AJAX command
-				set_ajax_timer();
+
+				// Reset the retries
+				akeeba_autoresume_try = 0;
+
+				// How much time do I have to wait?
+				var waitTime = 10;
+				if (data.hasOwnProperty('sleepTime'))
+				{
+					waitTime = data.sleepTime;
+				}
+
+				// Send an AJAX command
+				set_ajax_timer(waitTime);
 			}
 		}
 	})(akeeba.jQuery);
@@ -1104,11 +1193,90 @@ function backup_step(data)
 function backup_error(message)
 {
 	(function($){
+		// If resume is not enabled, die.
+		if (!akeeba_autoresume_enabled)
+		{
+			backup_die(message);
+		}
+
+		// If we are past the max retries, die.
+		if (akeeba_autoresume_try >= akeeba_autoresume_maxretries)
+		{
+			backup_die(message);
+			return;
+		}
+
 		// Make sure the timer is stopped
-		reset_timeout_bar();
+		akeeba_autoresume_try++;
+		reset_retry_timeout();
+
 		// Hide progress and warnings
 		$('#backup-progress-pane').hide("fast");
 		$('#backup-warnings-panel').hide("fast");
+		$('#error-panel').hide("fast");
+
+		// Setup and show the retry pane
+		$('#backup-error-message-retry').html(message);
+		$('#retry-panel').show("fast");
+
+		// Start the countdown
+		start_retry_timeout();
+	})(akeeba.jQuery);
+}
+
+function akeeba_cancel_resume_backup()
+{
+	(function($){
+		// Make sure the timer is stopped
+		reset_retry_timeout();
+
+		// Kill the backup
+		var errorMessage = $('#backup-error-message-retry').html();
+		backup_die(errorMessage);
+	})(akeeba.jQuery);
+}
+
+function akeeba_resume_backup()
+{
+	(function($){
+		// Make sure the timer is stopped
+		reset_retry_timeout();
+
+		// Hide error and retry panels
+		$('#error-panel').hide("fast");
+		$('#retry-panel').hide("fast");
+
+		// Show progress and warnings
+		$('#backup-progress-pane').show("fast");
+		if ($('#warnings-list').html())
+		{
+			$('#backup-warnings-panel').show("fast");
+		}
+
+		// Restart the backup
+		set_ajax_timer();
+	})(akeeba.jQuery);
+}
+
+function backup_die(message)
+{
+	(function($){
+		// Make sure the timer is stopped
+		reset_timeout_bar();
+
+		// Hide progress and warnings
+		$('#backup-progress-pane').hide("fast");
+		$('#backup-warnings-panel').hide("fast");
+		$('#retry-panel').hide("fast");
+
+		// Set up the view log URL
+		var viewLogUrl = akeeba_logview_url + '&tag=' + akeeba_backup_tag;
+		if (akeeba_backup_id)
+		{
+			viewLogUrl = viewLogUrl + '.' + encodeURIComponent(akeeba_backup_id);
+		}
+		$('#ab-viewlog-error').attr('href', viewLogUrl);
+
 		// Setup and show error pane
 		$('#backup-error-message').html(message);
 		$('#error-panel').show();
@@ -1120,8 +1288,18 @@ function backup_complete()
 	(function($){
 		// Make sure the timer is stopped
 		reset_timeout_bar();
+
 		// Hide progress
 		$('#backup-progress-pane').hide("fast");
+
+		// Set up the view log URL
+		var viewLogUrl = akeeba_logview_url + '&tag=' + akeeba_backup_tag;
+		if (akeeba_backup_id)
+		{
+			viewLogUrl = viewLogUrl + '.' + encodeURIComponent(akeeba_backup_id);
+		}
+		$('#ab-viewlog-success').attr('href', viewLogUrl);
+
 		// Show finished pane
 		$('#backup-complete').show();
 		$('#backup-warnings-panel').width('100%');
@@ -1137,6 +1315,19 @@ function backup_complete()
 			window.location = akeeba_return_url;
 		}
 	})(akeeba.jQuery);
+}
+
+function akeeba_restore_configuration_defaults()
+{
+	akeeba.jQuery.each(akeeba_config_passwordfields, function(curid, defvalue){
+		myElement = document.getElementById(curid);
+		try {
+			console.debug(curid + ' => ' + defvalue);
+		} catch(e) {
+		}
+		akeeba.jQuery(myElement).val('BROWSERS ARE BRAIN DEAD');
+		akeeba.jQuery(myElement).val(defvalue);
+	});
 }
 
 function akeeba_restore_backup_defaults()
