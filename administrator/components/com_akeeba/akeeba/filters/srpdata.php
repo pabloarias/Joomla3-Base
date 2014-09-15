@@ -57,11 +57,14 @@ class AEFilterSrpdata extends AEAbstractFilter
 			return false;
 		}
 
-		// Does it start with the name prefix?
-		if (strpos($barename, $this->params->name . '_') === 0)
-		{
-			return false;
-		}
+        // Does it start with the name prefix?
+        foreach($this->params->name as $name)
+        {
+            if (strpos($barename, $name . '_') === 0)
+            {
+                return false;
+            }
+        }
 
 		// Does it start with any of our extra prefixes?
 		foreach ($this->params->extraprefixes as $prefix)

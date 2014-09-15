@@ -161,6 +161,9 @@ JHtml::_('behavior.modal');
 		setTimeout(function(){
 			parse_config_data(data);
 
+			// Work around Chrome which blatantly ignores autocomplete=off in the ANGIE password field (FOR CRYING OUT LOUD!)
+			setTimeout('akeeba_restore_configuration_defaults();', 1000);
+
 			// Enable popovers
 			akeeba.jQuery('[rel="popover"]').popover({
 				trigger: 'manual',

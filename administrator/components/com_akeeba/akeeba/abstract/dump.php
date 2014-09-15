@@ -279,6 +279,14 @@ abstract class AEAbstractDump extends AEAbstractPart
 		// Initialize the algorithm
 		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__ . " :: Initializing algorithm for first run");
 		$this->nextTable = array_shift($this->tables);
+
+		// If there is no table to back up we are done with the database backup
+		if (empty($this->nextTable))
+		{
+			$this->setState('postrun');
+			return;
+		}
+
 		$this->nextRange = 0;
 		$this->query = '';
 

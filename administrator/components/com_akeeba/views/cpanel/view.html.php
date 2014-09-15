@@ -57,9 +57,13 @@ class AkeebaViewCpanel extends F0FViewHtml
 
 			$this->needsdlid = $model->needsDownloadID();
 			$this->needscoredlidwarning = $model->mustWarnAboutDownloadIDInCore();
+			$this->hasPostInstallationMessages = $model->hasPostInstallMessages();
+			$this->extension_id = $model->getState('extension_id', 0, 'int');
 
 			// Add live help
 			AkeebaHelperIncludes::addHelp('cpanel');
+
+            $this->statsIframe = F0FModel::getTmpInstance('Stats', 'AkeebaModel')->collectStatistics(true);
 		}
 
 		return $this->onDisplay($tpl);

@@ -38,15 +38,48 @@ class AkeebaControllerBackup extends F0FController
 		// Set the profile
 		$this->_setProfile();
 
+		// Get the backup ID
+		$backupId = $this->input->get('backupid', null, 'raw', 2);
+
+		if (strtoupper($backupId) == '[DEFAULT]')
+		{
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true)
+						->select('MAX(' . $db->qn('id') . ')')
+						->from($db->qn('#__ak_stats'));
+
+			try
+			{
+				$maxId = $db->setQuery($query)->loadResult();
+			}
+			catch (Exception $e)
+			{
+				$maxId = 0;
+			}
+
+			$backupId = 'id' . ($maxId + 1);
+		}
+		elseif (empty($backupId))
+		{
+			$backupId = null;
+		}
+
 		// Start the backup
 		JLoader::import('joomla.utilities.date');
 		AECoreKettenrad::reset(array(
 			'maxrun' => 0
 		));
-		AEUtilTempfiles::deleteTempFiles();
-		AEUtilTempvars::reset(AKEEBA_BACKUP_ORIGIN);
 
-		$kettenrad = AECoreKettenrad::load(AKEEBA_BACKUP_ORIGIN);
+		AEUtilTempfiles::deleteTempFiles();
+
+		$tempVarsTag = AKEEBA_BACKUP_ORIGIN;
+		$tempVarsTag .= empty($backupId) ? '' : ('.' . $backupId);
+
+		AEUtilTempvars::reset($tempVarsTag);
+
+		$kettenrad = AECoreKettenrad::load(AKEEBA_BACKUP_ORIGIN, $backupId);
+		$kettenrad->setBackupId($backupId);
+
 		$dateNow = new JDate();
 
 		$description = JText::_('BACKUP_DEFAULT_DESCRIPTION') . ' ' . $dateNow->format(JText::_('DATE_FORMAT_LC2'), true);
@@ -59,7 +92,7 @@ class AkeebaControllerBackup extends F0FController
 		$kettenrad->tick();
 		$kettenrad->tick();
 		$array = $kettenrad->getStatusArray();
-		AECoreKettenrad::save(AKEEBA_BACKUP_ORIGIN);
+		AECoreKettenrad::save(AKEEBA_BACKUP_ORIGIN, $backupId);
 
 		if ($array['Error'] != '')
 		{
@@ -79,7 +112,30 @@ class AkeebaControllerBackup extends F0FController
 			}
 			else
 			{
-				$this->_customRedirect(JURI::base() . 'index.php?option=com_akeeba&view=backup&task=step&key=' . $this->input->get('key', '', 'none', 2) . '&profile=' . $this->input->get('profile', 1, 'int'));
+				$curUri = JUri::getInstance();
+				$ssl = $curUri->isSSL() ? 1 : 0;
+				$tempURL = JRoute::_('index.php?option=com_akeeba', false, $ssl);
+				$uri = new JUri($tempURL);
+
+				$uri->setVar('view', 'backup');
+				$uri->setVar('task', 'step');
+				$uri->setVar('key', $this->input->get('key', '', 'none', 2));
+				$uri->setVar('profile', $this->input->get('profile', 1, 'int'));
+
+				if (!empty($backupId))
+				{
+					$uri->setVar('backupid', $backupId);
+				}
+
+				// Maybe we have a multilingual site?
+				$lg = F0FPlatform::getInstance()->getLanguage();
+				$languageTag = $lg->getTag();
+
+				$uri->setVar('lang', $languageTag);
+
+				$redirectionUrl = $uri->toString();
+
+				$this->_customRedirect($redirectionUrl);
 			}
 		}
 	}
@@ -91,11 +147,20 @@ class AkeebaControllerBackup extends F0FController
 		// Set the profile
 		$this->_setProfile();
 
-		$kettenrad = AECoreKettenrad::load(AKEEBA_BACKUP_ORIGIN);
+		// Get the backup ID
+		$backupId = $this->input->get('backupid', null, 'raw', 2);
+		if (empty($backupId))
+		{
+			$backupId = null;
+		}
+
+		$kettenrad = AECoreKettenrad::load(AKEEBA_BACKUP_ORIGIN, $backupId);
+		$kettenrad->setBackupId($backupId);
+
 		$kettenrad->tick();
 		$array = $kettenrad->getStatusArray();
 		$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-		AECoreKettenrad::save(AKEEBA_BACKUP_ORIGIN);
+		AECoreKettenrad::save(AKEEBA_BACKUP_ORIGIN, $backupId);
 
 		if ($array['Error'] != '')
 		{
@@ -128,7 +193,30 @@ class AkeebaControllerBackup extends F0FController
 
 			else
 			{
-				$this->_customRedirect(JURI::base() . 'index.php?option=com_akeeba&view=backup&task=step&key=' . $this->input->get('key', '', 'none', 2) . '&profile=' . $this->input->get('profile', 1, 'int'));
+				$curUri = JUri::getInstance();
+				$ssl = $curUri->isSSL() ? 1 : 0;
+				$tempURL = JRoute::_('index.php?option=com_akeeba', false, $ssl);
+				$uri = new JUri($tempURL);
+
+				$uri->setVar('view', 'backup');
+				$uri->setVar('task', 'step');
+				$uri->setVar('key', $this->input->get('key', '', 'none', 2));
+				$uri->setVar('profile', $this->input->get('profile', 1, 'int'));
+
+				if (!empty($backupId))
+				{
+					$uri->setVar('backupid', $backupId);
+				}
+
+				// Maybe we have a multilingual site?
+				$lg = F0FPlatform::getInstance()->getLanguage();
+				$languageTag = $lg->getTag();
+
+				$uri->setVar('lang', $languageTag);
+
+				$redirectionUrl = $uri->toString();
+
+				$this->_customRedirect($redirectionUrl);
 			}
 		}
 	}
@@ -185,5 +273,7 @@ class AkeebaControllerBackup extends F0FController
 		header('HTTP/1.1 ' . $header);
 		header('Location: ' . $url);
 		header('Content-Type: text/plain');
+
+		JFactory::getApplication()->close(0);
 	}
 }

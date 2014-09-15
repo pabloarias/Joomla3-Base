@@ -6,6 +6,7 @@
         <drivers>
             <driver>mysql</driver>
             <driver>mysqli</driver>
+            <driver>pdomysql</driver>
         </drivers>
     </meta>
 
@@ -56,6 +57,7 @@ CREATE TABLE `#__ak_stats` (
 	`absolute_path` longtext,
 	`multipart` int(11) NOT NULL DEFAULT '0',
 	`tag` varchar(255) DEFAULT NULL,
+	`backupid` varchar(255) DEFAULT NULL,
 	`filesexist` tinyint(3) NOT NULL DEFAULT '1',
 	`remote_filename` varchar(1000) DEFAULT NULL,
 	`total_size` bigint(20) NOT NULL DEFAULT '0',
@@ -76,6 +78,16 @@ CREATE TABLE `#__ak_storage` (
 	`data` longtext,
 	PRIMARY KEY (`tag`)
 ) DEFAULT CHARACTER SET utf8;
+            ]]></query>
+        </action>
+
+        <!-- Add the backupid column to #__ak_stats if it's missing -->
+        <action table="#__ak_stats" canfail="1">
+            <condition type="missing" value="backupid" />
+            <query><![CDATA[
+ALTER TABLE `#__ak_stats`
+ADD COLUMN `backupid` varchar(255) DEFAULT NULL
+AFTER `tag`
             ]]></query>
         </action>
     </sql>

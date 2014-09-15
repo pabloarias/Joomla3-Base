@@ -76,8 +76,6 @@ class AECoreDomainInit extends AEAbstractPart
 
 		// Initialize counters
 		$registry = AEFactory::getConfiguration();
-		$registry->set('volatile.step_counter', 0);
-		$registry->set('volatile.operation_counter', 0);
 
 		if (!empty($jpskey))
 		{
@@ -92,7 +90,7 @@ class AECoreDomainInit extends AEAbstractPart
 		// Initialize temporary storage
 		AEUtilTempvars::reset();
 
-		// Force load the tag
+		// Force load the tag -- do not delete!
 		$kettenrad = AEFactory::getKettenrad();
 		$tag = $kettenrad->getTag();
 
@@ -294,7 +292,8 @@ class AECoreDomainInit extends AEAbstractPart
 			'absolute_path' => $stat_absoluteArchiveName,
 			'multipart'     => 0,
 			'filesexist'    => 1,
-			'tag'           => $kettenrad->getTag()
+			'tag'           => $kettenrad->getTag(),
+			'backupid'		=> $kettenrad->getBackupId(),
 		);
 
 		// Save the entry

@@ -485,6 +485,9 @@ class AkeebaModelCpanels extends F0FModel
 			$result = false;
 		}
 
+		// Reset the plugins cache
+		F0FUtilsCacheCleaner::clearPluginsCache();
+
 		return $result;
 	}
 
@@ -503,5 +506,64 @@ class AkeebaModelCpanels extends F0FModel
 		$dbInstaller->updateSchema();
 
 		return $this;
+	}
+
+	/**
+	 * Returns true if we are installed in Joomla! 3.2 or later and we have post-installation messages for our component
+	 * which must be showed to the user.
+	 *
+	 * @return bool
+	 */
+	public function hasPostInstallMessages()
+	{
+		// Make sure we have Joomla! 3.2.0 or later
+		if (!version_compare(JVERSION, '3.2.0', 'ge'))
+		{
+			return false;
+		}
+
+		// Get the extension ID
+		// Get the extension ID for our component
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('extension_id')
+			->from('#__extensions')
+			->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
+		$db->setQuery($query);
+
+		try
+		{
+			$ids = $db->loadColumn();
+		}
+		catch (Exception $exc)
+		{
+			return false;
+		}
+
+		if (empty($ids))
+		{
+			return false;
+		}
+
+		$extension_id = array_shift($ids);
+
+		$this->setState('extension_id', $extension_id);
+
+		if (!defined('FOF_INCLUDED'))
+		{
+			include_once JPATH_SITE.'/libraries/fof/include.php';
+		}
+
+		if (!defined('FOF_INCLUDED'))
+		{
+			return false;
+		}
+
+		// Do I have messages?
+		$pimModel = FOFModel::getTmpInstance('Messages', 'PostinstallModel');
+		$pimModel->savestate(false);
+		$pimModel->setState('eid', $extension_id);
+
+		return (count($pimModel->getList()) >= 1);
 	}
 }

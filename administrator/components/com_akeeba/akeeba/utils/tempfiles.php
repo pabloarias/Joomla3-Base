@@ -20,6 +20,7 @@ class AEUtilTempfiles
 	/**
 	 * Creates a randomly-named temporary file, registers it with the temporary
 	 * files management and returns its absolute path
+	 *
 	 * @return string The temporary file name
 	 */
 	static function createRegisterTempFile()
@@ -37,9 +38,9 @@ class AEUtilTempfiles
 	 * Registers a temporary file with the Akeeba Engine, storing the list of temporary files
 	 * in another temporary flat database file.
 	 *
-	 * @param    string $fileName The path of the file, relative to the temporary directory
+	 * @param string $fileName The path of the file, relative to the temporary directory
 	 *
-	 * @return    string    The absolute path to the temporary file, for use in file operations
+	 * @return string The absolute path to the temporary file, for use in file operations
 	 */
 	static function registerTempFile($fileName)
 	{
@@ -70,8 +71,10 @@ class AEUtilTempfiles
 	/**
 	 * Unregister and delete a temporary file
 	 *
-	 * @param $fileName     The filename to unregister and delte
-	 * @param $removePrefix The prefix to remove
+	 * @param string $fileName     The filename to unregister and delete
+	 * @param bool   $removePrefix The prefix to remove
+	 *
+	 * @return bool
 	 */
 	static function unregisterAndDeleteTempFile($fileName, $removePrefix = false)
 	{
@@ -141,6 +144,8 @@ class AEUtilTempfiles
 
 	/**
 	 * Deletes all temporary files
+	 *
+	 * @return void
 	 */
 	static function deleteTempFiles()
 	{
@@ -176,6 +181,13 @@ class AEUtilTempfiles
 		$configuration->set('volatile.tempfiles', serialize($tempFiles));
 	}
 
+	/**
+	 * Nullify the contents of the file and try to delete it as well
+	 *
+	 * @param string $filename The absolute path to the file to delete
+	 *
+	 * @return bool True of the deletion is successful
+	 */
 	static function nullifyAndDelete($filename)
 	{
 		// Try to nullify (method #1)

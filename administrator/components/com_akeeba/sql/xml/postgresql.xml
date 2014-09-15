@@ -56,6 +56,7 @@ CREATE TABLE "#__ak_stats" (
 	"absolute_path" text,
 	"multipart" int NOT NULL DEFAULT '0',
 	"tag" character varying(255) DEFAULT NULL,
+	"backupid" character varying(255) DEFAULT NULL,
 	"filesexist" smallint NOT NULL DEFAULT '1',
 	"remote_filename" character varying(1000) DEFAULT NULL,
 	"total_size" bigint NOT NULL DEFAULT '0',
@@ -80,6 +81,15 @@ CREATE TABLE "#__ak_storage" (
 	"data" text,
 	PRIMARY KEY ("tag")
 );
+            ]]></query>
+        </action>
+
+        <!-- Add the backupid column to #__ak_stats if it's missing -->
+        <action table="#__ak_stats" canfail="1">
+            <condition type="missing" value="backupid" />
+            <query><![CDATA[
+ALTER TABLE "#__ak_stats"
+ADD COLUMN "backupid" character varying(255) DEFAULT NULL
             ]]></query>
         </action>
     </sql>

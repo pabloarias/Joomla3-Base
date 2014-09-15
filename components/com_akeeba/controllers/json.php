@@ -45,6 +45,7 @@ class AkeebaControllerJson extends F0FController
 			}
 		}
 
+		/** @var AkeebaModelJsons $model */
 		$model = $this->getThisModel();
 		$json = $model->execute($sourceJSON);
 		if(function_exists('ob_clean')) @ob_clean();

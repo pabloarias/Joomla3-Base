@@ -34,6 +34,12 @@ define('KICKSTARTPRO', '##KICKSTARTPRO##');
 // Uncomment the following line to enable Kickstart's debug mode
 //define('KSDEBUG', 1);
 
+// Used during development
+if (!defined('KSDEBUG') && isset($_SERVER) && isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'local.web') !== false))
+{
+	define('KSDEBUG', 1);
+}
+
 define('KSWINDOWS', substr(PHP_OS, 0, 3) == 'WIN');
 
 if(!defined('KSROOTDIR'))
@@ -4305,7 +4311,7 @@ class AKPostprocHybrid extends AKAbstractPostproc
  */
 class AKUnarchiverJPA extends AKAbstractUnarchiver
 {
-	private $archiveHeaderData = array();
+	protected $archiveHeaderData = array();
 
 	protected function readArchiveHeader()
 	{
@@ -4904,7 +4910,7 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 		if(empty($this->fileHeader->realFile)) $this->fileHeader->realFile = $this->fileHeader->file;
 		$lastSlash = strrpos($this->fileHeader->realFile, '/');
 		$dirName = substr( $this->fileHeader->realFile, 0, $lastSlash);
-		$perms = $this->flagRestorePermissions ? $retArray['permissions'] : 0755;
+		$perms = $this->flagRestorePermissions ? $this->fileHeader->permissions : 0755;
 		$ignore = AKFactory::get('kickstart.setup.ignoreerrors', false) || $this->isIgnoredDirectory($dirName);
 		if( ($this->postProcEngine->createDirRecursive($dirName, $perms) == false) && (!$ignore) ) {
 			$this->setError( AKText::sprintf('COULDNT_CREATE_DIR', $dirName) );
@@ -4934,7 +4940,7 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 
 			// Read 512Kb
 			$chunk = fread($this->fp, 524288);
-			$size_read = mb_strlen($string,'8bit');
+			$size_read = mb_strlen($chunk,'8bit');
 			//$pos = strpos($chunk, 'JPF');
 			$pos = mb_strpos($chunk, 'JPF', 0, '8bit');
 			if($pos !== false) {
@@ -5255,9 +5261,9 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
  */
 class AKUnarchiverJPS extends AKUnarchiverJPA
 {
-	private $archiveHeaderData = array();
+	protected $archiveHeaderData = array();
 
-	private $password = '';
+	protected $password = '';
 
 	public function __construct()
 	{
@@ -6286,6 +6292,8 @@ class AKText extends AKAbstractObject
 		'UPDATE_MOREINFO' => 'More information',
 		'IGNORE_MOST_ERRORS' => 'Ignore most errors',
 		'WRONG_FTP_PATH2' => 'Wrong FTP initial directory - the directory doesn\'t correspond to your site\'s web root',
+		'ARCHIVE_DIRECTORY' => 'Archive directory:',
+		'RELOAD_ARCHIVES'	=> 'Reload',
 	);
 
 	/**
@@ -6830,9 +6838,17 @@ class AKFactory {
 		$object = self::getClassInstance($class_name);
 		if( $object->getState() == 'init')
 		{
+			$sourcePath = self::get('kickstart.setup.sourcepath', '');
+			$sourceFile = self::get('kickstart.setup.sourcefile', '');
+
+			if (!empty($sourcePath))
+			{
+				$sourceFile = rtrim($sourcePath, '/\\') . '/' . $sourceFile;
+			}
+
 			// Initialize the object
 			$config = array(
-				'filename'				=> self::get('kickstart.setup.sourcefile', ''),
+				'filename'				=> $sourceFile,
 				'restore_permissions'	=> self::get('kickstart.setup.restoreperms', 0),
 				'post_proc'				=> self::get('kickstart.procengine', 'direct'),
 				'add_path'				=> self::get('kickstart.setup.targetpath', $destdir),
@@ -7868,6 +7884,7 @@ function autoVar($key, $default = '')
 	}
 }
 
+
 /**
  * Akeeba Kickstart
  * A JSON-powered archive extraction tool
@@ -7877,76 +7894,166 @@ function autoVar($key, $default = '')
  * @package     akeebabackup
  * @subpackage  kickstart
  */
-
 class AKKickstartUtils
 {
 	/**
+	 * Guess the best path containing backup archives. The default strategy is check in the current directory first,
+	 * then attempt to find an Akeeba Backup for Joomla!, Akeeba Solo or Akeeba Backup for WordPress default backup
+	 * output directory under the current root. The first one containing backup archives wins.
+	 *
+	 * @return string The path to get archives from
+	 */
+	public static function getBestArchivePath()
+	{
+		$basePath = self::getPath();
+		$basePathSlash = (empty($basePath) ? '.' : rtrim($basePath, '/\\')) . '/';
+
+		$paths = array(
+			$basePath,
+			$basePathSlash . 'administrator/components/com_akeeba/backup',
+			$basePathSlash . 'backups',
+			$basePathSlash . 'wp-content/plugins/akeebabackupwp/app/backups',
+		);
+
+		foreach ($paths as $path)
+		{
+			$archives = self::findArchives($path);
+
+			if (!empty($archives))
+			{
+				return $path;
+			}
+		}
+
+		return $basePath;
+	}
+
+	/**
 	 * Gets the directory the file is in
+	 *
 	 * @return string
 	 */
 	public static function getPath()
 	{
 		$path = KSROOTDIR;
-		$path = rtrim(str_replace('\\','/',$path),'/');
-		if(!empty($path)) $path .= '/';
+		$path = rtrim(str_replace('\\', '/', $path), '/');
+		if (!empty($path))
+		{
+			$path .= '/';
+		}
+
 		return $path;
 	}
 
 	/**
-	 * Scans the current directory for archive files (JPA, JPS and ZIP formet)
+	 * Scans the current directory for archive files (JPA, JPS and ZIP format)
+	 *
+	 * @param string $path The path to look for archives. null for automatic path
+	 *
 	 * @return array
 	 */
-	public static function findArchives()
+	public static function findArchives($path)
 	{
 		$ret = array();
-		$path = self::getPath();
-		if(empty($path)) $path = '.';
-		$dh = @opendir($path);
-		if($dh === false) return $ret;
-		while( false !== $file = @readdir($dh) )
+
+		if (empty($path))
 		{
-			$dotpos = strrpos($file,'.');
-			if($dotpos === false) continue;
-			if($dotpos == strlen($file)) continue;
-			$extension = strtolower( substr($file,$dotpos+1) );
-			if(in_array($extension,array('jpa','zip','jps')))
+			$path = self::getPath();
+		}
+
+		if (empty($path))
+		{
+			$path = '.';
+		}
+
+		$dh = @opendir($path);
+
+		if ($dh === false)
+		{
+			return $ret;
+		}
+
+		while (false !== $file = @readdir($dh))
+		{
+			$dotpos = strrpos($file, '.');
+
+			if ($dotpos === false)
+			{
+				continue;
+			}
+
+			if ($dotpos == strlen($file))
+			{
+				continue;
+			}
+
+			$extension = strtolower(substr($file, $dotpos + 1));
+
+			if (in_array($extension, array('jpa', 'zip', 'jps')))
 			{
 				$ret[] = $file;
 			}
 		}
+
 		closedir($dh);
-		if(!empty($ret)) return $ret;
+
+		if (!empty($ret))
+		{
+			return $ret;
+		}
 
 		// On some hosts using opendir doesn't work. Let's try Dir instead
 		$d = dir($path);
-		while(false != ($file = $d->read()))
+
+		while (false != ($file = $d->read()))
 		{
-			$dotpos = strrpos($file,'.');
-			if($dotpos === false) continue;
-			if($dotpos == strlen($file)) continue;
-			$extension = strtolower( substr($file,$dotpos+1) );
-			if(in_array($extension,array('jpa','zip','jps')))
+			$dotpos = strrpos($file, '.');
+
+			if ($dotpos === false)
+			{
+				continue;
+			}
+
+			if ($dotpos == strlen($file))
+			{
+				continue;
+			}
+
+			$extension = strtolower(substr($file, $dotpos + 1));
+
+			if (in_array($extension, array('jpa', 'zip', 'jps')))
 			{
 				$ret[] = $file;
 			}
 		}
+
 		return $ret;
 	}
 
 	/**
 	 * Scans the current directory for archive files and returns them as <OPTION> tags
+	 *
+	 * @param string $path The path to look for archives. null for automatic path
+	 *
 	 * @return string
 	 */
-	public static function getArchivesAsOptions()
+	public static function getArchivesAsOptions($path = null)
 	{
 		$ret = '';
-		$archives = self::findArchives();
-		if(empty($archives)) return $ret;
-		foreach($archives as $file)
+
+		$archives = self::findArchives($path);
+
+		if (empty($archives))
+		{
+			return $ret;
+		}
+
+		foreach ($archives as $file)
 		{
 			//$file = htmlentities($file);
-			$ret .= '<option value="'.$file.'">'.$file.'</option>'."\n";
+			$ret .= '<option value="' . $file . '">' . $file . '</option>' . "\n";
 		}
+
 		return $ret;
 	}
 }
@@ -8079,7 +8186,7 @@ function TranslateWinPath($p_path)
 }
 
 function echoCSS() {
-	echo <<<ENDCSS
+	echo <<<CSS
 html {
     background: #e9e9e9;
     font-size: 62.5%;
@@ -8333,6 +8440,7 @@ input:focus, input:hover {
 #resetFTPTempDir.button,
 #testFTP.button,
 #browseFTP,
+#reloadArchives,
 #notWorking.button {
 	padding: .5em 1em;
 	text-transform: none;
@@ -8771,7 +8879,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
   	transition: 0.3s linear all;
 }
 
-ENDCSS;
+CSS;
 
 	callExtraFeature('onExtraHeadCSS');
 }
@@ -8787,6 +8895,8 @@ function echoPage()
 {
 	$edition = KICKSTARTPRO ? 'Professional' : 'Core';
 	$automation = AKAutomation::getInstance();
+	$bestArchivePath = AKKickstartUtils::getBestArchivePath();
+	$filelist = AKKickstartUtils::getArchivesAsOptions($bestArchivePath);
 	?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -8848,6 +8958,8 @@ function echoPage()
 		// Hook interaction handlers
 		$(document).keyup( closeLightbox );
 		$('#kickstart\\.procengine').change( onChangeProcengine );
+		$('#kickstart\\.setup\\.sourcepath').change( onArchiveListReload );
+		$('#reloadArchives').click ( onArchiveListReload );
 		$('#checkFTPTempDir').click( oncheckFTPTempDirClick );
 		$('#resetFTPTempDir').click( onresetFTPTempDir );
 		$('#browseFTP').click( onbrowseFTP );
@@ -9579,6 +9691,7 @@ function echoPage()
 			'task' : 'startExtracting',
 			'json': JSON.stringify({
 <?php if(!$automation->hasAutomation()): ?>
+				'kickstart.setup.sourcepath':		$('#kickstart\\.setup\\.sourcepath').val(),
 				'kickstart.setup.sourcefile':		$('#kickstart\\.setup\\.sourcefile').val(),
 				'kickstart.jps.password':			$('#kickstart\\.jps\\.password').val(),
 				'kickstart.tuning.min_exec_time':	$('#kickstart\\.tuning\\.min_exec_time').val(),
@@ -9601,6 +9714,7 @@ function echoPage()
 				'kickstart.ftp.dir':				$('#kickstart\\.ftp\\.dir').val(),
 				'kickstart.ftp.tempdir':			$('#kickstart\\.ftp\\.tempdir').val()
 <?php else: ?>
+				'kickstart.setup.sourcepath':		$('#kickstart\\.setup\\.sourcepath').val(),
 				'kickstart.setup.sourcefile':		<?php echo autoVar('kickstart.setup.sourcefile') ?>,
 				'kickstart.jps.password':			<?php echo autoVar('kickstart.jps.password') ?>,
 				'kickstart.tuning.min_exec_time':	<?php echo autoVar('kickstart.tuning.min_exec_time', 1) ?>,
@@ -9773,6 +9887,18 @@ function echoPage()
 		$('#kickstart\\.ftp\\.tempdir').val('<?php echo addcslashes(AKKickstartUtils::getPath(),'\\\'"') ?>');
 	}
 
+	function onArchiveListReload()
+	{
+		post = {
+			'task'	: 'listArchives',
+			'json'	: JSON.stringify({path: $('#kickstart\\.setup\\.sourcepath').val()})
+		}
+
+		doAjax(post, function(ret){
+			$('#sourcefileContainer').html(ret);
+		});
+	}
+
 	/**
 	 * Akeeba Kickstart Update Check
 	 */
@@ -9851,7 +9977,7 @@ function echoPage()
 		}
 
 		// Important: operator is CASE-SENSITIVE.
-		// "No operator" seems to be treated as "<."
+		// "No operator" seems to be treated as less than
 		// Any other values seem to make the function return null.
 		switch (operator) {
 		case '>':
@@ -10006,10 +10132,16 @@ function echoPage()
 			<?php callExtraFeature('onPage1Step1'); ?>
 			<div class="clr"></div>
 
-			<label for="kickstart.setup.sourcefile">ARCHIVE_FILE</label>
+			<label for="kickstart.setup.sourcepath">ARCHIVE_DIRECTORY</label>
 			<span class="field">
-				<?php $filelist = AKKickstartUtils::getArchivesAsOptions();
-				if(!empty($filelist)):?>
+				<input type="text" id="kickstart.setup.sourcepath" value="<?php echo htmlentities($bestArchivePath); ?>" />
+				<span class="button" id="reloadArchives" style="margin-top:0;margin-bottom:0">RELOAD_ARCHIVES</span>
+			</span>
+			<br/>
+
+			<label for="kickstart.setup.sourcefile">ARCHIVE_FILE</label>
+			<span class="field" id="sourcefileContainer">
+				<?php if(!empty($filelist)):?>
 					<select id="kickstart.setup.sourcefile">
 					<?php echo $filelist; ?>
 					</select>
@@ -10468,6 +10600,43 @@ switch($task)
 
 		break;
 
+	case 'listArchives':
+		$ajax = true;
+
+		$path = null;
+
+		if(!empty($json))
+		{
+			$json = json_decode($json, true);
+
+			if( array_key_exists('path', $json) )
+			{
+				$path = $json['path'];
+			}
+		}
+
+		if (empty($path) || !@is_dir($path))
+		{
+			$filelist = null;
+		}
+		else
+		{
+			$filelist = AKKickstartUtils::getArchivesAsOptions($path);
+		}
+
+		if (empty($filelist))
+		{
+			$retArray = '<a href="https://www.akeebabackup.com/documentation/troubleshooter/ksnoarchives.html" target="_blank">' .
+				AKText::_('NOARCHIVESCLICKHERE')
+				. '</a>';
+		}
+		else
+		{
+			$retArray = '<select id="kickstart.setup.sourcefile">' . $filelist . '</select>';
+		}
+
+		break;
+
 	default:
 		$ajax = true;
 		if(!empty($json)) {
@@ -10861,7 +11030,8 @@ function ak_urlimport_step(data)
 
 	// Update GUI
 	AKURLsetProgressBar(percent);
-	$('#ak-url-progresstext').text( percent+'% ('+doneSize+' / '+totalSize+' bytes)' );
+	//$('#ak-url-progresstext').text( percent+'% ('+doneSize+' / '+totalSize+' bytes)' );
+	$('#ak-url-progresstext').text( percent+'% ('+doneSize+' bytes)' );
 
 	post = {
 		'task'	: 'urlimport',
@@ -10892,7 +11062,7 @@ function onAKURLJoomla()
 	akeeba_error_callback = AKURLerrorHandler;
 
 	var data = {
-		'task' : 'getjurl',
+		'task' : 'getjurl'
 	};
 
 	doAjax(data, function(ret)
@@ -11052,8 +11222,6 @@ function AKURLerrorHandler(msg)
 
 					// Init
 					$frag = 0;
-
-					// @todo Get the file size
 				}
 
 				// Calculate from and length
@@ -11067,6 +11235,8 @@ function AKURLerrorHandler(msg)
 				@unlink($temp_file);
 				$required_time = 1.0;
 				debugMsg("-- Importing frag $frag, byte position from/to: $from / $to");
+
+				$filesize = 0;
 
 				try
 				{
@@ -11170,9 +11340,17 @@ function AKURLerrorHandler(msg)
 
 					debugMsg("-- Temporary file merged and removed");
 
-					$frag++;
+					if ($filesize > $length)
+					{
+						debugMsg("-- Read more data than the requested length. I assume this file is complete.");
+						$frag = -1;
+					}
+					else
+					{
+						$frag++;
 
-					debugMsg("-- Proceeding to next fragment, frag $frag");
+						debugMsg("-- Proceeding to next fragment, frag $frag");
+					}
 				}
 
 				// Advance the frag pointer and mark the end

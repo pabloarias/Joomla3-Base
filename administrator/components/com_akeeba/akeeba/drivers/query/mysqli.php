@@ -18,7 +18,7 @@ defined('AKEEBAENGINE') or die();
 class AEQueryMysqli extends AEAbstractQuery implements AEAbstractQuerylimitable
 {
 	/**
-	 * @var    interger  The offset for the result set.
+	 * @var    integer  The offset for the result set.
 	 */
 	protected $offset;
 

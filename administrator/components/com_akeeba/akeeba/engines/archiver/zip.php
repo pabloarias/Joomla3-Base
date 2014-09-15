@@ -234,11 +234,10 @@ class AEArchiverZip extends AEAbstractArchiver
 
 		// Try to kill the archive if it exists
 		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "AEArchiverZip :: Killing old archive");
-		$fp = fopen($this->_dataFileName, "wb");
-		if (!($fp === false))
+		$this->fp = $this->_fopen($this->_dataFileName, "wb");
+		if (!($this->fp === false))
 		{
-			ftruncate($fp, 0);
-			fclose($fp);
+			ftruncate($this->fp, 0);
 		}
 		else
 		{
@@ -280,48 +279,64 @@ class AEArchiverZip extends AEAbstractArchiver
 		$cdSize = @filesize($this->_ctrlDirFileName);
 
 		// 2. Append Central Directory to data file and remove the CD temp file afterwards
-		$dataFP = fopen($this->_dataFileName, "ab");
-		$cdFP = fopen($this->_ctrlDirFileName, "rb");
+		if (!is_null($this->fp))
+		{
+			$this->_fclose($this->fp);
+		}
 
-		if ($dataFP === false)
+		if (!is_null($this->cdfp))
+		{
+			$this->_fclose($this->cdfp);
+		}
+
+		$this->fp = $this->_fopen($this->_dataFileName, "ab");
+		$this->cdfp = $this->_fopen($this->_ctrlDirFileName, "rb");
+
+		if ($this->fp === false)
 		{
 			$this->setError('Could not open ZIP data file ' . $this->_dataFileName . ' for reading');
 
 			return false;
 		}
 
-		if ($cdFP === false)
+		if ($this->cdfp === false)
 		{
 			// Already glued, return
-			fclose($dataFP);
+			$this->_fclose($this->fp);
+			$this->fp = null;
+			$this->cdfp = null;
 
 			return false;
 		}
 
 		if (!$this->_useSplitZIP)
 		{
-			while (!feof($cdFP))
+			while (!feof($this->cdfp))
 			{
-				$chunk = fread($cdFP, _AKEEBA_DIRECTORY_READ_CHUNK);
-				$this->_fwrite($dataFP, $chunk);
+				$chunk = fread($this->cdfp, _AKEEBA_DIRECTORY_READ_CHUNK);
+				$this->_fwrite($this->fp, $chunk);
+
 				if ($this->getError())
 				{
 					return;
 				}
 			}
+
 			unset($chunk);
-			fclose($cdFP);
+
+			$this->_fclose($this->cdfp);
 		}
 		else
-			// Special considerations for Split ZIP
+		// Special considerations for Split ZIP
 		{
-			// Calcuate size of Central Directory + EOCD records
+			// Calculate size of Central Directory + EOCD records
 			$comment_length = function_exists('mb_strlen') ? mb_strlen($this->_comment, '8bit') : strlen($this->_comment);
 			$total_cd_eocd_size = $cdSize + 22 + $comment_length;
 			// Free space on the part
 			clearstatcache();
 			$current_part_size = @filesize($this->_dataFileName);
 			$free_space = $this->_fragmentSize - ($current_part_size === false ? 0 : $current_part_size);
+
 			if (($free_space < $total_cd_eocd_size) && ($total_cd_eocd_size > 65536))
 			{
 				// Not enough space on archive for CD + EOCD, will go on separate part
@@ -336,108 +351,130 @@ class AEArchiverZip extends AEAbstractArchiver
 				else
 				{
 					// Close the old data file
-					fclose($dataFP);
+					$this->_fclose($this->fp);
+
 					// Open data file for output
-					$dataFP = @fopen($this->_dataFileName, "ab");
-					if ($dataFP === false)
+					$this->fp = @$this->_fopen($this->_dataFileName, "ab");
+
+					if ($this->fp === false)
 					{
+						$this->fp = null;
 						$this->setError("Could not open archive file {$this->_dataFileName} for append!");
 
 						return false;
 					}
 					// Write the CD record
-					while (!feof($cdFP))
+					while (!feof($this->cdfp))
 					{
-						$chunk = fread($cdFP, _AKEEBA_DIRECTORY_READ_CHUNK);
-						$this->_fwrite($dataFP, $chunk);
+						$chunk = fread($this->cdfp, _AKEEBA_DIRECTORY_READ_CHUNK);
+						$this->_fwrite($this->fp, $chunk);
+
 						if ($this->getError())
 						{
 							return;
 						}
 					}
+
 					unset($chunk);
-					fclose($cdFP);
+
+					$this->_fclose($this->cdfp);
+					$this->cdfp = null;
 				}
 			}
 			else
 			{
 				// Glue the CD + EOCD on the same part if they fit, or anyway if they are less than 64Kb.
 				// NOTE: WE *MUST NOT* CREATE FRAGMENTS SMALLER THAN 64Kb!!!!
-				while (!feof($cdFP))
+				while (!feof($this->cdfp))
 				{
-					$chunk = fread($cdFP, _AKEEBA_DIRECTORY_READ_CHUNK);
-					$this->_fwrite($dataFP, $chunk);
+					$chunk = fread($this->cdfp, _AKEEBA_DIRECTORY_READ_CHUNK);
+					$this->_fwrite($this->fp, $chunk);
+
 					if ($this->getError())
 					{
 						return;
 					}
 				}
+
 				unset($chunk);
-				fclose($cdFP);
+				$this->_fclose($this->cdfp);
+				$this->cdfp = null;
 			}
 		}
 
 		AEUtilTempfiles::unregisterAndDeleteTempFile($this->_ctrlDirFileName);
 
 		// 3. Write the rest of headers to the end of the ZIP file
-		fclose($dataFP);
+		$this->_fclose($this->fp);
+		$this->fp = null;
+
 		clearstatcache();
-		$dataFP = fopen($this->_dataFileName, "ab");
-		if ($dataFP === false)
+
+		$this->fp = $this->_fopen($this->_dataFileName, "ab");
+
+		if ($this->fp === false)
 		{
 			$this->setError('Could not open ' . $this->_dataFileName . ' for append');
 
 			return false;
 		}
-		$this->_fwrite($dataFP, $this->_ctrlDirEnd);
+
+		$this->_fwrite($this->fp, $this->_ctrlDirEnd);
+
 		if ($this->getError())
 		{
 			return;
 		}
+
 		if ($this->_useSplitZIP)
 		{
 			// Split ZIP files, enter relevant disk number information
-			$this->_fwrite($dataFP, pack('v', $this->_totalFragments - 1)); /* Number of this disk. */
-			$this->_fwrite($dataFP, pack('v', $this->_totalFragments - 1)); /* Disk with central directory start. */
+			$this->_fwrite($this->fp, pack('v', $this->_totalFragments - 1)); /* Number of this disk. */
+			$this->_fwrite($this->fp, pack('v', $this->_totalFragments - 1)); /* Disk with central directory start. */
 		}
 		else
 		{
 			// Non-split ZIP files, the disk numbers MUST be 0
-			$this->_fwrite($dataFP, pack('V', 0));
+			$this->_fwrite($this->fp, pack('V', 0));
 		}
-		$this->_fwrite($dataFP, pack('v', $this->_totalFileEntries)); /* Total # of entries "on this disk". */
-		$this->_fwrite($dataFP, pack('v', $this->_totalFileEntries)); /* Total # of entries overall. */
-		$this->_fwrite($dataFP, pack('V', $cdSize)); /* Size of central directory. */
-		$this->_fwrite($dataFP, pack('V', $cdOffset)); /* Offset to start of central dir. */
+		$this->_fwrite($this->fp, pack('v', $this->_totalFileEntries)); /* Total # of entries "on this disk". */
+		$this->_fwrite($this->fp, pack('v', $this->_totalFileEntries)); /* Total # of entries overall. */
+		$this->_fwrite($this->fp, pack('V', $cdSize)); /* Size of central directory. */
+		$this->_fwrite($this->fp, pack('V', $cdOffset)); /* Offset to start of central dir. */
 		$sizeOfComment = $comment_length = function_exists('mb_strlen') ? mb_strlen($this->_comment, '8bit') : strlen($this->_comment);
 		// 2.0.b2 -- Write a ZIP file comment
-		$this->_fwrite($dataFP, pack('v', $sizeOfComment)); /* ZIP file comment length. */
-		$this->_fwrite($dataFP, $this->_comment);
-		fclose($dataFP);
+		$this->_fwrite($this->fp, pack('v', $sizeOfComment)); /* ZIP file comment length. */
+		$this->_fwrite($this->fp, $this->_comment);
+		$this->_fclose($this->fp);
 		//sleep(2);
 
 		// If Split ZIP and there is no .zip file, rename the last fragment to .ZIP
 		if ($this->_useSplitZIP)
 		{
 			$extension = substr($this->_dataFileName, -3);
+
 			if ($extension != '.zip')
 			{
 				AEUtilLogger::WriteLog(_AE_LOG_DEBUG, 'Renaming last ZIP part to .ZIP extension');
+
 				$newName = $this->_dataFileNameBase . '.zip';
+
 				if (!@rename($this->_dataFileName, $newName))
 				{
 					$this->setError('Could not rename last ZIP part to .ZIP extension.');
 
 					return false;
 				}
+
 				$this->_dataFileName = $newName;
 			}
 		}
+
 		// If Split ZIP and only one fragment, change the signature
 		if ($this->_useSplitZIP && ($this->_totalFragments == 1))
 		{
-			$fp = fopen($this->_dataFileName, 'r+b');
-			$this->_fwrite($fp, "\x50\x4b\x30\x30");
+			$this->fp = $this->_fopen($this->_dataFileName, 'r+b');
+			$this->_fwrite($this->fp, "\x50\x4b\x30\x30");
 		}
 
 		if (function_exists('chmod'))
@@ -487,6 +524,19 @@ class AEArchiverZip extends AEAbstractArchiver
 		if (!$configuration)
 		{
 			$configuration = AEFactory::getConfiguration();
+		}
+
+		// Open data file for output
+		if (is_null($this->fp))
+		{
+			$this->fp = @$this->_fopen($this->_dataFileName, "ab");
+		}
+
+		if ($this->fp === false)
+		{
+			$this->setError("Could not open archive file {$this->_dataFileName} for append!");
+
+			return false;
 		}
 
 		if (!$configuration->get('volatile.engine.archiver.processingfile', false))
@@ -666,10 +716,6 @@ class AEArchiverZip extends AEAbstractArchiver
 				chr(hexdec($dtime[2] . $dtime[3])) .
 				chr(hexdec($dtime[0] . $dtime[1]));
 
-			// Get current data file size
-			//clearstatcache();
-			//$old_offset = @filesize( $this->_dataFileName );
-
 			// If it's a split ZIP file, we've got to make sure that the header can fit in the part
 			if ($this->_useSplitZIP)
 			{
@@ -690,22 +736,18 @@ class AEArchiverZip extends AEAbstractArchiver
 					}
 				}
 			}
-			// Open data file for output
-			$fp = @fopen($this->_dataFileName, "ab");
-			if ($fp === false)
-			{
-				$this->setError("Could not open archive file {$this->_dataFileName} for append!");
 
-				return false;
-			}
-
-			$seek_result = @fseek($fp, 0, SEEK_END);
-			$old_offset = ($seek_result == -1) ? false : @ftell($fp);
+			/**/
+			$old_offset = @ftell($this->fp);
+			/**
+			$seek_result = @fseek($this->fp, 0, SEEK_END);
+			$old_offset = ($seek_result == -1) ? false : @ftell($this->fp);
 			if ($old_offset === false)
 			{
 				@clearstatcache();
 				$old_offset = @filesize($this->_dataFileName);
 			}
+			/**/
 
 			// Get the file name length in bytes
 			if (function_exists('mb_strlen'))
@@ -717,28 +759,28 @@ class AEArchiverZip extends AEAbstractArchiver
 				$fn_length = strlen($storedName);
 			}
 
-			$this->_fwrite($fp, $this->_fileHeader); /* Begin creating the ZIP data. */
+			$this->_fwrite($this->fp, $this->_fileHeader); /* Begin creating the ZIP data. */
 			if (!$isSymlink)
 			{
-				$this->_fwrite($fp, "\x14\x00"); /* Version needed to extract. */
+				$this->_fwrite($this->fp, "\x14\x00"); /* Version needed to extract. */
 			}
 			else
 			{
-				$this->_fwrite($fp, "\x0a\x03"); /* Version needed to extract. */
+				$this->_fwrite($this->fp, "\x0a\x03"); /* Version needed to extract. */
 			}
-			$this->_fwrite($fp, pack('v', 2048)); /* General purpose bit flag. Bit 11 set = use UTF-8 encoding for filenames & comments */
-			$this->_fwrite($fp, ($compressionMethod == 8) ? "\x08\x00" : "\x00\x00"); /* Compression method. */
-			$this->_fwrite($fp, $hexdtime); /* Last modification time/date. */
-			$this->_fwrite($fp, pack('V', $crc)); /* CRC 32 information. */
+			$this->_fwrite($this->fp, pack('v', 2048)); /* General purpose bit flag. Bit 11 set = use UTF-8 encoding for filenames & comments */
+			$this->_fwrite($this->fp, ($compressionMethod == 8) ? "\x08\x00" : "\x00\x00"); /* Compression method. */
+			$this->_fwrite($this->fp, $hexdtime); /* Last modification time/date. */
+			$this->_fwrite($this->fp, pack('V', $crc)); /* CRC 32 information. */
 			if (!isset($c_len))
 			{
 				$c_len = $unc_len;
 			}
-			$this->_fwrite($fp, pack('V', $c_len)); /* Compressed filesize. */
-			$this->_fwrite($fp, pack('V', $unc_len)); /* Uncompressed filesize. */
-			$this->_fwrite($fp, pack('v', $fn_length)); /* Length of filename. */
-			$this->_fwrite($fp, pack('v', 0)); /* Extra field length. */
-			$this->_fwrite($fp, $storedName); /* File name. */
+			$this->_fwrite($this->fp, pack('V', $c_len)); /* Compressed filesize. */
+			$this->_fwrite($this->fp, pack('V', $unc_len)); /* Uncompressed filesize. */
+			$this->_fwrite($this->fp, pack('v', $fn_length)); /* Length of filename. */
+			$this->_fwrite($this->fp, pack('v', 0)); /* Extra field length. */
+			$this->_fwrite($this->fp, $storedName); /* File name. */
 
 			// Cache useful information about the file
 			if (!$isDir && !$isSymlink && !$isVirtual)
@@ -766,16 +808,6 @@ class AEArchiverZip extends AEAbstractArchiver
 			$fn_length = $configuration->get('volatile.engine.archiver.fn_length');
 			$old_offset = $configuration->get('volatile.engine.archiver.old_offset');
 			$storedName = $configuration->get('volatile.engine.archiver.storedName');
-
-
-			// Open data file for output
-			$fp = @fopen($this->_dataFileName, "ab");
-			if ($fp === false)
-			{
-				$this->setError("Could not open archive file {$this->_dataFileName} for append!");
-
-				return false;
-			}
 		}
 
 
@@ -785,7 +817,7 @@ class AEArchiverZip extends AEAbstractArchiver
 			// Just dump the compressed data
 			if (!$this->_useSplitZIP)
 			{
-				$this->_fwrite($fp, $zdata);
+				$this->_fwrite($this->fp, $zdata);
 				if ($this->getError())
 				{
 					return;
@@ -800,7 +832,7 @@ class AEArchiverZip extends AEAbstractArchiver
 				if ($free_space >= (function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)))
 				{
 					// Write in one part
-					$this->_fwrite($fp, $zdata);
+					$this->_fwrite($this->fp, $zdata);
 					if ($this->getError())
 					{
 						return;
@@ -817,7 +849,7 @@ class AEArchiverZip extends AEAbstractArchiver
 						$free_space = $this->_fragmentSize - ($current_part_size === false ? 0 : $current_part_size);
 
 						// Split between parts - Write a part
-						$this->_fwrite($fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $free_space));
+						$this->_fwrite($this->fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $free_space));
 						if ($this->getError())
 						{
 							return;
@@ -828,6 +860,9 @@ class AEArchiverZip extends AEAbstractArchiver
 
 						if ($bytes_left > 0)
 						{
+							$this->_fclose($this->fp);
+							$this->fp = null;
+
 							// Create new part
 							if (!$this->_createNewPart())
 							{
@@ -838,11 +873,9 @@ class AEArchiverZip extends AEAbstractArchiver
 							}
 							else
 							{
-								// Close the old data file
-								fclose($fp);
 								// Open data file for output
-								$fp = @fopen($this->_dataFileName, "ab");
-								if ($fp === false)
+								$this->fp = @$this->_fopen($this->_dataFileName, "ab");
+								if ($this->fp === false)
 								{
 									$this->setError("Could not open archive file {$this->_dataFileName} for append!");
 
@@ -864,7 +897,7 @@ class AEArchiverZip extends AEAbstractArchiver
 				// Just dump the data
 				if (!$this->_useSplitZIP)
 				{
-					$this->_fwrite($fp, $sourceNameOrData);
+					$this->_fwrite($this->fp, $sourceNameOrData);
 					if ($this->getError())
 					{
 						return;
@@ -879,7 +912,7 @@ class AEArchiverZip extends AEAbstractArchiver
 					if ($free_space >= (function_exists('mb_strlen') ? mb_strlen($sourceNameOrData, '8bit') : strlen($sourceNameOrData)))
 					{
 						// Write in one part
-						$this->_fwrite($fp, $sourceNameOrData);
+						$this->_fwrite($this->fp, $sourceNameOrData);
 						if ($this->getError())
 						{
 							return;
@@ -895,7 +928,7 @@ class AEArchiverZip extends AEAbstractArchiver
 							$current_part_size = @filesize($this->_dataFileName);
 							$free_space = $this->_fragmentSize - ($current_part_size === false ? 0 : $current_part_size);
 							// Split between parts - Write first part
-							$this->_fwrite($fp, $sourceNameOrData, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $free_space));
+							$this->_fwrite($this->fp, $sourceNameOrData, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $free_space));
 							if ($this->getError())
 							{
 								return;
@@ -904,6 +937,9 @@ class AEArchiverZip extends AEAbstractArchiver
 							$rest_size = (function_exists('mb_strlen') ? mb_strlen($sourceNameOrData, '8bit') : strlen($sourceNameOrData)) - $free_space;
 							if ($rest_size > 0)
 							{
+								$this->_fclose($this->fp);
+								$this->fp = null;
+
 								// Create new part if required
 								if (!$this->_createNewPart())
 								{
@@ -914,11 +950,9 @@ class AEArchiverZip extends AEAbstractArchiver
 								}
 								else
 								{
-									// Close the old data file
-									fclose($fp);
 									// Open data file for output
-									$fp = @fopen($this->_dataFileName, "ab");
-									if ($fp === false)
+									$this->fp = @$this->_fopen($this->_dataFileName, "ab");
+									if ($this->fp === false)
 									{
 										$this->setError("Could not open archive file {$this->_dataFileName} for append!");
 
@@ -977,7 +1011,7 @@ class AEArchiverZip extends AEAbstractArchiver
 						while (!feof($zdatafp) && ($timer->getTimeLeft() > 0) && ($unc_len > 0))
 						{
 							$zdata = fread($zdatafp, AKEEBA_CHUNK);
-							$this->_fwrite($fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), AKEEBA_CHUNK));
+							$this->_fwrite($this->fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), AKEEBA_CHUNK));
 							$unc_len -= AKEEBA_CHUNK;
 							if ($this->getError())
 							{
@@ -1006,7 +1040,7 @@ class AEArchiverZip extends AEAbstractArchiver
 							while (!feof($zdatafp) && ($timer->getTimeLeft() > 0) && ($unc_len > 0))
 							{
 								$zdata = fread($zdatafp, AKEEBA_CHUNK);
-								$this->_fwrite($fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), AKEEBA_CHUNK));
+								$this->_fwrite($this->fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), AKEEBA_CHUNK));
 								$unc_len -= AKEEBA_CHUNK;
 								if ($this->getError())
 								{
@@ -1049,7 +1083,7 @@ class AEArchiverZip extends AEAbstractArchiver
 								for ($i = 1; $i <= $loop_times; $i++)
 								{
 									$zdata = fread($zdatafp, $chunk_size_primary);
-									$this->_fwrite($fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $chunk_size_primary));
+									$this->_fwrite($this->fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $chunk_size_primary));
 									$unc_len -= $chunk_size_primary;
 									if ($this->getError())
 									{
@@ -1071,7 +1105,7 @@ class AEArchiverZip extends AEAbstractArchiver
 								if ($chunk_size_secondary > 0)
 								{
 									$zdata = fread($zdatafp, $chunk_size_secondary);
-									$this->_fwrite($fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $chunk_size_secondary));
+									$this->_fwrite($this->fp, $zdata, min((function_exists('mb_strlen') ? mb_strlen($zdata, '8bit') : strlen($zdata)), $chunk_size_secondary));
 									$unc_len -= $chunk_size_secondary;
 									if ($this->getError())
 									{
@@ -1114,7 +1148,8 @@ class AEArchiverZip extends AEAbstractArchiver
 									else
 									{
 										// Close the old data file
-										fclose($fp);
+										$this->_fclose($this->fp);
+										$this->fp = null;
 
 										// We have created the part. If the user asked for immediate post-proc, break step now.
 										if ($configuration->get('engine.postproc.common.after_part', 0))
@@ -1125,14 +1160,13 @@ class AEArchiverZip extends AEAbstractArchiver
 
 											$configuration->set('volatile.breakflag', true);
 											@fclose($zdatafp);
-											@fclose($fp);
 
 											return true;
 										}
 
 										// Open data file for output
-										$fp = @fopen($this->_dataFileName, "ab");
-										if ($fp === false)
+										$this->fp = @$this->_fopen($this->_dataFileName, "ab");
+										if ($this->fp === false)
 										{
 											$this->setError("Could not open archive file {$this->_dataFileName} for append!");
 
@@ -1145,81 +1179,82 @@ class AEArchiverZip extends AEAbstractArchiver
 
 						}
 					}
-					fclose($zdatafp);
+
+					@fclose($zdatafp);
 				}
 			}
 		}
 		elseif ($isSymlink)
 		{
-			$this->_fwrite($fp, @readlink($sourceNameOrData));
+			$this->_fwrite($this->fp, @readlink($sourceNameOrData));
 		}
 
-		// Done with data file.
-		fclose($fp);
-
 		// Open the central directory file for append
-		$fp = @fopen($this->_ctrlDirFileName, "ab");
-		if ($fp === false)
+		if (is_null($this->cdfp))
+		{
+			$this->cdfp = @$this->_fopen($this->_ctrlDirFileName, "ab");
+		}
+
+		if ($this->cdfp === false)
 		{
 			$this->setError("Could not open Central Directory temporary file for append!");
 
 			return false;
 		}
-		$this->_fwrite($fp, $this->_ctrlDirHeader);
+
+		$this->_fwrite($this->cdfp, $this->_ctrlDirHeader);
+
 		if (!$isSymlink)
 		{
-			$this->_fwrite($fp, "\x14\x00"); /* Version made by (always set to 2.0). */
-			$this->_fwrite($fp, "\x14\x00"); /* Version needed to extract */
-			$this->_fwrite($fp, pack('v', 2048)); /* General purpose bit flag */
-			$this->_fwrite($fp, ($compressionMethod == 8) ? "\x08\x00" : "\x00\x00"); /* Compression method. */
+			$this->_fwrite($this->cdfp, "\x14\x00"); /* Version made by (always set to 2.0). */
+			$this->_fwrite($this->cdfp, "\x14\x00"); /* Version needed to extract */
+			$this->_fwrite($this->cdfp, pack('v', 2048)); /* General purpose bit flag */
+			$this->_fwrite($this->cdfp, ($compressionMethod == 8) ? "\x08\x00" : "\x00\x00"); /* Compression method. */
 		}
 		else
 		{
 			// Symlinks get special treatment
-			$this->_fwrite($fp, "\x14\x03"); /* Version made by (version 2.0 with UNIX extensions). */
-			$this->_fwrite($fp, "\x0a\x03"); /* Version needed to extract */
-			$this->_fwrite($fp, pack('v', 2048)); /* General purpose bit flag */
-			$this->_fwrite($fp, "\x00\x00"); /* Compression method. */
+			$this->_fwrite($this->cdfp, "\x14\x03"); /* Version made by (version 2.0 with UNIX extensions). */
+			$this->_fwrite($this->cdfp, "\x0a\x03"); /* Version needed to extract */
+			$this->_fwrite($this->cdfp, pack('v', 2048)); /* General purpose bit flag */
+			$this->_fwrite($this->cdfp, "\x00\x00"); /* Compression method. */
 		}
 
-		$this->_fwrite($fp, $hexdtime); /* Last mod time/date. */
-		$this->_fwrite($fp, pack('V', $crc)); /* CRC 32 information. */
-		$this->_fwrite($fp, pack('V', $c_len)); /* Compressed filesize. */
+		$this->_fwrite($this->cdfp, $hexdtime); /* Last mod time/date. */
+		$this->_fwrite($this->cdfp, pack('V', $crc)); /* CRC 32 information. */
+		$this->_fwrite($this->cdfp, pack('V', $c_len)); /* Compressed filesize. */
 		if ($compressionMethod == 0)
 		{
 			// When we are not compressing, $unc_len is being reduced to 0 while backing up.
 			// With this trick, we always store the correct length, as in this case the compressed
 			// and uncompressed length is always the same.
-			$this->_fwrite($fp, pack('V', $c_len)); /* Uncompressed filesize. */
+			$this->_fwrite($this->cdfp, pack('V', $c_len)); /* Uncompressed filesize. */
 		}
 		else
 		{
 			// When compressing, the uncompressed length differs from compressed length
 			// and this line writes the correct value.
-			$this->_fwrite($fp, pack('V', $unc_len)); /* Uncompressed filesize. */
+			$this->_fwrite($this->cdfp, pack('V', $unc_len)); /* Uncompressed filesize. */
 		}
-		$this->_fwrite($fp, pack('v', $fn_length)); /* Length of filename. */
-		$this->_fwrite($fp, pack('v', 0)); /* Extra field length. */
-		$this->_fwrite($fp, pack('v', 0)); /* File comment length. */
-		$this->_fwrite($fp, pack('v', $starting_disk_number_for_this_file)); /* Disk number start. */
-		$this->_fwrite($fp, pack('v', 0)); /* Internal file attributes. */
+		$this->_fwrite($this->cdfp, pack('v', $fn_length)); /* Length of filename. */
+		$this->_fwrite($this->cdfp, pack('v', 0)); /* Extra field length. */
+		$this->_fwrite($this->cdfp, pack('v', 0)); /* File comment length. */
+		$this->_fwrite($this->cdfp, pack('v', $starting_disk_number_for_this_file)); /* Disk number start. */
+		$this->_fwrite($this->cdfp, pack('v', 0)); /* Internal file attributes. */
 		if (!$isSymlink)
 		{
-			$this->_fwrite($fp, pack('V', $isDir ? 0x41FF0010 : 0xFE49FFE0)); /* External file attributes -   'archive' bit set. */
+			$this->_fwrite($this->cdfp, pack('V', $isDir ? 0x41FF0010 : 0xFE49FFE0)); /* External file attributes -   'archive' bit set. */
 		}
 		else
 		{
 			// For SymLinks we store UNIX file attributes
-			$this->_fwrite($fp, "\x20\x80\xFF\xA1"); /* External file attributes for Symlink. */
+			$this->_fwrite($this->cdfp, "\x20\x80\xFF\xA1"); /* External file attributes for Symlink. */
 		}
-		$this->_fwrite($fp, pack('V', $old_offset)); /* Relative offset of local header. */
-		$this->_fwrite($fp, $storedName); /* File name. */
+		$this->_fwrite($this->cdfp, pack('V', $old_offset)); /* Relative offset of local header. */
+		$this->_fwrite($this->cdfp, $storedName); /* File name. */
 		/* Optional extra field, file comment goes here. */
 
-		// Finished with Central Directory
-		fclose($fp);
-
-		// Finaly, increase the file counter by one
+		// Finally, increase the file counter by one
 		$this->_totalFileEntries++;
 
 		// Uncache data
@@ -1277,6 +1312,9 @@ class AEArchiverZip extends AEAbstractArchiver
 
 	private function _createNewPart($finalPart = false)
 	{
+		// Remove the just finished part from the list of resumable offsets
+		$this->_removeFromOffsetsList($this->_dataFileName);
+
 		// Push the previous part if we have to post-process it immediately
 		$configuration = AEFactory::getConfiguration();
 		if ($configuration->get('engine.postproc.common.after_part', 0))

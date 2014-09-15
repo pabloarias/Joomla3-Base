@@ -51,6 +51,11 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 		// Load Joomla! database class
 		$db = AEFactory::getDatabase($this->get_platform_database_options());
 
+		if (!$db->connected())
+		{
+			return false;
+		}
+
 		// Get the active profile number, if no profile was specified
 		if (is_null($profile_id))
 		{
@@ -105,46 +110,50 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 		$registry->reset();
 
 		// Load the INI format local configuration dump off the database
-		$sql = $db->getQuery(true)
-			->select($db->qn('configuration'))
-			->from($db->qn($this->tableNameProfiles))
-			->where($db->qn('id') . ' = ' . $db->q($profile_id));
-		$db->setQuery($sql);
-		$ini_data_local = $db->loadResult();
-		if (empty($ini_data_local) || is_null($ini_data_local))
+		if ($db->connected())
 		{
-			// No configuration was saved yet - store the defaults
-			$this->save_configuration($profile_id);
-		}
-		else
-		{
-			// Configuration found. Convert to array format.
-			if (function_exists('get_magic_quotes_runtime'))
-			{
-				if (@get_magic_quotes_runtime())
-				{
-					$ini_data_local = stripslashes($ini_data_local);
-				}
-			}
-			// Decrypt the data if required
-			$ini_data_local = AEUtilSecuresettings::decryptSettings($ini_data_local);
+			$sql = $db->getQuery(true)
+				->select($db->qn('configuration'))
+				->from($db->qn($this->tableNameProfiles))
+				->where($db->qn('id') . ' = ' . $db->q($profile_id));
 
-			$ini_data_local = AEUtilINI::parse_ini_file_php($ini_data_local, true, true);
-			$ini_data = array();
-			foreach ($ini_data_local as $section => $row)
+			$db->setQuery($sql);
+			$ini_data_local = $db->loadResult();
+			if (empty($ini_data_local) || is_null($ini_data_local))
 			{
-				if (is_array($row) && !empty($row))
+				// No configuration was saved yet - store the defaults
+				$this->save_configuration($profile_id);
+			}
+			else
+			{
+				// Configuration found. Convert to array format.
+				if (function_exists('get_magic_quotes_runtime'))
 				{
-					foreach ($row as $key => $value)
+					if (@get_magic_quotes_runtime())
 					{
-						$ini_data["$section.$key"] = $value;
+						$ini_data_local = stripslashes($ini_data_local);
 					}
 				}
-			}
-			unset($ini_data_local);
+				// Decrypt the data if required
+				$ini_data_local = AEUtilSecuresettings::decryptSettings($ini_data_local);
 
-			// Import the configuration array
-			$registry->mergeArray($ini_data, false, false);
+				$ini_data_local = AEUtilINI::parse_ini_file_php($ini_data_local, true, true);
+				$ini_data = array();
+				foreach ($ini_data_local as $section => $row)
+				{
+					if (is_array($row) && !empty($row))
+					{
+						foreach ($row as $key => $value)
+						{
+							$ini_data["$section.$key"] = $value;
+						}
+					}
+				}
+				unset($ini_data_local);
+
+				// Import the configuration array
+				$registry->mergeArray($ini_data, false, false);
+			}
 		}
 
 		// Apply config overrides
@@ -222,32 +231,47 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 	 */
 	public function set_or_update_statistics($id = null, $data = array(), &$caller)
 	{
+		// No valid data?
 		if (!is_array($data))
 		{
 			return null;
-		} // No valid data?
+		}
+
+		// No data at all?
 		if (empty($data))
 		{
 			return null;
-		} // No data at all?
+		}
 
 		$db = AEFactory::getDatabase($this->get_platform_database_options());
+
+		$tableFields = $db->getTableColumns($this->tableNameStats);
+		$tableFields = array_keys($tableFields);
 
 		if (is_null($id))
 		{
 			// Create a new record
 			$sql_fields = array();
 			$sql_values = '';
+
 			foreach ($data as $key => $value)
 			{
+				if (!in_array($key, $tableFields))
+				{
+					continue;
+				}
+
 				$sql_fields[] = $db->qn($key);
 				$sql_values .= (!empty($sql_values) ? ',' : '') . $db->Quote($value);
 			}
+
 			$sql = $db->getQuery(true)
 				->insert($db->quoteName($this->tableNameStats))
 				->columns($sql_fields)
 				->values($sql_values);
+
 			$db->setQuery($sql);
+
 			try
 			{
 				$db->query();
@@ -505,7 +529,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->where(' NOT ' . $db->qn('archivename') . ' = ' . $db->q(''));
 		if (!empty($tag))
 		{
-			$query->where($db->qn('origin') . '=' . $db->q($tag));
+			$query->where($db->qn('origin') . ' LIKE ' . $db->q($tag . '%'));
 		}
 		$db->setQuery($query);
 
@@ -532,7 +556,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			->select('MAX(' . $db->qn('id') . ') AS ' . $db->qn('id'))
 			->from($db->qn($this->tableNameStats))
 			->where($db->qn('status') . ' = ' . $db->q('complete'))
-			->group($db->qn('absolute_path'));;
+			->group($db->qn('absolute_path'));
 
 		$query = $db->getQuery(true)
 			->select($db->qn('id'))
@@ -547,6 +571,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			$profile_id = $this->get_active_profile();
 			$query->where($db->qn('profile_id') . " = " . $db->q($profile_id));
 		}
+
 		if (!empty($tagFilters))
 		{
 			$operator = '';
@@ -569,6 +594,7 @@ abstract class AEPlatformAbstract implements AEPlatformInterface
 			unset($quotedTags);
 			$query->where($operator . ' ' . $db->quoteName('tag') . ' IN (' . $filter . ')');
 		}
+
 		$db->setQuery($query);
 		$array = $db->loadColumn();
 

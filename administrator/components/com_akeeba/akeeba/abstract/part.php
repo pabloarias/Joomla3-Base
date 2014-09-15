@@ -84,6 +84,9 @@ abstract class AEAbstractPart extends AEAbstractObject
 	/** @var object Embedded installer preferences */
 	protected $installerSettings;
 
+	/** @var int How much milliseconds should we wait to reach the min exec time */
+	protected $waitTimeMsec = 0;
+
 	/**
 	 * Public constructor
 	 * @return AECoreDomainInstaller
@@ -208,6 +211,7 @@ abstract class AEAbstractPart extends AEAbstractObject
 	 */
 	final public function tick($nesting = 0)
 	{
+		$this->waitTimeMsec = 0;
 		$configuration = AEFactory::getConfiguration();
 		$timer = AEFactory::getTimer();
 
@@ -266,9 +270,23 @@ abstract class AEAbstractPart extends AEAbstractObject
 				$configuration->set('volatile.breakflag', false);
 				// Log that we're breaking the step
 				AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "*** Batching of engine steps finished. I will now return control to the caller.");
+
+				// Do I need client-side sleep?
+				$serverSideSleep = true;
+				if (method_exists($this, 'getTag'))
+				{
+					$tag = $this->getTag();
+					$clientSideSleep = AEFactory::getConfiguration()->get('akeeba.basic.clientsidewait', 0);
+
+					if (in_array($tag, array('backend', 'restorepoint')) && $clientSideSleep)
+					{
+						$serverSideSleep = false;
+					}
+				}
+
 				// Enforce minimum execution time
 				$timer = AEFactory::getTimer();
-				$timer->enforce_min_exec_time(true);
+				$this->waitTimeMsec = (int)$timer->enforce_min_exec_time(true, $serverSideSleep);
 			}
 		}
 

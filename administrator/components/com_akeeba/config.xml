@@ -118,6 +118,11 @@
     <field name="notificationEmail" type="text" default=""
            label="CONFIG_NOTIFICATION_EMAIL_LABEL"
            description="CONFIG_NOTIFICATION_EMAIL_DESC"/>
+
+    <field name="stats_enabled" type="list" default="1" label="CONFIG_USAGESTATS_LABEL" description="CONFIG_USAGESTATS_DESC">
+      <option value="0">JNO</option>
+      <option value="1">JYES</option>
+    </field>
 	</fieldset>
 
 	<fieldset name="security" label="CONFIG_SECURITY_HEADER_LABEL" description="CONFIG_SECURITY_HEADER_DESC">

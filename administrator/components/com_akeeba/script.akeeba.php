@@ -42,6 +42,12 @@ if (!class_exists('F0FUtilsUpdate', false))
 	@include_once __DIR__ . '/fof/utils/update/update.php';
 }
 
+// Pre-load the cache cleaner utility class from our own copy of FOF
+if (!class_exists('F0FUtilsCacheCleaner', false))
+{
+	@include_once __DIR__ . '/fof/utils/cache/cleaner.php';
+}
+
 class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 {
 	/**
@@ -100,7 +106,14 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'plugins/system/aklazy.php',
 			'plugins/system/aklazy.xml',
 			'plugins/system/srp.php',
-			'plugins/system/srp.xml'
+			'plugins/system/srp.xml',
+			// Additional ANGIE installers which are not used in Core
+			'administrator/components/com_akeeba/assets/installers/angie-phpbb.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-phpbb.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-prestashop.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-prestashop.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-wordpress.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-wordpress.ini',
 		),
 		'folders' => array(
 			'administrator/components/com_akeeba/akeeba/engines/finalization',
@@ -197,6 +210,12 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'administrator/components/com_akeeba/akeeba/plugins/engines/utils/box.php',
 			// Old SRP feature, no longer used
 			'administrator/components/com_akeeba/plugins/controllers/installer.php',
+			// Old ABI installer
+			'administrator/components/com_akeeba/assets/installers/abi.jpa',
+			'administrator/components/com_akeeba/assets/installers/abi.ini',
+			// Old CLI backup scripts, obsolete since 3.5.0, removed in 4.0.0
+			'administrator/components/com_akeeba/backup.php',
+			'administrator/components/com_akeeba/altbackup.php',
 		),
 		'folders' => array(
 			'administrator/components/com_akeeba/akeeba/platform/joomla15',
@@ -231,6 +250,98 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	);
 
 	/**
+	 * Post-installation message definitions for Joomla! 3.2 or later.
+	 *
+	 * This array contains the message definitions for the Post-installation Messages component added in Joomla! 3.2 and
+	 * later versions. Each element is also a hashed array. For the keys used in these message definitions please
+	 * @see F0FUtilsInstallscript::addPostInstallationMessage
+	 *
+	 * @var array
+	 */
+	protected $postInstallationMessages = array(
+		'srp' => array(
+			'type'					=> 'action',
+			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_SRP',
+			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_SRP',
+			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_ENABLE_FEATURE',
+			'language_extension'	=> 'com_akeeba',
+			'language_client_id'	=> '1',
+			'version_introduced'	=> '4.0.0',
+			'condition_file'		=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'condition_method'		=> 'com_akeeba_postinstall_srp_condition',
+			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'action'				=> 'com_akeeba_postinstall_srp_action',
+		),
+		'backuponupdate' => array(
+			'type'					=> 'action',
+			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_BACKUPONUPDATE',
+			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_BACKUPONUPDATE',
+			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_ENABLE_FEATURE',
+			'language_extension'	=> 'com_akeeba',
+			'language_client_id'	=> '1',
+			'version_introduced'	=> '4.0.0',
+			'condition_file'		=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'condition_method'		=> 'com_akeeba_postinstall_backuponupdate_condition',
+			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'action'				=> 'com_akeeba_postinstall_backuponupdate_action',
+		),
+		'confwiz' => array(
+			'type'					=> 'action',
+			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_CONFWIZ',
+			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_CONFWIZ',
+			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_RUN_CONFWIZ',
+			'language_extension'	=> 'com_akeeba',
+			'language_client_id'	=> '1',
+			'version_introduced'	=> '4.0.0',
+			'condition_file'		=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'condition_method'		=> 'com_akeeba_postinstall_confwiz_condition',
+			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'action'				=> 'com_akeeba_postinstall_confwiz_action',
+		),
+		'angieupgrade' => array(
+			'type'					=> 'action',
+			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ANGIEUPGRADE',
+			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ANGIEUPGRADE',
+			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_ANGIEUPGRADE',
+			'language_extension'	=> 'com_akeeba',
+			'language_client_id'	=> '1',
+			'version_introduced'	=> '4.0.0',
+			'condition_file'		=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'condition_method'		=> 'com_akeeba_postinstall_angie_condition',
+			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
+			'action'				=> 'com_akeeba_postinstall_angie_action',
+		),
+
+		'accept_license' => array(
+			'type'					=> 'message',
+			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ACCEPTLICENSE',
+			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ACCEPTLICENSE',
+			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_I_CONFIRM_THIS',
+			'language_extension'	=> 'com_akeeba',
+			'language_client_id'	=> '1',
+			'version_introduced'	=> '4.0.0'
+		),
+		'accept_support' => array(
+			'type'					=> 'message',
+			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ACCEPTSUPPORT',
+			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ACCEPTSUPPORT',
+			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_I_CONFIRM_THIS',
+			'language_extension'	=> 'com_akeeba',
+			'language_client_id'	=> '1',
+			'version_introduced'	=> '4.0.0'
+		),
+		'accept_backuptest' => array(
+			'type'					=> 'message',
+			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ACCEPTBACKUPTEST',
+			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ACCEPTBACKUPTEST',
+			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_I_CONFIRM_THIS',
+			'language_extension'	=> 'com_akeeba',
+			'language_client_id'	=> '1',
+			'version_introduced'	=> '4.0.0'
+		),
+	);
+
+	/**
 	 * Runs after install, update or discover_update. In other words, it executes after Joomla! has finished installing
 	 * or updating your component. This is the last chance you've got to perform any additional installations, clean-up,
 	 * database updates and similar housekeeping functions.
@@ -241,6 +352,20 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	function postflight($type, $parent)
 	{
 		$this->isPaid = is_dir($parent->getParent()->getPath('source') . '/plugins/system/srp');
+
+		if (!$this->isPaid)
+		{
+			unset($this->postInstallationMessages['srp']);
+			unset($this->postInstallationMessages['backuponupdate']);
+		}
+
+        // Let's install common tables
+        $model = F0FModel::getTmpInstance('Stats', 'AkeebaModel');
+
+        if(method_exists($model, 'checkAndFixCommonTables'))
+        {
+            $model->checkAndFixCommonTables();
+        }
 
 		parent::postflight($type, $parent);
 
@@ -330,6 +455,18 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			</p>
 		</fieldset>
 	<?php
+        /** @var AkeebaModelStats $model */
+        $model  = F0FModel::getTmpInstance('Stats', 'AkeebaModel');
+
+        if(method_exists($model, 'collectStatistics'))
+        {
+            $iframe = $model->collectStatistics(true);
+
+            if($iframe)
+            {
+                echo $iframe;
+            }
+        }
 	}
 
 	protected function renderPostUninstallation($status, $parent)

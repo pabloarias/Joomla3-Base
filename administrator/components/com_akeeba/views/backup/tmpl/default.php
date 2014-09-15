@@ -14,6 +14,8 @@ defined('_JEXEC') or die();
 $quirks_style = $this->haserrors ? 'alert-error' : "";
 $formstyle = '';
 
+$configuration = AEFactory::getConfiguration();
+
 JHtml::_('behavior.framework');
 ?>
 <!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->
@@ -35,10 +37,14 @@ JHtml::_('behavior.framework');
 
 <script type="text/javascript" language="javascript">
 // Initialization
-
 var default_short_descr = "<?php echo $this->default_descr ?>";
 var config_angie_key    = "<?php echo $this->angiekey ?>";
 var jsp_key   = "<?php echo $this->showjpskey ? $this->jpskey : '' ?>";
+
+// Auto-resume setup
+var akeeba_autoresume_enabled = <?php echo (int)$configuration->get('akeeba.advanced.autoresume', 1); ?>;
+var akeeba_autoresume_timeout = <?php echo (int)$configuration->get('akeeba.advanced.autoresume_timeout', 10); ?>;
+var akeeba_autoresume_maxretries = <?php echo (int)$configuration->get('akeeba.advanced.autoresume_maxretries', 3); ?>;
 
 akeeba.jQuery(document).ready(function($){
 	// The return URL
@@ -62,6 +68,9 @@ akeeba.jQuery(document).ready(function($){
 
 	// Setup AJAX proxy URL
 	akeeba_ajax_url = 'index.php?option=com_akeeba&view=backup&task=ajax';
+
+	// Setup base View Log URL
+	akeeba_logview_url = '<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log';
 
 	// Setup the IFRAME mode
 	akeeba_use_iframe = <?php echo $this->useiframe ?>;
@@ -284,14 +293,14 @@ akeeba.jQuery(document).ready(function($){
 			</p>
 
 			<?php if(empty($this->returnurl)): ?>
-			<button class="btn btn-primary btn-large" onclick="window.location='<?php echo JURI::base() ?>index.php?option=com_akeeba&view=buadmin'; return false;">
+			<a class="btn btn-primary btn-large" href="<?php echo JURI::base() ?>index.php?option=com_akeeba&view=buadmin">
 				<i class="icon-inbox icon-white"></i>
 				<?php echo JText::_('BUADMIN'); ?>
-			</button>
-			<button class="btn" onclick="window.location='<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log'; return false;">
+			</a>
+			<a class="btn" id="ab-viewlog-success" href="<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log">
 				<i class="icon-list-alt"></i>
 				<?php echo JText::_('VIEWLOG'); ?>
-			</button>
+			</a>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -305,6 +314,36 @@ akeeba.jQuery(document).ready(function($){
 		<div id="warnings-list">
 		</div>
 	</div>
+</div>
+
+<div id="retry-panel" style="display: none">
+	<div class="alert alert-warning">
+		<h3 class="alert-heading"><?php echo JText::_('BACKUP_HEADER_BACKUPRETRY'); ?></h3>
+		<div id="retryframe">
+			<p><?php echo JText::_('BACKUP_TEXT_BACKUPFAILEDRETRY') ?></p>
+			<p>
+				<strong>
+					<?php echo JText::_('BACKUP_TEXT_WILLRETRY') ?>
+					<span id="akeeba-retry-timeout">0</span>
+					<?php echo JText::_('BACKUP_TEXT_WILLRETRYSECONDS') ?>
+				</strong>
+				<br/>
+				<button class="btn btn-danger btn-small" onclick="akeeba_cancel_resume_backup(); return false;">
+					<span class="icon-cancel"></span>
+					<?php echo JText::_('UI-MULTIDB-CANCEL'); ?>
+				</button>
+				<button class="btn btn-success btn-small" onclick="akeeba_resume_backup(); return false;">
+					<span class="icon-ok-circle"></span>
+					<?php echo JText::_('BACKUP_TEXT_BTNRESUME'); ?>
+				</button>
+			</p>
+
+			<p><?php echo JText::_('BACKUP_TEXT_LASTERRORMESSAGEWAS') ?></p>
+			<p id="backup-error-message-retry">
+			</p>
+		</div>
+	</div>
+
 </div>
 
 <div id="error-panel" style="display: none">
@@ -338,34 +377,25 @@ akeeba.jQuery(document).ready(function($){
 					<?php else: ?>
 					<?php echo JText::sprintf('BACKUP_TEXT_SOLVEISSUE_CORE', 'https://www.akeebabackup.com/subscribe.html?utm_source=akeeba_backup&utm_campaign=backuperrorcore','https://www.akeebabackup.com/support.html?utm_source=akeeba_backup&utm_campaign=backuperrorcore') ?>
 					<?php endif; ?>
-					<?php echo JText::sprintf('BACKUP_TEXT_SOLVEISSUE_LOG', 'index.php?option=com_akeeba&view=log&tag=backend') ?>
+					<?php echo JText::sprintf('BACKUP_TEXT_SOLVEISSUE_LOG', 'index.php?option=com_akeeba&view=log') ?>
 				</p>
 			</div>
 
 			<?php if(AKEEBA_PRO):?>
-			<button class="btn btn-large btn-primary" onclick="window.location='index.php?option=com_akeeba&view=alices'; return false;">
+			<a class="btn btn-large btn-success" href="index.php?option=com_akeeba&view=alices">
 				<i class="icon-list-alt icon-white"></i>
 				<?php echo JText::_('BACKUP_ANALYSELOG') ?>
-			</button>
-			<button class="btn btn-mini" onclick="window.location='https://www.akeebabackup.com/documentation/troubleshooter/abbackup.html?utm_source=akeeba_backup&utm_campaign=backuperrorbutton'; return false;">
-				<i class="icon-share-alt"></i>
-				<?php echo JText::_('BACKUP_TROUBLESHOOTINGDOCS') ?>
-			</button>
-			<button class="btn btn-mini" onclick="window.location='<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log'; return false;">
-				<i class="icon-list-alt"></i>
-				<?php echo JText::_('VIEWLOG'); ?>
-			</button>
+			</a>
+			<?php endif; ?>
 
-			<?php else: ?>
 			<button class="btn btn-large btn-primary" onclick="window.location='https://www.akeebabackup.com/documentation/troubleshooter/abbackup.html?utm_source=akeeba_backup&utm_campaign=backuperrorbutton'; return false;">
 				<i class="icon-share-alt icon-white"></i>
 				<?php echo JText::_('BACKUP_TROUBLESHOOTINGDOCS') ?>
 			</button>
-			<button class="btn btn-mini" onclick="window.location='<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log'; return false;">
+			<a class="btn" id="ab-viewlog-error" href="<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log">
 				<i class="icon-list-alt"></i>
 				<?php echo JText::_('VIEWLOG'); ?>
-			</button>
-			<?php endif; ?>
+			</a>
 		</div>
 	</div>
 

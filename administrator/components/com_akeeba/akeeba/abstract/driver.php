@@ -48,7 +48,7 @@ abstract class AEAbstractDriver extends AEAbstractObject implements AEAbstractDr
 	/** @var string The name of the database driver. */
 	public $name;
 
-	/** @var resource The db conenction resource */
+	/** @var resource The db connection resource */
 	protected $connection = '';
 
 	/** @var    integer  The number of SQL statements executed by the database driver. */

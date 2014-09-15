@@ -2,6 +2,7 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
@@ -16,6 +17,7 @@ defined('AKEEBAENGINE') or die();
  */
 class AECoreTimer extends AEAbstractObject
 {
+
 	/** @var int Maximum execution time allowance per step */
 	private $max_exec_time = null;
 
@@ -24,6 +26,7 @@ class AECoreTimer extends AEAbstractObject
 
 	/**
 	 * Public constructor, creates the timer object and calculates the execution time limits
+	 *
 	 * @return AECoreTimer
 	 */
 	public function __construct()
@@ -87,6 +90,7 @@ class AECoreTimer extends AEAbstractObject
 
 	/**
 	 * Gets the number of seconds left, before we hit the "must break" threshold
+	 *
 	 * @return float
 	 */
 	public function getTimeLeft()
@@ -97,6 +101,7 @@ class AECoreTimer extends AEAbstractObject
 	/**
 	 * Gets the time elapsed since object creation/unserialization, effectively how
 	 * long Akeeba Engine has been processing data
+	 *
 	 * @return float
 	 */
 	public function getRunningTime()
@@ -105,7 +110,7 @@ class AECoreTimer extends AEAbstractObject
 	}
 
 	/**
-	 * Returns the current timestampt in decimal seconds
+	 * Returns the current timestamp in decimal seconds
 	 */
 	private function microtime_float()
 	{
@@ -117,9 +122,12 @@ class AECoreTimer extends AEAbstractObject
 	/**
 	 * Enforce the minimum execution time
 	 *
-	 * @param    bool $log Should I log what I'm doing? Default is true.
+	 * @param    bool $log             Should I log what I'm doing? Default is true.
+	 * @param    bool $serverSideSleep Should I sleep on the server side? If false we return the amount of time to wait in msec
+	 *
+	 * @return  int Wait time to reach min_execution_time in msec
 	 */
-	public function enforce_min_exec_time($log = true)
+	public function enforce_min_exec_time($log = true, $serverSideSleep = true)
 	{
 		// Try to get a sane value for PHP's maximum_execution_time INI parameter
 		if (@function_exists('ini_get'))
@@ -156,11 +164,19 @@ class AECoreTimer extends AEAbstractObject
 		// Get current running time
 		$elapsed_time = $this->getRunningTime() * 1000;
 
+		$clientSideSleep = 0;
+
 		// Only run a sleep delay if we haven't reached the minexectime execution time
 		if (($minexectime > $elapsed_time) && ($elapsed_time > 0))
 		{
 			$sleep_msec = $minexectime - $elapsed_time;
-			if (function_exists('usleep'))
+
+			if (!$serverSideSleep)
+			{
+				AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Asking client to sleep for $sleep_msec msec");
+				$clientSideSleep = $sleep_msec;
+			}
+			elseif (function_exists('usleep'))
 			{
 				if ($log)
 				{
@@ -205,6 +221,8 @@ class AECoreTimer extends AEAbstractObject
 				AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "No need to sleep; execution time: $elapsed_time msec; min. exec. time: $minexectime msec");
 			}
 		}
+
+		return $clientSideSleep;
 	}
 
 	/**
@@ -214,5 +232,4 @@ class AECoreTimer extends AEAbstractObject
 	{
 		$this->start_time = $this->microtime_float();
 	}
-
 }

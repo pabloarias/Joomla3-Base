@@ -302,6 +302,10 @@ class AEPlatformJoomla25 extends AEPlatformAbstract
 					return 'AEDriverPlatformJoomla';
 					break;
 
+				case 'pdomysql':
+					return 'AEDriverPlatformJoomla';
+					break;
+
 				// Some custom driver. Uh oh!
 				default:
 					break;
@@ -321,13 +325,17 @@ class AEPlatformJoomla25 extends AEPlatformAbstract
 		{
 			return 'AEDriverSqlsrv';
 		}
-		elseif( strtolower(substr($driver, 0, 6)) == 'sqlazure' )
+		elseif( strtolower(substr($driver, 0, 8)) == 'sqlazure' )
 		{
 			return 'AEDriverSqlazure';
 		}
-		elseif( strtolower(substr($driver, 0, 6)) == 'postgresql' )
+		elseif( strtolower(substr($driver, 0, 10)) == 'postgresql' )
 		{
 			return 'AEDriverPostgresql';
+		}
+		elseif( strtolower(substr($driver, 0, 8)) == 'pdomysql' )
+		{
+			return 'AEDriverPdomysql';
 		}
 
 		// If we're still here, we have to guesstimate the correct driver. All bets are off.

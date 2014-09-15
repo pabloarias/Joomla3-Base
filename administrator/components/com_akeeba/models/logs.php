@@ -46,9 +46,17 @@ class AkeebaModelLogs extends F0FModel
 		if(!empty($list))
 		{
 			$options[] = JHTML::_('select.option',null,JText::_('LOG_CHOOSE_FILE_VALUE'));
+
 			foreach($list as $item)
 			{
 				$text = JText::_('STATS_LABEL_ORIGIN_'.strtoupper($item));
+
+				if (strstr($item, '.') !== false)
+				{
+					list($origin, $backupId) = explode('.', $item, 2);
+					$text = JText::_('STATS_LABEL_ORIGIN_'.strtoupper($origin)) . ' (' . $backupId . ')';
+				}
+
 				$options[] = JHTML::_('select.option',$item,$text);
 			}
 		}

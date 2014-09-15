@@ -425,7 +425,7 @@ ENDBODY;
 	 */
 	public function deleteFile()
 	{
-		$db = $this->getDBO();
+		JLoader::import('joomla.filesystem.file');
 
 		$id = $this->getState('id', 0);
 
@@ -435,19 +435,67 @@ ENDBODY;
 			return false;
 		}
 
+		// Get the backup statistics record and the files to delete
 		$stat = AEPlatform::getInstance()->get_statistics($id);
 		$allFiles = AEUtilStatistics::get_all_filenames($stat, false);
-		$aeconfig = AEFactory::getConfiguration();
+
+		// Remove the custom log file if necessary
+		$this->_deleteLogs($stat);
+
+		// No files? Nothing to do.
+		if (empty($allFiles))
+		{
+			return true;
+		}
 
 		$status = true;
-		JLoader::import('joomla.filesystem.file');
+
 		foreach($allFiles as $filename)
 		{
-			$new_status = JFile::delete($filename);
+			if (!@file_exists($filename))
+			{
+				continue;
+			}
+
+			$new_status = @unlink($filename);
+
+			if (!$new_status)
+			{
+				$new_status = JFile::delete($filename);
+			}
+
 			$status = $status ? $new_status : false;
 		}
 
 		return $status;
+	}
+
+	/**
+	 * Deletes the backup-specific log files of a stats record
+	 *
+	 * @param   array   $stat  The array holding the backup stats record
+	 *
+	 * @return  void
+	 */
+	protected function _deleteLogs(array $stat)
+	{
+		// We can't delete logs if there is no backup ID in the record
+		if (!isset($stat['backupid']) || empty($stat['backupid']))
+		{
+			return;
+		}
+
+		$logFileName = 'akeeba.' . $stat['tag'] . '.' . $stat['backupid'] . '.log';
+
+		$logPath = dirname($stat['absolute_path']) . '/' . $logFileName;
+
+		if (@file_exists($logPath))
+		{
+			if (!@unlink($logPath))
+			{
+				JFile::delete($logPath);
+			}
+		}
 	}
 
 	/**

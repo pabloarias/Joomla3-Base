@@ -1,9 +1,9 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
- * @since 3.3.b1
+ * @license   GNU General Public License version 3, or later
+ * @since     3.3.b1
  */
 
 // Protect from unauthorized access
@@ -32,12 +32,13 @@ class AkeebaViewPostsetup extends F0FViewHtml
 		$query = $db->getQuery(true)
 			->select($db->qn('enabled'))
 			->from($db->qn('#__extensions'))
-			->where($db->qn('element').' = '.$db->q('backuponupdate'))
-			->where($db->qn('folder').' = '.$db->q('system'));
+			->where($db->qn('element') . ' = ' . $db->q('backuponupdate'))
+			->where($db->qn('folder') . ' = ' . $db->q('system'));
 		$db->setQuery($query);
 		$enabledBOU = $db->loadResult();
 
-		if(!AKEEBA_PRO) {
+		if (!AKEEBA_PRO)
+		{
 			$enabledBOU = false;
 		}
 
@@ -46,8 +47,10 @@ class AkeebaViewPostsetup extends F0FViewHtml
 
 	private function _setSRPStatus()
 	{
-		if($this->_setConfWizStatus()) {
+		if ($this->_setConfWizStatus())
+		{
 			$this->enablesrp = $this->isMySQL();
+
 			return;
 		}
 
@@ -56,16 +59,19 @@ class AkeebaViewPostsetup extends F0FViewHtml
 		$query = $db->getQuery(true)
 			->select($db->qn('enabled'))
 			->from($db->qn('#__extensions'))
-			->where($db->qn('element').' = '.$db->q('srp'))
-			->where($db->qn('folder').' = '.$db->q('system'));
+			->where($db->qn('element') . ' = ' . $db->q('srp'))
+			->where($db->qn('folder') . ' = ' . $db->q('system'));
 		$db->setQuery($query);
 		$enableSRP = $db->loadResult();
 
-		if(!AKEEBA_PRO) {
+		if (!AKEEBA_PRO)
+		{
 			$enableSRP = false;
 		}
-		if(!$this->isMySQL()) {
+		if (!$this->isMySQL())
+		{
 			$enableSRP = false;
+
 			return;
 		}
 
@@ -76,24 +82,28 @@ class AkeebaViewPostsetup extends F0FViewHtml
 	{
 		static $enableconfwiz;
 
-		$component = JComponentHelper::getComponent( 'com_akeeba' );
-		if(is_object($component->params) && ($component->params instanceof JRegistry)) {
+		$component = JComponentHelper::getComponent('com_akeeba');
+		if (is_object($component->params) && ($component->params instanceof JRegistry))
+		{
 			$params = $component->params;
-		} else {
+		}
+		else
+		{
 			$params = new JParameter($component->params);
 		}
 
-		if(empty($enableconfwiz)) {
-			$lv = $params->get( 'lastversion', '' );
+		if (empty($enableconfwiz))
+		{
+			$lv = $params->get('lastversion', '');
 
 			$enableconfwiz = empty($lv);
 		}
 
-		$minStability = $params->get( 'minstability', 'stable' );
-		$acceptlicense = $params->get( 'acceptlicense', '0' );
-		$acceptsupport = $params->get( 'acceptsupport', '0' );
-		$acceptbackuptest = $params->get( 'acceptbackuptest', '0' );
-		$angieupgrade = $params->get( 'angieupgrade', '0' );
+		$minStability = $params->get('minstability', 'stable');
+		$acceptlicense = $params->get('acceptlicense', '0');
+		$acceptsupport = $params->get('acceptsupport', '0');
+		$acceptbackuptest = $params->get('acceptbackuptest', '0');
+		$angieupgrade = $params->get('angieupgrade', '0');
 
 		$this->enableconfwiz = $enableconfwiz;
 		$this->minstability = $minStability;
@@ -108,6 +118,7 @@ class AkeebaViewPostsetup extends F0FViewHtml
 	private function isMySQL()
 	{
 		$db = JFactory::getDbo();
+
 		return strtolower(substr($db->name, 0, 5)) == 'mysql';
 	}
 }

@@ -18,6 +18,7 @@ defined('AKEEBAENGINE') or die();
  */
 final class AECoreKettenrad extends AEAbstractPart
 {
+
 	/** @var array Cached copy of the response array */
 	private $array_cache = null;
 
@@ -35,6 +36,29 @@ final class AECoreKettenrad extends AEAbstractPart
 
 	/** @var int How many steps the domain_chain array contained when the backup began. Used for percentage calculations. */
 	private $total_steps = 0;
+
+	/** @var string A unique backup ID which allows us to run multiple parallel backups using the same backup origin (tag) */
+	private $backup_id = '';
+
+	/**
+	 * Returns the unique Backup ID
+	 *
+	 * @return string
+	 */
+	public function getBackupId()
+	{
+		return $this->backup_id;
+	}
+
+	/**
+	 * Sets the unique backup ID.
+	 *
+	 * @param string $backup_id
+	 */
+	public function setBackupId($backup_id = null)
+	{
+		$this->backup_id = $backup_id;
+	}
 
 	/**
 	 * Returns the current backup tag. If none is specified, it sets it to be the
@@ -69,13 +93,15 @@ final class AECoreKettenrad extends AEAbstractPart
 		$this->tag = $this->getTag();
 
 		// Reset the log
-		AEUtilLogger::openLog($this->tag);
-		AEUtilLogger::ResetLog($this->tag);
+		$logTag = $this->getLogTag();
+		AEUtilLogger::openLog($logTag);
+		AEUtilLogger::ResetLog($logTag);
 
 		set_error_handler('akeebaBackupErrorHandler');
 
 		// Reset the storage
-		AEUtilTempvars::reset($this->tag);
+		$tempVarsTag = $this->tag . (empty($this->backup_id) ? '' : ('.' . $this->backup_id));
+		AEUtilTempvars::reset($tempVarsTag);
 
 		// Apply the configuration overrides
 		$overrides = AEPlatform::getInstance()->configOverrides;
@@ -109,7 +135,8 @@ final class AECoreKettenrad extends AEAbstractPart
 
 	protected function _run()
 	{
-		AEUtilLogger::openLog($this->tag);
+		$logTag = $this->getLogTag();
+		AEUtilLogger::openLog($logTag);
 		set_error_handler('akeebaBackupErrorHandler');
 
 		// Maybe we're already done or in an error state?
@@ -206,6 +233,7 @@ final class AECoreKettenrad extends AEAbstractPart
 					// Aw, we're done! No more domains to run.
 					$this->setState('postrun');
 					AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Kettenrad :: No more domains to process");
+					AEUtilLogger::WriteLog(_AE_LOG_DEBUG, '====== Finished Step number ' . $stepCounter . ' ======');
 					$this->array_cache = null;
 
 					//restore_error_handler();
@@ -311,13 +339,15 @@ final class AECoreKettenrad extends AEAbstractPart
 			// Force break between steps
 			$registry->set('volatile.breakflag', true);
 		}
+
 		//restore_error_handler();
 	}
 
 	protected function _finalize()
 	{
 		// Open the log
-		AEUtilLogger::openLog($this->tag);
+		$logTag = $this->getLogTag();
+		AEUtilLogger::openLog($logTag);
 
 		//set_error_handler('akeebaBackupErrorHandler');		
 
@@ -325,7 +355,8 @@ final class AECoreKettenrad extends AEAbstractPart
 		$this->array_cache = null;
 
 		// Remove the memory file
-		AEUtilTempvars::reset($this->tag);
+		$tempVarsTag = $this->tag . (empty($this->backup_id) ? '' : ('.' . $this->backup_id));
+		AEUtilTempvars::reset($tempVarsTag);
 
 		// All done.
 		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Kettenrad :: Just finished");
@@ -336,15 +367,28 @@ final class AECoreKettenrad extends AEAbstractPart
 	/**
 	 * Saves the whole factory to temporary storage
 	 */
-	public static function save($tag = null)
+
+	/**
+	 * Saves the whole factory to temporary storage
+	 *
+	 * @param string|null $tag       The backup origin to save. Leave empty to get from already loaded Kettenrad instance.
+	 * @param string|null $backupId  The backup ID to save. Leave empty to get from already loaded Kettenrad instance.
+	 */
+	public static function save($tag = null, $backupId = null)
 	{
 		$kettenrad = AEFactory::getKettenrad();
 
 		if (empty($tag))
 		{
-			$kettenrad = AEFactory::getKettenrad();
 			$tag = $kettenrad->tag;
 		}
+
+		if (empty($backupId))
+		{
+			$backupId = $kettenrad->backup_id;
+		}
+
+		$saveTag = $tag . (empty($backupId) ? '' : ('.' . $backupId));
 
 		$ret = $kettenrad->getStatusArray();
 
@@ -355,8 +399,9 @@ final class AECoreKettenrad extends AEAbstractPart
 		else
 		{
 			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Saving Kettenrad instance $tag");
-			// Save a Factory snapshot:
-			AEUtilTempvars::set(AEFactory::serialize(), $tag);
+
+			// Save a Factory snapshot
+			AEUtilTempvars::set(AEFactory::serialize(), $saveTag);
 		}
 	}
 
@@ -364,16 +409,24 @@ final class AECoreKettenrad extends AEAbstractPart
 	 * Loads the factory from the storage (if it exists) and returns a reference to the
 	 * Kettenrad object.
 	 *
-	 * @param $tag string The backup tag to load
+	 * @param string|null $tag       The backup origin to load
+	 * @param string|null $backupId  The backup ID to load
 	 *
 	 * @return AECoreKettenrad A reference to the Kettenrad object
 	 */
-	public static function &load($tag = null)
+	public static function &load($tag = null, $backupId = null)
 	{
 		if (is_null($tag) && defined('AKEEBA_BACKUP_ORIGIN'))
 		{
 			$tag = AKEEBA_BACKUP_ORIGIN;
 		}
+
+		if (is_null($backupId) && defined('AKEEBA_BACKUP_ID'))
+		{
+			$tag = AKEEBA_BACKUP_ID;
+		}
+
+		$loadTag = $tag . (empty($backupId) ? '' : ('.' . $backupId));
 
 		// In order to load anything, we need to have the correct profile loaded. Let's assume
 		// that the latest backup record in this tag has the correct profile number set.
@@ -395,24 +448,25 @@ final class AECoreKettenrad extends AEAbstractPart
 			{
 				$stat = array_pop($statList);
 				$profile = $stat['profile_id'];
+
 				AEPlatform::getInstance()->load_configuration($profile);
 			}
 		}
 
-		AEUtilLogger::openLog($tag);
-		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Kettenrad :: Attempting to load from database ($tag)");
+		AEUtilLogger::openLog($loadTag);
+		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Kettenrad :: Attempting to load from database ($tag) [$loadTag]");
 
-		$serialized_factory = AEUtilTempvars::get($tag);
+		$serialized_factory = AEUtilTempvars::get($loadTag);
 
 		if ($serialized_factory !== false)
 		{
-			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, " -- Loaded stored Akeeba Factory ($tag)");
+			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, " -- Loaded stored Akeeba Factory ($tag) [$loadTag]");
 			AEFactory::unserialize($serialized_factory);
 		}
 		else
 		{
 			// There is no serialized factory. Nuke the in-memory factory.
-			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, " -- Stored Akeeba Factory ($tag) not found - hard reset");
+			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, " -- Stored Akeeba Factory ($tag) [$loadTag] not found - hard reset");
 			AEFactory::nuke();
 			AEPlatform::getInstance()->load_configuration();
 		}
@@ -423,7 +477,7 @@ final class AECoreKettenrad extends AEAbstractPart
 	}
 
 	/**
-	 * Resets the Kettenrad state, wipping out any pending backups and/or stale
+	 * Resets the Kettenrad state, wiping out any pending backups and/or stale
 	 * temporary data.
 	 *
 	 * @param array $config Configuration parameters for the reset operation
@@ -444,18 +498,18 @@ final class AECoreKettenrad extends AEAbstractPart
 			AEUtilLogger::WriteLog(false, '');
 		}
 
-		$tag = null;
+		$originTag = null;
 
 		if (!$config->global)
 		{
 			// If we're not resetting globally, get a list of running backups per tag
-			$tag = AEPlatform::getInstance()->get_backup_origin();
+			$originTag = AEPlatform::getInstance()->get_backup_origin();
 		}
 
 		// Cache the factory before proceeding
 		$factory = AEFactory::serialize();
 
-		$runningList = AEPlatform::getInstance()->get_running_backups($tag);
+		$runningList = AEPlatform::getInstance()->get_running_backups($originTag);
 
 		// Origins we have to clean
 		$origins = array(
@@ -471,7 +525,7 @@ final class AECoreKettenrad extends AEAbstractPart
 			// Mark running backups as failed
 			foreach ($runningList as $running)
 			{
-				if (empty($tag))
+				if (empty($originTag))
 				{
 					// Check the timestamp of the log file to decide if it's stuck,
 					// but only if a tag is not set
@@ -518,7 +572,9 @@ final class AECoreKettenrad extends AEAbstractPart
 				$dummy = null;
 				AEPlatform::getInstance()->set_or_update_statistics($running['id'], $running, $dummy);
 
-				$origins[] = $running['origin'];
+				$backupId = isset($running['backupid']) ? ('.' . $running['backupid']) : '';
+
+				$origins[] = $running['origin'] . $backupId;
 			}
 		}
 
@@ -526,13 +582,13 @@ final class AECoreKettenrad extends AEAbstractPart
 		{
 			$origins = array_unique($origins);
 
-			foreach ($origins as $tag)
+			foreach ($origins as $originTag)
 			{
-				AECoreKettenrad::load($tag);
+				AECoreKettenrad::load($originTag);
 				// Remove temporary files
 				AEUtilTempfiles::deleteTempFiles();
 				// Delete any stale temporary data
-				AEUtilTempvars::reset($tag);
+				AEUtilTempvars::reset($originTag);
 			}
 		}
 
@@ -559,6 +615,9 @@ final class AECoreKettenrad extends AEAbstractPart
 			// Get the default table
 			$array = $this->_makeReturnTable();
 
+			// Get the current step number
+			$stepCounter = AEFactory::getConfiguration()->get('volatile.step_counter', 0);
+
 			// Add the archive name
 			$statistics = AEFactory::getStatistics();
 			$record = $statistics->getRecord();
@@ -571,8 +630,11 @@ final class AECoreKettenrad extends AEAbstractPart
 			$array['Error'] = ($array['Error'] == false) ? '' : $array['Error'];
 
 			$array['tag'] = $this->tag;
-
 			$array['Progress'] = $this->getProgress();
+			$array['backupid'] = $this->getBackupId();
+			$array['sleepTime'] = $this->waitTimeMsec;
+			$array['stepNumber'] = $stepCounter;
+			$array['stepState'] = $this->getState();
 
 			$this->array_cache = $array;
 		}
@@ -626,6 +688,23 @@ final class AECoreKettenrad extends AEAbstractPart
 		}
 
 		return $percentage;
+	}
+
+	/**
+	 * Returns the tag used to open the correct log file
+	 *
+	 * @return string
+	 */
+	protected function getLogTag()
+	{
+		$tag = $this->getTag();
+
+		if (!empty($this->backup_id))
+		{
+			$tag .= '.' . $this->backup_id;
+		}
+
+		return $tag;
 	}
 }
 

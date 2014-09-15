@@ -384,6 +384,7 @@ class AkeebaControllerBuadmin extends AkeebaControllerDefault
 			return true;
 		}
 
+		/** @var AkeebaModelStatistics $model */
 		$model = $this->getModel('statistics');
 		$model->setState('id', $id);
 

@@ -19,11 +19,13 @@ class AECoreDomainFinalization extends AEAbstractPart
 {
 
 	private $action_queue = array();
+
 	private $action_handlers = array();
 
 	private $current_method = '';
 
 	private $backup_parts = array();
+
 	private $backup_parts_index = -1;
 
 	private $update_stats = false;
@@ -32,8 +34,11 @@ class AECoreDomainFinalization extends AEAbstractPart
 
 	// Used for percentage reporting
 	private $steps_total = 0;
+
 	private $steps_done = 0;
+
 	private $substeps_total = 0;
+
 	private $substeps_done = 0;
 
 	/**
@@ -418,7 +423,9 @@ class AECoreDomainFinalization extends AEAbstractPart
 			}
 
 			// Break step before processing?
-			if ($post_proc->break_before && !AEFactory::getConfiguration()->get('akeeba.tuning.nobreak.finalization', 0))
+			if ($post_proc->break_before && !AEFactory::getConfiguration()
+													  ->get('akeeba.tuning.nobreak.finalization', 0)
+			)
 			{
 				AEUtilLogger::WriteLog(_AE_LOG_DEBUG, 'Breaking step before post-processing run');
 				$configuration->set('volatile.breakflag', true);
@@ -769,6 +776,16 @@ class AECoreDomainFinalization extends AEAbstractPart
 					$backupDay = 0;
 				}
 
+				// Get the log file name
+				$tag = $stat['tag'];
+				$backupId = isset($stat['backupid']) ? $stat['backupid'] : '';
+				$logName = '';
+
+				if (!empty($backupId))
+				{
+					$logName = 'akeeba.' . $tag . '.' . $backupId . '.log';
+				}
+
 				// Multipart processing
 				$filenames = AEUtilStatistics::get_all_filenames($stat, true);
 
@@ -781,7 +798,15 @@ class AECoreDomainFinalization extends AEAbstractPart
 					{
 						$filesize += @filesize($filename);
 					}
-					$allFiles[] = array('id' => $id, 'filenames' => $filenames, 'size' => $filesize, 'backupstart' => $backupTS, 'day' => $backupDay);
+
+					$allFiles[] = array(
+						'id'          => $id,
+						'filenames'   => $filenames,
+						'size'        => $filesize,
+						'backupstart' => $backupTS,
+						'day'         => $backupDay,
+						'logname'     => $logName,
+					);
 				}
 			}
 		}
@@ -798,6 +823,7 @@ class AECoreDomainFinalization extends AEAbstractPart
 
 		// Init arrays
 		$killids = array();
+		$killLogs = array();
 		$ret = array();
 		$leftover = array();
 
@@ -830,6 +856,16 @@ class AECoreDomainFinalization extends AEAbstractPart
 				{
 					$ret[] = $file['filenames'];
 					$killids[] = $file['id'];
+
+					if (!empty($file['logname']))
+					{
+						$filePath = reset($file['filenames']);
+
+						if (!empty($filePath))
+						{
+							$killLogs[] = dirname($filePath) . '/' . $file['logname'];
+						}
+					}
 				}
 				else
 				{
@@ -871,6 +907,16 @@ class AECoreDomainFinalization extends AEAbstractPart
 						{
 							$ret[] = $def['filenames'];
 							$killids[] = $def['id'];
+
+							if (!empty($def['logname']))
+							{
+								$filePath = reset($def['filenames']);
+
+								if (!empty($filePath))
+								{
+									$killLogs[] = dirname($filePath) . '/' . $def['logname'];
+								}
+							}
 						}
 					}
 					else
@@ -910,7 +956,17 @@ class AECoreDomainFinalization extends AEAbstractPart
 					else
 					{
 						$ret[] = $def['filenames'];
-						$killids[] = $def['filenames'];
+						$killids[] = $def['id'];
+
+						if (!empty($def['logname']))
+						{
+							$filePath = reset($def['filenames']);
+
+							if (!empty($filePath))
+							{
+								$killLogs[] = dirname($filePath) . '/' . $def['logname'];
+							}
+						}
 					}
 				}
 			}
@@ -937,11 +993,10 @@ class AECoreDomainFinalization extends AEAbstractPart
 			}
 		}
 
-		// Apply quotas
+		// Apply quotas to backup archives
 		if (count($quotaFiles) > 0)
 		{
 			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Applying quotas");
-			JLoader::import('joomla.filesystem.file');
 
 			foreach ($quotaFiles as $file)
 			{
@@ -949,6 +1004,17 @@ class AECoreDomainFinalization extends AEAbstractPart
 				{
 					$this->setWarning("Failed to remove old backup file " . $file);
 				}
+			}
+		}
+
+		// Apply quotas to log files
+		if (!empty($killLogs))
+		{
+			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Removing obsolete log files");
+
+			foreach ($killLogs as $logPath)
+			{
+				@AEPlatform::getInstance()->unlink($logPath);
 			}
 		}
 
@@ -1247,18 +1313,40 @@ class AECoreDomainFinalization extends AEAbstractPart
 		$statsTable = AEPlatform::getInstance()->tableNameStats;
 		$db = AEFactory::getDatabase(AEPlatform::getInstance()->get_platform_database_options());
 		$query = $db->getQuery(true)
-			->select($db->qn('id'))
-			->from($db->qn($statsTable))
-			->where($db->qn('status') . ' = ' . $db->q('complete'))
-			->where($db->qn('filesexist') . '=' . $db->q('0'))
-			->order($db->qn('id') . ' DESC');
+					->select(array(
+						$db->qn('id'),
+						$db->qn('backupid'),
+						$db->qn('absolute_path'),
+					))
+					->from($db->qn($statsTable))
+					->where($db->qn('status') . ' = ' . $db->q('complete'))
+					->where($db->qn('filesexist') . '=' . $db->q('0'))
+					->order($db->qn('id') . ' DESC');
 
 		$db->setQuery($query, $limit, 100000);
-		$array = $db->loadColumn();
+		$records = $db->loadAssocList();
 
-		if (empty($array))
+		if (empty($records))
 		{
 			return;
+		}
+
+		$array = array();
+
+		// Delete backup-specific log files if they exist and add the IDs of the records to delete in the $array
+		foreach ($records as $stat)
+		{
+			$array[] = $stat['id'];
+
+			// We can't delete logs if there is no backup ID in the record
+			if (!isset($stat['backupid']) || empty($stat['backupid']))
+			{
+				continue;
+			}
+
+			$logFileName = 'akeeba.' . $stat['tag'] . '.' . $stat['backupid'] . '.log';
+			$logPath = dirname($stat['absolute_path']) . '/' . $logFileName;
+			@unlink($logPath);
 		}
 
 		$ids = array();
@@ -1270,8 +1358,8 @@ class AECoreDomainFinalization extends AEAbstractPart
 		$ids = implode(',', $ids);
 
 		$query = $db->getQuery(true)
-			->delete($db->qn($statsTable))
-			->where($db->qn('id') . " IN ($ids)");
+					->delete($db->qn($statsTable))
+					->where($db->qn('id') . " IN ($ids)");
 		$db->setQuery($query);
 		$db->query();
 	}

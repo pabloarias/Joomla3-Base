@@ -22,6 +22,7 @@ class AkeebaViewLog extends F0FViewHtml
 		AkeebaHelperIncludes::addHelp('log');
 
 		// Get a list of log names
+		/** @var AkeebaModelLogs $model */
 		$model = $this->getModel();
 		$this->logs = $model->getLogList();
 

@@ -21,7 +21,7 @@ JHtml::_('behavior.modal');
 
 $script = <<<JS
 
-// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
+;// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
 // due to missing trailing semicolon and/or newline in their code.
 (function($){
 	$(document).ready(function(){
@@ -125,6 +125,21 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 <?php endif; ?>
 
 <div id="updateNotice"></div>
+
+<?php if($this->hasPostInstallationMessages): ?>
+<div class="alert alert-info">
+	<h3>
+		<?php echo JText::_('AKEEBA_CPANEL_PIM_TITLE'); ?>
+	</h3>
+	<p>
+		<?php echo JText::_('AKEEBA_CPANEL_PIM_DESC'); ?>
+	</p>
+	<a href="index.php?option=com_postinstall&eid=<?php echo $this->extension_id?>"
+		class="btn btn-primary btn-large">
+		<?php echo JText::_('AKEEBA_CPANEL_PIM_BUTTON'); ?>
+	</a>
+</div>
+<?php endif; ?>
 
 <div id="cpanel" class="row-fluid">
 	<div class="span8">
@@ -236,13 +251,13 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 				<input type="hidden" name="cmd" value="_s-xclick" />
 				<input type="hidden" name="hosted_button_id" value="10903325" />
-				<a href="#" id="btnchangelog" class="btn btn-info">CHANGELOG</a>
-				<input type="submit" class="btn btn-inverse" value="Donate via PayPal" />
+				<a href="#" id="btnchangelog" class="btn btn-info btn-small">CHANGELOG</a>
+				<input type="submit" class="btn btn-inverse btn-small" value="Donate via PayPal" />
 				<!--<input class="btn" type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online." style="border: none !important; width: 92px; height 26px;" />-->
 				<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
 			</form>
 			<?php else: ?>
-			<a href="#" id="btnchangelog" class="btn btn-info btn-mini">CHANGELOG</a>
+			<a href="#" id="btnchangelog" class="btn btn-info btn-small">CHANGELOG</a>
 			<?php endif; ?>
 			<div style="display:none;">
 				<div id="akeeba-changelog">
@@ -280,6 +295,13 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 		</p>
 	</div>
 </div>
+
+<?php
+if($this->statsIframe)
+{
+    echo $this->statsIframe;
+}
+?>
 
 <script type="text/javascript">
 	(function($) {

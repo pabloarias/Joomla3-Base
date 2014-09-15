@@ -2,6 +2,7 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
@@ -24,6 +25,21 @@ defined('AKEEBAENGINE') or die();
  */
 class AEDumpNativeMysql extends AEAbstractDump
 {
+
+	/**
+	 * The primary key structure of the currently backed up table. The keys contained are:
+	 * - table		The name of the table being backed up
+	 * - field		The name of the primary key field
+	 * - value		The last value of the PK field
+	 *
+	 * @var array
+	 */
+	protected $table_autoincrement = array(
+		'table'		=> null,
+		'field'		=> null,
+		'value'		=> null,
+	);
+
 	/**
 	 * Implements the constructor of the class
 	 *
@@ -31,8 +47,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 	 */
 	public function __construct()
 	{
-		// DO NOT RUN THE PARENT::__CONSTRUCT; we are directly instanciating an AEAbstractObject here
-		// parent::__construct();
+		// DO NOT RUN THE PARENT::__CONSTRUCT; we are directly instantiating an AEAbstractObject here
 		AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__ . " :: New instance");
 	}
 
@@ -49,17 +64,9 @@ class AEDumpNativeMysql extends AEAbstractDump
 			return;
 		}
 
-		// This was required when we still supported MySQL 4 and wanted backwards compatibility with it
-		/**
-		$sql = "SET sql_mode='HIGH_NOT_PRECEDENCE'";
-		$db->setQuery($sql);
-		$db->query();
-		/**/
-
 		// Try to enforce SQL_BIG_SELECTS option
 		try
 		{
-			$dbVersion = $db->getVersion();
 			$db->setQuery('SET sql_big_selects=1');
 			$db->query();
 		}
@@ -73,7 +80,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 
 	/**
 	 * Performs one more step of dumping database data
-	 * @return type
+	 *
+	 * @return void
 	 */
 	protected function stepDatabaseDump()
 	{
@@ -139,12 +147,10 @@ class AEDumpNativeMysql extends AEAbstractDump
 			}
 
 			// Create drop statements if required (the key is defined by the scripting engine)
-			$configuration = AEFactory::getConfiguration();
 			if (AEUtilScripting::getScriptingParameter('db.dropstatements', 0))
 			{
 				if (array_key_exists('create', $this->tables_data[$tableName]))
 				{
-					// @todo This looks cheesy...
 					$dropStatement = $this->createDrop($this->tables_data[$tableName]['create']);
 				}
 				else
@@ -184,6 +190,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 				$this->nextRange = 1;
 				$outData = '';
 				$numRows = 0;
+				$dump_records = false;
 			}
 
 			// Output any data preamble commands, e.g. SET IDENTITY_INSERT for SQL Server
@@ -199,23 +206,36 @@ class AEDumpNativeMysql extends AEAbstractDump
 					}
 				}
 			}
+
+			// Get the table's auto increment information
+			if ($dump_records)
+			{
+				$this->setAutoIncrementInfo();
+			}
 		}
 
 		// Check if we have more work to do on this table
 		$configuration = AEFactory::getConfiguration();
 		$batchsize = intval($configuration->get('engine.dump.common.batchsize', 1000));
+
 		if ($batchsize <= 0)
 		{
 			$batchsize = 1000;
 		}
+
 		if (($this->nextRange < $this->maxRange))
 		{
 			$timer = AEFactory::getTimer();
 
 			// Get the number of rows left to dump from the current table
 			$sql = $db->getQuery(true)
-				->select('*')
-				->from($db->nameQuote($tableAbstract));
+					  ->select('*')
+					  ->from($db->nameQuote($tableAbstract));
+
+			if (!is_null($this->table_autoincrement['field']))
+			{
+				$sql->order($db->qn($this->table_autoincrement['field']) . ' ASC');
+			}
 
 			if ($this->nextRange == 0)
 			{
@@ -226,9 +246,20 @@ class AEDumpNativeMysql extends AEAbstractDump
 			else
 			{
 				// Subsequent runs, get a cursor to the rest of the records
-				$db->setQuery($sql, $this->nextRange, $batchsize);
 				$this->setSubstep($this->nextRange . ' / ' . $this->maxRange);
-				AEUtilLogger::WriteLog(_AE_LOG_INFO, "Continuing dump of " . $tableAbstract . " from record #{$this->nextRange}");
+
+				// If we have an auto_increment value and the table has over $batchsize records use the indexed select instead of a plain limit
+				if (!is_null($this->table_autoincrement['field']) && !is_null($this->table_autoincrement['value']))
+				{
+					AEUtilLogger::WriteLog(_AE_LOG_INFO, "Continuing dump of " . $tableAbstract . " from record #{$this->nextRange} using auto_increment column {$this->table_autoincrement['field']} and value {$this->table_autoincrement['value']}");
+					$sql->where($db->qn($this->table_autoincrement['field']) . ' > ' . $db->q($this->table_autoincrement['value']));
+					$db->setQuery($sql, 0, $batchsize);
+				}
+				else
+				{
+					AEUtilLogger::WriteLog(_AE_LOG_INFO, "Continuing dump of " . $tableAbstract . " from record #{$this->nextRange}");
+					$db->setQuery($sql, $this->nextRange, $batchsize);
+				}
 			}
 
 			$this->query = '';
@@ -265,8 +296,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 				{
 					$isFiltered = $filters->isFiltered(
 						array(
-							 'table' => $tableAbstract,
-							 'row'   => $myRow
+							'table' => $tableAbstract,
+							'row'   => $myRow
 						),
 						$configuration->get('volatile.database.root', '[SITEDB]'),
 						'dbobject',
@@ -275,6 +306,12 @@ class AEDumpNativeMysql extends AEAbstractDump
 
 					if ($isFiltered)
 					{
+						// Update the auto_increment value to avoid edge cases when the batch size is one
+						if (!is_null($this->table_autoincrement['field']) && isset($myRow[$this->table_autoincrement['field']]))
+						{
+							$this->table_autoincrement['value'] = $myRow[$this->table_autoincrement['field']];
+						}
+
 						continue;
 					}
 				}
@@ -434,6 +471,12 @@ class AEDumpNativeMysql extends AEAbstractDump
 				}
 				$outData = '';
 
+				// Update the auto_increment value to avoid edge cases when the batch size is one
+				if (!is_null($this->table_autoincrement['field']))
+				{
+					$this->table_autoincrement['value'] = $myRow[$this->table_autoincrement['field']];
+				}
+
 				unset($myRow);
 
 				// Check for imminent timeout
@@ -531,8 +574,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 		}
 
 		$sql = $db->getQuery(true)
-			->select('COUNT(*)')
-			->from($db->nameQuote($tableAbstract));
+				  ->select('COUNT(*)')
+				  ->from($db->nameQuote($tableAbstract));
 
 		$db->setQuery($sql);
 		$this->maxRange = $db->loadResult();
@@ -548,6 +591,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 	/**
 	 * Scans the database for tables to be backed up and sorts them according to
 	 * their dependencies on one another.
+	 *
+	 * @return void Updates $this->dependencies
 	 */
 	protected function getTablesToBackup()
 	{
@@ -602,6 +647,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 	/**
 	 * Generates a mapping between table names as they're stored in the database
 	 * and their abstract representation.
+	 *
+	 * @return void Updates $this->table_name_map
 	 */
 	private function get_tables_mapping()
 	{
@@ -672,7 +719,15 @@ class AEDumpNativeMysql extends AEAbstractDump
 			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__ . " :: Listing stored PROCEDUREs");
 			$sql = "SHOW PROCEDURE STATUS WHERE `Db`=" . $db->Quote($this->database);
 			$db->setQuery($sql);
-			$all_entries = $db->loadResultArray(1);
+
+			try
+			{
+				$all_entries = $db->loadResultArray(1);
+			}
+			catch (Exception $e)
+			{
+				$all_entries = array();
+			}
 
 			// If we have filters, make sure the tables pass the filtering
 			if (is_array($all_entries))
@@ -698,7 +753,15 @@ class AEDumpNativeMysql extends AEAbstractDump
 			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__ . " :: Listing stored FUNCTIONs");
 			$sql = "SHOW FUNCTION STATUS WHERE `Db`=" . $db->Quote($this->database);
 			$db->setQuery($sql);
-			$all_entries = $db->loadResultArray(1);
+
+			try
+			{
+				$all_entries = $db->loadResultArray(1);
+			}
+			catch (Exception $e)
+			{
+				$all_entries = array();
+			}
 
 			// If we have filters, make sure the tables pass the filtering
 			if (is_array($all_entries))
@@ -725,7 +788,15 @@ class AEDumpNativeMysql extends AEAbstractDump
 			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__ . " :: Listing stored TRIGGERs");
 			$sql = "SHOW TRIGGERS";
 			$db->setQuery($sql);
-			$all_entries = $db->loadResultArray();
+
+			try
+			{
+				$all_entries = $db->loadResultArray();
+			}
+			catch (Exception $e)
+			{
+				$all_entries = array();
+			}
 
 			// If we have filters, make sure the tables pass the filtering
 			if (is_array($all_entries))
@@ -747,13 +818,14 @@ class AEDumpNativeMysql extends AEAbstractDump
 					}
 				}
 			}
-
 		} // if MySQL 5
 	}
 
 	/**
 	 * Populates the _tables array with the metadata of each table and generates
 	 * dependency information for views and merge tables
+	 *
+	 * @return void Updates $this->tables_data
 	 */
 	private function get_tables_data()
 	{
@@ -909,7 +981,15 @@ class AEDumpNativeMysql extends AEAbstractDump
 			// Get a list of procedures
 			$sql = 'SHOW PROCEDURE STATUS WHERE `Db`=' . $db->Quote($this->database);
 			$db->setQuery($sql);
-			$metadata_list = $db->loadRowList();
+
+			try
+			{
+				$metadata_list = $db->loadRowList();
+			}
+			catch (Exception $e)
+			{
+				$metadata_list = null;
+			}
 
 			if (is_array($metadata_list))
 			{
@@ -948,7 +1028,15 @@ class AEDumpNativeMysql extends AEAbstractDump
 			// Get a list of functions
 			$sql = 'SHOW FUNCTION STATUS WHERE `Db`=' . $db->Quote($this->database);
 			$db->setQuery($sql);
-			$metadata_list = $db->loadRowList();
+
+			try
+			{
+				$metadata_list = $db->loadRowList();
+			}
+			catch (Exception $e)
+			{
+				$metadata_list = null;
+			}
 
 			if (is_array($metadata_list))
 			{
@@ -987,7 +1075,15 @@ class AEDumpNativeMysql extends AEAbstractDump
 			// Get a list of triggers
 			$sql = 'SHOW TRIGGERS';
 			$db->setQuery($sql);
-			$metadata_list = $db->loadRowList();
+
+			try
+			{
+				$metadata_list = $db->loadRowList();
+			}
+			catch (Exception $e)
+			{
+				$metadata_list = null;
+			}
 
 			if (is_array($metadata_list))
 			{
@@ -1019,7 +1115,6 @@ class AEDumpNativeMysql extends AEAbstractDump
 
 			AEUtilLogger::WriteLog(_AE_LOG_DEBUG, __CLASS__ . " :: Got MySQL entities list");
 		}
-
 		/*
 		// Only store unique values
 		if(count($dependencies) > 0)
@@ -1029,6 +1124,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 
 	/**
 	 * Populates the _tables array with the metadata of each table
+	 *
+	 * @return void Updates $this->tables_data and $this->tables
 	 */
 	private function get_tables_data_without_dependencies()
 	{
@@ -1121,7 +1218,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			$db->resetErrors();
 
 			$temp = array(
-				array('','','')
+				array('', '', '')
 			);
 		}
 
@@ -1339,7 +1436,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 	/**
 	 * Process all table dependencies
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function process_dependencies()
 	{
@@ -1362,6 +1459,8 @@ class AEDumpNativeMysql extends AEAbstractDump
 	 *
 	 * @param string $table_name Canonical name of the table to push
 	 * @param array  $stack      When called recursive, other views/tables previously processed in order to detect *ahem* dependency loops...
+	 *
+	 * @return void
 	 */
 	private function push_table($table_name, $stack = array(), $currentRecursionDepth = 0)
 	{
@@ -1610,4 +1709,32 @@ class AEDumpNativeMysql extends AEAbstractDump
 
 		return $dropQuery;
 	}
+
+	/**
+	 * Try to find an auto_increment field for the table being currently backed up and populate the
+	 * $this->table_autoincrement table.
+	 *
+	 * @return void Updates $this->table_autoincrement
+	 */
+	protected function setAutoIncrementInfo()
+	{
+		$this->table_autoincrement = array(
+			'table'		=> $this->nextTable,
+			'field'		=> null,
+			'value'		=> null,
+		);
+
+		$db = $this->getDB();
+
+		$query = 'SHOW COLUMNS FROM ' . $db->qn($this->nextTable) . ' WHERE ' . $db->qn('Extra') . ' = ' .
+			$db->q('auto_increment') . ' AND ' . $db->qn('Null') . ' = ' . $db->q('NO');
+		$keyInfo = $db->setQuery($query)->loadAssocList();
+
+		if (!empty($keyInfo))
+		{
+			$row = array_shift($keyInfo);
+			$this->table_autoincrement['field'] = $row['Field'];
+		}
+	}
+
 }

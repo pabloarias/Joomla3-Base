@@ -58,6 +58,7 @@ CREATE TABLE [#__ak_stats] (
 	[absolute_path] [NVARCHAR](4000),
 	[multipart] [INT] NOT NULL DEFAULT ('0'),
 	[tag] [NVARCHAR](255) NULL,
+	[backupid] [NVARCHAR](255) NULL,
 	[filesexist] [TINYINT] NOT NULL DEFAULT ('1'),
 	[remote_filename] [NVARCHAR](1000) NULL,
 	[total_size] [BIGINT] NOT NULL DEFAULT ('0'),
@@ -95,6 +96,15 @@ CREATE TABLE [#__ak_storage] (
 	[lastupdate] [DATETIME] NOT NULL DEFAULT ('1900-01-01 00:00:00'),
 	[data] [TEXT]
 )
+            ]]></query>
+        </action>
+
+        <!-- Add the backupid column to #__ak_stats if it's missing -->
+        <action table="#__ak_stats" canfail="1">
+            <condition type="missing" value="backupid" />
+            <query><![CDATA[
+ALTER TABLE [#__ak_stats]
+ADD [backupid] [NVARCHAR](255) DEFAULT NULL
             ]]></query>
         </action>
     </sql>

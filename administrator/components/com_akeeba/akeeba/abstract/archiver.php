@@ -42,6 +42,15 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/** @var   array  An array of open file pointers */
 	private $filePointers = array();
 
+	/** @var   array  An array of the last open files for writing and their last written to offsets */
+	private $fileOffsets = array();
+
+	/** @var resource File pointer to the archive being currently written to */
+	protected $fp = null;
+
+	/** @var resource File pointer to the archive's central directory file (for ZIP) */
+	protected $cdfp = null;
+
 	/**
 	 * Common code which gets called on instance creation or wake-up (unserialization)
 	 *
@@ -86,6 +95,8 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	public function _onSerialize()
 	{
 		$this->_closeAllFiles();
+		$this->fp = null;
+		$this->cdfp = null;
 
 		parent::_onSerialize();
 	}
@@ -98,6 +109,8 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	public function __destruct()
 	{
 		$this->_closeAllFiles();
+		$this->fp = null;
+		$this->cdfp = null;
 	}
 
 	/**
@@ -330,7 +343,20 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	{
 		if (!array_key_exists($file, $this->filePointers))
 		{
+			//AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Opening backup archive $file with mode $mode");
 			$this->filePointers[$file] = @fopen($file, $mode);
+
+			// If we open a file for append we have to seek to the correct offset
+			if (substr($mode, 0, 1) == 'a')
+			{
+				if (isset($this->fileOffsets[$file]))
+				{
+					//AEUtilLogger::WriteLog(_AE_LOG_DEBUG, "Truncating to " . $this->fileOffsets[$file]);
+					@ftruncate($this->filePointers[$file], $this->fileOffsets[$file]);
+				}
+
+				fseek($this->filePointers[$file], 0, SEEK_END);
+			}
 		}
 
 		return $this->filePointers[$file];
@@ -339,23 +365,22 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/**
 	 * Closes an already open file
 	 *
-	 * @param   string  $file  The name of the file
+	 * @param   resource  $fp  The file pointer to close
 	 *
 	 * @return  boolean
 	 */
-	protected final function _fclose($file)
+	protected final function _fclose(&$fp)
 	{
-		if (array_key_exists($file, $this->filePointers))
-		{
-			$fp = $this->filePointers[$file];
-			$result = @fclose($fp);
+		$offset = array_search($fp, $this->filePointers, true);
 
-			unset($this->filePointers[$file]);
-		}
-		else
+		$result = @fclose($fp);
+
+		if ($offset !== false)
 		{
-			$result = false;
+			unset($this->filePointers[$offset]);
 		}
+
+		$fp = null;
 
 		return $result;
 	}
@@ -389,6 +414,15 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	 */
 	protected final function _fwrite($fp, $data, $p_len = null)
 	{
+		static $lastFp = null;
+		static $filename = null;
+
+		if ($fp !== $lastFp)
+		{
+			$lastFp = $fp;
+			$filename = array_search($fp, $this->filePointers, true);
+		}
+
 		$len = is_null($p_len) ? (function_exists('mb_strlen') ? mb_strlen($data, '8bit') : strlen($data)) : $p_len;
 		$ret = fwrite($fp, $data, $len);
 
@@ -399,7 +433,25 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 			return false;
 		}
 
+		if ($filename !== false)
+		{
+			$this->fileOffsets[$filename] = @ftell($fp);
+		}
+
 		return true;
+	}
+
+	/**
+	 * Removes a file path from the list of resumable offsets
+	 *
+	 * @param $filename
+	 */
+	protected function _removeFromOffsetsList($filename)
+	{
+		if (isset($this->fileOffsets[$filename]))
+		{
+			unset($this->fileOffsets[$filename]);
+		}
 	}
 
 	/**

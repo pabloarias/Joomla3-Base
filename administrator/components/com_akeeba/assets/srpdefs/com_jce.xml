@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 	System Restore Point definition for JCE by JoomlaContentEditor.net
-	
+
 	Copyright ©2011 Nicholas K. Dionysopoulos / AkeebaBackup.com
 	License: GNU General Public License version 3, or later
 -->
@@ -16,4 +16,7 @@
 	<langfiles>
 		<lang>plg_editors_jce</lang>
 	</langfiles>
+  <extraprefixes>
+    <prefix>wf</prefix>
+  </extraprefixes>
 </restorepoint>
