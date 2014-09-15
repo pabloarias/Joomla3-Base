@@ -19,7 +19,7 @@ class F0FDatabaseInstaller
 	private $xmlDirectory = null;
 
 	/** @var  array  A list of the base names of the XML schema files */
-	public $xmlFiles = array('mysql', 'mysqli', 'postgresql', 'sqlsrv', 'mssql');
+	public $xmlFiles = array('mysql', 'mysqli', 'pdomysql', 'postgresql', 'sqlsrv', 'mssql');
 
 	/**
 	 * Public constructor

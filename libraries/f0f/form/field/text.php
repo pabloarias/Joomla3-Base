@@ -225,7 +225,7 @@ class F0FFormFieldText extends JFormFieldText implements F0FFormField
 		$ret = str_replace('[ITEMID]', JFactory::getApplication()->input->getInt('Itemid', 0), $ret);
 
 		// Replace other field variables in the URL
-		$fields = $this->item->getFields();
+		$fields = $this->item->getTableFields();
 
 		foreach ($fields as $fielddata)
 		{
