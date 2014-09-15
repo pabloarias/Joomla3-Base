@@ -1,4 +1,4 @@
-/* JCE Editor - 2.4.1 | 19 July 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* JCE Editor - 2.4.3 | 11 September 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 function IeCursorFix(){return true;}
 function jInsertEditorText(text,editor){WFEditor.insert(editor,text);}
 (function(){var winLoaded=false,each=tinymce.each,explode=tinymce.explode;var WFEditor={_bookmark:{},getSite:function(base){var site,host;var u=document.location.href;if(base.indexOf('http')!==-1){host=base.substr(base.indexOf('://')+3);site=host.substr(host.indexOf('/'));}else{site=u.substr(0,u.indexOf(base)+base.length);}
@@ -22,9 +22,13 @@ var use_cookies=getVar(s.use_cookies,true);elements=elements||DOM.select('.wfEdi
 DOM.removeClass(el,'wfNoEditor');DOM.addClass(el,'wfEditor');tinyMCE.execCommand('mceAddEditor',0,el.id);}else{self._wrapText(ed.getElement(),true);if(ed.isHidden()){if(use_cookies){tinymce.util.Cookie.set('wf_editor_'+el.id+'_state',1);}
 DOM.removeClass(el,'wfNoEditor');DOM.addClass(el,'wfEditor');ed.load();ed.show();}else{if(use_cookies){tinymce.util.Cookie.set('wf_editor_'+el.id+'_state',0);}
 DOM.removeClass(el,'wfEditor');DOM.addClass(el,'wfNoEditor');ed.save({no_events:false});ed.hide();}}},_wrapText:function(el,s){var v,n;el.setAttribute("wrap",s);if(!tinymce.isIE){v=el.value;n=el.cloneNode(false);n.setAttribute("wrap",s);el.parentNode.replaceChild(n,el);n.value=v;}},showLoader:function(el){tinymce.DOM.addClass('.wfEditor','loading');},hideLoader:function(el){tinymce.DOM.removeClass(el,'loading');},setContent:function(id,html){var ed=tinyMCE.get(id);if(ed){ed.setContent(html);}else{document.getElementById(id).value=html;}},getContent:function(id){var ed=tinyMCE.get(id);if(ed&&!ed.isHidden()){return ed.save();}
-return document.getElementById(id).value;},insert:function(el,v){var ed,parent;if(typeof el=='string'){el=document.getElementById(el);}
-if(/wfEditor/.test(el.className)){ed=tinyMCE.get(el.id);if(window.parent.tinymce){if(parent=window.parent.tinyMCE.get(el.id)){ed=parent;if(ed.lastSelectionBookmark){ed.selection.moveToBookmark(ed.lastSelectionBookmark);}}}
-ed.execCommand('mceInsertContent',false,v);}else{this.insertIntoTextarea(el,v);}},insertIntoTextarea:function(el,v){if(document.selection){el.focus();var s=document.selection.createRange();s.text=v;}else{if(el.selectionStart||el.selectionStart=='0'){var startPos=el.selectionStart;var endPos=el.selectionEnd;el.value=el.value.substring(0,startPos)+v+el.value.substring(endPos,el.value.length);}else{el.value+=v;}}},convertURL:function(url,elm,save,name){var ed=tinymce.EditorManager.activeEditor,s=tinymce.settings,base=s.document_base_url;if(!url)
+return document.getElementById(id).value;},insert:function(el,v){var ed,win=window;if(window.parent.tinymce){win=window.parent;}
+if(el){if(typeof el==='string'){el=document.getElementById(el);}
+if(el&&el.id){ed=win.tinyMCE.get(el.id);}}
+if(!ed){ed=win.tinyMCE.activeEditor;}
+if(!ed||ed.isHidden()){this.insertIntoTextarea(el,v);return true;}
+if(ed){if(ed.lastSelectionBookmark){ed.selection.moveToBookmark(ed.lastSelectionBookmark);}
+ed.execCommand('mceInsertContent',false,v);}},insertIntoTextarea:function(el,v){if(document.selection){el.focus();var s=document.selection.createRange();s.text=v;}else{if(el.selectionStart||el.selectionStart=='0'){var startPos=el.selectionStart;var endPos=el.selectionEnd;el.value=el.value.substring(0,startPos)+v+el.value.substring(endPos,el.value.length);}else{el.value+=v;}}},convertURL:function(url,elm,save,name){var ed=tinymce.EditorManager.activeEditor,s=tinymce.settings,base=s.document_base_url;if(!url)
 return url;if(!s.convert_urls||(elm&&elm.nodeName=='LINK')||url.indexOf('file:')===0)
 return url;if(url==base||url==base.substring(0,base.length-1)||url.charAt(0)=='/'){return url;}
 if(s.relative_urls)

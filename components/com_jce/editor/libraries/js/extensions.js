@@ -1,3 +1,3 @@
-/* JCE Editor - 2.4.1 | 19 July 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* JCE Editor - 2.4.3 | 11 September 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 (function(){var WFExtensions={types:{},add:function(n,o){this[n]=o;return this[n];},addType:function(n){this.types[n]={};},addExtension:function(type,n,o){if(typeof this.types[type]=='undefined'){this.addType(type);}
 this.types[type][n]=o;},getType:function(type){return this.types[type]||false;},getExtension:function(type,ext){var s=this.getType(type);return s[ext];}};window.WFExtensions=WFExtensions;})();

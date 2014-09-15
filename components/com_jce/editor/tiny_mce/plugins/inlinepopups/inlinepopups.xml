@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install version="2.0" type="plugin" plugin="inlinepopups" core="1" editable="0">
   <name>WF_INLINEPOPUPS_TITLE</name>
-  <version>2.4.1</version>
-  <creationDate>19 July 2014</creationDate>
+  <version>2.4.3</version>
+  <creationDate>11 September 2014</creationDate>
   <author>Ryan Demmer</author>
   <authorEmail>info@joomlacontenteditor.net</authorEmail>
   <authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
