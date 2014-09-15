@@ -1,0 +1,24 @@
+DEBUG   |140915 06:29:06|Loading filters
+DEBUG   |140915 06:29:06|-- Loading filter Srpdirs
+DEBUG   |140915 06:29:06|-- Loading filter Tables
+DEBUG   |140915 06:29:06|-- Loading filter Skipdirs
+DEBUG   |140915 06:29:06|-- Loading filter Directories
+DEBUG   |140915 06:29:06|-- Loading filter Srpdata
+DEBUG   |140915 06:29:06|-- Loading filter Srpfiles
+DEBUG   |140915 06:29:06|-- Loading filter Incremental
+DEBUG   |140915 06:29:06|-- Loading filter Tabledata
+DEBUG   |140915 06:29:06|-- Loading filter Skipfiles
+DEBUG   |140915 06:29:06|-- Loading filter Srpskipdata
+DEBUG   |140915 06:29:06|-- Loading filter Srpskipfiles
+DEBUG   |140915 06:29:06|-- Loading filter Files
+DEBUG   |140915 06:29:06|-- Loading filter PlatformLibraries
+DEBUG   |140915 06:29:06|-- Loading filter PlatformSitedb
+DEBUG   |140915 06:29:06|-- Loading filter PlatformSkipdirs
+DEBUG   |140915 06:29:06|-- Loading filter PlatformFolders
+DEBUG   |140915 06:29:06|-- Loading filter PlatformTabledata
+DEBUG   |140915 06:29:06|-- Loading filter PlatformSiteroot
+DEBUG   |140915 06:29:06|-- Loading filter PlatformSkipfiles
+DEBUG   |140915 06:29:06|-- Loading filter PlatformSystemcachefiles
+DEBUG   |140915 06:29:06|-- Loading filter PlatformFiles
+DEBUG   |140915 06:29:06|Loading optional filters
+DEBUG   |140915 06:29:06|-- Loading optional filter StackPlatformFinder
