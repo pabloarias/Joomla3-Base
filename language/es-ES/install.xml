@@ -2,14 +2,14 @@
 <extension version="3.3" client="site" type="language" method="upgrade">
     <name>Spanish (ES)</name>
     <tag>es-ES</tag>
-    <version>3.3.3.1</version>
-    <creationDate>2014-5-9</creationDate>
+    <version>3.3.4.1</version>
+    <creationDate>2014-9-28</creationDate>
     <author>Spanish Translation Team: Comunidad Joomla</author>
     <authorEmail>info@comunidadjoomla.org</authorEmail>
     <authorUrl>www.comunidadjoomla.org</authorUrl>
     <copyright>Copyright (C) 2005 - 2014 Open Source Matters and comunidadjoomla.org. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <description>Spanish language pack for Joomla! 3.3.3 - Site</description>
+    <description>Spanish language pack for Joomla! 3.3.4 - Site</description>
     	<files>
 		<filename>index.html</filename>
 		<filename>es-ES.com_ajax.ini</filename>

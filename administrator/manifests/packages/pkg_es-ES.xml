@@ -2,8 +2,8 @@
 <extension type="package" version="3.3">
 <name>Spanish Language Pack</name>
 <packagename>es-ES</packagename>
-<version>3.3.3.1</version>
-<creationDate>9 de septiembre del 2014</creationDate>
+<version>3.3.4.1</version>
+<creationDate>28 de septiembre del 2014</creationDate>
 <author>Spanish Translation Team: comunidadjoomla.org</author>
 <authorEmail>info@comunidadjoomla.org</authorEmail>
 <authorUrl>www.comunidadjoomla.org</authorUrl>
@@ -14,12 +14,12 @@
 <packagerurl>www.comunidadjoomla.org</packagerurl>
 <description><![CDATA[
 		<div style="text-align:left;">
-		<h2>Successfully installed the spanish language pack for Joomla! 3.3.3.</h2>
+		<h2>Successfully installed the spanish language pack for Joomla! 3.3.4.</h2>
 		<p></p>
 		<p>Please report any bugs or issues at the Comunidad Joomla! <a href="http://foro.comunidadjoomla.org/traduccion-ext/" target="_blank">Translation forum</a></p>
 		<p></p>
 		<p>Translated by: <a href="http://www.comunidadjoomla.org" target="_blank" title="">The spanish translation team of Comunidad Joomla!</a></p>
-		<h2>El paquete en español para Joomla! 3.3.3 se ha instalado correctamente.</h2>
+		<h2>El paquete en español para Joomla! 3.3.4 se ha instalado correctamente.</h2>
 		<p></p>
 		<p>Por favor, reporte cualquier bug o asunto relacionado a nuestro <a href="http://foro.comunidadjoomla.org/traduccion-ext/" target="_blank">Foro de traducciones</a></p>
 		<p></p>
