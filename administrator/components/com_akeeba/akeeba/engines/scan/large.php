@@ -47,7 +47,7 @@ class AEScanLarge extends AEAbstractScan
 		return $result;
 	}
 
-	private function scanFolder($folder, &$position, $forFolders = true, $threshold_key = 'dir', $threshold_default = 50)
+	protected function scanFolder($folder, &$position, $forFolders = true, $threshold_key = 'dir', $threshold_default = 50)
 	{
 		$registry = AEFactory::getConfiguration();
 

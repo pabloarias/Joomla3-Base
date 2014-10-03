@@ -128,45 +128,51 @@ define('_AKEEBA_RESTORATION', 1);
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
 // Unarchiver run states
-define('AK_STATE_NOFILE',	0); // File header not read yet
-define('AK_STATE_HEADER',	1); // File header read; ready to process data
-define('AK_STATE_DATA',		2); // Processing file data
-define('AK_STATE_DATAREAD',	3); // Finished processing file data; ready to post-process
-define('AK_STATE_POSTPROC',	4); // Post-processing
-define('AK_STATE_DONE',		5); // Done with post-processing
+define('AK_STATE_NOFILE', 0); // File header not read yet
+define('AK_STATE_HEADER', 1); // File header read; ready to process data
+define('AK_STATE_DATA', 2); // Processing file data
+define('AK_STATE_DATAREAD', 3); // Finished processing file data; ready to post-process
+define('AK_STATE_POSTPROC', 4); // Post-processing
+define('AK_STATE_DONE', 5); // Done with post-processing
 
 /* Windows system detection */
-if(!defined('_AKEEBA_IS_WINDOWS'))
+if (!defined('_AKEEBA_IS_WINDOWS'))
 {
 	if (function_exists('php_uname'))
+	{
 		define('_AKEEBA_IS_WINDOWS', stristr(php_uname(), 'windows'));
+	}
 	else
+	{
 		define('_AKEEBA_IS_WINDOWS', DIRECTORY_SEPARATOR == '\\');
+	}
 }
 
 // Get the file's root
-if(!defined('KSROOTDIR'))
+if (!defined('KSROOTDIR'))
 {
 	define('KSROOTDIR', dirname(__FILE__));
 }
-if(!defined('KSLANGDIR'))
+if (!defined('KSLANGDIR'))
 {
 	define('KSLANGDIR', KSROOTDIR);
 }
 
 // Make sure the locale is correct for basename() to work
-if(function_exists('setlocale'))
+if (function_exists('setlocale'))
 {
 	@setlocale(LC_ALL, 'en_US.UTF8');
 }
 
 // fnmatch not available on non-POSIX systems
 // Thanks to soywiz@php.net for this usefull alternative function [http://gr2.php.net/fnmatch]
-if (!function_exists('fnmatch')) {
-	function fnmatch($pattern, $string) {
+if (!function_exists('fnmatch'))
+{
+	function fnmatch($pattern, $string)
+	{
 		return @preg_match(
 			'/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
-		array('*' => '.*', '?' => '.?')) . '$/i', $string
+				array('*' => '.*', '?' => '.?')) . '$/i', $string
 		);
 	}
 }
@@ -174,33 +180,41 @@ if (!function_exists('fnmatch')) {
 // Unicode-safe binary data length function
 if (!function_exists('akstringlen'))
 {
-	if(function_exists('mb_strlen')) {
-		function akstringlen($string) { return mb_strlen($string,'8bit'); }
-	} else {
-		function akstringlen($string) { return strlen($string); }
+	if (function_exists('mb_strlen'))
+	{
+		function akstringlen($string)
+		{
+			return mb_strlen($string, '8bit');
+		}
+	}
+	else
+	{
+		function akstringlen($string)
+		{
+			return strlen($string);
+		}
 	}
 }
 
 /**
  * Gets a query parameter from GET or POST data
+ *
  * @param $key
  * @param $default
  */
-function getQueryParam( $key, $default = null )
+function getQueryParam($key, $default = null)
 {
-	$value = null;
+	$value = $default;
 
-	if(array_key_exists($key, $_REQUEST)) {
+	if (array_key_exists($key, $_REQUEST))
+	{
 		$value = $_REQUEST[$key];
-	} elseif(array_key_exists($key, $_POST)) {
-		$value = $_POST[$key];
-	} elseif(array_key_exists($key, $_GET)) {
-		$value = $_GET[$key];
-	} else {
-		return $default;
 	}
 
-	if(get_magic_quotes_gpc() && !is_null($value)) $value=stripslashes($value);
+	if (get_magic_quotes_gpc() && !is_null($value))
+	{
+		$value = stripslashes($value);
+	}
 
 	return $value;
 }
@@ -208,9 +222,14 @@ function getQueryParam( $key, $default = null )
 // Debugging function
 function debugMsg($msg)
 {
-	if(!defined('KSDEBUG')) return;
-	$fp = fopen('debug.txt','at');
-	fwrite($fp, $msg."\n");
+	if (!defined('KSDEBUG'))
+	{
+		return;
+	}
+
+	$fp = fopen('debug.txt', 'at');
+
+	fwrite($fp, $msg . "\n");
 	fclose($fp);
 }
 
@@ -1783,6 +1802,29 @@ abstract class AKAbstractUnarchiver extends AKAbstractPart
 					// Archive's absolute filename
 					case 'filename':
 						$this->filename = $value;
+
+						// Sanity check
+						if (!empty($value))
+						{
+							$value = strtolower($value);
+
+							if (strlen($value) > 6)
+							{
+								if (
+									(substr($value, 0, 7) == 'http://')
+									|| (substr($value, 0, 8) == 'https://')
+									|| (substr($value, 0, 6) == 'ftp://')
+									|| (substr($value, 0, 7) == 'ssh2://')
+									|| (substr($value, 0, 6) == 'ssl://')
+								)
+								{
+									$this->setState('error', 'Invalid archive location');
+								}
+							}
+						}
+
+
+
 						break;
 
 					// Should I restore permissions?
@@ -6294,6 +6336,7 @@ class AKText extends AKAbstractObject
 		'WRONG_FTP_PATH2' => 'Wrong FTP initial directory - the directory doesn\'t correspond to your site\'s web root',
 		'ARCHIVE_DIRECTORY' => 'Archive directory:',
 		'RELOAD_ARCHIVES'	=> 'Reload',
+		'CONFIG_UI_SFTPBROWSER_TITLE'	=> 'SFTP Directory Browser',
 	);
 
 	/**
@@ -7292,8 +7335,9 @@ class AKEncryptionAES
  */
 
 /**
- * The Master Setup will read the configuration parameters from restoration.php, abiautomation.ini, or
+ * The Master Setup will read the configuration parameters from restoration.php or
  * the JSON-encoded "configuration" input variable and return the status.
+ *
  * @return bool True if the master configuration was applied to the Factory object
  */
 function masterSetup()
@@ -7305,26 +7349,29 @@ function masterSetup()
 	$ini_data = null;
 
 	// In restore.php mode, require restoration.php or fail
-	if(!defined('KICKSTART'))
+	if (!defined('KICKSTART'))
 	{
 		// This is the standalone mode, used by Akeeba Backup Professional. It looks for a restoration.php
 		// file to perform its magic. If the file is not there, we will abort.
 		$setupFile = 'restoration.php';
 
-		if( !file_exists($setupFile) )
+		if (!file_exists($setupFile))
 		{
-			// Uh oh... Somebody tried to pooh on our back yard. Lock the gates! Don't let the traitor inside!
 			AKFactory::set('kickstart.enabled', false);
+
 			return false;
 		}
 
 		// Load restoration.php. It creates a global variable named $restoration_setup
 		require_once $setupFile;
+
 		$ini_data = $restoration_setup;
-		if(empty($ini_data))
+
+		if (empty($ini_data))
 		{
 			// No parameters fetched. Darn, how am I supposed to work like that?!
 			AKFactory::set('kickstart.enabled', false);
+
 			return false;
 		}
 
@@ -7334,17 +7381,21 @@ function masterSetup()
 	{
 		// Maybe we have $restoration_setup defined in the head of kickstart.php
 		global $restoration_setup;
-		if(!empty($restoration_setup) && !is_array($restoration_setup)) {
+
+		if (!empty($restoration_setup) && !is_array($restoration_setup))
+		{
 			$ini_data = AKText::parse_ini_file($restoration_setup, false, true);
-		} elseif(is_array($restoration_setup)) {
+		}
+		elseif (is_array($restoration_setup))
+		{
 			$ini_data = $restoration_setup;
 		}
 	}
 
 	// Import any data from $restoration_setup
-	if(!empty($ini_data))
+	if (!empty($ini_data))
 	{
-		foreach($ini_data as $key => $value)
+		foreach ($ini_data as $key => $value)
 		{
 			AKFactory::set($key, $value);
 		}
@@ -7361,33 +7412,66 @@ function masterSetup()
 	// Detect a JSON string in the request variable and store it.
 	$json = getQueryParam('json', null);
 
-	// Remove everything from the request array
-	if(!empty($_REQUEST))
+	// Remove everything from the request, post and get arrays
+	if (!empty($_REQUEST))
 	{
-		foreach($_REQUEST as $key => $value)
+		foreach ($_REQUEST as $key => $value)
 		{
 			unset($_REQUEST[$key]);
 		}
 	}
-	// Decrypt a possibly encrypted JSON string
-	if(!empty($json))
+
+	if (!empty($_POST))
 	{
-		$password = AKFactory::get('kickstart.security.password', null);
-		if(!empty($password))
+		foreach ($_POST as $key => $value)
+		{
+			unset($_POST[$key]);
+		}
+	}
+
+	if (!empty($_GET))
+	{
+		foreach ($_GET as $key => $value)
+		{
+			unset($_GET[$key]);
+		}
+	}
+
+	// Decrypt a possibly encrypted JSON string
+	$password = AKFactory::get('kickstart.security.password', null);
+
+	if (!empty($json))
+	{
+		if (!empty($password))
 		{
 			$json = AKEncryptionAES::AESDecryptCtr($json, $password, 128);
+
+			if (empty($json))
+			{
+				die('###{"status":false,"message":"Invalid login"}###');
+			}
 		}
 
 		// Get the raw data
-		$raw = json_decode( $json, true );
-		// Pass all JSON data to the request array
-		if(!empty($raw))
+		$raw = json_decode($json, true);
+
+		if (!empty($password) && (empty($raw)))
 		{
-			foreach($raw as $key => $value)
+			die('###{"status":false,"message":"Invalid login"}###');
+		}
+
+		// Pass all JSON data to the request array
+		if (!empty($raw))
+		{
+			foreach ($raw as $key => $value)
 			{
 				$_REQUEST[$key] = $value;
 			}
 		}
+	}
+	elseif (!empty($password))
+	{
+		die('###{"status":false,"message":"Invalid login"}###');
 	}
 
 	// ------------------------------------------------------------
@@ -7395,50 +7479,44 @@ function masterSetup()
 	// ------------------------------------------------------------
 	// A "factory" variable will override all other settings.
 	$serialized = getQueryParam('factory', null);
-	if( !is_null($serialized) )
+
+	if (!is_null($serialized))
 	{
 		// Get the serialized factory
 		AKFactory::unserialize($serialized);
 		AKFactory::set('kickstart.enabled', true);
+
 		return true;
 	}
 
 	// ------------------------------------------------------------
-	// 4. Try abiautomation.ini and the configuration variable for Kickstart
+	// 4. Try the configuration variable for Kickstart
 	// ------------------------------------------------------------
-	if(defined('KICKSTART'))
+	if (defined('KICKSTART'))
 	{
-		// We are in Kickstart mode. abiautomation.ini has precedence.
-		$setupFile = 'abiautomation.ini';
-		if( file_exists($setupFile) )
+		$configuration = getQueryParam('configuration');
+
+		if (!is_null($configuration))
 		{
-			// abiautomation.ini was found
-			$ini_data = AKText::parse_ini_file('restoration.ini', false);
+			// Let's decode the configuration from JSON to array
+			$ini_data = json_decode($configuration, true);
 		}
 		else
 		{
-			// abiautomation.ini was not found. Let's try input parameters.
-			$configuration = getQueryParam('configuration');
-			if( !is_null($configuration) )
-			{
-				// Let's decode the configuration from JSON to array
-				$ini_data = json_decode($configuration, true);
-			}
-			else
-			{
-				// Neither exists. Enable Kickstart's interface anyway.
-				$ini_data = array('kickstart.enabled'=>true);
-			}
+			// Neither exists. Enable Kickstart's interface anyway.
+			$ini_data = array('kickstart.enabled' => true);
 		}
 
 		// Import any INI data we might have from other sources
-		if(!empty($ini_data))
+		if (!empty($ini_data))
 		{
-			foreach($ini_data as $key => $value)
+			foreach ($ini_data as $key => $value)
 			{
 				AKFactory::set($key, $value);
 			}
+
 			AKFactory::set('kickstart.enabled', true);
+
 			return true;
 		}
 	}
@@ -7578,9 +7656,9 @@ if(!defined('KICKSTART'))
 				$postproc->unlink( $basepath.'restoration.php' );
 
 				// Import a custom finalisation file
-				if (file_exists(__DIR__ . '/restore_finalisation.php'))
+				if (file_exists(dirname(__FILE__) . '/restore_finalisation.php'))
 				{
-					include_once __DIR__ . '/restore_finalisation.php';
+					include_once dirname(__FILE__) . '/restore_finalisation.php';
 				}
 
 				// Run a custom finalisation script
@@ -7678,209 +7756,6 @@ function recursive_remove_directory($directory)
 		}
 		// return success
 		return TRUE;
-	}
-}
-
-/**
- * Akeeba Kickstart
- * A JSON-powered archive extraction tool
- *
- * @copyright   2010-2014 Nicholas K. Dionysopoulos / AkeebaBackup.com
- * @license     GNU GPL v2 or - at your option - any later version
- * @package     akeebabackup
- * @subpackage  kickstart
- */
-
-class AKAutomation
-{
-	/**
-	 * @var bool Is there automation information available?
-	 */
-	private $_hasAutomation = false;
-
-	/**
-	 * @var array The abiautomation.ini contents, in array format
-	 */
-	private $_automation = array();
-
-	/**
-	 * Singleton implementation
-	 * @return ABIAutomation
-	 */
-	public static function &getInstance()
-	{
-		static $instance;
-
-		if(empty($instance))
-		{
-			$instance = new AKAutomation();
-		}
-
-		return $instance;
-	}
-
-	/**
-	 * Loads and parses the automation INI file
-	 * @return AKAutomation
-	 */
-	public function __construct()
-	{
-		// Initialize
-		$this->_hasAutomation = false;
-		$this->_automation = array();
-
-		$filenames = array('abiautomation.ini', 'kickstart.ini', 'jpi4automation');
-
-		foreach($filenames as $filename)
-		{
-			// Try to load the abiautomation.ini file
-			if(@file_exists($filename))
-			{
-				$this->_automation = $this->_parse_ini_file($filename, true);
-				if(!isset($this->_automation['kickstart']))
-				{
-					$this->_automation = array();
-				}
-				else
-				{
-					$this->_hasAutomation = true;
-					break;
-				}
-			}
-		}
-
-	}
-
-	/**
-	 * Do we have automation?
-	 * @return bool True if abiautomation.ini exists and has a abi section
-	 */
-	public function hasAutomation()
-	{
-		return $this->_hasAutomation;
-	}
-
-	/**
-	 * Returns an automation section. If the section doesn't exist, it returns an empty array.
-	 * @param string $section [optional] The name of the section to load, defaults to 'kickstart'
-	 * @return array
-	 */
-	public function getSection($section = 'kickstart')
-	{
-		if(!$this->_hasAutomation)
-		{
-			return array();
-		}
-		else
-		{
-			if(isset($this->_automation[$section]))
-			{
-				return $this->_automation[$section];
-			} else {
-				return array();
-			}
-		}
-	}
-
-	private function _parse_ini_file($file, $process_sections = false, $rawdata = false)
-	{
-		$process_sections = ($process_sections !== true) ? false : true;
-
-		if(!$rawdata)
-		{
-			$ini = file($file);
-		}
-		else
-		{
-			$file = str_replace("\r","",$file);
-			$ini = explode("\n", $file);
-		}
-
-		if (count($ini) == 0) {return array();}
-
-		$sections = array();
-		$values = array();
-		$result = array();
-		$globals = array();
-		$i = 0;
-		foreach ($ini as $line) {
-			$line = trim($line);
-			$line = str_replace("\t", " ", $line);
-
-			// Comments
-			if (!preg_match('/^[a-zA-Z0-9[]/', $line)) {continue;}
-
-			// Sections
-			if ($line{0} == '[') {
-				$tmp = explode(']', $line);
-				$sections[] = trim(substr($tmp[0], 1));
-				$i++;
-				continue;
-			}
-
-			// Key-value pair
-			list($key, $value) = explode('=', $line, 2);
-			$key = trim($key);
-			$value = trim($value);
-			if (strstr($value, ";")) {
-				$tmp = explode(';', $value);
-				if (count($tmp) == 2) {
-					if ((($value{0} != '"') && ($value{0} != "'")) ||
-					preg_match('/^".*"\s*;/', $value) || preg_match('/^".*;[^"]*$/', $value) ||
-					preg_match("/^'.*'\s*;/", $value) || preg_match("/^'.*;[^']*$/", $value) ){
-						$value = $tmp[0];
-					}
-				} else {
-					if ($value{0} == '"') {
-						$value = preg_replace('/^"(.*)".*/', '$1', $value);
-					} elseif ($value{0} == "'") {
-						$value = preg_replace("/^'(.*)'.*/", '$1', $value);
-					} else {
-						$value = $tmp[0];
-					}
-				}
-			}
-			$value = trim($value);
-			$value = trim($value, "'\"");
-
-			if ($i == 0) {
-				if (substr($line, -1, 2) == '[]') {
-					$globals[$key][] = $value;
-				} else {
-					$globals[$key] = $value;
-				}
-			} else {
-				if (substr($line, -1, 2) == '[]') {
-					$values[$i-1][$key][] = $value;
-				} else {
-					$values[$i-1][$key] = $value;
-				}
-			}
-		}
-
-		for($j = 0; $j < $i; $j++) {
-			if ($process_sections === true) {
-				$result[$sections[$j]] = $values[$j];
-			} else {
-				$result[] = $values[$j];
-			}
-		}
-
-		return $result + $globals;
-	}
-}
-
-function autoVar($key, $default = '')
-{
-	$automation = AKAutomation::getInstance();
-	$vars = $automation->getSection('kickstart');
-	if(array_key_exists($key, $vars))
-	{
-		return "'".addcslashes($vars[$key], "'\"\\")."'";
-	}
-	else
-	{
-		return "'".addcslashes($default, "'\"\\")."'";
 	}
 }
 
@@ -8184,6 +8059,274 @@ function TranslateWinPath($p_path)
 
 	return $p_path;
 }
+
+
+/**
+ * FTP Functions
+ */
+function getListing($directory, $host, $port, $username, $password, $passive, $ssl)
+{
+	$directory = resolvePath($directory);
+	$dir       = $directory;
+
+	// Parse directory to parts
+	$parsed_dir = trim($dir,'/');
+	$parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
+
+	// Find the path to the parent directory
+	if(!empty($parts)) {
+		$copy_of_parts = $parts;
+		array_pop($copy_of_parts);
+		if(!empty($copy_of_parts)) {
+			$parent_directory = '/' . implode('/', $copy_of_parts);
+		} else {
+			$parent_directory = '/';
+		}
+	} else {
+		$parent_directory = '';
+	}
+
+	// Connect to the server
+	if($ssl) {
+		$con = @ftp_ssl_connect($host, $port);
+	} else {
+		$con = @ftp_connect($host, $port);
+	}
+	if($con === false) {
+		return array(
+			'error' => 'FTPBROWSER_ERROR_HOSTNAME'
+		);
+	}
+
+	// Login
+	$result = @ftp_login($con, $username, $password);
+	if($result === false) {
+		return array(
+			'error' => 'FTPBROWSER_ERROR_USERPASS'
+		);
+	}
+
+	// Set the passive mode -- don't care if it fails, though!
+	@ftp_pasv($con, $passive);
+
+	// Try to chdir to the specified directory
+	if(!empty($dir)) {
+		$result = @ftp_chdir($con, $dir);
+		if($result === false) {
+			return array(
+				'error' => 'FTPBROWSER_ERROR_NOACCESS'
+			);
+		}
+	}
+
+	// Get a raw directory listing (hoping it's a UNIX server!)
+	$list = @ftp_rawlist($con,'.');
+	ftp_close($con);
+
+	if($list === false) {
+		return array(
+			'error' => 'FTPBROWSER_ERROR_UNSUPPORTED'
+		);
+	}
+
+	// Parse the raw listing into an array
+	$folders = parse_rawlist($list);
+
+	return array(
+		'error'			=> '',
+		'list'			=> $folders,
+		'breadcrumbs'	=> $parts,
+		'directory'		=> $directory,
+		'parent'		=> $parent_directory
+	);
+}
+
+function parse_rawlist($list)
+{
+	$folders = array();
+	foreach($list as $v)
+	{
+		$info = array();
+		$vinfo = preg_split("/[\s]+/", $v, 9);
+		if ($vinfo[0] !== "total") {
+			$perms = $vinfo[0];
+			if(substr($perms,0,1) == 'd') {
+				$folders[] = $vinfo[8];
+			}
+		}
+	}
+
+	asort($folders);
+	return $folders;
+}
+
+function getSftpListing($directory, $host, $port, $username, $password)
+{
+	$directory = resolvePath($directory);
+	$dir       = $directory;
+
+	// Parse directory to parts
+	$parsed_dir = trim($dir,'/');
+	$parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
+
+	// Find the path to the parent directory
+	if(!empty($parts)) {
+		$copy_of_parts = $parts;
+		array_pop($copy_of_parts);
+		if(!empty($copy_of_parts)) {
+			$parent_directory = '/' . implode('/', $copy_of_parts);
+		} else {
+			$parent_directory = '/';
+		}
+	} else {
+		$parent_directory = '';
+	}
+
+	// Initialise
+	$connection = null;
+	$sftphandle = null;
+
+	// Open a connection
+	if(!function_exists('ssh2_connect'))
+	{
+		return array(
+			'error' => AKText::_('SFTP_NO_SSH2')
+		);
+	}
+
+	$connection = ssh2_connect($host, $port);
+
+	if ($connection === false)
+	{
+		return array(
+			'error' => AKText::_('SFTP_WRONG_USER')
+		);
+	}
+
+	if(!ssh2_auth_password($connection, $username, $password))
+	{
+		return array(
+			'error' => AKText::_('SFTP_WRONG_USER')
+		);
+	}
+
+	$sftphandle = ssh2_sftp($connection);
+
+	if($sftphandle === false)
+	{
+		return array(
+			'error' => AKText::_('SFTP_NO_FTP_SUPPORT')
+		);
+	}
+
+	// Get a raw directory listing (hoping it's a UNIX server!)
+	$list = array();
+	$dir  = ltrim($dir, '/');
+
+	$handle = opendir("ssh2.sftp://$sftphandle/$dir");
+
+	if (!is_resource($handle))
+	{
+		return array(
+			'error' => AKText::_('SFTPBROWSER_ERROR_NOACCESS')
+		);
+	}
+
+	while (($entry = readdir($handle)) !== false)
+	{
+		if (!is_dir("ssh2.sftp://$sftphandle/$dir/$entry"))
+		{
+			continue;
+		}
+
+		$list[] = $entry;
+	}
+
+	closedir($handle);
+
+	if (!empty($list))
+	{
+		asort($list);
+	}
+
+	return array(
+		'error'			=> '',
+		'list'			=> $list,
+		'breadcrumbs'	=> $parts,
+		'directory'		=> $directory,
+		'parent'		=> $parent_directory
+	);
+}
+
+/**
+ * Simple function to resolve relative paths.
+ * Note that it is unable to resolve pathnames any higher than the present working directory.
+ * I.E. It doesn't know about any directory names that you don't tell it about; hence: ../../foo becomes foo.
+ *
+ * @param $filename
+ *
+ * @return string
+ */
+function resolvePath($filename)
+{
+	$filename = str_replace('//', '/', $filename);
+	$parts = explode('/', $filename);
+	$out = array();
+	foreach ($parts as $part){
+		if ($part == '.') continue;
+		if ($part == '..') {
+			array_pop($out);
+			continue;
+		}
+		$out[] = $part;
+	}
+	return implode('/', $out);
+}
+
+function createStealthURL()
+{
+	$filename = AKFactory::get('kickstart.stealth.url', '');
+	// We need an HTML file!
+	if(empty($filename)) return;
+	// Make sure it ends in .html or .htm
+	$filename = basename($filename);
+	if( (strtolower(substr($filename,-5)) != '.html') && (strtolower(substr($filename,-4)) != '.htm') ) return;
+
+	$filename_quoted = str_replace('.','\\.',$filename);
+	$rewrite_base = trim(dirname(AKFactory::get('kickstart.stealth.url', '')),'/');
+
+	// Get the IP
+	$userIP = $_SERVER['REMOTE_ADDR'];
+	$userIP = str_replace('.', '\.', $userIP);
+
+	// Get the .htaccess contents
+	$stealthHtaccess = <<<ENDHTACCESS
+RewriteEngine On
+RewriteBase /$rewrite_base
+RewriteCond %{REMOTE_HOST}		!$userIP
+RewriteCond %{REQUEST_URI}		!$filename_quoted
+RewriteCond %{REQUEST_URI}		!(\.png|\.jpg|\.gif|\.jpeg|\.bmp|\.swf|\.css|\.js)$
+RewriteRule (.*)				$filename	[R=307,L]
+
+ENDHTACCESS;
+
+	// Write the new .htaccess, removing the old one first
+	$postproc = AKFactory::getpostProc();
+	$postproc->unlink('.htaccess');
+	$tempfile = $postproc->processFilename('.htaccess');
+	@file_put_contents($tempfile, $stealthHtaccess);
+	$postproc->process();
+}
+
+/**
+ * Akeeba Kickstart
+ * A JSON-powered archive extraction tool
+ *
+ * @copyright   2010-2014 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @license     GNU GPL v2 or - at your option - any later version
+ * @package     akeebabackup
+ * @subpackage  kickstart
+ */
 
 function echoCSS() {
 	echo <<<CSS
@@ -8884,47 +9027,22 @@ CSS;
 	callExtraFeature('onExtraHeadCSS');
 }
 
-function echoTranslationStrings()
-{
-	callExtraFeature('onLoadTranslations');
-	$translation = AKText::getInstance();
-	echo $translation->asJavascript();
-}
+/**
+ * Akeeba Kickstart
+ * A JSON-powered archive extraction tool
+ *
+ * @copyright   2010-2014 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @license     GNU GPL v2 or - at your option - any later version
+ * @package     akeebabackup
+ * @subpackage  kickstart
+ */
 
-function echoPage()
+function echoHeadJavascript()
 {
-	$edition = KICKSTARTPRO ? 'Professional' : 'Core';
-	$automation = AKAutomation::getInstance();
-	$bestArchivePath = AKKickstartUtils::getBestArchivePath();
-	$filelist = AKKickstartUtils::getArchivesAsOptions($bestArchivePath);
-	?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Akeeba Kickstart <?php echo $edition?> <?php echo VERSION?></title>
-<style type="text/css" media="all" rel="stylesheet">
-<?php echoCSS();?>
-</style>
-<?php if(@file_exists('jquery.min.js')):?>
-<script type="text/javascript" src="jquery.min.js"></script>
-<?php else: ?>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<?php endif; ?>
-<?php if(@file_exists('json2.min.js')):?>
-<script type="text/javascript" src="json2.min.js"></script>
-<?php else: ?>
-<script type="text/javascript" src="//yandex.st/json2/2011-10-19/json2.min.js"></script>
-<?php endif; ?>
-<?php if(@file_exists('jquery-ui.min.js')):?>
-<script type="text/javascript" src="jquery-ui.min.js"></script>
-<?php else: ?>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-<?php endif; ?>
+?>
 <script type="text/javascript" language="javascript">
-	var akeeba_automation = <?php echo $automation->hasAutomation() ? 'true' : 'false' ?>;
 	var akeeba_debug = <?php echo defined('KSDEBUG') ? 'true' : 'false' ?>;
-    var sftp_path = '<?php echo TranslateWinPath(defined('KSROOTDIR') ? KSROOTDIR : __DIR__); ?>/';
+	var sftp_path = '<?php echo TranslateWinPath(defined('KSROOTDIR') ? KSROOTDIR : dirname(__FILE__)); ?>/';
 	var isJoomla = true;
 
 	/**
@@ -8974,29 +9092,23 @@ function echoPage()
 		// Reset the progress bar
 		setProgressBar(0);
 
-		// Do we have automation?
-		if(akeeba_automation) {
-			$('#automode').css('display','block');
-			$('#gobutton').click();
-		} else {
-			// Show warning
-			var msieVersion = getInternetExplorerVersion();
-			if((msieVersion != -1) && (msieVersion <= 8.99))
-			{
-				$('#ie7Warning').css('display','block');
-			}
-			if(!akeeba_debug) {
-				$('#preextraction').css('display','block');
-				$('#fade').css('display','block');
-			}
-
-            // Trigger change, so we avoid problems if the user refreshes the page
-            $('#kickstart\\.procengine').change();
+		// Show warning
+		var msieVersion = getInternetExplorerVersion();
+		if((msieVersion != -1) && (msieVersion <= 8.99))
+		{
+			$('#ie7Warning').css('display','block');
 		}
+		if(!akeeba_debug) {
+			$('#preextraction').css('display','block');
+			$('#fade').css('display','block');
+		}
+
+		// Trigger change, so we avoid problems if the user refreshes the page
+		$('#kickstart\\.procengine').change();
 	});
 
 	var translation = {
-	<?php echoTranslationStrings(); ?>
+		<?php echoTranslationStrings(); ?>
 	}
 
 	var akeeba_ajax_url = '<?php echo defined('KSSELFNAME') ? KSSELFNAME : basename(__FILE__); ?>';
@@ -9015,13 +9127,13 @@ function echoPage()
 	var akeeba_ftpbrowser_ssl = 0;
 	var akeeba_ftpbrowser_directory = '';
 
-    var akeeba_sftpbrowser_host = null;
-    var akeeba_sftpbrowser_port = 21;
-    var akeeba_sftpbrowser_username = null;
-    var akeeba_sftpbrowser_password = null;
-    var akeeba_sftpbrowser_pubkey = null;
-    var akeeba_sftpbrowser_privkey = null;
-    var akeeba_sftpbrowser_directory = '';
+	var akeeba_sftpbrowser_host = null;
+	var akeeba_sftpbrowser_port = 21;
+	var akeeba_sftpbrowser_username = null;
+	var akeeba_sftpbrowser_password = null;
+	var akeeba_sftpbrowser_pubkey = null;
+	var akeeba_sftpbrowser_privkey = null;
+	var akeeba_sftpbrowser_directory = '';
 
 	function translateGUI()
 	{
@@ -9044,101 +9156,101 @@ function echoPage()
 	}
 
 	function array_key_exists ( key, search ) {
-	   if (!search || (search.constructor !== Array && search.constructor !== Object)){
-	        return false;
-	    }
-	    return key in search;
+		if (!search || (search.constructor !== Array && search.constructor !== Object)){
+			return false;
+		}
+		return key in search;
 	}
 
 	function empty (mixed_var) {
-	    var key;
+		var key;
 
-	    if (mixed_var === "" ||
-	        mixed_var === 0 ||
-	        mixed_var === "0" ||
-	        mixed_var === null ||
-	        mixed_var === false ||
-	        typeof mixed_var === 'undefined'
-	    ){
-	        return true;
-	    }
+		if (mixed_var === "" ||
+			mixed_var === 0 ||
+			mixed_var === "0" ||
+			mixed_var === null ||
+			mixed_var === false ||
+			typeof mixed_var === 'undefined'
+		){
+			return true;
+		}
 
-	    if (typeof mixed_var == 'object') {
-	        for (key in mixed_var) {
-	            return false;
-	        }
-	        return true;
-	    }
+		if (typeof mixed_var == 'object') {
+			for (key in mixed_var) {
+				return false;
+			}
+			return true;
+		}
 
-	    return false;
+		return false;
 	}
 
 	function is_array (mixed_var) {
-	    var key = '';
-	    var getFuncName = function (fn) {
-	        var name = (/\W*function\s+([\w\$]+)\s*\(/).exec(fn);
-	        if (!name) {
-	            return '(Anonymous)';
-	        }
-	        return name[1];
-	    };
+		var key = '';
+		var getFuncName = function (fn) {
+			var name = (/\W*function\s+([\w\$]+)\s*\(/).exec(fn);
+			if (!name) {
+				return '(Anonymous)';
+			}
+			return name[1];
+		};
 
-	    if (!mixed_var) {
-	        return false;
-	    }
+		if (!mixed_var) {
+			return false;
+		}
 
-	    // BEGIN REDUNDANT
-	    this.php_js = this.php_js || {};
-	    this.php_js.ini = this.php_js.ini || {};
-	    // END REDUNDANT
+		// BEGIN REDUNDANT
+		this.php_js = this.php_js || {};
+		this.php_js.ini = this.php_js.ini || {};
+		// END REDUNDANT
 
-	    if (typeof mixed_var === 'object') {
+		if (typeof mixed_var === 'object') {
 
-	        if (this.php_js.ini['phpjs.objectsAsArrays'] &&  // Strict checking for being a JavaScript array (only check this way if call ini_set('phpjs.objectsAsArrays', 0) to disallow objects as arrays)
-	            (
-	            (this.php_js.ini['phpjs.objectsAsArrays'].local_value.toLowerCase &&
-	                    this.php_js.ini['phpjs.objectsAsArrays'].local_value.toLowerCase() === 'off') ||
-	                parseInt(this.php_js.ini['phpjs.objectsAsArrays'].local_value, 10) === 0)
-	            ) {
-	            return mixed_var.hasOwnProperty('length') && // Not non-enumerable because of being on parent class
-	                            !mixed_var.propertyIsEnumerable('length') && // Since is own property, if not enumerable, it must be a built-in function
-	                                getFuncName(mixed_var.constructor) !== 'String'; // exclude String()
-	        }
+			if (this.php_js.ini['phpjs.objectsAsArrays'] &&  // Strict checking for being a JavaScript array (only check this way if call ini_set('phpjs.objectsAsArrays', 0) to disallow objects as arrays)
+				(
+				(this.php_js.ini['phpjs.objectsAsArrays'].local_value.toLowerCase &&
+				this.php_js.ini['phpjs.objectsAsArrays'].local_value.toLowerCase() === 'off') ||
+				parseInt(this.php_js.ini['phpjs.objectsAsArrays'].local_value, 10) === 0)
+			) {
+				return mixed_var.hasOwnProperty('length') && // Not non-enumerable because of being on parent class
+				!mixed_var.propertyIsEnumerable('length') && // Since is own property, if not enumerable, it must be a built-in function
+				getFuncName(mixed_var.constructor) !== 'String'; // exclude String()
+			}
 
-	        if (mixed_var.hasOwnProperty) {
-	            for (key in mixed_var) {
-	                // Checks whether the object has the specified property
-	                // if not, we figure it's not an object in the sense of a php-associative-array.
-	                if (false === mixed_var.hasOwnProperty(key)) {
-	                    return false;
-	                }
-	            }
-	        }
+			if (mixed_var.hasOwnProperty) {
+				for (key in mixed_var) {
+					// Checks whether the object has the specified property
+					// if not, we figure it's not an object in the sense of a php-associative-array.
+					if (false === mixed_var.hasOwnProperty(key)) {
+						return false;
+					}
+				}
+			}
 
-	        // Read discussion at: http://kevin.vanzonneveld.net/techblog/article/javascript_equivalent_for_phps_is_array/
-	        return true;
-	    }
+			// Read discussion at: http://kevin.vanzonneveld.net/techblog/article/javascript_equivalent_for_phps_is_array/
+			return true;
+		}
 
-	    return false;
+		return false;
 	}
 
-    function resolvePath(filename)
-    {
-        filename = filename.replace('\/\/g', '\/');
-        var parts = filename.split('/');
-        var out = [];
+	function resolvePath(filename)
+	{
+		filename = filename.replace('\/\/g', '\/');
+		var parts = filename.split('/');
+		var out = [];
 
-        $.each(parts, function(i, part){
-            if (part == '.') return;
-            if (part == '..') {
-                out.pop();
-                return;
-            }
-            out.push(part);
-        });
+		$.each(parts, function(i, part){
+			if (part == '.') return;
+			if (part == '..') {
+				out.pop();
+				return;
+			}
+			out.push(part);
+		});
 
-        return out.join('/');
-    }
+		return out.join('/');
+	}
 
 	/**
 	 * Performs an AJAX request and returns the parsed JSON output.
@@ -9245,21 +9357,21 @@ function echoPage()
 			$('#ftp-options').show('fast');
 		}
 
-        if($('#kickstart\\.procengine').val() == 'sftp' )
-        {
-            $('#ftp-ssl-passive').hide('fast');
+		if($('#kickstart\\.procengine').val() == 'sftp' )
+		{
+			$('#ftp-ssl-passive').hide('fast');
 
-            if($('#kickstart\\.ftp\\.dir').val() == ''){
-                $('#kickstart\\.ftp\\.dir').val(sftp_path);
-            }
+			if($('#kickstart\\.ftp\\.dir').val() == ''){
+				$('#kickstart\\.ftp\\.dir').val(sftp_path);
+			}
 
-            $('#testFTP').html(trans('BTN_TESTSFTPCON'))
-        }
-        else
-        {
-            $('#ftp-ssl-passive').show('fast');
-            $('#testFTP').html(trans('BTN_TESTFTPCON'))
-        }
+			$('#testFTP').html(trans('BTN_TESTSFTPCON'))
+		}
+		else
+		{
+			$('#ftp-ssl-passive').show('fast');
+			$('#testFTP').html(trans('BTN_TESTFTPCON'))
+		}
 	}
 
 	function closeLightbox(event)
@@ -9319,17 +9431,17 @@ function echoPage()
 
 	function onTestFTPClick(event)
 	{
-        var type = 'ftp';
+		var type = 'ftp';
 
-        if($('#kickstart\\.procengine').val() == 'sftp')
-        {
-            type = 'sftp';
-        }
+		if($('#kickstart\\.procengine').val() == 'sftp')
+		{
+			type = 'sftp';
+		}
 
 		var data = {
 			'task' : 'checkFTP',
 			'json': JSON.stringify({
-                'type' : type,
+				'type' : type,
 				'kickstart.ftp.host':		$('#kickstart\\.ftp\\.host').val(),
 				'kickstart.ftp.port':		$('#kickstart\\.ftp\\.port').val(),
 				'kickstart.ftp.ssl':		$('#kickstart\\.ftp\\.ssl').is(':checked'),
@@ -9341,12 +9453,12 @@ function echoPage()
 			})
 		};
 		doAjax(data, function(ret){
-            if(type == 'ftp'){
-                var key = ret.status ? 'FTP_CONNECTION_OK' : 'FTP_CONNECTION_FAILURE';
-            }
-            else{
-                var key = ret.status ? 'SFTP_CONNECTION_OK' : 'SFTP_CONNECTION_FAILURE';
-            }
+			if(type == 'ftp'){
+				var key = ret.status ? 'FTP_CONNECTION_OK' : 'FTP_CONNECTION_FAILURE';
+			}
+			else{
+				var key = ret.status ? 'SFTP_CONNECTION_OK' : 'SFTP_CONNECTION_FAILURE';
+			}
 
 
 			alert( trans(key) + "\n\n" + (ret.status ? '' : ret.message) );
@@ -9355,42 +9467,42 @@ function echoPage()
 
 	function onbrowseFTP ()
 	{
-        if($('#kickstart\\.procengine').val() == 'ftp')
-        {
-            akeeba_ftpbrowser_host      = $('#kickstart\\.ftp\\.host').val();
-            akeeba_ftpbrowser_port      = $('#kickstart\\.ftp\\.port').val();
-            akeeba_ftpbrowser_username  = $('#kickstart\\.ftp\\.user').val();
-            akeeba_ftpbrowser_password  = $('#kickstart\\.ftp\\.pass').val();
-            akeeba_ftpbrowser_passive   = $('#kickstart\\.ftp\\.passive').is(':checked');
-            akeeba_ftpbrowser_ssl       = $('#kickstart\\.ftp\\.ssl').is(':checked');
-            akeeba_ftpbrowser_directory = $('#kickstart\\.ftp\\.dir').val();
+		if($('#kickstart\\.procengine').val() != 'sftp')
+		{
+			akeeba_ftpbrowser_host      = $('#kickstart\\.ftp\\.host').val();
+			akeeba_ftpbrowser_port      = $('#kickstart\\.ftp\\.port').val();
+			akeeba_ftpbrowser_username  = $('#kickstart\\.ftp\\.user').val();
+			akeeba_ftpbrowser_password  = $('#kickstart\\.ftp\\.pass').val();
+			akeeba_ftpbrowser_passive   = $('#kickstart\\.ftp\\.passive').is(':checked');
+			akeeba_ftpbrowser_ssl       = $('#kickstart\\.ftp\\.ssl').is(':checked');
+			akeeba_ftpbrowser_directory = $('#kickstart\\.ftp\\.dir').val();
 
-            var akeeba_onbrowseFTP_callback = function(path) {
-                var charlist = ('/').replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
-                var re = new RegExp('^[' + charlist + ']+', 'g');
-                path = '/' + (path+'').replace(re, '');
-                $('#kickstart\\.ftp\\.dir').val(path);
-            };
+			var akeeba_onbrowseFTP_callback = function(path) {
+				var charlist = ('/').replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
+				var re = new RegExp('^[' + charlist + ']+', 'g');
+				path = '/' + (path+'').replace(re, '');
+				$('#kickstart\\.ftp\\.dir').val(path);
+			};
 
-            akeeba_ftpbrowser_hook( akeeba_onbrowseFTP_callback );
-        }
-        else
-        {
-            akeeba_sftpbrowser_host = $('#kickstart\\.ftp\\.host').val();
-            akeeba_sftpbrowser_port = $('#kickstart\\.ftp\\.port').val();
-            akeeba_sftpbrowser_username = $('#kickstart\\.ftp\\.user').val();
-            akeeba_sftpbrowser_password = $('#kickstart\\.ftp\\.pass').val();
-            akeeba_sftpbrowser_directory = $('#kickstart\\.ftp\\.dir').val();
+			akeeba_ftpbrowser_hook( akeeba_onbrowseFTP_callback );
+		}
+		else
+		{
+			akeeba_sftpbrowser_host = $('#kickstart\\.ftp\\.host').val();
+			akeeba_sftpbrowser_port = $('#kickstart\\.ftp\\.port').val();
+			akeeba_sftpbrowser_username = $('#kickstart\\.ftp\\.user').val();
+			akeeba_sftpbrowser_password = $('#kickstart\\.ftp\\.pass').val();
+			akeeba_sftpbrowser_directory = $('#kickstart\\.ftp\\.dir').val();
 
-            var akeeba_postprocsftp_callback = function(path) {
-                var charlist = ('/').replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
-                var re = new RegExp('^[' + charlist + ']+', 'g');
-                path = '/' + (path+'').replace(re, '');
-                $('#kickstart\\.ftp\\.dir').val(path);
-            };
+			var akeeba_postprocsftp_callback = function(path) {
+				var charlist = ('/').replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
+				var re = new RegExp('^[' + charlist + ']+', 'g');
+				path = '/' + (path+'').replace(re, '');
+				$('#kickstart\\.ftp\\.dir').val(path);
+			};
 
-            akeeba_sftpbrowser_hook( akeeba_postprocsftp_callback );
-        }
+			akeeba_sftpbrowser_hook( akeeba_postprocsftp_callback );
+		}
 	}
 
 	akeeba_ftpbrowser_hook = function( callback )
@@ -9428,15 +9540,16 @@ function echoPage()
 		if(empty(akeeba_ftpbrowser_directory)) akeeba_ftpbrowser_directory = '';
 
 		var data = {
-            'task'      : 'ftpbrowse',
-            'json': JSON.stringify({
-                'host'		: akeeba_ftpbrowser_host,
-                'username'	: akeeba_ftpbrowser_username,
-                'password'	: akeeba_ftpbrowser_password,
-                'passive'	: (akeeba_ftpbrowser_passive ? 1 : 0),
-                'ssl'		: (akeeba_ftpbrowser_ssl ? 1 : 0),
-                'directory'	: akeeba_ftpbrowser_directory
-            })
+			'task'      : 'ftpbrowse',
+			'json': JSON.stringify({
+				'host'		: akeeba_ftpbrowser_host,
+				'port'		: akeeba_ftpbrowser_port,
+				'username'	: akeeba_ftpbrowser_username,
+				'password'	: akeeba_ftpbrowser_password,
+				'passive'	: (akeeba_ftpbrowser_passive ? 1 : 0),
+				'ssl'		: (akeeba_ftpbrowser_ssl ? 1 : 0),
+				'directory'	: akeeba_ftpbrowser_directory
+			})
 		};
 
 		// Do AJAX call and Render results
@@ -9536,147 +9649,147 @@ function echoPage()
 		li.appendTo('#ak_crumbs');
 	}
 
-    // FTP browser function
-    akeeba_sftpbrowser_hook = function( callback )
-    {
-        var sftp_dialog_element = $("#ftpdialog");
-        var sftp_callback = function() {
-            callback(akeeba_sftpbrowser_directory);
-            sftp_dialog_element.dialog("close");
-        };
+	// FTP browser function
+	akeeba_sftpbrowser_hook = function( callback )
+	{
+		var sftp_dialog_element = $("#ftpdialog");
+		var sftp_callback = function() {
+			callback(akeeba_sftpbrowser_directory);
+			sftp_dialog_element.dialog("close");
+		};
 
-        sftp_dialog_element.css('display','block');
-        sftp_dialog_element.removeClass('ui-state-error');
-        sftp_dialog_element.dialog({
-            autoOpen	: false,
-            'title'		: trans('CONFIG_UI_SFTPBROWSER_TITLE'),
-            draggable	: false,
-            height		: 500,
-            width		: 500,
-            modal		: true,
-            resizable	: false,
-            buttons		: {
-                "OK": sftp_callback,
-                "Cancel": function() {
-                    sftp_dialog_element.dialog("close");
-                }
-            }
-        });
+		sftp_dialog_element.css('display','block');
+		sftp_dialog_element.removeClass('ui-state-error');
+		sftp_dialog_element.dialog({
+			autoOpen	: false,
+			'title'		: trans('CONFIG_UI_SFTPBROWSER_TITLE'),
+			draggable	: false,
+			height		: 500,
+			width		: 500,
+			modal		: true,
+			resizable	: false,
+			buttons		: {
+				"OK": sftp_callback,
+				"Cancel": function() {
+					sftp_dialog_element.dialog("close");
+				}
+			}
+		});
 
-        $('#ftpBrowserErrorContainer').css('display','none');
-        $('#ftpBrowserFolderList').html('');
-        $('#ak_crumbs').html('');
+		$('#ftpBrowserErrorContainer').css('display','none');
+		$('#ftpBrowserFolderList').html('');
+		$('#ak_crumbs').html('');
 
-        sftp_dialog_element.dialog('open');
+		sftp_dialog_element.dialog('open');
 
-        if(empty(akeeba_sftpbrowser_directory)) akeeba_sftpbrowser_directory = '';
+		if(empty(akeeba_sftpbrowser_directory)) akeeba_sftpbrowser_directory = '';
 
-        var data = {
-            'task'      : 'sftpbrowse',
-            'json': JSON.stringify({
-                'host'		: akeeba_sftpbrowser_host,
-                'port'		: akeeba_sftpbrowser_port,
-                'username'	: akeeba_sftpbrowser_username,
-                'password'	: akeeba_sftpbrowser_password,
-                'directory'	: akeeba_sftpbrowser_directory
-            })
-        };
+		var data = {
+			'task'      : 'sftpbrowse',
+			'json': JSON.stringify({
+				'host'		: akeeba_sftpbrowser_host,
+				'port'		: akeeba_sftpbrowser_port,
+				'username'	: akeeba_sftpbrowser_username,
+				'password'	: akeeba_sftpbrowser_password,
+				'directory'	: akeeba_sftpbrowser_directory
+			})
+		};
 
-        doAjax(
-            data,
-            function(data) {
-                if(data.error != false) {
-                    // An error occured
-                    $('#ftpBrowserError').html(data.error);
-                    $('#ftpBrowserErrorContainer').css('display','block');
-                    $('#ftpBrowserFolderList').css('display','none');
-                    $('#ak_crumbs').css('display','none');
-                } else {
-                    // Create the interface
-                    $('#ftpBrowserErrorContainer').css('display','none');
+		doAjax(
+			data,
+			function(data) {
+				if(data.error != false) {
+					// An error occured
+					$('#ftpBrowserError').html(data.error);
+					$('#ftpBrowserErrorContainer').css('display','block');
+					$('#ftpBrowserFolderList').css('display','none');
+					$('#ak_crumbs').css('display','none');
+				} else {
+					// Create the interface
+					$('#ftpBrowserErrorContainer').css('display','none');
 
-                    // Display the crumbs
-                    if(!empty(data.breadcrumbs)) {
-                        $('#ak_crumbs').css('display','block');
-                        $('#ak_crumbs').html('');
-                        var relativePath = '/';
+					// Display the crumbs
+					if(!empty(data.breadcrumbs)) {
+						$('#ak_crumbs').css('display','block');
+						$('#ak_crumbs').html('');
+						var relativePath = '/';
 
-                        akeeba_sftpbrowser_addcrumb(trans('UI-ROOT'), '/', callback);
+						akeeba_sftpbrowser_addcrumb(trans('UI-ROOT'), '/', callback);
 
-                        $.each(data.breadcrumbs, function(i, crumb) {
-                            relativePath += '/'+crumb;
+						$.each(data.breadcrumbs, function(i, crumb) {
+							relativePath += '/'+crumb;
 
-                            akeeba_sftpbrowser_addcrumb(crumb, relativePath, callback);
-                        });
-                    } else {
-                        $('#ftpBrowserCrumbs').css('display','none');
-                    }
+							akeeba_sftpbrowser_addcrumb(crumb, relativePath, callback);
+						});
+					} else {
+						$('#ftpBrowserCrumbs').css('display','none');
+					}
 
-                    // Display the list of directories
-                    if(!empty(data.list)) {
-                        $('#ftpBrowserFolderList').css('display','block');
+					// Display the list of directories
+					if(!empty(data.list)) {
+						$('#ftpBrowserFolderList').css('display','block');
 
-                        $.each(data.list, function(i, item) {
-                            akeeba_sftpbrowser_create_link(akeeba_sftpbrowser_directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
-                        });
-                    } else {
-                        $('#ftpBrowserFolderList').css('display','none');
-                    }
-                }
-            },
-            function(message) {
-                $('#ftpBrowserError').html(message);
-                $('#ftpBrowserErrorContainer').css('display','block');
-                $('#ftpBrowserFolderList').css('display','none');
-                $('#ftpBrowserCrumbs').css('display','none');
-            }
-        );
-    };
+						$.each(data.list, function(i, item) {
+							akeeba_sftpbrowser_create_link(akeeba_sftpbrowser_directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
+						});
+					} else {
+						$('#ftpBrowserFolderList').css('display','none');
+					}
+				}
+			},
+			function(message) {
+				$('#ftpBrowserError').html(message);
+				$('#ftpBrowserErrorContainer').css('display','block');
+				$('#ftpBrowserFolderList').css('display','none');
+				$('#ftpBrowserCrumbs').css('display','none');
+			}
+		);
+	};
 
-    /**
-     * Creates a directory link for the SFTP browser UI
-     */
-    function akeeba_sftpbrowser_create_link(path, label, container, callback)
-    {
-        var row = $(document.createElement('tr'));
-        var cell = $(document.createElement('td')).appendTo(row);
+	/**
+	 * Creates a directory link for the SFTP browser UI
+	 */
+	function akeeba_sftpbrowser_create_link(path, label, container, callback)
+	{
+		var row = $(document.createElement('tr'));
+		var cell = $(document.createElement('td')).appendTo(row);
 
-        var myElement = $(document.createElement('a'))
-            .text(label)
-            .click(function(){
-                akeeba_sftpbrowser_directory = resolvePath(path);
-                akeeba_sftpbrowser_hook(callback);
-            })
-            .appendTo(cell);
-        row.appendTo($(container));
-    }
+		var myElement = $(document.createElement('a'))
+			.text(label)
+			.click(function(){
+				akeeba_sftpbrowser_directory = resolvePath(path);
+				akeeba_sftpbrowser_hook(callback);
+			})
+			.appendTo(cell);
+		row.appendTo($(container));
+	}
 
-    /**
-     * Adds a breadcrumb to the SFTP browser
-     */
-    function akeeba_sftpbrowser_addcrumb(crumb, relativePath, callback, last)
-    {
-        if(empty(last)) last = false;
-        var li = $(document.createElement('li'));
+	/**
+	 * Adds a breadcrumb to the SFTP browser
+	 */
+	function akeeba_sftpbrowser_addcrumb(crumb, relativePath, callback, last)
+	{
+		if(empty(last)) last = false;
+		var li = $(document.createElement('li'));
 
-        $(document.createElement('a'))
-            .html(crumb)
-            .click(function(e){
-                akeeba_sftpbrowser_directory = relativePath;
-                akeeba_sftpbrowser_hook(callback);
-                e.preventDefault();
-            })
-            .appendTo(li);
+		$(document.createElement('a'))
+			.html(crumb)
+			.click(function(e){
+				akeeba_sftpbrowser_directory = relativePath;
+				akeeba_sftpbrowser_hook(callback);
+				e.preventDefault();
+			})
+			.appendTo(li);
 
-        if(!last) {
-            $(document.createElement('span'))
-                .text('/')
-                .addClass('divider')
-                .appendTo(li);
-        }
+		if(!last) {
+			$(document.createElement('span'))
+				.text('/')
+				.addClass('divider')
+				.appendTo(li);
+		}
 
-        li.appendTo('#ak_crumbs');
-    }
+		li.appendTo('#ak_crumbs');
+	}
 
 	function onStartExtraction()
 	{
@@ -9690,8 +9803,6 @@ function echoPage()
 		var data = {
 			'task' : 'startExtracting',
 			'json': JSON.stringify({
-<?php if(!$automation->hasAutomation()): ?>
-				'kickstart.setup.sourcepath':		$('#kickstart\\.setup\\.sourcepath').val(),
 				'kickstart.setup.sourcefile':		$('#kickstart\\.setup\\.sourcefile').val(),
 				'kickstart.jps.password':			$('#kickstart\\.jps\\.password').val(),
 				'kickstart.tuning.min_exec_time':	$('#kickstart\\.tuning\\.min_exec_time').val(),
@@ -9713,29 +9824,6 @@ function echoPage()
 				'kickstart.ftp.pass':				$('#kickstart\\.ftp\\.pass').val(),
 				'kickstart.ftp.dir':				$('#kickstart\\.ftp\\.dir').val(),
 				'kickstart.ftp.tempdir':			$('#kickstart\\.ftp\\.tempdir').val()
-<?php else: ?>
-				'kickstart.setup.sourcepath':		$('#kickstart\\.setup\\.sourcepath').val(),
-				'kickstart.setup.sourcefile':		<?php echo autoVar('kickstart.setup.sourcefile') ?>,
-				'kickstart.jps.password':			<?php echo autoVar('kickstart.jps.password') ?>,
-				'kickstart.tuning.min_exec_time':	<?php echo autoVar('kickstart.tuning.min_exec_time', 1) ?>,
-				'kickstart.tuning.max_exec_time':	<?php echo autoVar('kickstart.tuning.max_exec_time', 5) ?>,
-				'kickstart.stealth.enable': 		false,
-				'kickstart.tuning.run_time_bias':	75,
-				'kickstart.setup.restoreperms':		0,
-				'kickstart.setup.dryrun':			0,
-				'kickstart.setup.ignoreerrors':		<?php echo autoVar('kickstart.setup.ignoreerrors', 0) ?>,
-				'kickstart.enabled':				1,
-				'kickstart.security.password':		'',
-				'kickstart.procengine':				<?php echo autoVar('kickstart.procengine', 'direct') ?>,
-				'kickstart.ftp.host':				<?php echo autoVar('kickstart.ftp.host','localhost') ?>,
-				'kickstart.ftp.port':				<?php echo autoVar('kickstart.ftp.port',22) ?>,
-				'kickstart.ftp.ssl':				<?php echo autoVar('kickstart.ftp.ssl',0) ?>,
-				'kickstart.ftp.passive':			<?php echo autoVar('kickstart.ftp.passive',1) ?>,
-				'kickstart.ftp.user':				<?php echo autoVar('kickstart.ftp.user') ?>,
-				'kickstart.ftp.pass':				<?php echo autoVar('kickstart.ftp.pass') ?>,
-				'kickstart.ftp.dir':				<?php echo autoVar('kickstart.ftp.dir','/') ?>,
-				'kickstart.ftp.tempdir':			<?php echo autoVar('kickstart.ftp.tempdir', AKKickstartUtils::getPath().'kicktemp') ?>
-<?php endif; ?>
 			})
 		};
 		doAjax(data, function(ret){
@@ -9758,7 +9846,7 @@ function echoPage()
 			$.each(data.Warnings, function(i, item){
 				$('#warnings').append(
 					$(document.createElement('div'))
-					.html(item)
+						.html(item)
 				);
 				$('#warningsBox').show('fast');
 			});
@@ -9817,7 +9905,6 @@ function echoPage()
 			$('#extractionComplete').show('fast');
 
 			$('#runInstaller').css('display','inline-block');
-			if(akeeba_automation) $('#runInstaller').click();
 		}
 	}
 
@@ -9915,13 +10002,13 @@ function echoPage()
 		var i = 0,
 			x = 0,
 			compare = 0,
-			// vm maps textual PHP versions to negatives so they're less than 0.
-			// PHP currently defines these as CASE-SENSITIVE. It is important to
-			// leave these as negatives so that they can come before numerical versions
-			// and as if no letters were there to begin with.
-			// (1alpha is < 1 and < 1.1 but > 1dev1)
-			// If a non-numerical value can't be mapped to this table, it receives
-			// -7 as its value.
+		// vm maps textual PHP versions to negatives so they're less than 0.
+		// PHP currently defines these as CASE-SENSITIVE. It is important to
+		// leave these as negatives so that they can come before numerical versions
+		// and as if no letters were there to begin with.
+		// (1alpha is < 1 and < 1.1 but > 1dev1)
+		// If a non-numerical value can't be mapped to this table, it receives
+		// -7 as its value.
 			vm = {
 				'dev': -6,
 				'alpha': -5,
@@ -9934,24 +10021,24 @@ function echoPage()
 				'p': -1,
 				'pl': -1
 			},
-			// This function will be called to prepare each version argument.
-			// It replaces every _, -, and + with a dot.
-			// It surrounds any nonsequence of numbers/dots with dots.
-			// It replaces sequences of dots with a single dot.
-			//    version_compare('4..0', '4.0') == 0
-			// Important: A string of 0 length needs to be converted into a value
-			// even less than an unexisting value in vm (-7), hence [-8].
-			// It's also important to not strip spaces because of this.
-			//   version_compare('', ' ') == 1
+		// This function will be called to prepare each version argument.
+		// It replaces every _, -, and + with a dot.
+		// It surrounds any nonsequence of numbers/dots with dots.
+		// It replaces sequences of dots with a single dot.
+		//    version_compare('4..0', '4.0') == 0
+		// Important: A string of 0 length needs to be converted into a value
+		// even less than an unexisting value in vm (-7), hence [-8].
+		// It's also important to not strip spaces because of this.
+		//   version_compare('', ' ') == 1
 			prepVersion = function (v) {
 				v = ('' + v).replace(/[_\-+]/g, '.');
 				v = v.replace(/([^.\d]+)/g, '.$1.').replace(/\.{2,}/g, '.');
 				return (!v.length ? [-8] : v.split('.'));
 			},
-			// This converts a version component to a number.
-			// Empty component becomes 0.
-			// Non-numerical component becomes a negative number.
-			// Numerical component becomes itself as an integer.
+		// This converts a version component to a number.
+		// Empty component becomes 0.
+		// Non-numerical component becomes a negative number.
+		// Numerical component becomes itself as an integer.
 			numVersion = function (v) {
 				return !v ? 0 : (isNaN(v) ? vm[v] || -7 : parseInt(v, 10));
 			};
@@ -9980,29 +10067,29 @@ function echoPage()
 		// "No operator" seems to be treated as less than
 		// Any other values seem to make the function return null.
 		switch (operator) {
-		case '>':
-		case 'gt':
-			return (compare > 0);
-		case '>=':
-		case 'ge':
-			return (compare >= 0);
-		case '<=':
-		case 'le':
-			return (compare <= 0);
-		case '==':
-		case '=':
-		case 'eq':
-			return (compare === 0);
-		case '<>':
-		case '!=':
-		case 'ne':
-			return (compare !== 0);
-		case '':
-		case '<':
-		case 'lt':
-			return (compare < 0);
-		default:
-			return null;
+			case '>':
+			case 'gt':
+				return (compare > 0);
+			case '>=':
+			case 'ge':
+				return (compare >= 0);
+			case '<=':
+			case 'le':
+				return (compare <= 0);
+			case '==':
+			case '=':
+			case 'eq':
+				return (compare === 0);
+			case '<>':
+			case '!=':
+			case 'ne':
+				return (compare !== 0);
+			case '':
+			case '<':
+			case 'lt':
+				return (compare < 0);
+			default:
+				return null;
 		}
 	}
 
@@ -10013,11 +10100,11 @@ function echoPage()
 			type: "GET",
 			url: 'http://query.yahooapis.com/v1/public/yql',
 			data: {
-<?php if(KICKSTARTPRO): ?>
+				<?php if(KICKSTARTPRO): ?>
 				q: 'SELECT * FROM xml WHERE url="http://nocdn.akeebabackup.com/updates/kickstart.xml"',
-<?php else: ?>
+				<?php else: ?>
 				q: 'SELECT * FROM xml WHERE url="http://nocdn.akeebabackup.com/updates/kickstartpro.xml"',
-<?php endif; ?>
+				<?php endif; ?>
 				format: 'json',
 				callback: 'updatesCallback'
 			},
@@ -10056,52 +10143,102 @@ function echoPage()
 	}
 
 	<?php callExtraFeature('onExtraHeadJavascript'); ?>
-	</script>
-</head>
-<body>
+</script>
+<?php
+}
 
-<div id="automode" style="display:none;">
-	AUTOMODEON
-</div>
+/**
+ * Akeeba Kickstart
+ * A JSON-powered archive extraction tool
+ *
+ * @copyright   2010-2014 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @license     GNU GPL v2 or - at your option - any later version
+ * @package     akeebabackup
+ * @subpackage  kickstart
+ */
 
-<div id="fade" class="black_overlay"></div>
+function echoTranslationStrings()
+{
+	callExtraFeature('onLoadTranslations');
+	$translation = AKText::getInstance();
+	echo $translation->asJavascript();
+}
 
-<div id="page-container">
+function echoPage()
+{
+	$edition = KICKSTARTPRO ? 'Professional' : 'Core';
+	$bestArchivePath = AKKickstartUtils::getBestArchivePath();
+	$filelist = AKKickstartUtils::getArchivesAsOptions($bestArchivePath);
+	?>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Akeeba Kickstart <?php echo $edition?> <?php echo VERSION?></title>
+	<style type="text/css" media="all" rel="stylesheet">
+		<?php echoCSS();?>
+	</style>
+	<?php if(@file_exists('jquery.min.js')):?>
+		<script type="text/javascript" src="jquery.min.js"></script>
+	<?php else: ?>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<?php endif; ?>
+	<?php if(@file_exists('json2.min.js')):?>
+		<script type="text/javascript" src="json2.min.js"></script>
+	<?php else: ?>
+		<script type="text/javascript" src="//yandex.st/json2/2011-10-19/json2.min.js"></script>
+	<?php endif; ?>
+	<?php if(@file_exists('jquery-ui.min.js')):?>
+		<script type="text/javascript" src="jquery-ui.min.js"></script>
+	<?php else: ?>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+	<?php endif; ?>
+	<?php echoHeadJavascript(); ?>
+	</head>
+	<body>
 
-<div id="preextraction" class="white_content">
-	<div id="ie7Warning" style="display:none;">
-		<h2>Deprecated Internet Explorer version</h2>
-		<p>
-			This script is not guaranteed to work properly on Internet Explorer 8
-			or previous version, or on Internet Explorer 9 and higher running
-			in compatibility mode.
-		</p>
-		<p>
-			Please use Internet Explorer 9 or later in native mode (the
-			&quot;broken page&quot; icon next to the address bar should not be
-			enabled). Alternatively, you may use the latest versions of Firefox,
-			Safari, Google Chrome or Opera.
-		</p>
+	<div id="automode" style="display:none;">
+		AUTOMODEON
 	</div>
 
-	<h2>THINGS_HEADER</h2>
-	<ol>
-		<li>THINGS_01</li>
-		<li>THINGS_02</li>
-		<li>THINGS_03</li>
-		<li>THINGS_04</li>
-		<li>THINGS_05</li>
-		<li>THINGS_06</li>
-		<li>THINGS_07</li>
-		<li>THINGS_08</li>
-		<li>THINGS_09</li>
-	</ol>
-	<a href="javascript:void(0)" onclick="closeLightbox();">CLOSE_LIGHTBOX</a>
-</div>
+	<div id="fade" class="black_overlay"></div>
 
-<div id="genericerror" class="white_content">
-	<pre id="genericerrorInner"></pre>
-</div>
+	<div id="page-container">
+
+	<div id="preextraction" class="white_content">
+		<div id="ie7Warning" style="display:none;">
+			<h2>Deprecated Internet Explorer version</h2>
+			<p>
+				This script is not guaranteed to work properly on Internet Explorer 8
+				or previous version, or on Internet Explorer 9 and higher running
+				in compatibility mode.
+			</p>
+			<p>
+				Please use Internet Explorer 9 or later in native mode (the
+				&quot;broken page&quot; icon next to the address bar should not be
+				enabled). Alternatively, you may use the latest versions of Firefox,
+				Safari, Google Chrome or Opera.
+			</p>
+		</div>
+
+		<h2>THINGS_HEADER</h2>
+		<ol>
+			<li>THINGS_01</li>
+			<li>THINGS_02</li>
+			<li>THINGS_03</li>
+			<li>THINGS_04</li>
+			<li>THINGS_05</li>
+			<li>THINGS_06</li>
+			<li>THINGS_07</li>
+			<li>THINGS_08</li>
+			<li>THINGS_09</li>
+		</ol>
+		<a href="javascript:void(0)" onclick="closeLightbox();">CLOSE_LIGHTBOX</a>
+	</div>
+
+	<div id="genericerror" class="white_content">
+		<pre id="genericerrorInner"></pre>
+	</div>
 
 	<div id="header">
 		<div class="title">Akeeba Kickstart <?php echo $edition?> ##VERSION##</div>
@@ -10116,52 +10253,52 @@ function echoPage()
 		</p>
 	</div>
 
-<div id="page1">
-	<?php callExtraFeature('onPage1'); ?>
+	<div id="page1">
+		<?php callExtraFeature('onPage1'); ?>
 
-	<div id="page1-content">
+		<div id="page1-content">
 
-	<div class="helpme">
-		<span>NEEDSOMEHELPKS</span> <a href="https://www.akeebabackup.com/documentation/quick-start-guide/using-kickstart.html" target="_blank">QUICKSTART</a>
-	</div>
+			<div class="helpme">
+				<span>NEEDSOMEHELPKS</span> <a href="https://www.akeebabackup.com/documentation/quick-start-guide/using-kickstart.html" target="_blank">QUICKSTART</a>
+			</div>
 
-	<div class="step1">
-		<div class="circle">1</div>
-		<h2>SELECT_ARCHIVE</h2>
-		<div class="area-container">
-			<?php callExtraFeature('onPage1Step1'); ?>
-			<div class="clr"></div>
+			<div class="step1">
+				<div class="circle">1</div>
+				<h2>SELECT_ARCHIVE</h2>
+				<div class="area-container">
+					<?php callExtraFeature('onPage1Step1'); ?>
+					<div class="clr"></div>
 
-			<label for="kickstart.setup.sourcepath">ARCHIVE_DIRECTORY</label>
+					<label for="kickstart.setup.sourcepath">ARCHIVE_DIRECTORY</label>
 			<span class="field">
 				<input type="text" id="kickstart.setup.sourcepath" value="<?php echo htmlentities($bestArchivePath); ?>" />
 				<span class="button" id="reloadArchives" style="margin-top:0;margin-bottom:0">RELOAD_ARCHIVES</span>
 			</span>
-			<br/>
+					<br/>
 
-			<label for="kickstart.setup.sourcefile">ARCHIVE_FILE</label>
+					<label for="kickstart.setup.sourcefile">ARCHIVE_FILE</label>
 			<span class="field" id="sourcefileContainer">
 				<?php if(!empty($filelist)):?>
 					<select id="kickstart.setup.sourcefile">
-					<?php echo $filelist; ?>
+						<?php echo $filelist; ?>
 					</select>
 				<?php else:?>
 					<a href="https://www.akeebabackup.com/documentation/troubleshooter/ksnoarchives.html" target="_blank">NOARCHIVESCLICKHERE</a>
 				<?php endif;?>
 			</span>
-			<br />
-			<label for="kickstart.jps.password">JPS_PASSWORD</label>
-			<span class="field"><input type="password" id="kickstart.jps.password" value="" /></span>
-		</div>
-	</div>
+					<br />
+					<label for="kickstart.jps.password">JPS_PASSWORD</label>
+					<span class="field"><input type="password" id="kickstart.jps.password" value="" /></span>
+				</div>
+			</div>
 
-	<div class="clr"></div>
+			<div class="clr"></div>
 
-	<div class="step2">
-		<div class="circle">2</div>
-		<h2>SELECT_EXTRACTION</h2>
-		<div class="area-container">
-			<label for="kickstart.procengine">WRITE_TO_FILES</label>
+			<div class="step2">
+				<div class="circle">2</div>
+				<h2>SELECT_EXTRACTION</h2>
+				<div class="area-container">
+					<label for="kickstart.procengine">WRITE_TO_FILES</label>
 			<span class="field">
 				<select id="kickstart.procengine">
 					<option value="hybrid">WRITE_HYBRID</option>
@@ -10171,191 +10308,166 @@ function echoPage()
 				</select>
 			</span><br/>
 
-			<label for="kickstart.setup.ignoreerrors">IGNORE_MOST_ERRORS</label>
-			<span class="field"><input type="checkbox" id="kickstart.setup.ignoreerrors" /></span>
+					<label for="kickstart.setup.ignoreerrors">IGNORE_MOST_ERRORS</label>
+					<span class="field"><input type="checkbox" id="kickstart.setup.ignoreerrors" /></span>
 
-			<div id="ftp-options">
-				<label for="kickstart.ftp.host">FTP_HOST</label>
-				<span class="field"><input type="text" id="kickstart.ftp.host" value="localhost" /></span><br />
-				<label for="kickstart.ftp.port">FTP_PORT</label>
-				<span class="field"><input type="text" id="kickstart.ftp.port" value="21" /></span><br />
-                <div id="ftp-ssl-passive">
-                    <label for="kickstart.ftp.ssl">FTP_FTPS</label>
-                    <span class="field"><input type="checkbox" id="kickstart.ftp.ssl" /></span><br />
-                    <label for="kickstart.ftp.passive">FTP_PASSIVE</label>
-                    <span class="field"><input type="checkbox" id="kickstart.ftp.passive" checked="checked" /></span><br />
-                </div>
-				<label for="kickstart.ftp.user">FTP_USER</label>
-				<span class="field"><input type="text" id="kickstart.ftp.user" value="" /></span><br />
-				<label for="kickstart.ftp.pass">FTP_PASS</label>
-				<span	class="field"><input type="password" id="kickstart.ftp.pass" value="" /></span><br />
-				<label for="kickstart.ftp.dir">FTP_DIR</label>
+					<div id="ftp-options">
+						<label for="kickstart.ftp.host">FTP_HOST</label>
+						<span class="field"><input type="text" id="kickstart.ftp.host" value="localhost" /></span><br />
+						<label for="kickstart.ftp.port">FTP_PORT</label>
+						<span class="field"><input type="text" id="kickstart.ftp.port" value="21" /></span><br />
+						<div id="ftp-ssl-passive">
+							<label for="kickstart.ftp.ssl">FTP_FTPS</label>
+							<span class="field"><input type="checkbox" id="kickstart.ftp.ssl" /></span><br />
+							<label for="kickstart.ftp.passive">FTP_PASSIVE</label>
+							<span class="field"><input type="checkbox" id="kickstart.ftp.passive" checked="checked" /></span><br />
+						</div>
+						<label for="kickstart.ftp.user">FTP_USER</label>
+						<span class="field"><input type="text" id="kickstart.ftp.user" value="" /></span><br />
+						<label for="kickstart.ftp.pass">FTP_PASS</label>
+						<span	class="field"><input type="password" id="kickstart.ftp.pass" value="" /></span><br />
+						<label for="kickstart.ftp.dir">FTP_DIR</label>
 				<span class="field">
                     <input type="text" id="kickstart.ftp.dir" value="" />
                     <span class="button" id="browseFTP" style="margin-top:0;margin-bottom:0">FTP_BROWSE</span>
                 </span><br />
 
-				<label for="kickstart.ftp.tempdir">FTP_TEMPDIR</label>
+						<label for="kickstart.ftp.tempdir">FTP_TEMPDIR</label>
 				<span class="field">
 					<input type="text" id="kickstart.ftp.tempdir" value="<?php echo htmlentities(AKKickstartUtils::getPath()) ?>" />
 					<span class="button" id="checkFTPTempDir">BTN_CHECK</span>
 					<span class="button" id="resetFTPTempDir">BTN_RESET</span>
 				</span><br />
-				<label></label>
-				<span class="button" id="testFTP">BTN_TESTFTPCON</span>
-				<a id="notWorking" class="button" href="https://www.akeebabackup.com/documentation/troubleshooter/kscantextract.html" target="_blank">CANTGETITTOWORK</a>
-				<br />
+						<label></label>
+						<span class="button" id="testFTP">BTN_TESTFTPCON</span>
+						<a id="notWorking" class="button" href="https://www.akeebabackup.com/documentation/troubleshooter/kscantextract.html" target="_blank">CANTGETITTOWORK</a>
+						<br />
+					</div>
+
+				</div>
 			</div>
 
+			<div class="clr"></div>
+
+			<div class="step3">
+				<div class="circle">3</div>
+				<h2>FINE_TUNE</h2>
+				<div class="area-container">
+					<label for="kickstart.tuning.min_exec_time">MIN_EXEC_TIME</label>
+					<span class="field"><input type="text" id="kickstart.tuning.min_exec_time" value="1" /></span> <span>SECONDS_PER_STEP</span><br />
+					<label for="kickstart.tuning.max_exec_time">MAX_EXEC_TIME</label>
+					<span class="field"><input type="text" id="kickstart.tuning.max_exec_time" value="5" /></span> <span>SECONDS_PER_STEP</span><br />
+
+					<label for="kickstart.stealth.enable">STEALTH_MODE</label>
+					<span class="field"><input type="checkbox" id="kickstart.stealth.enable" /></span><br />
+					<label for="kickstart.stealth.url">STEALTH_URL</label>
+					<span class="field"><input type="text" id="kickstart.stealth.url" value="" /></span><br />
+				</div>
+			</div>
+
+			<div class="clr"></div>
+
+			<div class="step4">
+				<div class="circle">4</div>
+				<h2>EXTRACT_FILES</h2>
+				<div class="area-container">
+					<span></span>
+					<span id="gobutton" class="button">BTN_START</span>
+				</div>
+			</div>
+
+			<div class="clr"></div>
+
 		</div>
-	</div>
 
-	<div class="clr"></div>
-
-	<div class="step3">
-		<div class="circle">3</div>
-		<h2>FINE_TUNE</h2>
-		<div class="area-container">
-			<label for="kickstart.tuning.min_exec_time">MIN_EXEC_TIME</label>
-			<span class="field"><input type="text" id="kickstart.tuning.min_exec_time" value="1" /></span> <span>SECONDS_PER_STEP</span><br />
-			<label for="kickstart.tuning.max_exec_time">MAX_EXEC_TIME</label>
-			<span class="field"><input type="text" id="kickstart.tuning.max_exec_time" value="5" /></span> <span>SECONDS_PER_STEP</span><br />
-
-			<label for="kickstart.stealth.enable">STEALTH_MODE</label>
-			<span class="field"><input type="checkbox" id="kickstart.stealth.enable" /></span><br />
-			<label for="kickstart.stealth.url">STEALTH_URL</label>
-			<span class="field"><input type="text" id="kickstart.stealth.url" value="" /></span><br />
-		</div>
-	</div>
-
-	<div class="clr"></div>
-
-	<div class="step4">
-		<div class="circle">4</div>
-		<h2>EXTRACT_FILES</h2>
-		<div class="area-container">
-			<span></span>
-			<span id="gobutton" class="button">BTN_START</span>
-		</div>
-	</div>
-
-	<div class="clr"></div>
-
-	</div>
-
-	<div id="ftpdialog" style="display:none;">
-		<p class="instructions alert alert-info">FTPBROWSER_LBL_INSTRUCTIONS</p>
-		<div class="error alert alert-error" id="ftpBrowserErrorContainer">
-			<h3>FTPBROWSER_LBL_ERROR</h3>
-			<p id="ftpBrowserError"></p>
-		</div>
-		<ul id="ak_crumbs" class="breadcrumb"></ul>
-		<div class="row-fluid">
-			<div class="span12">
-				<table id="ftpBrowserFolderList" class="table table-striped">
-				</table>
+		<div id="ftpdialog" style="display:none;">
+			<p class="instructions alert alert-info">FTPBROWSER_LBL_INSTRUCTIONS</p>
+			<div class="error alert alert-error" id="ftpBrowserErrorContainer">
+				<h3>FTPBROWSER_LBL_ERROR</h3>
+				<p id="ftpBrowserError"></p>
+			</div>
+			<ul id="ak_crumbs" class="breadcrumb"></ul>
+			<div class="row-fluid">
+				<div class="span12">
+					<table id="ftpBrowserFolderList" class="table table-striped">
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<div id="page2">
-	<div id="page2a">
-		<div class="circle">5</div>
-		<h2>EXTRACTING</h2>
-		<div class="area-container">
-			<div id="warn-not-close">DO_NOT_CLOSE_EXTRACT</div>
-			<div id="progressbar">
-				<div id="progressbar-inner">&nbsp;</div>
+	<div id="page2">
+		<div id="page2a">
+			<div class="circle">5</div>
+			<h2>EXTRACTING</h2>
+			<div class="area-container">
+				<div id="warn-not-close">DO_NOT_CLOSE_EXTRACT</div>
+				<div id="progressbar">
+					<div id="progressbar-inner">&nbsp;</div>
+				</div>
+				<div id="currentFile"></div>
 			</div>
-			<div id="currentFile"></div>
+		</div>
+
+		<div id="extractionComplete" style="display: none">
+			<div class="circle">6</div>
+			<h2>RESTACLEANUP</h2>
+			<div id="runInstaller" class="button">BTN_RUNINSTALLER</div>
+			<div id="runCleanup" class="button" style="display:none">BTN_CLEANUP</div>
+			<div id="gotoSite" class="button" style="display:none">BTN_SITEFE</div>
+			<div id="gotoAdministrator" class="button" style="display:none">BTN_SITEBE</div>
+			<div id="gotoPostRestorationRroubleshooting" style="display:none">
+				<a href="https://www.akeebabackup.com/documentation/troubleshooter/post-restoration.html" target="_blank">POSTRESTORATIONTROUBLESHOOTING</a>
+			</div>
+		</div>
+
+		<div id="warningsBox" style="display: none;">
+			<div id="warningsHeader">
+				<h2>WARNINGS</h2>
+			</div>
+			<div id="warningsContainer">
+				<div id="warnings"></div>
+			</div>
+		</div>
+
+		<div id="error" style="display: none;">
+			<h3>ERROR_OCCURED</h3>
+			<p id="errorMessage"></p>
+			<div id="gotoStart" class="button">BTN_GOTOSTART</div>
+			<div>
+				<a href="https://www.akeebabackup.com/documentation/troubleshooter/kscantextract.html" target="_blank">CANTGETITTOWORK</a>
+			</div>
 		</div>
 	</div>
 
-	<div id="extractionComplete" style="display: none">
-		<div class="circle">6</div>
-		<h2>RESTACLEANUP</h2>
-		<div id="runInstaller" class="button">BTN_RUNINSTALLER</div>
-		<div id="runCleanup" class="button" style="display:none">BTN_CLEANUP</div>
-		<div id="gotoSite" class="button" style="display:none">BTN_SITEFE</div>
-		<div id="gotoAdministrator" class="button" style="display:none">BTN_SITEBE</div>
-		<div id="gotoPostRestorationRroubleshooting" style="display:none">
-			<a href="https://www.akeebabackup.com/documentation/troubleshooter/post-restoration.html" target="_blank">POSTRESTORATIONTROUBLESHOOTING</a>
+	<div id="footer">
+		<div class="copyright">Copyright &copy; 2008&ndash;2013 <a	href="http://www.akeebabackup.com">Nicholas K.
+				Dionysopoulos / Akeeba Backup</a>. All legal rights reserved.<br />
+
+			This program is free software: you can redistribute it and/or modify it under the terms of
+			the <a href="http://www.gnu.org/gpl-3.htmlhttp://www.gnu.org/copyleft/gpl.html">GNU General
+				Public License</a> as published by the Free Software Foundation, either version 3 of the License,
+			or (at your option) any later version.<br />
+			Design credits: <a href="http://internet-inspired.com/">Internet Inspired</a>, slightly modified by AkeebaBackup.com
 		</div>
 	</div>
 
-	<div id="warningsBox" style="display: none;">
-		<div id="warningsHeader">
-			<h2>WARNINGS</h2>
-		</div>
-		<div id="warningsContainer">
-		<div id="warnings"></div>
-		</div>
 	</div>
 
-	<div id="error" style="display: none;">
-		<h3>ERROR_OCCURED</h3>
-		<p id="errorMessage"></p>
-		<div id="gotoStart" class="button">BTN_GOTOSTART</div>
-		<div>
-			<a href="https://www.akeebabackup.com/documentation/troubleshooter/kscantextract.html" target="_blank">CANTGETITTOWORK</a>
-		</div>
-	</div>
-</div>
-
-<div id="footer">
-	<div class="copyright">Copyright &copy; 2008&ndash;2013 <a	href="http://www.akeebabackup.com">Nicholas K.
-		Dionysopoulos / Akeeba Backup</a>. All legal rights reserved.<br />
-
-		This program is free software: you can redistribute it and/or modify it under the terms of
-		the <a href="http://www.gnu.org/gpl-3.htmlhttp://www.gnu.org/copyleft/gpl.html">GNU General
-		Public License</a> as published by the Free Software Foundation, either version 3 of the License,
-		or (at your option) any later version.<br />
-		Design credits: <a href="http://internet-inspired.com/">Internet Inspired</a>, slightly modified by AkeebaBackup.com
-	</div>
-</div>
-
-</div>
-
-</body>
-</html>
-	<?php
+	</body>
+	</html>
+<?php
 }
 
-function createStealthURL()
-{
-	$filename = AKFactory::get('kickstart.stealth.url', '');
-	// We need an HTML file!
-	if(empty($filename)) return;
-	// Make sure it ends in .html or .htm
-	$filename = basename($filename);
-	if( (strtolower(substr($filename,-5)) != '.html') && (strtolower(substr($filename,-4)) != '.htm') ) return;
-
-	$filename_quoted = str_replace('.','\\.',$filename);
-	$rewrite_base = trim(dirname(AKFactory::get('kickstart.stealth.url', '')),'/');
-
-	// Get the IP
-	$userIP = $_SERVER['REMOTE_ADDR'];
-	$userIP = str_replace('.', '\.', $userIP);
-
-	// Get the .htaccess contents
-	$stealthHtaccess = <<<ENDHTACCESS
-RewriteEngine On
-RewriteBase /$rewrite_base
-RewriteCond %{REMOTE_HOST}		!$userIP
-RewriteCond %{REQUEST_URI}		!$filename_quoted
-RewriteCond %{REQUEST_URI}		!(\.png|\.jpg|\.gif|\.jpeg|\.bmp|\.swf|\.css|\.js)$
-RewriteRule (.*)				$filename	[R=307,L]
-
-ENDHTACCESS;
-
-	// Write the new .htaccess, removing the old one first
-	$postproc = AKFactory::getpostProc();
-	$postproc->unlink('.htaccess');
-	$tempfile = $postproc->processFilename('.htaccess');
-	@file_put_contents($tempfile, $stealthHtaccess);
-	$postproc->process();
-}
+/**
+ * Akeeba Kickstart
+ * A JSON-powered archive extraction tool
+ *
+ * @copyright   2010-2014 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @license     GNU GPL v2 or - at your option - any later version
+ * @package     akeebabackup
+ * @subpackage  kickstart
+ */
 
 // Register additional feature classes
 callExtraFeature();
@@ -10558,13 +10670,10 @@ switch($task)
 			}
 		}
 
-		// 6. Delete abiautomation.ini
-		$engine->unlink('abiautomation.ini');
-
-		// 7. Delete cacert.pem
+		// 6. Delete cacert.pem
 		$engine->unlink('cacert.pem');
 
-		// 8. Delete jquery.min.js and json2.min.js
+		// 7. Delete jquery.min.js and json2.min.js
 		$engine->unlink('jquery.min.js');
 		$engine->unlink('json2.min.js');
 
@@ -10572,7 +10681,6 @@ switch($task)
 
 	case 'display':
 		$ajax = false;
-		$automation = AKAutomation::getInstance();
 		echoPage();
 		break;
 
@@ -10661,228 +10769,6 @@ if($ajax)
 
 	// Return the message
 	echo "###$json###";
-}
-
-/**
- * FTP Functions
- */
-function getListing($directory, $host, $port, $username, $password, $passive, $ssl)
-{
-    $directory = resolvePath($directory);
-    $dir       = $directory;
-
-    // Parse directory to parts
-    $parsed_dir = trim($dir,'/');
-    $parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
-
-    // Find the path to the parent directory
-    if(!empty($parts)) {
-        $copy_of_parts = $parts;
-        array_pop($copy_of_parts);
-        if(!empty($copy_of_parts)) {
-            $parent_directory = '/' . implode('/', $copy_of_parts);
-        } else {
-            $parent_directory = '/';
-        }
-    } else {
-        $parent_directory = '';
-    }
-
-    // Connect to the server
-    if($ssl) {
-        $con = @ftp_ssl_connect($host, $port);
-    } else {
-        $con = @ftp_connect($host, $port);
-    }
-    if($con === false) {
-        return array(
-            'error' => 'FTPBROWSER_ERROR_HOSTNAME'
-        );
-    }
-
-    // Login
-    $result = @ftp_login($con, $username, $password);
-    if($result === false) {
-        return array(
-            'error' => 'FTPBROWSER_ERROR_USERPASS'
-        );
-    }
-
-    // Set the passive mode -- don't care if it fails, though!
-    @ftp_pasv($con, $passive);
-
-    // Try to chdir to the specified directory
-    if(!empty($dir)) {
-        $result = @ftp_chdir($con, $dir);
-        if($result === false) {
-            return array(
-                'error' => 'FTPBROWSER_ERROR_NOACCESS'
-            );
-        }
-    }
-
-    // Get a raw directory listing (hoping it's a UNIX server!)
-    $list = @ftp_rawlist($con,'.');
-    ftp_close($con);
-
-    if($list === false) {
-        return array(
-            'error' => 'FTPBROWSER_ERROR_UNSUPPORTED'
-        );
-    }
-
-    // Parse the raw listing into an array
-    $folders = parse_rawlist($list);
-
-    return array(
-        'error'			=> '',
-        'list'			=> $folders,
-        'breadcrumbs'	=> $parts,
-        'directory'		=> $directory,
-        'parent'		=> $parent_directory
-    );
-}
-
-function parse_rawlist($list)
-{
-    $folders = array();
-    foreach($list as $v)
-    {
-        $info = array();
-        $vinfo = preg_split("/[\s]+/", $v, 9);
-        if ($vinfo[0] !== "total") {
-            $perms = $vinfo[0];
-            if(substr($perms,0,1) == 'd') {
-                $folders[] = $vinfo[8];
-            }
-        }
-    }
-
-    asort($folders);
-    return $folders;
-}
-
-function getSftpListing($directory, $host, $port, $username, $password)
-{
-    $directory = resolvePath($directory);
-    $dir       = $directory;
-
-    // Parse directory to parts
-    $parsed_dir = trim($dir,'/');
-    $parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
-
-    // Find the path to the parent directory
-    if(!empty($parts)) {
-        $copy_of_parts = $parts;
-        array_pop($copy_of_parts);
-        if(!empty($copy_of_parts)) {
-            $parent_directory = '/' . implode('/', $copy_of_parts);
-        } else {
-            $parent_directory = '/';
-        }
-    } else {
-        $parent_directory = '';
-    }
-
-    // Initialise
-    $connection = null;
-    $sftphandle = null;
-
-    // Open a connection
-    if(!function_exists('ssh2_connect'))
-    {
-        return array(
-            'error' => AKText::_('SFTP_NO_SSH2')
-        );
-    }
-
-    $connection = ssh2_connect($host, $port);
-
-    if ($connection === false)
-    {
-        return array(
-            'error' => AKText::_('SFTP_WRONG_USER')
-        );
-    }
-
-    if(!ssh2_auth_password($connection, $username, $password))
-    {
-        return array(
-            'error' => AKText::_('SFTP_WRONG_USER')
-        );
-    }
-
-    $sftphandle = ssh2_sftp($connection);
-
-    if($sftphandle === false)
-    {
-        return array(
-            'error' => AKText::_('SFTP_NO_FTP_SUPPORT')
-        );
-    }
-
-    // Get a raw directory listing (hoping it's a UNIX server!)
-    $list = array();
-    $dir  = ltrim($dir, '/');
-
-    $handle = opendir("ssh2.sftp://$sftphandle/$dir");
-
-    if (!is_resource($handle))
-    {
-        return array(
-            'error' => AKText::_('SFTPBROWSER_ERROR_NOACCESS')
-        );
-    }
-
-    while (($entry = readdir($handle)) !== false)
-    {
-        if (!is_dir("ssh2.sftp://$sftphandle/$dir/$entry"))
-        {
-            continue;
-        }
-
-        $list[] = $entry;
-    }
-
-    closedir($handle);
-
-    if (!empty($list))
-    {
-        asort($list);
-    }
-
-    return array(
-        'error'			=> '',
-        'list'			=> $list,
-        'breadcrumbs'	=> $parts,
-        'directory'		=> $directory,
-        'parent'		=> $parent_directory
-    );
-}
-
-/**
- * Simple function to resolve relative paths.
- * Note that it is unable to resolve pathnames any higher than the present working directory.
- * I.E. It doesn't know about any directory names that you don't tell it about; hence: ../../foo becomes foo.
- *
- * @param $filename
- *
- * @return string
- */
-function resolvePath($filename)
-{
-    $filename = str_replace('//', '/', $filename);
-    $parts = explode('/', $filename);
-    $out = array();
-    foreach ($parts as $part){
-        if ($part == '.') continue;
-        if ($part == '..') {
-            array_pop($out);
-            continue;
-        }
-        $out[] = $part;
-    }
-    return implode('/', $out);
 }
 
 /**

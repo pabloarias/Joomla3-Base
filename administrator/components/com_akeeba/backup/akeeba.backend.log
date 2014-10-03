@@ -18498,3 +18498,30 @@ DEBUG   |140915 06:29:05|
 DEBUG   |140915 06:29:15|Kettenrad :: Attempting to load from database (backend) [backend]
 DEBUG   |140915 06:29:15| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
 DEBUG   |140915 06:29:16|
+DEBUG   |140915 06:42:23|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |140915 06:42:23| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |140915 06:42:23|
+DEBUG   |140915 06:44:10|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |140915 06:44:10| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |140915 06:44:10|
+DEBUG   |140915 06:44:26|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |140915 06:44:26| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |140915 06:44:26|
+DEBUG   |140915 06:44:33|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |140915 06:44:33| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |140915 06:44:34|
+DEBUG   |140915 06:44:39|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |140915 06:44:39| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |140915 06:44:39|
+DEBUG   |140915 06:46:15|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |140915 06:46:15| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |140915 06:46:15|
+DEBUG   |140915 06:46:26|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |140915 06:46:26| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |140915 06:46:26|
+DEBUG   |141004 00:20:06|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |141004 00:20:06| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |141004 00:20:06|
+DEBUG   |141004 00:20:13|Kettenrad :: Attempting to load from database (backend) [backend]
+DEBUG   |141004 00:20:13| -- Stored Akeeba Factory (backend) [backend] not found - hard reset
+DEBUG   |141004 00:20:13|

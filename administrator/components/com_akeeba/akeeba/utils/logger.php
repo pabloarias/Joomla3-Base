@@ -19,32 +19,40 @@ class AEUtilLogger
 	/** @var string Full path to log file. You can change it at will. */
 	public static $logName = null;
 
+    protected static $oldLog = null;
+    protected static $configuredLoglevel;
+    protected static $site_root_untranslated;
+    protected static $site_root;
+    protected static $fp = null;
+
 	/**
 	 * Clears the logfile
+     *
+     * @param   string  $tag    Backup origin
 	 */
-	static function ResetLog($tag)
+	public static function ResetLog($tag)
 	{
-		$oldLogName = AEUtilLogger::$logName;
-		AEUtilLogger::$logName = AEUtilLogger::logName($tag);
-		$defaultLog = self::logName(null);
+		$oldLogName = static::$logName;
+		static::$logName = static::logName($tag);
+		$defaultLog = static::logName(null);
 
 		// Close the file if it's open
-		if ($oldLogName == AEUtilLogger::$logName)
+		if ($oldLogName == static::$logName)
 		{
-			self::WriteLog(null);
+			static::WriteLog(null);
 		}
 
 		// Remove any old log file
-		@unlink(AEUtilLogger::$logName);
+		@unlink(static::$logName);
 
 		if (!empty($tag))
 		{
 			// Rename the default log (if it exists) to the new name
-			@rename($defaultLog, AEUtilLogger::$logName);
+			@rename($defaultLog, static::$logName);
 		}
 
 		// Touch the log file
-		$fp = @fopen(AEUtilLogger::$logName, 'w');
+		$fp = @fopen(static::$logName, 'w');
 		if ($fp !== false)
 		{
 			@fclose($fp);
@@ -56,8 +64,8 @@ class AEUtilLogger
 			@unlink($defaultLog);
 		}
 
-		@chmod(AEUtilLogger::$logName, 0666);
-		self::WriteLog(true, '');
+		@chmod(static::$logName, 0666);
+		static::WriteLog(true, '');
 	}
 
 	/**
@@ -66,56 +74,51 @@ class AEUtilLogger
 	 * @param int|bool $level   The log level (_AE_LOG_XX constants). Use FALSE to pause logging, TRUE to resume logging
 	 * @param string   $message The message to write to the log
 	 */
-	static function WriteLog($level, $message = '')
+	public static function WriteLog($level, $message = '')
 	{
-		static $oldLog = null;
-		static $configuredLoglevel;
-		static $site_root_untranslated;
-		static $site_root;
-		static $fp = null;
-
 		// Make sure we have a log name
-		if (empty(self::$logName))
+		if (empty(static::$logName))
 		{
-			self::$logName = self::logName();
+			static::$logName = static::logName();
 		}
 
 		// Check for log name changes
-		if (is_null($oldLog))
+		if (is_null(static::$oldLog))
 		{
-			$oldLog = self::$logName;
+            static::$oldLog = static::$logName;
 		}
-		elseif ($oldLog != self::$logName)
+		elseif (static::$oldLog != static::$logName)
 		{
 			// The log file changed. Close the old log.
-			if (is_resource($fp))
+			if (is_resource(static::$fp))
 			{
-				@fclose($fp);
+				@fclose(static::$fp);
 			}
-			$fp = null;
+
+            static::$fp = null;
 		}
 
 		// Close the log file if the level is set to NULL
-		if (is_null($level) && !is_null($fp))
+		if (is_null($level) && !is_null(static::$fp))
 		{
-			@fclose($fp);
-			$fp = null;
+			@fclose(static::$fp);
+            static::$fp = null;
 
 			return;
 		}
 
-		if (empty($site_root) || empty($site_root_untranslated))
+		if (empty(static::$site_root) || empty(static::$site_root_untranslated))
 		{
-			$site_root_untranslated = AEPlatform::getInstance()->get_site_root();
-			$site_root = AEUtilFilesystem::TranslateWinPath($site_root_untranslated);
+            static::$site_root_untranslated = AEPlatform::getInstance()->get_site_root();
+            static::$site_root = AEUtilFilesystem::TranslateWinPath(static::$site_root_untranslated);
 		}
 
-		if (empty($configuredLoglevel) or ($level === true))
+		if (empty(static::$configuredLoglevel) or ($level === true))
 		{
 			// Load the registry and fetch log level
 			$registry = AEFactory::getConfiguration();
-			$configuredLoglevel = $registry->get('akeeba.basic.log_level');
-			$configuredLoglevel = $configuredLoglevel * 1;
+            static::$configuredLoglevel = $registry->get('akeeba.basic.log_level');
+            static::$configuredLoglevel = static::$configuredLoglevel * 1;
 
 			return;
 		}
@@ -123,26 +126,28 @@ class AEUtilLogger
 		if ($level === false)
 		{
 			// Pause logging
-			$configuredLogLevel = false;
+            static::$configuredLoglevel = false;
 
 			return;
 		}
 
 		// Catch paused logging
-		if ($configuredLoglevel === false)
+		if (static::$configuredLoglevel === false)
 		{
 			return;
 		}
 
-		if (($configuredLoglevel >= $level) && ($configuredLoglevel != 0))
+		if ((static::$configuredLoglevel >= $level) && (static::$configuredLoglevel != 0))
 		{
 			if (!defined('AKEEBADEBUG'))
 			{
-				$message = str_replace($site_root_untranslated, "<root>", $message);
-				$message = str_replace($site_root, "<root>", $message);
+				$message = str_replace(static::$site_root_untranslated, "<root>", $message);
+				$message = str_replace(static::$site_root, "<root>", $message);
 			}
+
 			$message = str_replace("\n", ' \n ', $message);
-			switch ($level)
+
+            switch ($level)
 			{
 				case _AE_LOG_ERROR:
 					$string = "ERROR   |";
@@ -157,21 +162,22 @@ class AEUtilLogger
 					$string = "DEBUG   |";
 					break;
 			}
+
 			$string .= @strftime("%y%m%d %H:%M:%S") . "|$message\r\n";
 
-			if (is_null($fp))
+			if (is_null(static::$fp))
 			{
-				$fp = @fopen(AEUtilLogger::$logName, "a");
+                static::$fp = @fopen(static::$logName, "a");
 			}
 
-			if (!($fp === false))
+			if (!(static::$fp === false))
 			{
-				$result = @fwrite($fp, $string);
+				$result = @fwrite(static::$fp, $string);
 				if ($result === false)
 				{
 					// Try harder with the file pointer, will ya?
-					$fp = @fopen(AEUtilLogger::$logName, "a");
-					$result = @fwrite($fp, $string);
+                    static::$fp = @fopen(static::$logName, "a");
+					$result = @fwrite(static::$fp, $string);
 				}
 			}
 		}
@@ -204,13 +210,13 @@ class AEUtilLogger
 
 	public static function closeLog()
 	{
-		self::WriteLog(null, null);
+		static::WriteLog(null, null);
 	}
 
 	public static function openLog($tag = null)
 	{
-		AEUtilLogger::$logName = AEUtilLogger::logName($tag);
-		@touch(AEUtilLogger::$logName);
+        static::$logName = static::logName($tag);
+		@touch(static::$logName);
 	}
 }
 

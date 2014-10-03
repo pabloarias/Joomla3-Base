@@ -1,4 +1,18 @@
 <?php die();?>
+Akeeba Backup 4.0.5
+================================================================================
+# [HIGH] The integrated restoration is broken after the last security update
+
+Akeeba Backup 4.0.4
+================================================================================
+! [SECURITY: Medium] Possibility of arbitrary file writing while a backup archive is being extracted by the integrated restoration feature
+
+Akeeba Backup 4.0.3
+================================================================================
++ Warn the user if the post-processing engine requires cURL extension and it's not enabled
+! Backup failure on certain Windows hosts and PHP versions due to the way these versions handle file pointers
+! Failure to post-process part files immediately on certain Windows hosts and PHP versions due to the way these versions handle file pointers
+
 Akeeba Backup 4.0.2
 ================================================================================
 ! Dangling file pointer causing backup failure on certain Windows hosts

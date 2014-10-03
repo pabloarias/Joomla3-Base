@@ -16,6 +16,9 @@ defined('AKEEBAENGINE') or die();
  */
 class AEUtilScripting
 {
+    protected static $scripting = null;
+    protected static $script    = null;
+
 	/**
 	 * Loads the scripting.ini and returns an array with the domains, the scripts and
 	 * the raw data
@@ -23,9 +26,7 @@ class AEUtilScripting
 	 */
 	public static function loadScripting()
 	{
-		static $scripting = null;
-
-		if (empty($scripting))
+		if (empty(static::$scripting))
 		{
 			$ds = DIRECTORY_SEPARATOR;
 			$ini_file_name = AEFactory::getAkeebaRoot() . $ds . 'core' . $ds . 'scripting.ini';
@@ -55,7 +56,7 @@ class AEUtilScripting
 					$scripts[$key] = $record;
 				}
 
-				$scripting = array(
+				static::$scripting = array(
 					'domains' => $domains,
 					'scripts' => $scripts,
 					'data'    => $raw_data
@@ -63,11 +64,11 @@ class AEUtilScripting
 			}
 			else
 			{
-				$scripting = array();
+                static::$scripting = array();
 			}
 		}
 
-		return $scripting;
+		return static::$scripting;
 	}
 
 	/**
@@ -75,7 +76,7 @@ class AEUtilScripting
 	 */
 	public static function importScriptingToRegistry()
 	{
-		$scripting = self::loadScripting();
+		$scripting = static::loadScripting();
 		$configuration = AEFactory::getConfiguration();
 		$configuration->mergeArray($scripting['data'], false);
 	}
@@ -90,16 +91,14 @@ class AEUtilScripting
 	 */
 	public static function getScriptingParameter($key, $default = null)
 	{
-		static $script = null;
-
 		$configuration = AEFactory::getConfiguration();
 
-		if (is_null($script))
+		if (is_null(static::$script))
 		{
-			$script = $configuration->get('akeeba.basic.backup_type', 'full');
+			static::$script = $configuration->get('akeeba.basic.backup_type', 'full');
 		}
 
-		return $configuration->get('volatile.scripting.' . $script . '.' . $key, $default);
+		return $configuration->get('volatile.scripting.' . static::$script . '.' . $key, $default);
 	}
 
 	/**
@@ -113,7 +112,7 @@ class AEUtilScripting
 		$configuration = AEFactory::getConfiguration();
 		$script = $configuration->get('akeeba.basic.backup_type', 'full');
 
-		$scripting = self::loadScripting();
+		$scripting = static::loadScripting();
 		$domains = $scripting['domains'];
 		$keys = $scripting['scripts'][$script]['chain'];
 

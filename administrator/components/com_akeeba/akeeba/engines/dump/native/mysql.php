@@ -1593,7 +1593,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			{
 				// Nope, let's assume the table name ends in the next blank character
 				$pos = strpos($restOfQuery, ' ', 1);
-				$tableName = substr($restOfQuery, 1, $pos - 1);
+				$tableName = substr($restOfQuery, 0, $pos);
 			}
 
 			unset($restOfQuery);
@@ -1619,7 +1619,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			{
 				// Nope, let's assume the table name ends in the next blank character
 				$pos = strpos($restOfQuery, ' ', 1);
-				$tableName = substr($restOfQuery, 1, $pos - 1);
+				$tableName = substr($restOfQuery, 0, $pos);
 			}
 
 			unset($restOfQuery);
@@ -1645,7 +1645,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			{
 				// Nope, let's assume the entity name ends in the next blank character
 				$pos = strpos($restOfQuery, ' ', 1);
-				$entity_name = substr($restOfQuery, 1, $pos - 1);
+				$entity_name = substr($restOfQuery, 0, $pos);
 			}
 
 			unset($restOfQuery);
@@ -1671,7 +1671,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			{
 				// Nope, let's assume the entity name ends in the next blank character
 				$pos = strpos($restOfQuery, ' ', 1);
-				$entity_name = substr($restOfQuery, 1, $pos - 1);
+				$entity_name = substr($restOfQuery, 0, $pos);
 			}
 
 			unset($restOfQuery);
@@ -1698,7 +1698,7 @@ class AEDumpNativeMysql extends AEAbstractDump
 			{
 				// Nope, let's assume the entity name ends in the next blank character
 				$pos = strpos($restOfQuery, ' ', 1);
-				$entity_name = substr($restOfQuery, 1, $pos - 1);
+				$entity_name = substr($restOfQuery, 0, $pos);
 			}
 
 			unset($restOfQuery);

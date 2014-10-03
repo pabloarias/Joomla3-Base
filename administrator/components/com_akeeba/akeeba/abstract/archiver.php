@@ -54,6 +54,7 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/**
 	 * Common code which gets called on instance creation or wake-up (unserialization)
 	 *
+     * @codeCoverageIgnore
 	 * @return  void
 	 */
 	protected function __bootstrap_code()
@@ -70,6 +71,7 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/**
 	 * Public constructor
 	 *
+     * @codeCoverageIgnore
 	 * @return  AEAbstractArchiver
 	 */
 	public function __construct()
@@ -80,6 +82,7 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/**
 	 * Wakeup (unserialization) function
 	 *
+     * @codeCoverageIgnore
 	 * @return  void
 	 */
 	final public function __wakeup()
@@ -90,6 +93,7 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/**
 	 * Release file pointers when the object is being serialized
 	 *
+     * @codeCoverageIgnore
 	 * @return  void
 	 */
 	public function _onSerialize()
@@ -104,6 +108,7 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/**
 	 * Release file pointers when the object is being destroyed
 	 *
+     * @codeCoverageIgnore
 	 * @return  void
 	 */
 	public function __destruct()
@@ -118,9 +123,10 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	 *
 	 * @param   string  $error  The error message
 	 *
+     * @codeCoverageIgnore
 	 * @return  void
 	 *
-	 * @see  AEAbstractObject#setError($error)
+	 * @see  AEAbstractObject::setError($error)
 	 */
 	public function setError($error)
 	{
@@ -133,9 +139,10 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	 *
 	 * @param   string  $warning  The warning message
 	 *
+     * @codeCoverageIgnore
 	 * @return  void
 	 *
-	 * @see  AEAbstractObject#setWarning($warning)
+	 * @see  AEAbstractObject::setWarning($warning)
 	 */
 	public function setWarning($warning)
 	{
@@ -157,6 +164,7 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 		$aComment = str_replace("\n", " ", $aComment); // Replace newlines with spaces
 		$aComment = str_replace("<br>", "\n", $aComment); // Replace HTML4 <br> with single newlines
 		$aComment = str_replace("<br/>", "\n", $aComment); // Replace HTML4 <br> with single newlines
+		$aComment = str_replace("<br />", "\n", $aComment); // Replace HTML <br /> with single newlines
 		$aComment = str_replace("</p>", "\n\n", $aComment); // Replace paragraph endings with double newlines
 		$aComment = str_replace("<b>", "*", $aComment); // Replace bold with star notation
 		$aComment = str_replace("</b>", "*", $aComment); // Replace bold with star notation
@@ -184,11 +192,13 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 			return false;
 		}
 
+        // @codeCoverageIgnoreStart
 		if (function_exists('mb_internal_encoding'))
 		{
 			$mb_encoding = mb_internal_encoding();
 			mb_internal_encoding('ISO-8859-1');
 		}
+        // @codeCoverageIgnoreEnd
 
 		foreach ($fileList as $file)
 		{
@@ -201,10 +211,12 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 			 * /**/
 		}
 
+        // @codeCoverageIgnoreStart
 		if (function_exists('mb_internal_encoding'))
 		{
 			mb_internal_encoding($mb_encoding);
 		}
+        // @codeCoverageIgnoreEnd
 
 		return true;
 	}
@@ -560,6 +572,8 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	 *
 	 * Copied verbatim from pclZip library
 	 *
+     * @codeCoverageIgnore
+     *
 	 * @param   string  $p_dir   Source tree
 	 * @param   string  $p_path  Check if this is part of $p_dir
 	 *
@@ -644,6 +658,8 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	 * of the class. It actually extracts the source JPA in memory and instructs the
 	 * class to include each extracted file.
 	 *
+     * @codeCoverageIgnore
+     *
 	 * @param   integer  $index  The index in the source JPA archive's list currently in use
 	 * @param   integer  $offset The source JPA archive's offset to use
 	 *
@@ -843,6 +859,8 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	 * "skip"     => if this is not a file, just skip it...
 	 * "done"     => No more files left in archive
 	 *
+     * @codeCoverageIgnore
+     *
 	 * @param   integer  $offset  The absolute data offset from archive's header
 	 *
 	 * @return  array  See description for more information
@@ -945,6 +963,8 @@ abstract class AEAbstractArchiver extends AEAbstractObject
 	/**
 	 * Skips over the JPA header entry and returns the offset file data starts from
 	 *
+     * @codeCoverageIgnore
+     *
 	 * @return  boolean|integer  False on failure, offset otherwise
 	 */
 	private final function _xformReadHeader()

@@ -40,10 +40,12 @@ class AEUtilTempvars
 		self::$storageEngine = $engine;
 	}
 
-	/**
-	 * Returns the fully qualified path to the storage file
-	 * @return unknown_type
-	 */
+    /**
+     * Returns the fully qualified path to the storage file
+     * @param   string  $tag
+     *
+     * @return string
+     */
 	static public function get_storage_filename($tag = null)
 	{
 		static $basepath = null;
@@ -69,10 +71,12 @@ class AEUtilTempvars
 		}
 	}
 
-	/**
-	 * Resets the storage. This method removes all stored values.
-	 * @return    bool    True on success
-	 */
+    /**
+     * Resets the storage. This method removes all stored values.
+     * @param   null    $tag
+     *
+     * @return    bool    True on success
+     */
 	public static function reset($tag = null)
 	{
 		switch (self::getStorageEngine())

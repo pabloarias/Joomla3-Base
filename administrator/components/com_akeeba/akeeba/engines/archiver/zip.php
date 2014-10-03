@@ -1312,8 +1312,23 @@ class AEArchiverZip extends AEAbstractArchiver
 
 	private function _createNewPart($finalPart = false)
 	{
+		// Close any open file pointers
+		if (is_resource($this->fp))
+		{
+			$this->_fclose($this->fp);
+		}
+
+		if (is_resource($this->cdfp))
+		{
+			$this->_fclose($this->cdfp);
+		}
+
 		// Remove the just finished part from the list of resumable offsets
 		$this->_removeFromOffsetsList($this->_dataFileName);
+
+		// Set the file pointers to null
+		$this->fp = null;
+		$this->cdfp = null;
 
 		// Push the previous part if we have to post-process it immediately
 		$configuration = AEFactory::getConfiguration();
