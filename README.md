@@ -14,11 +14,11 @@ Archivos a eliminar antes del despliegue en producción:
 - readme.md
 
 Paquetes incluidos:
-- Joomla 3.3.3
-- Idioma español 3.3.3.1
+- Joomla 3.3.6
+- Idioma español 3.3.4.1
 - Editor JCE 2.4.3 + traducción al español
 - Xmap 2.3.4
-- Akeeba Backup 4.0.2 + traducción al español
+- Akeeba Backup 4.0.5 + traducción al español
 - Title Manager 3.0
 
 Contenidos incluidos:
