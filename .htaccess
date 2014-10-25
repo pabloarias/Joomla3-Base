@@ -45,6 +45,14 @@ RewriteRule .* index.php [F]
 # www redirect (or vice versa), place that code here. Ensure those
 # redirects use the correct RewriteRule syntax and the [R=301,L] flags.
 #
+# redirect www to no-www
+#RewriteCond %{HTTP_HOST} ^www\.(.+) [NC]
+#RewriteRule ^(.*) http://%1/$1 [R=301,NE,L]
+#
+#redirect no-www to www
+#RewriteCond %{HTTP_HOST} ^(?!www\.)(.+) [NC]
+#RewriteRule ^(.*) http://www.%1/$1 [R=301,NE,L]
+#
 ## End - Custom redirects
 
 ##
