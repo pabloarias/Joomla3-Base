@@ -7,17 +7,19 @@
  */
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+
 $data = $this->item->getData();
 if(substr($data['configuration'], 0, 12) == '###AES128###') {
 	// Load the server key file if necessary
 	JLoader::import('joomla.filesystem.file');
 	if(!defined('AKEEBA_SERVERKEY')) {
-		$filename = JPATH_COMPONENT_ADMINISTRATOR.'/akeeba/serverkey.php';
+		$filename = JPATH_COMPONENT_ADMINISTRATOR.'/engine/serverkey.php';
 		include_once $filename;
 	}
-	$key = AEUtilSecuresettings::getKey();
+	$key = Factory::getSecureSettings()->getKey();
 
-	$data['configuration'] = AEUtilSecuresettings::decryptSettings($data['configuration'], $key);
+	$data['configuration'] = Factory::getSecureSettings()->decryptSettings($data['configuration'], $key);
 }
 
 $defaultName = $this->input->get('view', 'joomla', 'cmd');

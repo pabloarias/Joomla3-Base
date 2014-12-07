@@ -9,6 +9,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 class AkeebaViewBackup extends F0FViewHtml
 {
 	/**
@@ -59,10 +62,10 @@ class AkeebaViewBackup extends F0FViewHtml
 		$this->isSTW = $isSTW;
 
 		// Get the domain details from scripting facility
-		$registry = AEFactory::getConfiguration();
+		$registry = Factory::getConfiguration();
 		$tag = $model->getState('tag');
 		$script = ($tag == 'restorepoint') ? 'full' : $registry->get('akeeba.basic.backup_type','full');
-		$scripting = AEUtilScripting::loadScripting();
+		$scripting = Factory::getEngineParamsProvider()->loadScripting();
 		$domains = array();
 		if(!empty($scripting)) foreach( $scripting['scripts'][$script]['chain'] as $domain )
 		{
@@ -80,7 +83,7 @@ class AkeebaViewBackup extends F0FViewHtml
 		$bias = $registry->get('akeeba.tuning.run_time_bias',75);
 
 		// Check if the output directory is writable
-		$quirks = AEUtilQuirks::get_quirks();
+		$quirks = Factory::getConfigurationChecks()->getDetailedStatus();
 		$unwritableOutput = array_key_exists('001', $quirks);
 
 		// Pass on data

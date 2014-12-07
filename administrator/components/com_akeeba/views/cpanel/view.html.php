@@ -9,6 +9,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * Akeeba Backup Control Panel view class
  *
@@ -32,7 +35,7 @@ class AkeebaViewCpanel extends F0FViewHtml
 		$schemaok = true;
 		$this->schemaok = $schemaok;
 
-		$aeconfig = AEFactory::getConfiguration();
+		$aeconfig = Factory::getConfiguration();
 
 		if($schemaok) {
 			// Load the helper classes

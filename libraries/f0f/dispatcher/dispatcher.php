@@ -247,6 +247,11 @@ class F0FDispatcher extends F0FUtilsObject
 		$this->input->set('option', $this->component);
 		$this->input->set('view', $this->view);
 		$this->input->set('layout', $this->layout);
+
+		if (array_key_exists('authTimeStep', $config))
+		{
+			$this->fofAuth_timeStep = empty($config['authTimeStep']) ? 6 : $config['authTimeStep'];
+		}
 	}
 
     /**

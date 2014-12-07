@@ -7,6 +7,9 @@
  * @since 2.1
  */
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
@@ -25,7 +28,7 @@ class AkeebaViewLight extends F0FViewHtml
 	{
 		$this->setLayout('step');
 
-		$kettenrad = AEFactory::getKettenrad();
+		$kettenrad = Factory::getKettenrad();
 		$array = $kettenrad->getStatusArray();
 
 		$model = $this->getModel();

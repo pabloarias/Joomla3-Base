@@ -41,6 +41,11 @@ $step = ($array['HasRun'] == 1) ? 'done' : 'step';
 </head>
 <body>
 <h1><?php echo JText::_('LIGHT_HEADER');?></h1>
+<hr/>
+<p>
+	<?php echo JText::_('COM_AKEEBA_DEPRECATED_FEATURE'); ?>
+</p>
+<hr/>
 <form action="index.php" method="post" name="adminForm" id="adminForm">
 <input type="hidden" name="option" value="com_akeeba" />
 <input type="hidden" name="view" value="light" />

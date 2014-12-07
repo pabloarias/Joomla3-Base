@@ -16,14 +16,39 @@ if (version_compare(JVERSION, '3.0', 'gt'))
 	JHtml::_('formbehavior.chosen', 'select');
 }
 
-$configurl = base64_encode(JURI::base().'index.php?option=com_akeeba&view=config');
+$configurl = base64_encode(JUri::base().'index.php?option=com_akeeba&view=config');
 $token = JFactory::getSession()->getFormToken();
 ?>
+<?php if (version_compare(JVERSION, '3.0', 'ge')): ?>
+	<script type="text/javascript">
+		Joomla.orderTable = function ()
+		{
+			table = document.getElementById("sortTable");
+			direction = document.getElementById("directionTable");
+			order = table.options[table.selectedIndex].value;
+			if (order != '$order')
+			{
+				dirn = 'asc';
+			}
+			else
+			{
+				dirn = direction.options[direction.selectedIndex].value;
+			}
+			Joomla.tableOrdering(order, dirn);
+		}
+	</script>
+<?php endif; ?>
+
 <form action="index.php" method="post" name="adminForm" id="adminForm">
 	<input type="hidden" name="option" value="com_akeeba" />
 	<input type="hidden" name="view" value="profiles" />
 	<input type="hidden" name="boxchecked" id="boxchecked" value="0" />
 	<input type="hidden" name="task" id="task" value="" />
+	<input type="hidden" name="hidemainmenu" id="hidemainmenu" value="0"/>
+	<input type="hidden" name="filter_order" id="filter_order"
+		   value="<?php echo $this->escape($this->lists->order) ?>"/>
+	<input type="hidden" name="filter_order_Dir" id="filter_order_Dir"
+		   value="<?php echo $this->escape($this->lists->order_Dir) ?>"/>
 	<input type="hidden" name="<?php echo JFactory::getSession()->getFormToken()?>" value="1" />
 
 	<div class="alert alert-info">
@@ -31,21 +56,72 @@ $token = JFactory::getSession()->getFormToken();
 		#<?php echo $this->profileid; ?> <?php echo $this->profilename; ?>
 	</div>
 
-	<?php if(version_compare(JVERSION, '3.0', 'gt')): ?>
+	<?php if (version_compare(JVERSION, '3.0', 'gt')): ?>
 		<div id="filter-bar" class="btn-toolbar">
 			<div class="btn-group pull-right hidden-phone">
-				<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC') ?></label>
+				<label for="limit"
+					   class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC') ?></label>
 				<?php echo $this->getModel()->getPagination()->getLimitBox(); ?>
 			</div>
+			<?php
+			$asc_sel = ($this->getLists()->order_Dir == 'asc') ? 'selected="selected"' : '';
+			$desc_sel = ($this->getLists()->order_Dir == 'desc') ? 'selected="selected"' : '';
+			?>
+			<div class="btn-group pull-right hidden-phone">
+				<label for="directionTable"
+					   class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC') ?></label>
+				<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
+					<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC') ?></option>
+					<option
+						value="asc" <?php echo $asc_sel ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING') ?></option>
+					<option
+						value="desc" <?php echo $desc_sel ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING') ?></option>
+				</select>
+			</div>
+			<div class="btn-group pull-right">
+				<label for="sortTable" class="element-invisible"><?php echo JText::_('JGLOBAL_SORT_BY') ?></label>
+				<select name="sortTable" id="sortTable" class="input-medium" onchange="Joomla.orderTable()">
+					<option value=""><?php echo JText::_('JGLOBAL_SORT_BY') ?></option>
+					<?php echo JHtml::_('select.options', $this->sortFields, 'value', 'text', $this->getLists()->order) ?>
+				</select>
+			</div>
 		</div>
+		<div class="clearfix"></div>
 	<?php endif; ?>
 
 	<table class="adminlist table table-striped">
 		<thead>
 			<tr>
-				<th width="20px">&nbsp;</th>
-				<th width="20px">#</th>
-				<th><?php JText::_('PROFILE_COLLABEL_DESCRIPTION'); ?></th>
+				<th width="20px">
+					<input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this);" />
+				</th>
+				<th width="20px">
+					<?php echo JHTML::_('grid.sort', 'JGRID_HEADING_ID', 'id', $this->lists->order_Dir, $this->lists->order, 'browse'); ?>
+				</th>
+				<th width="20%"></th>
+				<th>
+					<?php echo JHTML::_('grid.sort', 'PROFILE_COLLABEL_DESCRIPTION', 'description', $this->lists->order_Dir, $this->lists->order, 'browse'); ?>
+				</th>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td class="form-inline">
+					<div class="form-inline">
+						<input type="text" name="description" id="description"
+							   value="<?php echo $this->escape($this->getModel()->getState('description', '')); ?>" size="30"
+							   class="input-small" onchange="document.adminForm.submit();"
+							   placeholder="<?php echo JText::_('PROFILE_COLLABEL_DESCRIPTION') ?>"
+							/>
+						<button class="btn btn-mini" onclick="this.form.submit();">
+							<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>
+						</button>
+						<button class="btn btn-mini" onclick="document.adminForm.description.value='';this.form.submit();">
+							<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>
+						</button>
+					</div>
+				</td>
 			</tr>
 		</thead>
 		<tfoot>
@@ -76,7 +152,8 @@ $token = JFactory::getSession()->getFormToken();
 						<i class="icon-download"></i>
 						<?php echo JText::_('COM_AKEEBA_PROFILES_BTN_EXPORT'); ?>
 					</button>
-					&nbsp;
+				</td>
+				<td>
 					<a href="<?php echo $link; ?>">
 						<?php echo $profile->description; ?>
 					</a>

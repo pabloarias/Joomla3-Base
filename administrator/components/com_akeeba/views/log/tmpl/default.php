@@ -11,6 +11,8 @@ defined('_JEXEC') or die();
 if(empty($this->tag)) $this->tag = null;
 
 JHtml::_('behavior.framework');
+if (version_compare(JVERSION, '3.0.0', 'ge')) JHtml::_('formbehavior.chosen');
+
 ?>
 <?php if(count($this->logs)): ?>
 <form name="adminForm" id="adminForm" action="index.php" method="post" class="form-inline">
@@ -19,10 +21,10 @@ JHtml::_('behavior.framework');
 	<input type="hidden" name="<?php echo JFactory::getSession()->getFormToken()?>" value="1" />
 	<fieldset>
 		<label for="tag"><?php echo JText::_('LOG_CHOOSE_FILE_TITLE'); ?></label>
-		<?php echo JHTML::_('select.genericlist', $this->logs, 'tag', 'onchange=submitform()', 'value', 'text', $this->tag, 'tag') ?>
+		<?php echo JHtml::_('select.genericlist', $this->logs, 'tag', 'onchange="submitform();" class="advancedSelect"', 'value', 'text', $this->tag) ?>
 
 		<?php if(!empty($this->tag)): ?>
-		<button class="btn btn-primary" onclick="window.location='<?php echo JURI::base(); ?>index.php?option=com_akeeba&view=log&task=download&tag=<?php echo urlencode($this->tag); ?>'; return false;">
+		<button class="btn btn-primary" onclick="window.location='<?php echo JUri::base(); ?>index.php?option=com_akeeba&view=log&task=download&tag=<?php echo urlencode($this->tag); ?>'; return false;">
 			<i class="icon-download-alt icon-white"></i>
 			<?php echo JText::_('LOG_LABEL_DOWNLOAD'); ?>
 		</button>
@@ -32,7 +34,7 @@ JHtml::_('behavior.framework');
 		<br/>
 		<hr/>
 		<iframe
-			src="<?php echo JURI::base(); ?>index.php?option=com_akeeba&view=log&task=iframe&layout=raw&tag=<?php echo urlencode($this->tag); ?>"
+			src="<?php echo JUri::base(); ?>index.php?option=com_akeeba&view=log&task=iframe&layout=raw&tag=<?php echo urlencode($this->tag); ?>"
 			width="99%" height="400px">
 		</iframe>
 		<?php endif; ?>

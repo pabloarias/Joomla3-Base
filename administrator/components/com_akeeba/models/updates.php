@@ -26,7 +26,7 @@ class AkeebaModelUpdates extends F0FUtilsUpdate
 		$isPro = defined('AKEEBA_PRO') ? AKEEBA_PRO : 0;
 
 		JLoader::import('joomla.application.component.helper');
-		$dlid = AEUtilComconfig::getValue('update_dlid', '');
+		$dlid = \Akeeba\Engine\Util\Comconfig::getValue('update_dlid', '');
 		$this->extraQuery = null;
 
 		// If I have a valid Download ID I will need to use a non-blank extra_query in Joomla! 3.2+

@@ -17,6 +17,11 @@ defined('_JEXEC') or die();
 </head>
 <body>
 <h1><?php echo JText::_('LIGHT_HEADER');?></h1>
+<hr/>
+<p>
+	<?php echo JText::_('COM_AKEEBA_DEPRECATED_FEATURE'); ?>
+</p>
+<hr/>
 <div
 	style="margin: 2px; border: thin solid red; background-color: #ffffee;">
 <p><b><?php echo JText::_('LIGHT_TEXT_ERROR');?></b></p>

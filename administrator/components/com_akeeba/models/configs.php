@@ -1,51 +1,66 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
- * @since 3.2.5
+ * @license   GNU General Public License version 3, or later
+ * @since     3.2.5
  */
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 class AkeebaModelConfigs extends F0FModel
 {
+	/**
+	 * Save the engine configuration
+	 */
 	public function saveEngineConfig()
 	{
 		$data = $this->getState('engineconfig', array());
 
 		// Forbid stupidly selecting the site's root as the output or temporary directory
-		if( array_key_exists('akeeba.basic.output_directory', $data) )
+		if (array_key_exists('akeeba.basic.output_directory', $data))
 		{
 			$folder = $data['akeeba.basic.output_directory'];
-			$folder = AEUtilFilesystem::translateStockDirs( $folder, true, true );
+			$folder = Factory::getFilesystemTools()->translateStockDirs($folder, true, true);
 
-			$check = AEUtilFilesystem::translateStockDirs( '[SITEROOT]', true, true );
+			$check = Factory::getFilesystemTools()->translateStockDirs('[SITEROOT]', true, true);
 
-			if($check == $folder)
+			if ($check == $folder)
 			{
 				JError::raiseWarning(503, JText::_('CONFIG_OUTDIR_ROOT'));
 				$data['akeeba.basic.output_directory'] = '[DEFAULT_OUTPUT]';
 			}
 		}
 
-		// Merge it
-		$config = AEFactory::getConfiguration();
+		// Unprotect the configuration and merge it
+		$config = Factory::getConfiguration();
+		$protectedKeys = $config->getProtectedKeys();
+		$config->resetProtectedKeys();
 		$config->mergeArray($data, false, false);
+		$config->setProtectedKeys($protectedKeys);
+
 		// Save configuration
-		AEPlatform::getInstance()->save_configuration();
+		Platform::getInstance()->save_configuration();
 	}
 
+	/**
+	 * Test the FTP connection.
+	 *
+	 * @return bool|string  True on success, error message on failure
+	 */
 	public function testFTP()
 	{
 		$config = array(
-			'host' => $this->getState('host'),
-			'port' => $this->getState('port'),
-			'user' => $this->getState('user'),
-			'pass' => $this->getState('pass'),
+			'host'    => $this->getState('host'),
+			'port'    => $this->getState('port'),
+			'user'    => $this->getState('user'),
+			'pass'    => $this->getState('pass'),
 			'initdir' => $this->getState('initdir'),
-			'usessl' => $this->getState('usessl'),
+			'usessl'  => $this->getState('usessl'),
 			'passive' => $this->getState('passive'),
 		);
 
@@ -56,10 +71,11 @@ class AkeebaModelConfigs extends F0FModel
 		}
 
 		// Perform the FTP connection test
-		$test = new AEArchiverDirectftp();
+		$test = new \Akeeba\Engine\Archiver\Directftp();
 		$test->initialize('', $config);
 		$errors = $test->getError();
-		if(empty($errors) || $test->connect_ok)
+
+		if (empty($errors) || $test->connect_ok)
 		{
 			$result = true;
 		}
@@ -67,18 +83,24 @@ class AkeebaModelConfigs extends F0FModel
 		{
 			$result = $errors;
 		}
+
 		return $result;
 	}
 
+	/**
+	 * Test the SFTP connection.
+	 *
+	 * @return array|bool  True on success, error message on failure.
+	 */
 	public function testSFTP()
 	{
 		$config = array(
-			'host' => $this->getState('host'),
-			'port' => $this->getState('port'),
-			'user' => $this->getState('user'),
-			'pass' => $this->getState('pass'),
+			'host'    => $this->getState('host'),
+			'port'    => $this->getState('port'),
+			'user'    => $this->getState('user'),
+			'pass'    => $this->getState('pass'),
 			'privkey' => $this->getState('privkey'),
-			'pubkey' => $this->getState('pubkey'),
+			'pubkey'  => $this->getState('pubkey'),
 			'initdir' => $this->getState('initdir'),
 		);
 
@@ -89,10 +111,11 @@ class AkeebaModelConfigs extends F0FModel
 		}
 
 		// Perform the FTP connection test
-		$test = new AEArchiverDirectsftp();
+		$test = new \Akeeba\Engine\Archiver\Directsftp();
 		$test->initialize('', $config);
 		$errors = $test->getWarnings();
-		if(empty($errors) || $test->connect_ok)
+
+		if (empty($errors) || $test->connect_ok)
 		{
 			$result = true;
 		}
@@ -100,6 +123,7 @@ class AkeebaModelConfigs extends F0FModel
 		{
 			$result = $errors;
 		}
+
 		return $result;
 	}
 
@@ -113,8 +137,13 @@ class AkeebaModelConfigs extends F0FModel
 		$engine = $this->getState('engine');
 		$params = $this->getState('params', array());
 
-		$engine = AEFactory::getPostprocEngine($engine);
-		if($engine === false) return false;
+		$engine = Factory::getPostprocEngine($engine);
+
+		if ($engine === false)
+		{
+			return false;
+		}
+
 		$engine->oauthOpen($params);
 	}
 
@@ -129,8 +158,13 @@ class AkeebaModelConfigs extends F0FModel
 		$method = $this->getState('method');
 		$params = $this->getState('params', array());
 
-		$engine = AEFactory::getPostprocEngine($engine);
-		if($engine === false) return false;
+		$engine = Factory::getPostprocEngine($engine);
+
+		if ($engine === false)
+		{
+			return false;
+		}
+
 		return $engine->customApiCall($method, $params);
 	}
 }

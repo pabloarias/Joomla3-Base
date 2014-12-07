@@ -78,7 +78,7 @@ JS
 			<ul class="breadcrumb">
 				<?php $i = 0 ?>
 				<?php foreach($this->breadcrumbs as $crumb):
-					$link = JURI::base()."index.php?option=com_akeeba&view=browser&tmpl=component&folder=".urlencode($crumb['folder']);
+					$link = JUri::base()."index.php?option=com_akeeba&view=browser&tmpl=component&folder=".urlencode($crumb['folder']);
 					$label = htmlentities($crumb['label']);
 					$i++;
 					$bull = $i < count($this->breadcrumbs) ? '&bull;' : '';
@@ -105,7 +105,7 @@ JS
 			<table class="table table-striped">
 				<tr>
 					<td>
-						<?php $linkbase = JURI::base()."index.php?option=com_akeeba&view=browser&tmpl=component&folder="; ?>
+						<?php $linkbase = JUri::base()."index.php?option=com_akeeba&view=browser&tmpl=component&folder="; ?>
 						<a class="btn btn-mini btn-inverse" href="<?php echo $linkbase.urlencode($this->parent); ?>">
 							<i class="icon-arrow-up icon-white"></i>
 							<?php echo JText::_('BROWSER_LBL_GOPARENT') ?>
@@ -137,7 +137,7 @@ JS
 			<table class="table table-striped">
 				<tr>
 					<td>
-						<?php $linkbase = JURI::base()."index.php?option=com_akeeba&view=browser&tmpl=component&folder="; ?>
+						<?php $linkbase = JUri::base()."index.php?option=com_akeeba&view=browser&tmpl=component&folder="; ?>
 						<a class="btn btn-mini btn-inverse" href="<?php echo $linkbase.urlencode($this->parent); ?>">
 							<i class="icon-arrow-up icon-white"></i>
 							<?php echo JText::_('BROWSER_LBL_GOPARENT') ?>

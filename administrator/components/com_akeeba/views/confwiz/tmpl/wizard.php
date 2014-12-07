@@ -74,11 +74,11 @@ JHtml::_('behavior.framework');
 				<?php echo JText::_('AKEEBA_WIZARD_CONGRATS') ?>
 			</p>
 		</div>
-		<button class="btn btn-primary btn-large" onclick="window.location='<?php echo JURI::base() ?>index.php?option=com_akeeba&view=backup'; return false;">
+		<button class="btn btn-primary btn-large" onclick="window.location='<?php echo JUri::base() ?>index.php?option=com_akeeba&view=backup'; return false;">
 			<i class="icon-road icon-white"></i>
 			<?php echo JText::_('BACKUP'); ?>
 		</button>
-		<button class="btn" onclick="window.location='<?php echo JURI::base() ?>index.php?option=com_akeeba&view=config'; return false;">
+		<button class="btn" onclick="window.location='<?php echo JUri::base() ?>index.php?option=com_akeeba&view=config'; return false;">
 			<i class="icon-wrench"></i>
 			<?php echo JText::_('CONFIGURATION'); ?>
 		</button>

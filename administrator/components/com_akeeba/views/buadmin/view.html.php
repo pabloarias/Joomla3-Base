@@ -1,14 +1,17 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
+ * @license   GNU General Public License version 3, or later
  *
- * @since 1.3
+ * @since     1.3
  */
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
+
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
 
 /**
  * Akeeba Backup Administrator view class
@@ -18,69 +21,72 @@ class AkeebaViewBuadmin extends F0FViewHtml
 {
 	protected $lists = null;
 
-	function  __construct($config = array()) {
+	function  __construct($config = array())
+	{
 		parent::__construct($config);
 		$this->lists = new JObject();
-
-        $tmpl_path = JPATH_COMPONENT_ADMINISTRATOR.'/plugins/views/buadmin/tmpl';
-		$this->addTemplatePath($tmpl_path);
 	}
 
 	public function onEdit($tpl = null)
 	{
-		$model = $this->getModel();
-		$id = $model->getId();
-		$record = AEPlatform::getInstance()->get_statistics($id);
-		$this->record = $record;
+		$model           = $this->getModel();
+		$id              = $model->getId();
+		$record          = Platform::getInstance()->get_statistics($id);
+		$this->record    = $record;
 		$this->record_id = $id;
 
 		$this->setLayout('comment');
 	}
 
-	public function onBrowse($tpl=null)
+	public function onBrowse($tpl = null)
 	{
 		$session = JFactory::getSession();
-		$task = $session->get('buadmin.task', 'default', 'akeeba');
+		$task    = $session->get('buadmin.task', 'default', 'akeeba');
 
-		if($task != 'restorepoint') $task = 'default';
+		if ($task != 'restorepoint')
+		{
+			$task = 'default';
+		}
 
-		$aeconfig = AEFactory::getConfiguration();
+		$aeconfig = Factory::getConfiguration();
 
 		// Add custom submenus
-		if(AKEEBA_PRO) {
-			$toolbar = F0FToolbar::getAnInstance($this->input->get('option','com_foobar','cmd'), $this->config);
+		if (AKEEBA_PRO)
+		{
+			$toolbar = F0FToolbar::getAnInstance($this->input->get('option', 'com_foobar', 'cmd'), $this->config);
 			$toolbar->appendLink(
 				JText::_('BUADMIN_LABEL_BACKUPS'),
-				JURI::base().'index.php?option=com_akeeba&view=buadmin&task=browse',
+				JUri::base() . 'index.php?option=com_akeeba&view=buadmin&task=browse',
 				($task == 'default')
 			);
 			$toolbar->appendLink(
 				JText::_('BUADMIN_LABEL_SRP'),
-				JURI::base().'index.php?option=com_akeeba&view=buadmin&task=restorepoint',
+				JUri::base() . 'index.php?option=com_akeeba&view=buadmin&task=restorepoint',
 				($task == 'restorepoint')
 			);
 		}
 
-		if(AKEEBA_PRO && ($task == 'default'))
+		if (AKEEBA_PRO && ($task == 'default'))
 		{
 			$bar = JToolBar::getInstance('toolbar');
-			$bar->appendButton( 'Link', 'restore', JText::_('DISCOVER'), 'index.php?option=com_akeeba&view=discover' );
+			$bar->appendButton('Link', 'restore', JText::_('DISCOVER'), 'index.php?option=com_akeeba&view=discover');
 			JToolBarHelper::publish('restore', JText::_('STATS_LABEL_RESTORE'));
 		}
 
-		if(($task == 'default')) {
+		if (($task == 'default'))
+		{
 			JToolBarHelper::editList('showcomment', JText::_('STATS_LOG_EDITCOMMENT'));
 
-			$pModel = F0FModel::getTmpInstance('Profiles','AkeebaModel');
-			$enginesPerPprofile = $pModel->getPostProcessingEnginePerProfile();
+			$pModel                  = F0FModel::getTmpInstance('Profiles', 'AkeebaModel');
+			$enginesPerPprofile      = $pModel->getPostProcessingEnginePerProfile();
 			$this->enginesPerProfile = $enginesPerPprofile;
 		}
 		JToolBarHelper::spacer();
 
 		// "Show warning first" download button. Joomlantastic!
-		$confirmationText = AkeebaHelperEscape::escapeJS( JText::_('STATS_LOG_DOWNLOAD_CONFIRM'), "'\n" );
-		$baseURI = JURI::base();
-		$js = <<<JS
+		$confirmationText = AkeebaHelperEscape::escapeJS(JText::_('STATS_LOG_DOWNLOAD_CONFIRM'), "'\n");
+		$baseURI          = JUri::base();
+		$js               = <<<JS
 
 ;// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
 // due to missing trailing semicolon and/or newline in their code.
@@ -110,40 +116,43 @@ JS;
 
 		// ...ordering
 		$app = JFactory::getApplication();
-		$this->lists->set('order',			$app->getUserStateFromRequest($hash.'filter_order',
+		$this->lists->set('order', $app->getUserStateFromRequest($hash . 'filter_order',
 			'filter_order', 'backupstart'));
-		$this->lists->set('order_Dir',		$app->getUserStateFromRequest($hash.'filter_order_Dir',
+		$this->lists->set('order_Dir', $app->getUserStateFromRequest($hash . 'filter_order_Dir',
 			'filter_order_Dir', 'DESC'));
 
 		// ...filter state
-		$this->lists->set('fltDescription',	$app->getUserStateFromRequest($hash.'filter_description',
+		$this->lists->set('fltDescription', $app->getUserStateFromRequest($hash . 'filter_description',
 			'description', null));
-		$this->lists->set('fltFrom',		$app->getUserStateFromRequest($hash.'filter_from',
+		$this->lists->set('fltFrom', $app->getUserStateFromRequest($hash . 'filter_from',
 			'from', null));
-		$this->lists->set('fltTo',			$app->getUserStateFromRequest($hash.'filter_to',
+		$this->lists->set('fltTo', $app->getUserStateFromRequest($hash . 'filter_to',
 			'to', null));
-		$this->lists->set('fltOrigin',		$app->getUserStateFromRequest($hash.'filter_origin',
+		$this->lists->set('fltOrigin', $app->getUserStateFromRequest($hash . 'filter_origin',
 			'origin', null));
-		$this->lists->set('fltProfile',		$app->getUserStateFromRequest($hash.'filter_profile',
+		$this->lists->set('fltProfile', $app->getUserStateFromRequest($hash . 'filter_profile',
 			'profile', null));
 
-		$filters = $this->_getFilters();
+		$filters  = $this->_getFilters();
 		$ordering = $this->_getOrdering();
 
-		require_once JPATH_COMPONENT_ADMINISTRATOR.'/models/statistics.php';
+		require_once JPATH_COMPONENT_ADMINISTRATOR . '/models/statistics.php';
 		$model = new AkeebaModelStatistics();
-		$list = $model->getStatisticsListWithMeta(false, $filters, $ordering);
+		$list  = $model->getStatisticsListWithMeta(false, $filters, $ordering);
 
 		// Assign data to the view
-		$this->lists =		$this->lists; // Filter lists
-		$this->list =		$list; // Data
-		$this->pagination =	$model->getPagination($filters); // Pagination object
+		$this->lists      = $this->lists; // Filter lists
+		$this->list       = $list; // Data
+		$this->pagination = $model->getPagination($filters); // Pagination object
 
 		// Add live help
-		if($task == 'restorepoint') {
+		if ($task == 'restorepoint')
+		{
 			$this->setLayout('restorepoint');
 			AkeebaHelperIncludes::addHelp('restorepoint');
-		} else {
+		}
+		else
+		{
 			AkeebaHelperIncludes::addHelp('buadmin');
 		}
 
@@ -154,81 +163,97 @@ JS;
 	{
 		$filters = array();
 
-		if($this->lists->fltDescription) {
+		if ($this->lists->fltDescription)
+		{
 			$filters[] = array(
-				'field'			=> 'description',
-				'operand'		=> 'LIKE',
-				'value'			=> $this->lists->fltDescription
+				'field'   => 'description',
+				'operand' => 'LIKE',
+				'value'   => $this->lists->fltDescription
 			);
 		}
 
-		if($this->lists->fltFrom && $this->lists->fltTo) {
+		if ($this->lists->fltFrom && $this->lists->fltTo)
+		{
 			$filters[] = array(
-				'field'			=> 'backupstart',
-				'operand'		=> 'BETWEEN',
-				'value'			=> $this->lists->fltFrom,
-				'value2'			=> $this->lists->fltTo
+				'field'   => 'backupstart',
+				'operand' => 'BETWEEN',
+				'value'   => $this->lists->fltFrom,
+				'value2'  => $this->lists->fltTo
 			);
-		} elseif ($this->lists->fltFrom) {
+		}
+		elseif ($this->lists->fltFrom)
+		{
 			$filters[] = array(
-				'field'			=> 'backupstart',
-				'operand'		=> '>=',
-				'value'			=> $this->lists->fltFrom,
+				'field'   => 'backupstart',
+				'operand' => '>=',
+				'value'   => $this->lists->fltFrom,
 			);
-		} elseif($this->lists->fltTo) {
+		}
+		elseif ($this->lists->fltTo)
+		{
 			JLoader::import('joomla.utilities.date');
-			$to = new JDate($this->lists->fltTo);
+			$to     = new JDate($this->lists->fltTo);
 			$toUnix = $to->toUnix();
-			$to = date('Y-m-d').' 23:59:59';
+			$to     = date('Y-m-d') . ' 23:59:59';
 
 			$filters[] = array(
-				'field'			=> 'backupstart',
-				'operand'		=> '<=',
-				'value'			=> $to,
+				'field'   => 'backupstart',
+				'operand' => '<=',
+				'value'   => $to,
 			);
 		}
-		if($this->lists->fltOrigin) {
+		if ($this->lists->fltOrigin)
+		{
 			$filters[] = array(
-				'field'			=> 'origin',
-				'operand'		=> '=',
-				'value'			=> $this->lists->fltOrigin
+				'field'   => 'origin',
+				'operand' => '=',
+				'value'   => $this->lists->fltOrigin
 			);
 		}
-		if($this->lists->fltProfile) {
+		if ($this->lists->fltProfile)
+		{
 			$filters[] = array(
-				'field'			=> 'profile_id',
-				'operand'		=> '=',
-				'value'			=> (int)$this->lists->fltProfile
+				'field'   => 'profile_id',
+				'operand' => '=',
+				'value'   => (int)$this->lists->fltProfile
 			);
 		}
 
 		$session = JFactory::getSession();
-		$task = $session->get('buadmin.task', 'browse', 'akeeba');
-		if($task == 'restorepoint') {
+		$task    = $session->get('buadmin.task', 'browse', 'akeeba');
+		if ($task == 'restorepoint')
+		{
 			$filters[] = array(
-				'field'			=> 'tag',
-				'operand'		=> '=',
-				'value'			=> 'restorepoint'
+				'field'   => 'tag',
+				'operand' => '=',
+				'value'   => 'restorepoint'
 			);
-		} else {
+		}
+		else
+		{
 			$filters[] = array(
-				'field'			=> 'tag',
-				'operand'		=> '<>',
-				'value'			=> 'restorepoint'
+				'field'   => 'tag',
+				'operand' => '<>',
+				'value'   => 'restorepoint'
 			);
 		}
 
 
-		if(empty($filters)) $filters = null;
+		if (empty($filters))
+		{
+			$filters = null;
+		}
+
 		return $filters;
 	}
 
 	private function _getOrdering()
 	{
 		$order = array(
-			'by'		=> $this->lists->order,
-			'order'		=> strtoupper($this->lists->order_Dir)
+			'by'    => $this->lists->order,
+			'order' => strtoupper($this->lists->order_Dir)
 		);
+
 		return $order;
 	}
 }

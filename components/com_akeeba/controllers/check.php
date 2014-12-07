@@ -11,6 +11,8 @@ defined('_JEXEC') or die();
 
 defined('AKEEBA_BACKUP_ORIGIN') or define('AKEEBA_BACKUP_ORIGIN','frontend');
 
+use Akeeba\Engine\Platform;
+
 class AkeebaControllerCheck extends F0FController
 {
 	public function __construct($config = array())
@@ -55,7 +57,7 @@ class AkeebaControllerCheck extends F0FController
 	private function _checkPermissions()
 	{
 		// Is frontend backup enabled?
-		$febEnabled = AEPlatform::getInstance()->get_platform_configuration_option('failure_frontend_enable', 0) != 0;
+		$febEnabled = Platform::getInstance()->get_platform_configuration_option('failure_frontend_enable', 0) != 0;
 
 		if(!$febEnabled)
 		{
@@ -67,7 +69,7 @@ class AkeebaControllerCheck extends F0FController
 
 		// Is the key good?
 		$key      = $this->input->get('key', '', 'none', 2);
-		$validKey = AEPlatform::getInstance()->get_platform_configuration_option('frontend_secret_word','');
+		$validKey = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word','');
 		$validKeyTrim = trim($validKey);
 
 		if( ($key != $validKey) || (empty($validKeyTrim)) )

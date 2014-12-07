@@ -9,6 +9,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * Akeeba Backup Configuration view class
  *
@@ -17,14 +20,14 @@ class AkeebaViewConfig extends F0FViewHtml
 {
 	public function onAdd($tpl = null)
 	{
-		$media_folder = JURI::base().'../media/com_akeeba/';
+		$media_folder = JUri::base().'../media/com_akeeba/';
 
 		// Get a JSON representation of GUI data
-		$json = AkeebaHelperEscape::escapeJS(AEUtilInihelper::getJsonGuiDefinition(),'"\\');
+		$json = AkeebaHelperEscape::escapeJS(Factory::getEngineParamsProvider()->getJsonGuiDefinition(),'"\\');
 		$this->json = $json;
 
 		// Get profile ID
-		$profileid = AEPlatform::getInstance()->get_active_profile();
+		$profileid = Platform::getInstance()->get_active_profile();
 		$this->profileid = $profileid;
 
 		// Get profile name
@@ -38,13 +41,13 @@ class AkeebaViewConfig extends F0FViewHtml
 		$this->mediadir = AkeebaHelperEscape::escapeJS($media_folder.'theme/');
 
 		// Are the settings secured?
-		if( AEPlatform::getInstance()->get_platform_configuration_option('useencryption', -1) == 0 ) {
+		if( Platform::getInstance()->get_platform_configuration_option('useencryption', -1) == 0 ) {
 			$this->securesettings = -1;
-		} elseif( !AEUtilSecuresettings::supportsEncryption() ) {
+		} elseif( !Factory::getSecureSettings()->supportsEncryption() ) {
 			$this->securesettings = 0;
 		} else {
 			JLoader::import('joomla.filesystem.file');
-			$filename = JPATH_COMPONENT_ADMINISTRATOR.'/akeeba/serverkey.php';
+			$filename = JPATH_COMPONENT_ADMINISTRATOR.'/engine/serverkey.php';
 			if(JFile::exists($filename)) {
 				$this->securesettings = 1;
 			} else {

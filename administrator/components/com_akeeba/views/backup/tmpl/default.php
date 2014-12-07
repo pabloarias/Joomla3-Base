@@ -10,13 +10,18 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 // Apply error container chrome if there are errors detected
 $quirks_style = $this->haserrors ? 'alert-error' : "";
 $formstyle = '';
 
-$configuration = AEFactory::getConfiguration();
+$configuration = Factory::getConfiguration();
 
 JHtml::_('behavior.framework');
+if (version_compare(JVERSION, '3.0.0', 'ge')) JHtml::_('formbehavior.chosen');
+
 ?>
 <!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->
 <div id="nojquerywarning" style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;">
@@ -70,7 +75,7 @@ akeeba.jQuery(document).ready(function($){
 	akeeba_ajax_url = 'index.php?option=com_akeeba&view=backup&task=ajax';
 
 	// Setup base View Log URL
-	akeeba_logview_url = '<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log';
+	akeeba_logview_url = '<?php echo JUri::base() ?>index.php?option=com_akeeba&view=log';
 
 	// Setup the IFRAME mode
 	akeeba_use_iframe = <?php echo $this->useiframe ?>;
@@ -94,7 +99,7 @@ akeeba.jQuery(document).ready(function($){
 });
 </script>
 
-<?php if(!version_compare(PHP_VERSION, '5.3.0', 'ge') && AEUtilComconfig::getValue('displayphpwarning', 1)): ?>
+<?php if(!version_compare(PHP_VERSION, '5.3.0', 'ge') && \Akeeba\Engine\Util\Comconfig::getValue('displayphpwarning', 1)): ?>
 <div class="alert">
 	<a class="close" data-dismiss="alert" href="#">×</a>
 	<p><strong><?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_HEADER') ?></strong><br/>
@@ -103,7 +108,7 @@ akeeba.jQuery(document).ready(function($){
 
 	<?php
 	if(function_exists('base64_encode')) {
-		$returnurl = '&returnurl=' . base64_encode(JURI::getInstance()->toString());
+		$returnurl = '&returnurl=' . base64_encode(JUri::getInstance()->toString());
 	} else {
 		$returnurl = '';
 	}
@@ -179,7 +184,7 @@ akeeba.jQuery(document).ready(function($){
 		<label>
 			<?php echo JText::_('CPANEL_PROFILE_TITLE'); ?>: #<?php echo $this->profileid; ?>
 		</label>
-		<?php echo JHTML::_('select.genericlist', $this->profilelist, 'profileid', 'onchange="flipProfile();"', 'value', 'text', $this->profileid); ?>
+		<?php echo JHTML::_('select.genericlist', $this->profilelist, 'profileid', 'onchange="flipProfile();" class="advancedSelect"', 'value', 'text', $this->profileid); ?>
 		<button class="btn" onclick="flipProfile(); return false;">
 			<i class="icon-retweet"></i>
 			<?php echo JText::_('CPANEL_PROFILE_BUTTON'); ?>
@@ -293,11 +298,11 @@ akeeba.jQuery(document).ready(function($){
 			</p>
 
 			<?php if(empty($this->returnurl)): ?>
-			<a class="btn btn-primary btn-large" href="<?php echo JURI::base() ?>index.php?option=com_akeeba&view=buadmin">
+			<a class="btn btn-primary btn-large" href="<?php echo JUri::base() ?>index.php?option=com_akeeba&view=buadmin">
 				<i class="icon-inbox icon-white"></i>
 				<?php echo JText::_('BUADMIN'); ?>
 			</a>
-			<a class="btn" id="ab-viewlog-success" href="<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log">
+			<a class="btn" id="ab-viewlog-success" href="<?php echo JUri::base() ?>index.php?option=com_akeeba&view=log">
 				<i class="icon-list-alt"></i>
 				<?php echo JText::_('VIEWLOG'); ?>
 			</a>
@@ -392,7 +397,7 @@ akeeba.jQuery(document).ready(function($){
 				<i class="icon-share-alt icon-white"></i>
 				<?php echo JText::_('BACKUP_TROUBLESHOOTINGDOCS') ?>
 			</button>
-			<a class="btn" id="ab-viewlog-error" href="<?php echo JURI::base() ?>index.php?option=com_akeeba&view=log">
+			<a class="btn" id="ab-viewlog-error" href="<?php echo JUri::base() ?>index.php?option=com_akeeba&view=log">
 				<i class="icon-list-alt"></i>
 				<?php echo JText::_('VIEWLOG'); ?>
 			</a>

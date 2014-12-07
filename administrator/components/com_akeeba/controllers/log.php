@@ -10,6 +10,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * Log view controller class
  *
@@ -48,7 +51,7 @@ class AkeebaControllerLog extends AkeebaControllerDefault
 		$model = $this->getThisModel();
 		$model->setState('tag', $tag);
 
-		AEPlatform::getInstance()->load_configuration(AEPlatform::getInstance()->get_active_profile());
+		Platform::getInstance()->load_configuration(Platform::getInstance()->get_active_profile());
 
 		parent::display($cachable, $urlparams);
 	}
@@ -64,7 +67,7 @@ class AkeebaControllerLog extends AkeebaControllerDefault
 		$model = $this->getThisModel();
 		$model->setState('tag', $tag);
 
-		AEPlatform::getInstance()->load_configuration(AEPlatform::getInstance()->get_active_profile());
+		Platform::getInstance()->load_configuration(Platform::getInstance()->get_active_profile());
 
 		parent::display();
 
@@ -74,7 +77,7 @@ class AkeebaControllerLog extends AkeebaControllerDefault
 
 	public function download($cachable = false, $urlparams = false)
 	{
-		AEPlatform::getInstance()->load_configuration(AEPlatform::getInstance()->get_active_profile());
+		Platform::getInstance()->load_configuration(Platform::getInstance()->get_active_profile());
 
 		$tag = $this->input->get('tag', null, 'cmd');
 		if (empty($tag))

@@ -1,13 +1,16 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
- * @since 3.5
+ * @license   GNU General Public License version 3, or later
+ * @since     3.5
  */
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
+
+use Akeeba\Engine\Platform;
+use Akeeba\Engine\Factory;
 
 class AkeebaModelBrowsers extends F0FModel
 {
@@ -17,20 +20,20 @@ class AkeebaModelBrowsers extends F0FModel
 		JLoader::import('joomla.filesystem.path');
 
 		// Get the folder to browse
-		$folder = $this->getState('folder', '');
+		$folder        = $this->getState('folder', '');
 		$processfolder = $this->getState('processfolder', 0);
 
-		if(empty($folder))
+		if (empty($folder))
 		{
 			$folder = JPATH_SITE;
 		}
 
-		$stock_dirs = AEPlatform::getInstance()->get_stock_directories();
+		$stock_dirs = Platform::getInstance()->get_stock_directories();
 		arsort($stock_dirs);
 
-		if($processfolder == 1)
+		if ($processfolder == 1)
 		{
-			foreach($stock_dirs as $find => $replace)
+			foreach ($stock_dirs as $find => $replace)
 			{
 				$folder = str_replace($find, $replace, $folder);
 			}
@@ -38,10 +41,13 @@ class AkeebaModelBrowsers extends F0FModel
 
 		// Normalise name, but only if realpath() really, REALLY works...
 		$old_folder = $folder;
-		$folder = @realpath($folder);
-		if($folder === false) $folder = $old_folder;
+		$folder     = @realpath($folder);
+		if ($folder === false)
+		{
+			$folder = $old_folder;
+		}
 
-		if(AEUtilFilesystem::folderExists($folder))
+		if (@is_dir($folder))
 		{
 			$isFolderThere = true;
 		}
@@ -54,17 +60,17 @@ class AkeebaModelBrowsers extends F0FModel
 		$isInRoot = (strpos($folder, JPATH_SITE) === 0);
 
 		// Check open_basedir restrictions
-		$isOpenbasedirRestricted = AEUtilQuirks::checkOpenBasedirs($folder);
+		$isOpenbasedirRestricted = Factory::getConfigurationChecks()->checkOpenBasedirs($folder);
 
 		// -- Get the meta form of the directory name, if applicable
 		$folder_raw = $folder;
-		foreach($stock_dirs as $replace => $find)
+		foreach ($stock_dirs as $replace => $find)
 		{
 			$folder_raw = str_replace($find, $replace, $folder_raw);
 		}
 
 		// Writable check and contents listing if it's in site root and not restricted
-		if($isFolderThere && !$isOpenbasedirRestricted)
+		if ($isFolderThere && !$isOpenbasedirRestricted)
 		{
 			// Get writability status
 			$isWritable = is_writable($folder);
@@ -74,7 +80,7 @@ class AkeebaModelBrowsers extends F0FModel
 		}
 		else
 		{
-			if($isFolderThere && !$isOpenbasedirRestricted)
+			if ($isFolderThere && !$isOpenbasedirRestricted)
 			{
 				$isWritable = is_writable($folder);
 			}
@@ -88,39 +94,43 @@ class AkeebaModelBrowsers extends F0FModel
 
 		// Get parent directory
 		$pathparts = explode(DIRECTORY_SEPARATOR, $folder);
-		if(is_array($pathparts))
+		if (is_array($pathparts))
 		{
 			$path = '';
-			foreach($pathparts as $part)
+			foreach ($pathparts as $part)
 			{
-				$path .= empty($path) ? $part : DIRECTORY_SEPARATOR.$part;
-				if(empty($part)) {
-					if( DIRECTORY_SEPARATOR != '\\' ) $path = DIRECTORY_SEPARATOR;
+				$path .= empty($path) ? $part : DIRECTORY_SEPARATOR . $part;
+				if (empty($part))
+				{
+					if (DIRECTORY_SEPARATOR != '\\')
+					{
+						$path = DIRECTORY_SEPARATOR;
+					}
 					$part = DIRECTORY_SEPARATOR;
 				}
-				$crumb['label'] = $part;
+				$crumb['label']  = $part;
 				$crumb['folder'] = $path;
-				$breadcrumbs[]=$crumb;
+				$breadcrumbs[]   = $crumb;
 			}
 
-			$junk = array_pop($pathparts);
+			$junk   = array_pop($pathparts);
 			$parent = implode(DIRECTORY_SEPARATOR, $pathparts);
 		}
 		else
 		{
 			// Can't identify parent dir, use ourselves.
-			$parent = $folder;
+			$parent      = $folder;
 			$breadcrumbs = array();
 		}
 
-		$this->setState('folder',					$folder);
-		$this->setState('folder_raw',				$folder_raw);
-		$this->setState('parent',					$parent);
-		$this->setState('exists',					$isFolderThere);
-		$this->setState('inRoot',					$isInRoot);
-		$this->setState('openbasedirRestricted',	$isOpenbasedirRestricted);
-		$this->setState('writable',					$isWritable);
-		$this->setState('subfolders',				$subfolders);
-		$this->setState('breadcrumbs',				$breadcrumbs);
+		$this->setState('folder', $folder);
+		$this->setState('folder_raw', $folder_raw);
+		$this->setState('parent', $parent);
+		$this->setState('exists', $isFolderThere);
+		$this->setState('inRoot', $isInRoot);
+		$this->setState('openbasedirRestricted', $isOpenbasedirRestricted);
+		$this->setState('writable', $isWritable);
+		$this->setState('subfolders', $subfolders);
+		$this->setState('breadcrumbs', $breadcrumbs);
 	}
 }

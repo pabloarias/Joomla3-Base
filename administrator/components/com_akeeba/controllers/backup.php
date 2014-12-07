@@ -10,6 +10,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Platform;
+use Akeeba\Engine\Factory;
+
 /**
  * The Backup controller class
  *
@@ -55,7 +58,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 				$session = JFactory::getSession();
 				$session->set('profile', $newProfile, 'akeeba');
 
-				AEPlatform::getInstance()->load_configuration($newProfile);
+				Platform::getInstance()->load_configuration($newProfile);
 			}
 
 			// Deactivate the menus

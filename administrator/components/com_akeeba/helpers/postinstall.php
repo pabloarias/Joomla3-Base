@@ -106,7 +106,7 @@ function com_akeeba_postinstall_confwiz_condition()
 	}
 	else
 	{
-		$params = new JParameter($component->params);
+		$params = new JRegistry($component->params);
 	}
 
 	$lv = $params->get('lastversion', '');
@@ -142,7 +142,7 @@ function com_akeeba_postinstall_angie_condition()
 	}
 	else
 	{
-		$params = new JParameter($component->params);
+		$params = new JRegistry($component->params);
 	}
 
 	$angieupgrade = $params->get('angieupgrade', '0');
@@ -164,8 +164,13 @@ function com_akeeba_postinstall_angie_action()
 	}
 
 	// Load the factory
-	require_once JPATH_ADMINISTRATOR . '/components/com_akeeba/akeeba/factory.php';
-	@include_once JPATH_ADMINISTRATOR . '/components/com_akeeba/alice/factory.php';
+	require_once JPATH_ADMINISTRATOR . '/components/com_akeeba/engine/Factory.php';
+	\Akeeba\Engine\Platform::addPlatform('joomla25', JPATH_ADMINISTRATOR . '/components/com_akeeba/platform/joomla25');
+
+	if (!file_exists(JPATH_ADMINISTRATOR . '/components/com_akeeba/alice/factory.php'))
+	{
+		@require_once JPATH_ADMINISTRATOR . '/components/com_akeeba/alice/factory.php';
+	}
 
 	// Get all profiles
 	include_once JPATH_SITE.'/libraries/f0f/include.php';
@@ -193,16 +198,16 @@ function com_akeeba_postinstall_angie_action()
 	// Upgrade all profiles
 	foreach ($profiles as $profile_id)
 	{
-		AEFactory::nuke();
-		AEPlatform::getInstance()->load_configuration($profile_id);
-		$config = AEFactory::getConfiguration();
+		\Akeeba\Engine\Factory::nuke();
+		\Akeeba\Engine\Platform::getInstance()->load_configuration($profile_id);
+		$config = \Akeeba\Engine\Factory::getConfiguration();
 		$config->set('akeeba.advanced.embedded_installer', 'angie');
-		AEPlatform::getInstance()->save_configuration($profile_id);
+		\Akeeba\Engine\Platform::getInstance()->save_configuration($profile_id);
 	}
 
 	// Restore the old profile
-	AEFactory::nuke();
-	AEPlatform::getInstance()->load_configuration($oldProfile);
+	\Akeeba\Engine\Factory::nuke();
+	\Akeeba\Engine\Platform::getInstance()->load_configuration($oldProfile);
 
 	com_akeeba_postinstall_common_savesettings(1);
 }

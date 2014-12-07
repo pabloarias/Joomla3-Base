@@ -12,6 +12,9 @@ defined('_JEXEC') or die();
 
 defined('AKEEBA_BACKUP_ORIGIN') or define('AKEEBA_BACKUP_ORIGIN', 'frontend');
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 class AkeebaControllerBackup extends F0FController
 {
 	public function __construct($config = array())
@@ -66,18 +69,19 @@ class AkeebaControllerBackup extends F0FController
 
 		// Start the backup
 		JLoader::import('joomla.utilities.date');
-		AECoreKettenrad::reset(array(
+		Factory::resetState(array(
 			'maxrun' => 0
 		));
 
-		AEUtilTempfiles::deleteTempFiles();
+		Factory::getTempFiles()->deleteTempFiles();
 
 		$tempVarsTag = AKEEBA_BACKUP_ORIGIN;
 		$tempVarsTag .= empty($backupId) ? '' : ('.' . $backupId);
 
-		AEUtilTempvars::reset($tempVarsTag);
+		Factory::getFactoryStorage()->reset($tempVarsTag);
 
-		$kettenrad = AECoreKettenrad::load(AKEEBA_BACKUP_ORIGIN, $backupId);
+		Factory::loadState(AKEEBA_BACKUP_ORIGIN, $backupId);
+		$kettenrad = Factory::getKettenrad();
 		$kettenrad->setBackupId($backupId);
 
 		$dateNow = new JDate();
@@ -92,7 +96,7 @@ class AkeebaControllerBackup extends F0FController
 		$kettenrad->tick();
 		$kettenrad->tick();
 		$array = $kettenrad->getStatusArray();
-		AECoreKettenrad::save(AKEEBA_BACKUP_ORIGIN, $backupId);
+		Factory::saveState(AKEEBA_BACKUP_ORIGIN, $backupId);
 
 		if ($array['Error'] != '')
 		{
@@ -154,13 +158,14 @@ class AkeebaControllerBackup extends F0FController
 			$backupId = null;
 		}
 
-		$kettenrad = AECoreKettenrad::load(AKEEBA_BACKUP_ORIGIN, $backupId);
+		Factory::loadState(AKEEBA_BACKUP_ORIGIN, $backupId);
+		$kettenrad = Factory::getKettenrad();
 		$kettenrad->setBackupId($backupId);
 
 		$kettenrad->tick();
 		$array = $kettenrad->getStatusArray();
 		$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-		AECoreKettenrad::save(AKEEBA_BACKUP_ORIGIN, $backupId);
+		Factory::saveState(AKEEBA_BACKUP_ORIGIN, $backupId);
 
 		if ($array['Error'] != '')
 		{
@@ -172,8 +177,8 @@ class AkeebaControllerBackup extends F0FController
 		elseif ($array['HasRun'] == 1)
 		{
 			// All done
-			AEFactory::nuke();
-			AEUtilTempvars::reset();
+			Factory::nuke();
+			Factory::getFactoryStorage()->reset();
 			@ob_end_clean();
 			echo '200 OK';
 			flush();
@@ -228,7 +233,7 @@ class AkeebaControllerBackup extends F0FController
 	private function _checkPermissions()
 	{
 		// Is frontend backup enabled?
-		$febEnabled = AEPlatform::getInstance()->get_platform_configuration_option('frontend_enable', 0) != 0;
+		$febEnabled = Platform::getInstance()->get_platform_configuration_option('frontend_enable', 0) != 0;
 
 		if (!$febEnabled)
 		{
@@ -240,7 +245,7 @@ class AkeebaControllerBackup extends F0FController
 
 		// Is the key good?
 		$key = $this->input->get('key', '', 'none', 2);
-		$validKey = AEPlatform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
+		$validKey = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
 		$validKeyTrim = trim($validKey);
 
 		if (($key != $validKey) || (empty($validKeyTrim)))
@@ -265,7 +270,7 @@ class AkeebaControllerBackup extends F0FController
 		$session = JFactory::getSession();
 		$session->set('profile', $profile, 'akeeba');
 
-		AEPlatform::getInstance()->load_configuration($profile);
+		Platform::getInstance()->load_configuration($profile);
 	}
 
 	private function _customRedirect($url, $header = '302 Found')

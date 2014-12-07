@@ -7,4 +7,4 @@
  * @since 2.1
  */
 
-require_once JPATH_COMPONENT_ADMINISTRATOR.'/plugins/models/extfilter.php';
+require_once __DIR__ . '/extfilters.php';

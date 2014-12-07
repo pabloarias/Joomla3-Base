@@ -1,4 +1,51 @@
 <?php die();?>
+Akeeba Backup 4.1.0.rc3
+================================================================================
+! DirectoryIterator::getExtension is not compatible with PHP 5.3.4 and 5.3.5
+! As we announced 18 months ago, we require PHP 5.3.4 or later. If your site doesn't meet this requirement a very stern warning will be issued.
+- Removed the (broken) multipart upload from the legacy S3 post-processing engine. Please use the new "Upload to Amazon S3" option for multipart uploads.
+~ Removing references to JParameter (it was removed in Joomla! 3.4 alpha)
+# [HIGH] Some Pro features (restore SRPs, site transfer wizard) not working because their files are deleted on installation
+# [HIGH] Bug in third party Guzzle library causes Amazon S3 multipart uploads of archives larger than the remaining RAM size to fail due to memory exhaustion.
+# [MEDIUM] The backup would halt if the upload to S3 failed instead of simply raising a warning
+# [MEDIUM] System Restore Points were throwing a fatal error while applying size quota
+# [MEDIUM] Fatal error on sites with open_basedir restrictions on the site's root
+# [LOW] System Restore Points throwing warnings
+
+Akeeba Backup 4.1.0.rc2
+================================================================================
+! Settings would be lost when upgrading to 4.1.0.rc1 due to the loss of the settings' encryption key on upgrade
+# [LOW] 500 error when a specified engine (scanner, archiver, post-processing, dump) doesn't exist
+
+Akeeba Backup 4.1.0.rc1
+================================================================================
++ New and improved backup engine
++ Installation integrity check automatically spots missing, out of date or tampered files and warns you
++ ALICE will check if Additional Database information are correct [PRO]
++ ANGIE: Add warning about Live site URL on Windows
++ You can now sort and search entries in the Profiles Management page
++ Using advanced selects (Chosen) for backup profile lists under Joomla! 3
+- Removed inconsistent submenus at the top of some pages
+~ The following features are deprecated and will be removed in a later version: site transfer wizard, system restore points, extension filters, lite mode, the old Amazon S3 integration (there is a new Amazon S3 integration which has replaced it)
+~ Changed the .htaccess files to be compatible with Apache 2.4
+~ Improved styling for detected issues
+~ Set the commonly used ports for FTP/FTPS and SFTP transfers in the Site Transfer Wizard [PRO]
+# [MEDIUM] ANGIE: The option "No auto value on zero" was not working
+# [MEDIUM] The data file pointer can be null sometimes when using multipart archives causing backup failures
+# [MEDIUM] Fixed error while trying to fetch Super Administrators email during frontend backup
+# [MEDIUM] ALICE: The "Backup engine state saving issues" and "Timeout while backing up" tests returned wrong results [PRO]
+# [MEDIUM] Upload to remote storage from the Manage Backups page was broken for Amazon S3 multipart uploads [PRO]
+# [MEDIUM] ae/gh-11 Race condition could prevent the reliable creation of JPS (encrypted) archives [PRO]
+# [MEDIUM] gh-522 "Back to standard installer" still results in a System Restore Point backup being taken [PRO]
+# [LOW] Tooltips not showing for engine parameters when selecting a different engine (e.g. changing the Archiver Engine from JPA to ZIP)
+# [LOW] The lib_joomla translation might not be loaded when an extension is installed and the System - System Restore Points plugin is enabled [PRO]
+# [LOW] ANGIE: Fixed table name abstraction when no table prefix is given
+# [LOW] ANGIE: Fixed loading of translations
+# [LOW] SFTP post-processing engine did not mark successfully uploaded backup as Remote [PRO]
+# [LOW] SFTP post-processing engine could not fetch the archive back to the server [PRO]
+# [LOW] ANGIE: Fixed .htaccess parsing while restoring a WordPress site
+# [LOW] ANGIE: Fixed removing installation directory while restoring a WordPress site
+
 Akeeba Backup 4.0.5
 ================================================================================
 # [HIGH] The integrated restoration is broken after the last security update

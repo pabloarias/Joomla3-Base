@@ -1,9 +1,9 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
- * @since 1.3
+ * @license   GNU General Public License version 3, or later
+ * @since     1.3
  */
 
 // Protect from unauthorized access
@@ -15,12 +15,13 @@ defined('_JEXEC') or die();
  */
 class AkeebaControllerProfiles extends AkeebaControllerDefault
 {
-	public function  __construct($config = array()) {
+	public function  __construct($config = array())
+	{
 		parent::__construct($config);
 
-		$base_path = JPATH_COMPONENT_ADMINISTRATOR.'/plugins';
-		$model_path = $base_path.'/models';
-		$view_path = $base_path.'/views';
+		$base_path = JPATH_COMPONENT_ADMINISTRATOR . '/plugins';
+		$model_path = $base_path . '/models';
+		$view_path = $base_path . '/views';
 		$this->addModelPath($model_path);
 		$this->addViewPath($view_path);
 	}
@@ -32,12 +33,15 @@ class AkeebaControllerProfiles extends AkeebaControllerDefault
 	public function copy()
 	{
 		// CSRF prevention
-		if($this->csrfProtection) {
+		if ($this->csrfProtection)
+		{
 			$this->_csrfProtection();
 		}
 
+		/** @var AkeebaModelProfiles $model */
 		$model = $this->getThisModel();
-		if($model->copy())
+
+		if ($model->copy())
 		{
 			// Show a "COPY OK" message
 			$message = JText::_('PROFILE_COPY_OK');
@@ -50,9 +54,10 @@ class AkeebaControllerProfiles extends AkeebaControllerDefault
 		{
 			// Show message on failure
 			$message = JText::_('PROFILE_COPY_ERROR');
-			$message .= ' ['.$model->getError().']';
+			$message .= ' [' . $model->getError() . ']';
 			$type = 'error';
 		}
+
 		// Redirect
 		$this->setRedirect('index.php?option=com_akeeba&view=profiles', $message, $type);
 	}
@@ -65,15 +70,15 @@ class AkeebaControllerProfiles extends AkeebaControllerDefault
 		$this->_csrfProtection();
 
 		$user = JFactory::getUser();
-		if (!$user->authorise('akeeba.configure', 'com_akeeba')) {
+
+		if (!$user->authorise('akeeba.configure', 'com_akeeba'))
+		{
 			return JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
-		// Get the user
-		$user		= JFactory::getUser();
-
 		// Get some data from the request
-		$file		= F0FInput::getVar('importfile', '', $_FILES, 'array');
+		$filesInput = JFactory::getApplication()->input->files;
+		$file = $filesInput->get('importfile', array(), 'array');
 
 		if (isset($file['name']))
 		{
@@ -85,41 +90,43 @@ class AkeebaControllerProfiles extends AkeebaControllerDefault
 			$data = json_decode($data, true);
 
 			// Check for data validity
-			$isValid = is_array($data) && !empty($data);
-			if($isValid) {
-				$isValid = $isValid && array_key_exists('description', $data);
-			}
-			if($isValid) {
-				$isValid = $isValid && array_key_exists('configuration', $data);
-			}
-			if($isValid) {
-				$isValid = $isValid && array_key_exists('filters', $data);
-			}
+			$isValid =
+				is_array($data) &&
+				!empty($data) &&
+				array_key_exists('description', $data) &&
+				array_key_exists('configuration', $data) &&
+				array_key_exists('filters', $data);
 
-			if(!$isValid) {
+			if (!$isValid)
+			{
 				$this->setRedirect('index.php?option=com_akeeba&view=profiles', JText::_('COM_AKEEBA_PROFILES_ERR_IMPORT_INVALID'), 'error');
+
 				return false;
 			}
 
 			// Unset the id, if it exists
-			if(array_key_exists('id', $data)) {
+			if (array_key_exists('id', $data))
+			{
 				unset($data['id']);
 			}
 
 			// Try saving the profile
 			$result = $this->getThisModel()->getTable()->save($data);
 
-			if($result) {
+			if ($result)
+			{
 				$this->setRedirect('index.php?option=com_akeeba&view=profiles', JText::_('COM_AKEEBA_PROFILES_MSG_IMPORT_COMPLETE'));
-			} else {
+			}
+			else
+			{
 				$this->setRedirect('index.php?option=com_akeeba&view=profiles', JText::_('COM_AKEEBA_PROFILES_ERR_IMPORT_FAILED'), 'error');
 			}
 		}
 		else
 		{
 			$this->setRedirect('index.php?option=com_akeeba&view=profiles', JText::_('MSG_UPLOAD_INVALID_REQUEST'), 'error');
+
 			return false;
 		}
-
 	}
 }

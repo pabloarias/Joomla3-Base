@@ -9,6 +9,10 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+use Akeeba\Engine\Util\Comconfig;
+
 class AkeebaModelSchedules extends F0FModel
 {
 	public function getPaths()
@@ -36,7 +40,7 @@ class AkeebaModelSchedules extends F0FModel
 		);
 
 		// Get the profile ID
-		$profileid = AEPlatform::getInstance()->get_active_profile();
+		$profileid = Platform::getInstance()->get_active_profile();
 
 		// Get the absolute path to the site's root
 		$absolute_root = rtrim(realpath(JPATH_ROOT), DIRECTORY_SEPARATOR);
@@ -49,10 +53,10 @@ class AkeebaModelSchedules extends F0FModel
 			$ret->info->php_path = '/path/to/php';
 		}
 		// Get front-end backup secret key
-		$ret->info->secret = AEUtilComconfig::getValue('frontend_secret_word', '');
-		$ret->info->feenabled = AEUtilComconfig::getValue('frontend_enable', false);
+		$ret->info->secret = Comconfig::getValue('frontend_secret_word', '');
+		$ret->info->feenabled = Comconfig::getValue('frontend_enable', false);
 		// Get root URL
-		$ret->info->root_url = rtrim(AEUtilComconfig::getValue('siteurl', ''), '/');
+		$ret->info->root_url = rtrim(Comconfig::getValue('siteurl', ''), '/');
 
 		// Get information for CLI CRON script
 		if(AKEEBA_PRO) {
@@ -106,7 +110,7 @@ class AkeebaModelSchedules extends F0FModel
         );
 
         // Get the profile ID
-        $profileid = AEPlatform::getInstance()->get_active_profile();
+        $profileid = Platform::getInstance()->get_active_profile();
 
         // Get the absolute path to the site's root
         $absolute_root = rtrim(realpath(JPATH_ROOT), DIRECTORY_SEPARATOR);
@@ -125,10 +129,10 @@ class AkeebaModelSchedules extends F0FModel
         }
 
         // Get front-end backup secret key
-        $ret->info->secret    = AEUtilComconfig::getValue('frontend_secret_word', '');
-        $ret->info->feenabled = AEUtilComconfig::getValue('failure_frontend_enable', false);
+        $ret->info->secret    = Comconfig::getValue('frontend_secret_word', '');
+        $ret->info->feenabled = Comconfig::getValue('failure_frontend_enable', false);
         // Get root URL
-        $ret->info->root_url = rtrim(AEUtilComconfig::getValue('siteurl', ''), '/');
+        $ret->info->root_url = rtrim(Comconfig::getValue('siteurl', ''), '/');
 
         // Get information for CLI CRON script
         if(AKEEBA_PRO)

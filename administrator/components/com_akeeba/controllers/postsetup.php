@@ -9,6 +9,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 class AkeebaControllerPostsetup extends AkeebaControllerDefault
 {
 	public function execute($task)
@@ -116,7 +119,7 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 		}
 		else
 		{
-			$params = new JParameter($rawparams);
+			$params = new JRegistry($rawparams);
 		}
 
 		if ($acceptlicense && $acceptsupport)
@@ -219,14 +222,14 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 
 		foreach ($profiles as $profile_id)
 		{
-			AEFactory::nuke();
-			AEPlatform::getInstance()->load_configuration($profile_id);
-			$config = AEFactory::getConfiguration();
+			Factory::nuke();
+			Platform::getInstance()->load_configuration($profile_id);
+			$config = Factory::getConfiguration();
 			$config->set('akeeba.advanced.embedded_installer', 'angie');
-			AEPlatform::getInstance()->save_configuration($profile_id);
+			Platform::getInstance()->save_configuration($profile_id);
 		}
 
-		AEFactory::nuke();
-		AEPlatform::getInstance()->load_configuration($oldProfile);
+		Factory::nuke();
+		Platform::getInstance()->load_configuration($oldProfile);
 	}
 }

@@ -10,6 +10,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Platform;
+use Akeeba\Engine\Factory;
+
 /**
  * Filesystem Filter model
  *
@@ -28,7 +31,7 @@ class AkeebaModelFsfilters extends F0FModel
 		// Initialize the absolute directory root
 		$directory = substr($root,0);
 		// Replace stock directory tags, like [SITEROOT]
-		$stock_dirs = AEPlatform::getInstance()->get_stock_directories();
+		$stock_dirs = Platform::getInstance()->get_stock_directories();
 		if(!empty($stock_dirs))
 		{
 			foreach($stock_dirs as $key => $replacement)
@@ -36,9 +39,9 @@ class AkeebaModelFsfilters extends F0FModel
 				$directory = str_replace($key, $replacement, $directory);
 			}
 		}
-		$directory = AEUtilFilesystem::TranslateWinPath($directory);
+		$directory = Factory::getFilesystemTools()->TranslateWinPath($directory);
 		// Clean and add the node
-		$node = AEUtilFilesystem::TranslateWinPath($node);
+		$node = Factory::getFilesystemTools()->TranslateWinPath($node);
 		if( ($node == '/') ) $node = ''; // Just a dir. sep. is treated as no dir at all
 		// Trim leading and trailing slashes
 		$node = trim($node, '/');
@@ -49,7 +52,7 @@ class AkeebaModelFsfilters extends F0FModel
 		if(!empty($node)) $node .= '/';
 
 		// Get a filters instance
-		$filters = AEFactory::getFilters();
+		$filters = Factory::getFilters();
 
 		// Detect PHP 5.2.5or earlier, with broken json_decode implementation
 		$phpversion = PHP_VERSION;
@@ -76,14 +79,14 @@ class AkeebaModelFsfilters extends F0FModel
 		}
 
 		// Get a listing of folders and process it
-		$folders = AEUtilScanner::getFolders($directory);
+		$folders = Factory::getFileLister()->getFolders($directory);
 		asort($folders);
 		$folders_out = array();
 		if(!empty($folders))
 		{
 			foreach($folders as $folder)
 			{
-				$folder = AEUtilFilesystem::TranslateWinPath($folder);
+				$folder = Factory::getFilesystemTools()->TranslateWinPath($folder);
 				// Filter out files whose names result to an empty JSON representation
 				if(AKEEBA_SAFE_JSON)
 				{
@@ -121,7 +124,7 @@ class AkeebaModelFsfilters extends F0FModel
 		$folders = $folders_out;
 
 		// Get a listing of files and process it
-		$files = AEUtilScanner::getFiles($directory);
+		$files = Factory::getFileLister()->getFiles($directory);
 		asort($files);
 		$files_out = array();
 		if(!empty($files))
@@ -250,11 +253,11 @@ class AkeebaModelFsfilters extends F0FModel
 			'newstate'=> false
 		);
 		// Get a reference to the global Filters object
-		$filters = AEFactory::getFilters();
+		$filters = Factory::getFilters();
 		// Get the object to toggle
 		$node = $this->glue_crumbs($crumbs, $item);
 		// Get the specific filter object
-		$filter = AEFactory::getFilterObject($filter);
+		$filter = Factory::getFilterObject($filter);
 		// Toggle the filter
 		$success = $filter->toggle($root, $node, $new_status);
 		// Save the data on success
@@ -281,11 +284,11 @@ class AkeebaModelFsfilters extends F0FModel
 			'newstate'=> false
 		);
 		// Get a reference to the global Filters object
-		$filters = AEFactory::getFilters();
+		$filters = Factory::getFilters();
 		// Get the object to toggle
 		$node = $this->glue_crumbs($crumbs, $item);
 		// Get the specific filter object
-		$filter = AEFactory::getFilterObject($filter);
+		$filter = Factory::getFilterObject($filter);
 		// Toggle the filter
 		$success = $filter->set($root, $node);
 		// Save the data on success
@@ -312,12 +315,12 @@ class AkeebaModelFsfilters extends F0FModel
 			'newstate'=> false
 		);
 		// Get a reference to the global Filters object
-		$filters = AEFactory::getFilters();
+		$filters = Factory::getFilters();
 		// Get the object to toggle
 		$old_node = $this->glue_crumbs($crumbs, $old_item);
 		$new_node = $this->glue_crumbs($crumbs, $new_item);
 		// Get the specific filter object
-		$filter = AEFactory::getFilterObject($filter);
+		$filter = Factory::getFilterObject($filter);
 		// Toggle the filter
 		if(!empty($old_item))
 		{
@@ -347,7 +350,7 @@ class AkeebaModelFsfilters extends F0FModel
 	public function &get_filters($root)
 	{
 		// A reference to the global Akeeba Engine filter object
-		$filters = AEFactory::getFilters();
+		$filters = Factory::getFilters();
 		// Initialize the return array
 		$ret = array();
 		// Define the known filter types and loop through them
@@ -391,14 +394,14 @@ class AkeebaModelFsfilters extends F0FModel
 	public function resetFilters($root)
 	{
 		// Get a reference to the global Filters object
-		$filters = AEFactory::getFilters();
-		$filter = AEFactory::getFilterObject('directories');
+		$filters = Factory::getFilters();
+		$filter = Factory::getFilterObject('directories');
 		$filter->reset($root);
-		$filter = AEFactory::getFilterObject('files');
+		$filter = Factory::getFilterObject('files');
 		$filter->reset($root);
-		$filter = AEFactory::getFilterObject('skipdirs');
+		$filter = Factory::getFilterObject('skipdirs');
 		$filter->reset($root);
-		$filter = AEFactory::getFilterObject('skipfiles');
+		$filter = Factory::getFilterObject('skipfiles');
 		$filter->reset($root);
 		$filters->save();
 		return $this->make_listing($root);

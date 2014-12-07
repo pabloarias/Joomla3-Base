@@ -30,7 +30,8 @@ class AkeebaToolbar extends F0FToolbar
 	public function onCpanelsAdd()
 	{
 		JToolBarHelper::title(JText::_('AKEEBA').' :: <small>'.JText::_('AKEEBA_CONTROLPANEL').'</small>','akeeba');
-		$this->_renderDefaultSubmenus('cpanel');
+
+		// $this->_renderDefaultSubmenus('cpanel');
 	}
 
 	public function onBackups()
@@ -38,7 +39,8 @@ class AkeebaToolbar extends F0FToolbar
 		// Add some buttons
 		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
 		JToolBarHelper::spacer();
-		$this->_renderDefaultSubmenus('backup');
+
+		// $this->_renderDefaultSubmenus('backup');
 	}
 
 	public function onConfwizsAdd()
@@ -85,7 +87,7 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::cancel();
 		JToolBarHelper::spacer();
 
-		$this->_renderDefaultSubmenus('config');
+		// $this->_renderDefaultSubmenus('config');
 	}
 
 	public function onStatisticsBrowse()
@@ -176,7 +178,7 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
 		JToolBarHelper::spacer();
 
-		$this->_renderDefaultSubmenus('log');
+		// $this->_renderDefaultSubmenus('log');
 	}
 
 	public function onFsfiltersBrowse()
@@ -267,7 +269,7 @@ class AkeebaToolbar extends F0FToolbar
 		);
 
 		foreach($submenus as $view => $key) {
-			$link = JURI::base().'index.php?option='.$this->component.'&view='.$view;
+			$link = JUri::base().'index.php?option='.$this->component.'&view='.$view;
 			$this->appendLink(JText::_($key), $link, $view == $active);
 		}
 	}

@@ -1,13 +1,16 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
- * @since 1.3
+ * @license   GNU General Public License version 3, or later
+ * @since     1.3
  */
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
+
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
 
 /**
  * The Profiles MVC model class
@@ -16,7 +19,8 @@ defined('_JEXEC') or die();
 class AkeebaModelProfiles extends F0FModel
 {
 
-	public function __construct($config = array()) {
+	public function __construct($config = array())
+	{
 		parent::__construct($config);
 		// This fixes an issue where sometimes no profiles are shown
 		$this->setState('configuration', '');
@@ -37,6 +41,7 @@ class AkeebaModelProfiles extends F0FModel
 	 * Gets a list of all the profiles as an array of objects
 	 *
 	 * @param bool $overrideLimits If set, it will list all entries, without applying limits
+	 *
 	 * @return array List of profiles
 	 */
 	public function getProfilesList($overrideLimits = false)
@@ -54,21 +59,23 @@ class AkeebaModelProfiles extends F0FModel
 		$id = $this->getId();
 
 		// Check for invalid id's (not numeric, or <= 0)
-		if( (!is_numeric($id)) || ($id <= 0) )
+		if (( !is_numeric($id)) || ($id <= 0))
 		{
 			$this->setError(JText::_('PROFILE_INVALID_ID'));
+
 			return false;
 		}
 
-		$profile = F0FModel::getTmpInstance('Profiles', 'AkeebaModel')
-			->setId($id)
-			->getItem()
-			->getData();
+		$profile       = F0FModel::getTmpInstance('Profiles', 'AkeebaModel')
+								 ->setId($id)
+								 ->getItem()
+								 ->getData();
 		$profile['id'] = 0;
-		$oProfile = $this->getTable();
+		$oProfile      = $this->getTable();
 		$oProfile->reset();
 		$status = $oProfile->save($profile);
-		if($status) {
+		if ($status)
+		{
 			$this->setId($oProfile->id);
 		}
 
@@ -83,34 +90,39 @@ class AkeebaModelProfiles extends F0FModel
 	public function checkID()
 	{
 		// Check for invalid id's (not numeric, or <= 0)
-		if( (!is_numeric($this->_id)) || ($this->_id <= 0) ) return false;
+		if (( !is_numeric($this->_id)) || ($this->_id <= 0))
+		{
+			return false;
+		}
 
 		// Check for existing ID, or return false
 		$myProfile = $this->getProfile();
+
 		return is_object($myProfile);
 	}
 
 	public function getPostProcessingEnginePerProfile()
 	{
 		// Cache the current profile
-		$session = JFactory::getSession();
+		$session          = JFactory::getSession();
 		$currentProfileID = $session->get('profile', null, 'akeeba');
 
-		$db = $this->getDBO();
+		$db    = $this->getDBO();
 		$query = $db->getQuery(true)
-			->select($db->qn('id'))
-			->from($db->qn('#__ak_profiles'));
+					->select($db->qn('id'))
+					->from($db->qn('#__ak_profiles'));
 		$db->setQuery($query);
 		$profiles = $db->loadColumn();
 
 		$engines = array();
-		foreach($profiles as $profileID) {
-			AEPlatform::getInstance()->load_configuration($profileID);
-			$pConf = AEFactory::getConfiguration();
-			$engines[$profileID] = $pConf->get('akeeba.advanced.proc_engine');
+		foreach ($profiles as $profileID)
+		{
+			Platform::getInstance()->load_configuration($profileID);
+			$pConf               = Factory::getConfiguration();
+			$engines[$profileID] = $pConf->get('akeeba.advanced.postproc_engine');
 		}
 
-		AEPlatform::getInstance()->load_configuration($currentProfileID);
+		Platform::getInstance()->load_configuration($currentProfileID);
 
 		return $engines;
 	}

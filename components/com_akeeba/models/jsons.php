@@ -13,17 +13,15 @@ defined('_JEXEC') or die();
 // JSON API version number
 define('AKEEBA_JSON_API_VERSION', '320');
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+use Akeeba\Engine\Util\Encrypt;
+
 /*
  * Short API version history:
  * 300	First draft. Basic backup working. Encryption semi-broken.
  * 316	Fixed download feature.
  */
-
-// Force load the AEUtilEncrypt class if it's Akeeba Backup Professional
-if (AKEEBA_PRO == 1)
-{
-	$dummy = new AEUtilEncrypt;
-}
 
 if (!defined('AKEEBA_BACKUP_ORIGIN'))
 {
@@ -72,7 +70,7 @@ class AkeebaModelJsons extends F0FModel
 	public function execute($json)
 	{
 		// Check if we're activated
-		$enabled = AEPlatform::getInstance()->get_platform_configuration_option('frontend_enable', 0);
+		$enabled = Platform::getInstance()->get_platform_configuration_option('frontend_enable', 0);
 		if (!$enabled)
 		{
 			$this->data = 'Access denied';
@@ -98,7 +96,7 @@ class AkeebaModelJsons extends F0FModel
 		// Request format: {encapsulation, body{ [key], [challenge], method, [data] }} or {[challenge], method, [data]}
 		if (isset($request->encapsulation) && isset($request->body))
 		{
-			if (!class_exists('AEUtilEncrypt') && !($request->encapsulation == self::ENCAPSULATION_RAW))
+			if (!class_exists('\\Akeeba\\Engine\\Util\\Encrypt') && !($request->encapsulation == self::ENCAPSULATION_RAW))
 			{
 				// Encrypted request found, but there is no encryption class available!
 				$this->data = 'This server does not support encrypted requests';
@@ -115,7 +113,7 @@ class AkeebaModelJsons extends F0FModel
 					if (!isset($body))
 					{
 						$request->body = base64_decode($request->body);
-						$body = AEUtilEncrypt::AESDecryptCBC($request->body, $this->serverKey(), 128);
+						$body = Factory::getEncryption()->AESDecryptCBC($request->body, $this->serverKey(), 128);
 					}
 					break;
 
@@ -123,21 +121,21 @@ class AkeebaModelJsons extends F0FModel
 					if (!isset($body))
 					{
 						$request->body = base64_decode($request->body);
-						$body = AEUtilEncrypt::AESDecryptCBC($request->body, $this->serverKey(), 256);
+						$body = Factory::getEncryption()->AESDecryptCBC($request->body, $this->serverKey(), 256);
 					}
 					break;
 
 				case self::ENCAPSULATION_AESCTR128:
 					if (!isset($body))
 					{
-						$body = AEUtilEncrypt::AESDecryptCtr($request->body, $this->serverKey(), 128);
+						$body = Factory::getEncryption()->AESDecryptCtr($request->body, $this->serverKey(), 128);
 					}
 					break;
 
 				case self::ENCAPSULATION_AESCTR256:
 					if (!isset($body))
 					{
-						$body = AEUtilEncrypt::AESDecryptCtr($request->body, $this->serverKey(), 256);
+						$body = Factory::getEncryption()->AESDecryptCtr($request->body, $this->serverKey(), 256);
 					}
 					break;
 
@@ -309,19 +307,19 @@ class AkeebaModelJsons extends F0FModel
 				break;
 
 			case self::ENCAPSULATION_AESCTR128:
-				$data = AEUtilEncrypt::AESEncryptCtr($data, $this->password, 128);
+				$data = Factory::getEncryption()->AESEncryptCtr($data, $this->password, 128);
 				break;
 
 			case self::ENCAPSULATION_AESCTR256:
-				$data = AEUtilEncrypt::AESEncryptCtr($data, $this->password, 256);
+				$data = Factory::getEncryption()->AESEncryptCtr($data, $this->password, 256);
 				break;
 
 			case self::ENCAPSULATION_AESCBC128:
-				$data = base64_encode(AEUtilEncrypt::AESEncryptCBC($data, $this->password, 128));
+				$data = base64_encode(Factory::getEncryption()->AESEncryptCBC($data, $this->password, 128));
 				break;
 
 			case self::ENCAPSULATION_AESCBC256:
-				$data = base64_encode(AEUtilEncrypt::AESEncryptCBC($data, $this->password, 256));
+				$data = base64_encode(Factory::getEncryption()->AESEncryptCBC($data, $this->password, 256));
 				break;
 		}
 
@@ -344,7 +342,7 @@ class AkeebaModelJsons extends F0FModel
 
 		if (is_null($key))
 		{
-			$key = AEPlatform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
+			$key = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
 		}
 
 		return $key;
@@ -405,7 +403,7 @@ class AkeebaModelJsons extends F0FModel
 		extract($config);
 
 		// Nuke the factory
-		AEFactory::nuke();
+		Factory::nuke();
 
 		// Set the profile
 		$profile = (int)$profile;
@@ -440,7 +438,7 @@ class AkeebaModelJsons extends F0FModel
 
 		$session = JFactory::getSession();
 		$session->set('profile', $profile, 'akeeba');
-		AEPlatform::getInstance()->load_configuration($profile);
+		Platform::getInstance()->load_configuration($profile);
 
 		// Use the default description if none specified
 		if (empty($description))
@@ -456,18 +454,19 @@ class AkeebaModelJsons extends F0FModel
 		}
 
 		// Start the backup
-		AECoreKettenrad::reset(array(
+		Factory::resetState(array(
 			'maxrun' => 0
 		));
 
-		AEUtilTempfiles::deleteTempFiles();
+		Factory::getTempFiles()->deleteTempFiles();
 
 		$tempVarsTag = AKEEBA_BACKUP_ORIGIN;
 		$tempVarsTag .= empty($$backupid) ? '' : ('.' . $$backupid);
 
-		AEUtilTempvars::reset($tempVarsTag);
+		Factory::getFactoryStorage()->reset($tempVarsTag);
 
-		$kettenrad = AECoreKettenrad::load(AKEEBA_BACKUP_ORIGIN, $backupid);
+		Factory::loadState(AKEEBA_BACKUP_ORIGIN, $backupid);
+		$kettenrad = Factory::getKettenrad();
 		$kettenrad->setBackupId($backupid);
 
 		$options = array(
@@ -477,7 +476,7 @@ class AkeebaModelJsons extends F0FModel
 		);
 		$kettenrad->setup($options); // Setting up the engine
 		$array = $kettenrad->tick(); // Initializes the init domain
-		AECoreKettenrad::save(AKEEBA_BACKUP_ORIGIN, $backupid);
+		Factory::saveState(AKEEBA_BACKUP_ORIGIN, $backupid);
 
 		$array = $kettenrad->getStatusArray();
 		if ($array['Error'] != '')
@@ -490,7 +489,7 @@ class AkeebaModelJsons extends F0FModel
 		}
 		else
 		{
-			$statistics = AEFactory::getStatistics();
+			$statistics = Factory::getStatistics();
 			$array['BackupID'] = $statistics->getId();
 			$array['HasRun'] = 1; // Force the backup to go on.
 			return $array;
@@ -547,7 +546,7 @@ class AkeebaModelJsons extends F0FModel
 			'akeeba.basic.backup_type'                    => 'full',
 			'akeeba.basic.backup_type'                    => 'full',
 			'akeeba.advanced.archiver_engine'             => 'jpa',
-			'akeeba.advanced.proc_engine'                 => 'none',
+			'akeeba.advanced.postproc_engine'             => 'none',
 			'akeeba.advanced.embedded_installer'          => 'none',
 			'engine.archiver.common.dereference_symlinks' => true, // hopefully no extension has symlinks inside its own directories...
 			'core.filters.srp.type'                       => $config['type'],
@@ -615,7 +614,7 @@ class AkeebaModelJsons extends F0FModel
 
 		// Set a custom finalization action queue
 		$configOverrides['volatile.core.finalization.action_handlers'] = array(
-			new AEFinalizationSrpquotas()
+			new \Akeeba\Engine\Finalization\Srpquotas()
 		);
 		$configOverrides['volatile.core.finalization.action_queue'] = array(
 			'remove_temp_files',
@@ -625,20 +624,21 @@ class AkeebaModelJsons extends F0FModel
 		);
 
 		// Apply the configuration overrides, please
-		$platform = AEPlatform::getInstance();
+		$platform = Platform::getInstance();
 		$platform->configOverrides = $configOverrides;
 
 		// Nuke the factory
-		AEFactory::nuke();
+		Factory::nuke();
 
 		$profile = 1;
 		$session = JFactory::getSession();
 		$session->set('profile', $profile, 'akeeba');
-		AEPlatform::getInstance()->load_configuration($profile);
+		Platform::getInstance()->load_configuration($profile);
 
-		AEUtilTempvars::reset('restorepoint');
+		Factory::getFactoryStorage()->reset('restorepoint');
 
-		$kettenrad = AECoreKettenrad::load('restorepoint');
+		Factory::loadState('restorepoint');
+		$kettenrad = Factory::getKettenrad();
 		$options = array(
 			'description' => $description,
 			'comment'     => $comment,
@@ -651,7 +651,7 @@ class AkeebaModelJsons extends F0FModel
 			$kettenrad->tick();
 		}
 		$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-		AECoreKettenrad::save($tag);
+		Factory::saveState($tag);
 
 		$array = $kettenrad->getStatusArray();
 		if ($array['Error'] != '')
@@ -664,7 +664,7 @@ class AkeebaModelJsons extends F0FModel
 		}
 		else
 		{
-			$statistics = AEFactory::getStatistics();
+			$statistics = Factory::getStatistics();
 			$array['BackupID'] = $statistics->getId();
 			$array['HasRun'] = 1; // Force the backup to go on.
 			return $array;
@@ -684,22 +684,23 @@ class AkeebaModelJsons extends F0FModel
 		// Try to set the profile from the setup parameters
 		if (!empty($profile))
 		{
-			$registry = AEFactory::getConfiguration();
+			$registry = Factory::getConfiguration();
 			$session = JFactory::getSession();
 			$session->set('profile', $profile, 'akeeba');
 		}
 
-		$kettenrad = AECoreKettenrad::load($tag, $backupid);
+		Factory::loadState($tag, $backupid);
+		$kettenrad = Factory::getKettenrad();
 		$kettenrad->setBackupId($backupid);
 
-		$registry = AEFactory::getConfiguration();
+		$registry = Factory::getConfiguration();
 		$session = JFactory::getSession();
 		$session->set('profile', $registry->activeProfile, 'akeeba');
 
 		$array = $kettenrad->tick();
 		$ret_array = $kettenrad->getStatusArray();
 		$array['Progress'] = $ret_array['Progress'];
-		AECoreKettenrad::save($tag, $backupid);
+		Factory::saveState($tag, $backupid);
 
 		if ($array['Error'] != '')
 		{
@@ -711,8 +712,8 @@ class AkeebaModelJsons extends F0FModel
 		}
 		elseif ($array['HasRun'] == false)
 		{
-			AEFactory::nuke();
-			AEUtilTempvars::reset();
+			Factory::nuke();
+			Factory::getFactoryStorage()->reset();
 		}
 
 		return $array;
@@ -745,10 +746,10 @@ class AkeebaModelJsons extends F0FModel
 		extract($config);
 
 		// Get the basic statistics
-		$record = AEPlatform::getInstance()->get_statistics($backup_id);
+		$record = Platform::getInstance()->get_statistics($backup_id);
 
 		// Get a list of filenames
-		$backup_stats = AEPlatform::getInstance()->get_statistics($backup_id);
+		$backup_stats = Platform::getInstance()->get_statistics($backup_id);
 
 		// Backup record doesn't exist
 		if (empty($backup_stats))
@@ -759,7 +760,7 @@ class AkeebaModelJsons extends F0FModel
 			return 'Invalid backup record identifier';
 		}
 
-		$filenames = AEUtilStatistics::get_all_filenames($record);
+		$filenames = Factory::getStatistics()->get_all_filenames($record);
 
 		if (empty($filenames))
 		{
@@ -802,7 +803,7 @@ class AkeebaModelJsons extends F0FModel
 		$config = array_merge($defConfig, $config);
 		extract($config);
 
-		$backup_stats = AEPlatform::getInstance()->get_statistics($backup_id);
+		$backup_stats = Platform::getInstance()->get_statistics($backup_id);
 		if (empty($backup_stats))
 		{
 			// Backup record doesn't exist
@@ -811,7 +812,7 @@ class AkeebaModelJsons extends F0FModel
 
 			return 'Invalid backup record identifier';
 		}
-		$files = AEUtilStatistics::get_all_filenames($backup_stats);
+		$files = Factory::getStatistics()->get_all_filenames($backup_stats);
 
 		if ((count($files) < $part_id) || ($part_id <= 0))
 		{
@@ -955,7 +956,7 @@ class AkeebaModelJsons extends F0FModel
 		$config = array_merge($defConfig, $config);
 		extract($config);
 
-		$filename = AEUtilLogger::logName($tag);
+		$filename = Factory::getLog()->getLogFilename($tag);
 		$buffer = file_get_contents($filename);
 
 		switch ($this->encapsulation)
@@ -992,7 +993,7 @@ class AkeebaModelJsons extends F0FModel
 		$config = array_merge($defConfig, $config);
 		extract($config);
 
-		$backup_stats = AEPlatform::getInstance()->get_statistics($backup_id);
+		$backup_stats = Platform::getInstance()->get_statistics($backup_id);
 		if (empty($backup_stats))
 		{
 			// Backup record doesn't exist
@@ -1003,7 +1004,7 @@ class AkeebaModelJsons extends F0FModel
 			flush();
 			JFactory::getApplication()->close();
 		}
-		$files = AEUtilStatistics::get_all_filenames($backup_stats);
+		$files = Factory::getStatistics()->get_all_filenames($backup_stats);
 
 		if ((count($files) < $part_id) || ($part_id <= 0))
 		{

@@ -10,6 +10,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Platform;
+
 /**
  * MVC View for Log
  *
@@ -31,7 +33,7 @@ class AkeebaViewLog extends F0FViewHtml
 		$this->tag = $tag;
 
 		// Get profile ID
-		$profileid = AEPlatform::getInstance()->get_active_profile();
+		$profileid = Platform::getInstance()->get_active_profile();
 		$this->profileid = $profileid;
 
 		// Get profile name

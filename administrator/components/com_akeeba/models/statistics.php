@@ -9,6 +9,9 @@
  */
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * Akeeba statistics model class
  * used for all requirements of backup statistics in JP
@@ -70,13 +73,13 @@ class AkeebaModelStatistics extends F0FModel
 			$limit = 0;
 			$filters = null;
 		}
-		$allStats = AEPlatform::getInstance()->get_statistics_list(array(
+		$allStats = Platform::getInstance()->get_statistics_list(array(
 			'limitstart'	=> $limitstart,
 			'limit'			=> $limit,
 			'filters'		=> $filters,
 			'order'			=> $order
 		));
-		$valid = AEPlatform::getInstance()->get_valid_backup_records();
+		$valid = Platform::getInstance()->get_valid_backup_records();
 		if(empty($valid)) $valid = array();
 
 		// This will hold the entries whose files are no longer present and are
@@ -92,7 +95,7 @@ class AkeebaModelStatistics extends F0FModel
 				$total_size = 0;
 				if(in_array($stat['id'], $valid))
 				{
-					$archives = AEUtilStatistics::get_all_filenames($stat);
+					$archives = Factory::getStatistics()->get_all_filenames($stat);
 					$stat['meta'] = (count($archives) > 0) ? 'ok' : 'obsolete';
 
 					if($stat['meta'] == 'ok')
@@ -154,7 +157,7 @@ class AkeebaModelStatistics extends F0FModel
 		// Update records found as not having files any more
 		if(count($updateNonExistent))
 		{
-			AEPlatform::getInstance()->invalidate_backup_records($updateNonExistent);
+			Platform::getInstance()->invalidate_backup_records($updateNonExistent);
 		}
 
 		unset($valid);
@@ -178,11 +181,11 @@ class AkeebaModelStatistics extends F0FModel
 		$db->setQuery($query);
 		$id = $db->loadResult();
 
-		$backup_types = AEUtilScripting::loadScripting();
+		$backup_types = Factory::getEngineParamsProvider()->loadScripting();
 
 		if(empty($id)) return '<p class="label">'.JText::_('BACKUP_STATUS_NONE').'</p>';
 
-		$record = AEPlatform::getInstance()->get_statistics($id);
+		$record = Platform::getInstance()->get_statistics($id);
 
 		JLoader::import('joomla.utilities.date');
 
@@ -230,7 +233,7 @@ class AkeebaModelStatistics extends F0FModel
 
 		if(array_key_exists($record['type'],$backup_types['scripts']))
 		{
-			$type = AEPlatform::getInstance()->translate($backup_types['scripts'][ $record['type'] ]['text']);
+			$type = Platform::getInstance()->translate($backup_types['scripts'][ $record['type'] ]['text']);
 		}
 		else
 		{
@@ -255,7 +258,11 @@ class AkeebaModelStatistics extends F0FModel
         $params = JComponentHelper::getParams('com_akeeba');
 
         // Invalidate stale backups
-        AECoreKettenrad::reset(array('global' => true, 'log' => false, 'maxrun' => $params->get('failure_timeout', 180)));
+        Factory::resetState(array(
+			'global' => true,
+			'log' => false,
+			'maxrun' => $params->get('failure_timeout', 180)
+		));
 
         // Get the last execution and search for failed backups AFTER that date
         $last = $this->getLastCheck();
@@ -265,13 +272,13 @@ class AkeebaModelStatistics extends F0FModel
         $filters[] = array('field' => 'origin'     , 'operand' => '<>', 'value'   => 'restorepoint');
         $filters[] = array('field' => 'backupstart', 'operand' => '>' , 'value'   => $last);
 
-        $failed = AEPlatform::getInstance()->get_statistics_list(array('filters' => $filters));
+        $failed = Platform::getInstance()->get_statistics_list(array('filters' => $filters));
 
         // Well, everything went ok.
         if(!$failed)
         {
             return array(
-                'message' => array("No need to run: no failed backups or they were already notificated"),
+                'message' => array("No need to run: no failed backups or notifications were already sent."),
                 'result'  => true
             );
         }
@@ -363,8 +370,8 @@ ENDBODY;
         $mailfrom = $jconfig->get('mailfrom');
         $fromname = $jconfig->get('fromname');
 
-        $email_subject = AEUtilFilesystem::replace_archive_name_variables($email_subject);
-        $email_body    = AEUtilFilesystem::replace_archive_name_variables($email_body);
+        $email_subject = Factory::getFilesystemTools()->replace_archive_name_variables($email_subject);
+        $email_body    = Factory::getFilesystemTools()->replace_archive_name_variables($email_body);
         $email_body    = str_replace('[FAILEDLIST]', $failedReport, $email_body);
 
         foreach($superAdmins as $sa)
@@ -410,7 +417,7 @@ ENDBODY;
 
 		// Try to delete files
 		$this->deleteFile($id);
-		if(!AEPlatform::getInstance()->delete_statistics($id))
+		if(!Platform::getInstance()->delete_statistics($id))
 		{
 			$this->setError($db->getError());
 			return false;
@@ -436,8 +443,8 @@ ENDBODY;
 		}
 
 		// Get the backup statistics record and the files to delete
-		$stat = AEPlatform::getInstance()->get_statistics($id);
-		$allFiles = AEUtilStatistics::get_all_filenames($stat, false);
+		$stat = Platform::getInstance()->get_statistics($id);
+		$allFiles = Factory::getStatistics()->get_all_filenames($stat, false);
 
 		// Remove the custom log file if necessary
 		$this->_deleteLogs($stat);
@@ -513,7 +520,7 @@ ENDBODY;
 			JLoader::import('joomla.html.pagination');
 
 			// Prepare pagination values
-			$total = AEPlatform::getInstance()->get_statistics_count($filters);
+			$total = Platform::getInstance()->get_statistics_count($filters);
 			$limitstart = $this->getState('limitstart');
 			$limit = $this->getState('limit');
 

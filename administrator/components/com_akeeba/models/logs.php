@@ -10,6 +10,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * The Control Panel model
  *
@@ -18,10 +21,10 @@ class AkeebaModelLogs extends F0FModel
 {
 	function getLogFiles()
 	{
-		$configuration = AEFactory::getConfiguration();
+		$configuration = Factory::getConfiguration();
 		$outdir = $configuration->get('akeeba.basic.output_directory');
 
-		$files = AEUtilScanner::getFiles($outdir);
+		$files = Factory::getFileLister()->getFiles($outdir);
 		$ret = array();
 		if(!empty($files) && is_array($files))
 		{
@@ -72,7 +75,7 @@ class AkeebaModelLogs extends F0FModel
 		echo "If you fail to do so, your support request will receive minimal priority.\r\n";
 		echo "\r\n";
 		echo "--- START OF RAW LOG --\r\n";
-		@readfile(AEUtilLogger::logName($tag)); // The at sign is necessary to skip showing PHP errors if the file doesn't exist or isn't readable for some reason
+		@readfile(Factory::getLog()->getLogFilename($tag)); // The at sign is necessary to skip showing PHP errors if the file doesn't exist or isn't readable for some reason
 		echo "--- END OF RAW LOG ---\r\n";
 	}
 }

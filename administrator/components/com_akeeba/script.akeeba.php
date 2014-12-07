@@ -100,7 +100,90 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	 */
 	protected $removeFilesFree = array(
 		'files'   => array(
+			// Pro component features
 			'administrator/components/com_akeeba/restore.php',
+			'administrator/components/com_akeeba/engine/Archiver/Directftp.php',
+			'administrator/components/com_akeeba/engine/Archiver/directftp.ini',
+			'administrator/components/com_akeeba/engine/Archiver/Directsftp.php',
+			'administrator/components/com_akeeba/engine/Archiver/directsftp.ini',
+			'administrator/components/com_akeeba/engine/Archiver/Jps.php',
+			'administrator/components/com_akeeba/engine/Archiver/jps.ini',
+			'administrator/components/com_akeeba/engine/Archiver/Zipnative.php',
+			'administrator/components/com_akeeba/engine/Archiver/zipnative.ini',
+			'administrator/components/com_akeeba/engine/Dump/Reverse.php',
+			'administrator/components/com_akeeba/engine/Dump/reverse.ini',
+			'administrator/components/com_akeeba/engine/Postproc/amazons3.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Amazons3.php',
+			'administrator/components/com_akeeba/engine/Postproc/azure.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Azure.php',
+			'administrator/components/com_akeeba/engine/Postproc/cloudfiles.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Cloudfiles.php',
+			'administrator/components/com_akeeba/engine/Postproc/cloudme.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Cloudme.php',
+			'administrator/components/com_akeeba/engine/Postproc/dreamobjects.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Dreamobjects.php',
+			'administrator/components/com_akeeba/engine/Postproc/dropbox.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Dropbox.php',
+			'administrator/components/com_akeeba/engine/Postproc/email.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Email.php',
+			'administrator/components/com_akeeba/engine/Postproc/ftp.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Ftp.php',
+			'administrator/components/com_akeeba/engine/Postproc/googlestorage.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Googlestorage.php',
+			'administrator/components/com_akeeba/engine/Postproc/idrivesync.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Idrivesync.php',
+			'administrator/components/com_akeeba/engine/Postproc/s3.ini',
+			'administrator/components/com_akeeba/engine/Postproc/S3.php',
+			'administrator/components/com_akeeba/engine/Postproc/sftp.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Sftp.php',
+			'administrator/components/com_akeeba/engine/Postproc/sugarsync.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Sugarsync.php',
+			'administrator/components/com_akeeba/engine/Postproc/webdav.ini',
+			'administrator/components/com_akeeba/engine/Postproc/Webdav.php',
+			'administrator/components/com_akeeba/engine/Scan/large.ini',
+			'administrator/components/com_akeeba/engine/Scan/Large.php',
+			'administrator/components/com_akeeba/controllers/alice.php',
+			'administrator/components/com_akeeba/controllers/discover.php',
+			'administrator/components/com_akeeba/controllers/eff.php',
+			'administrator/components/com_akeeba/controllers/extfilter.php',
+			'administrator/components/com_akeeba/controllers/multidb.php',
+			'administrator/components/com_akeeba/controllers/regexdbfilter.php',
+			'administrator/components/com_akeeba/controllers/regexfsfilter.php',
+			'administrator/components/com_akeeba/controllers/remotefile.php',
+			'administrator/components/com_akeeba/controllers/restore.php',
+			'administrator/components/com_akeeba/controllers/s3import.php',
+			'administrator/components/com_akeeba/controllers/srprestore.php',
+			'administrator/components/com_akeeba/controllers/upload.php',
+			'administrator/components/com_akeeba/models/alices.php',
+			'administrator/components/com_akeeba/models/discovers.php',
+			'administrator/components/com_akeeba/models/effs.php',
+			'administrator/components/com_akeeba/models/extfilters.php',
+			'administrator/components/com_akeeba/models/installer.php',
+			'administrator/components/com_akeeba/models/multidbs.php',
+			'administrator/components/com_akeeba/models/regexdbfilters.php',
+			'administrator/components/com_akeeba/models/regexfsfilters.php',
+			'administrator/components/com_akeeba/models/remotefiles.php',
+			'administrator/components/com_akeeba/models/restores.php',
+			'administrator/components/com_akeeba/models/s3imports.php',
+			'administrator/components/com_akeeba/models/srprestores.php',
+			'administrator/components/com_akeeba/models/uploads.php',
+			'administrator/components/com_akeeba/platform/joomla25/Filter/Components.php',
+			'administrator/components/com_akeeba/platform/joomla25/Filter/Extensiondirs.php',
+			'administrator/components/com_akeeba/platform/joomla25/Filter/Extensionfiles.php',
+			'administrator/components/com_akeeba/platform/joomla25/Filter/Languages.php',
+			'administrator/components/com_akeeba/platform/joomla25/Filter/Modules.php',
+			'administrator/components/com_akeeba/platform/joomla25/Filter/Plugins.php',
+			'administrator/components/com_akeeba/platform/joomla25/Filter/Templates.php',
+			'administrator/components/com_akeeba/views/buadmin/tmpl/restorepoint.php',
+			'administrator/components/com_akeeba/assets/installers/abi.ini',
+			'administrator/components/com_akeeba/assets/installers/abi.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-generic.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-generic.jpa',
+			// Media files
+			'media/com_akeeba/akeebauipro.js',
+			'media/com_akeeba/alice.js',
+			'media/com_akeeba/encryption.js',
+			// Plugins
 			'plugins/system/akeebaupdatecheck.php',
 			'plugins/system/akeebaupdatecheck.xml',
 			'plugins/system/aklazy.php',
@@ -108,21 +191,33 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'plugins/system/srp.php',
 			'plugins/system/srp.xml',
 			// Additional ANGIE installers which are not used in Core
-			'administrator/components/com_akeeba/assets/installers/angie-phpbb.jpa',
-			'administrator/components/com_akeeba/assets/installers/angie-phpbb.ini',
-			'administrator/components/com_akeeba/assets/installers/angie-prestashop.jpa',
-			'administrator/components/com_akeeba/assets/installers/angie-prestashop.ini',
-			'administrator/components/com_akeeba/assets/installers/angie-wordpress.jpa',
-			'administrator/components/com_akeeba/assets/installers/angie-wordpress.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-generic.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-generic.ini',
 		),
 		'folders' => array(
-			'administrator/components/com_akeeba/akeeba/engines/finalization',
+			// Plugins
 			'plugins/system/akeebaupdatecheck',
 			'plugins/system/aklazy',
 			'plugins/system/srp',
-			'administrator/components/com_akeeba/plugins',
-			'administrator/components/com_akeeba/akeeba/plugins',
+			// Modules
 			'administrator/modules/mod_akadmin',
+			// Pro component features
+			'administrator/components/com_akeeba/alice',
+			'administrator/components/com_akeeba/platform/joomla25/Config/Pro',
+			'administrator/components/com_akeeba/views/alices',
+			'administrator/components/com_akeeba/views/discover',
+			'administrator/components/com_akeeba/views/eff',
+			'administrator/components/com_akeeba/views/extfilter',
+			'administrator/components/com_akeeba/views/multidb',
+			'administrator/components/com_akeeba/views/regexdbfilter',
+			'administrator/components/com_akeeba/views/regexfsfilter',
+			'administrator/components/com_akeeba/views/remotefiles',
+			'administrator/components/com_akeeba/views/restore',
+			'administrator/components/com_akeeba/views/s3import',
+			'administrator/components/com_akeeba/views/srprestore',
+			'administrator/components/com_akeeba/views/upload',
+			'administrator/components/com_akeeba/engine/Dump/Reverse',
+			'administrator/components/com_akeeba/engine/Postproc/Connector',
 		)
 	);
 
@@ -138,30 +233,13 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'cache/com_akeeba.updates.ini',
 			'administrator/cache/com_akeeba.updates.php',
 			'administrator/cache/com_akeeba.updates.ini',
-			'administrator/components/com_akeeba/akeeba/core/03.filters.ini',
-			'administrator/components/com_akeeba/akeeba/engines/archiver/directftp.ini',
-			'administrator/components/com_akeeba/akeeba/engines/archiver/directftp.php',
-			'administrator/components/com_akeeba/akeeba/engines/archiver/directsftp.ini',
-			'administrator/components/com_akeeba/akeeba/engines/archiver/directsftp.php',
-			'administrator/components/com_akeeba/akeeba/engines/archiver/zipnative.ini',
-			'administrator/components/com_akeeba/akeeba/engines/archiver/zipnative.php',
-			'administrator/components/com_akeeba/akeeba/engines/proc/email.ini',
-			'administrator/components/com_akeeba/akeeba/engines/proc/email.php',
-			'administrator/components/com_akeeba/views/buadmin/restorepoint.php',
+			'administrator/components/com_akeeba/controllers/acl.php',
 			'administrator/components/com_akeeba/controllers/installer.php',
-			'administrator/components/com_akeeba/controllers/srprestore.php',
-			'administrator/components/com_akeeba/controllers/stw.php',
-			'administrator/components/com_akeeba/controllers/upload.php',
-			'administrator/components/com_akeeba/models/installer.php',
 			'administrator/components/com_akeeba/models/srprestore.php',
 			'administrator/components/com_akeeba/models/stw.php',
-			'administrator/components/com_akeeba/controllers/acl.php',
 			'administrator/components/com_akeeba/models/acl.php',
 			'administrator/components/com_akeeba/tables/acl.php',
-			'administrator/components/com_akeeba/akeeba/platform/joomla15/platform.php',
-			'administrator/components/com_akeeba/akeeba/platform/joomlacli/platform.php',
 			// Files renamed after using FOF
-			'administrator/components/com_akeeba/plugins/controllers/remotefiles.php',
 			'administrator/components/com_akeeba/models/cpanel.php',
 			'administrator/components/com_akeeba/models/backup.php',
 			'administrator/components/com_akeeba/models/config.php',
@@ -169,17 +247,6 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'administrator/components/com_akeeba/models/log.php',
 			'administrator/components/com_akeeba/models/fsfilter.php',
 			'administrator/components/com_akeeba/models/dbef.php',
-			'administrator/components/com_akeeba/plugins/models/discover.php',
-			'administrator/components/com_akeeba/plugins/models/s3import.php',
-			'administrator/components/com_akeeba/plugins/models/multidb.php',
-			'administrator/components/com_akeeba/plugins/models/regexfsfilter.php',
-			'administrator/components/com_akeeba/plugins/models/regexdbfilter.php',
-			'administrator/components/com_akeeba/plugins/models/extfilter.php',
-			'administrator/components/com_akeeba/plugins/models/eff.php',
-			'administrator/components/com_akeeba/plugins/models/stw.php',
-			'administrator/components/com_akeeba/plugins/models/restore.php',
-			'administrator/components/com_akeeba/plugins/models/srprestore.php',
-			'administrator/components/com_akeeba/plugins/models/profiles.php',
 			'administrator/components/com_akeeba/views/profiles/tmpl/default_edit.php',
 			'administrator/components/com_akeeba/views/buadmin/tmpl/default_comment.php',
 			'administrator/components/com_akeeba/views/fsfilter/tmpl/default_tab.php',
@@ -189,8 +256,6 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'administrator/components/com_akeeba/views/extfilter/tmpl/default_plugins.php',
 			'administrator/components/com_akeeba/views/extfilter/tmpl/default_templates.php',
 			'administrator/components/com_akeeba/views/dbef/tmpl/default_tab.php',
-			'administrator/components/com_akeeba/plugins/views/discover/tmpl/default_discover.php',
-			'administrator/components/com_akeeba/plugins/views/remotefiles/tmpl/default_dltoserver.php',
 			'components/com_akeeba/models/light.php',
 			'components/com_akeeba/models/json.php',
 			'components/com_akeeba/views/light/view.html.php',
@@ -204,35 +269,40 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'media/com_akeeba/js/akeebajqui.js',
 			'media/com_akeeba/theme/jquery-ui.css',
 			'media/com_akeeba/theme/browser.css',
-			// Box integration
-			'administrator/components/com_akeeba/akeeba/plugins/engines/proc/box.ini',
-			'administrator/components/com_akeeba/akeeba/plugins/engines/proc/box.php',
-			'administrator/components/com_akeeba/akeeba/plugins/engines/utils/box.php',
-			// Old SRP feature, no longer used
-			'administrator/components/com_akeeba/plugins/controllers/installer.php',
 			// Old ABI installer
 			'administrator/components/com_akeeba/assets/installers/abi.jpa',
 			'administrator/components/com_akeeba/assets/installers/abi.ini',
+			// Additional ANGIE installers which are not used in Pro and Core versions
+			'administrator/components/com_akeeba/assets/installers/angie-magento.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-magento.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-moodle.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-moodle.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-phpbb.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-phpbb.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-prestashop.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-prestashop.ini',
+			'administrator/components/com_akeeba/assets/installers/angie-wordpress.jpa',
+			'administrator/components/com_akeeba/assets/installers/angie-wordpress.ini',
 			// Old CLI backup scripts, obsolete since 3.5.0, removed in 4.0.0
 			'administrator/components/com_akeeba/backup.php',
 			'administrator/components/com_akeeba/altbackup.php',
 		),
 		'folders' => array(
-			'administrator/components/com_akeeba/akeeba/platform/joomla15',
-			'administrator/components/com_akeeba/akeeba/platform/joomlacli',
+			// Directories used in version 4.1 and earlier
+			'administrator/components/com_akeeba/akeeba',
+			'administrator/components/com_akeeba/plugins',
+
+			// Obsolete views
 			'administrator/components/com_akeeba/views/installer',
-			'administrator/components/com_akeeba/views/srprestore',
-			'administrator/components/com_akeeba/views/stw',
-			'administrator/components/com_akeeba/views/upload',
 			'administrator/components/com_akeeba/views/acl',
 			'administrator/components/com_akeeba/assets/images',
+
 			// Folders renamed after using FOF
 			'components/com_akeeba/views/backup',
 			'components/com_akeeba/views/json',
+
 			// Outdated media directories
 			'media/com_akeeba/theme/images',
-			// Old SRP feature, no longer used
-			'administrator/components/com_akeeba/plugins/views/installer',
 		)
 	);
 
@@ -340,6 +410,94 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'version_introduced'	=> '4.0.0'
 		),
 	);
+
+	/**
+	 * The minimum PHP version required to install this extension
+	 *
+	 * @var   string
+	 */
+	protected $minimumPHPVersion = '5.3.4';
+
+	/**
+	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the component. This is our last chance to
+	 * tell Joomla! if it should abort the installation.
+	 *
+	 * @param   string     $type   Installation type (install, update, discover_install)
+	 * @param   JInstaller $parent Parent object
+	 *
+	 * @return  boolean  True to let the installation proceed, false to halt the installation
+	 */
+	public function preflight($type, $parent)
+	{
+		// Check the minimum PHP version. Issue a very stern warning if it's not met.
+		if (!empty($this->minimumPHPVersion))
+		{
+			if (defined('PHP_VERSION'))
+			{
+				$version = PHP_VERSION;
+			}
+			elseif (function_exists('phpversion'))
+			{
+				$version = phpversion();
+			}
+			else
+			{
+				$version = '5.0.0'; // all bets are off!
+			}
+
+			if (!version_compare($version, $this->minimumPHPVersion, 'ge'))
+			{
+				$msg = "<h1>Your PHP version is too old</h1>";
+				$msg .= "<p>You need PHP $this->minimumPHPVersion or later to install this component. Support for PHP 5.3.3 and earlier versions has been discontinued by our company as we publicly announced in February 2013.</p>";
+				$msg .= "<p>You are using PHP $version which is an extremely old version, released more than four years ago. It version contains known functional and security issues. The functional issues do not allow you to run Akeeba Backup and cannot be worked around. The security issues mean that your site <b>can be easily hacked</b> since that these security issues are well known for over four years.</p>";
+				$msg .= "<p>You have to ask your host to immediately update your site to PHP $this->minimumPHPVersion or later, ideally the latest available version of PHP 5.4. If your host won't do that you are advised to switch to a better host to ensure the security of your site. If you have to stay with your current host for reasons beyond your control you can use Akeeba Backup 4.0.5 or earlier, available from our downloads page.</p>";
+
+				if (version_compare(JVERSION, '3.0', 'gt'))
+				{
+					JLog::add($msg, JLog::WARNING, 'jerror');
+				}
+				else
+				{
+					JError::raiseWarning(100, $msg);
+				}
+
+				return false;
+			}
+		}
+
+		$result = parent::preflight($type, $parent);
+
+		// Move the serverkey.php file from /akeeba to /engine to preserve the settings
+		if ($result)
+		{
+			$componentPath = JPATH_ADMINISTRATOR . '/components/com_akeeba';
+			$fromFile = $componentPath . '/akeeba/serverkey.php';
+			$toFile = $componentPath . '/engine/serverkey.php';
+
+			if (@file_exists($fromFile) && !@file_exists($toFile))
+			{
+				$toPath = $componentPath . '/engine';
+
+				if (class_exists('JLoader') && method_exists('JLoader', 'import'))
+				{
+					JLoader::import('joomla.filesystem.folder');
+					JLoader::import('joomla.filesystem.file');
+				}
+
+				if (@is_dir($componentPath) && !@is_dir($toPath))
+				{
+					JFolder::create($toPath);
+				}
+
+				if (@is_dir($toPath))
+				{
+					JFile::copy($fromFile, $toFile);
+				}
+			}
+		}
+
+		return $result;
+	}
 
 	/**
 	 * Runs after install, update or discover_update. In other words, it executes after Joomla! has finished installing

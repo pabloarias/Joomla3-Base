@@ -9,6 +9,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 class AkeebaDispatcher extends F0FDispatcher
 {
 	public function onBeforeDispatch()
@@ -26,9 +29,9 @@ class AkeebaDispatcher extends F0FDispatcher
 			AkeebaStrapper::addJSfile('media://com_akeeba/js/akeebaui.js');
 			AkeebaStrapper::addJSfile('media://com_akeeba/js/piecon.min.js');
 			jimport('joomla.filesystem.file');
-			if (JFile::exists(F0FTemplateUtils::parsePath('media://com_akeeba/plugins/js/akeebaui.js', true)))
+			if (JFile::exists(F0FTemplateUtils::parsePath('media://com_akeeba/js/akeebauipro.js', true)))
 			{
-				AkeebaStrapper::addJSfile('media://com_akeeba/plugins/js/akeebaui.js');
+				AkeebaStrapper::addJSfile('media://com_akeeba/js/akeebauipro.js');
 			}
 			AkeebaStrapper::addCSSfile('media://com_akeeba/theme/akeebaui.css');
 
@@ -49,7 +52,7 @@ class AkeebaDispatcher extends F0FDispatcher
 
 	public function dispatch()
 	{
-		if (!class_exists('AkeebaControllerDefault'))
+		if ( !class_exists('AkeebaControllerDefault'))
 		{
 			require_once JPATH_ADMINISTRATOR . '/components/com_akeeba/controllers/default.php';
 		}
@@ -89,7 +92,7 @@ class AkeebaDispatcher extends F0FDispatcher
 		}
 
 		// Necessary defines for Akeeba Engine
-		if (!defined('AKEEBAENGINE'))
+		if ( !defined('AKEEBAENGINE'))
 		{
 			define('AKEEBAENGINE', 1); // Required for accessing Akeeba Engine's factory class
 			define('AKEEBAROOT', dirname(__FILE__) . '/akeeba');
@@ -99,13 +102,13 @@ class AkeebaDispatcher extends F0FDispatcher
 		// Setup Akeeba's ACLs, honoring laxed permissions in component's parameters, if set
 		// Access check, Joomla! 1.6 style.
 		$user = JFactory::getUser();
-		if (!$user->authorise('core.manage', 'com_akeeba'))
+		if ( !$user->authorise('core.manage', 'com_akeeba'))
 		{
 			return JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		// Make sure we have a profile set throughout the component's lifetime
-		$session = JFactory::getSession();
+		$session    = JFactory::getSession();
 		$profile_id = $session->get('profile', null, 'akeeba');
 		if (is_null($profile_id))
 		{
@@ -113,13 +116,18 @@ class AkeebaDispatcher extends F0FDispatcher
 			$session->set('profile', 1, 'akeeba');
 		}
 
-		// Load the factory
-		require_once JPATH_COMPONENT_ADMINISTRATOR . '/akeeba/factory.php';
-		@include_once JPATH_COMPONENT_ADMINISTRATOR . '/alice/factory.php';
+		// Load Akeeba Engine and ALICE
+		require_once JPATH_COMPONENT_ADMINISTRATOR . '/engine/Factory.php';
 
-		// Load the Akeeba Backup configuration and check user access permission
-		$aeconfig = AEFactory::getConfiguration();
-		AEPlatform::getInstance()->load_configuration();
+		if (@file_exists(JPATH_COMPONENT_ADMINISTRATOR . '/alice/factory.php'))
+		{
+			require_once JPATH_COMPONENT_ADMINISTRATOR . '/alice/factory.php';
+		}
+
+		// Load the Akeeba Engine configuration
+		Platform::addPlatform('joomla25', JPATH_COMPONENT_ADMINISTRATOR . '/platform/joomla25');
+		$akeebaEngineConfig = Factory::getConfiguration();
+		Platform::getInstance()->load_configuration();
 
 		$jDbo = JFactory::getDbo();
 
@@ -129,36 +137,23 @@ class AkeebaDispatcher extends F0FDispatcher
 			@JFactory::getDbo()->disconnect();
 		}
 
-		unset($aeconfig);
+		unset($akeebaEngineConfig);
 
 		// Preload helpers
 		require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/includes.php';
 		require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/escape.php';
 
 		// Load the utils helper library
-		AEPlatform::getInstance()->load_version_defines();
+		Platform::getInstance()->load_version_defines();
 
 		// Create a versioning tag for our static files
 		$staticFilesVersioningTag = md5(AKEEBA_VERSION . AKEEBA_DATE);
 		define('AKEEBAMEDIATAG', $staticFilesVersioningTag);
 
 		// If JSON functions don't exist, load our compatibility layer
-		if ((!function_exists('json_encode')) || (!function_exists('json_decode')))
+		if (( !function_exists('json_encode')) || ( !function_exists('json_decode')))
 		{
 			require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/jsonlib.php';
-		}
-
-		// Look for controllers in the plugins folder
-		$option = $this->input->get('option', 'com_foobar', 'cmd');
-		$view = $this->input->get('view', $this->defaultView, 'cmd');
-		$c = F0FInflector::singularize($view);
-		$alt_path = JPATH_ADMINISTRATOR . '/components/' . $option . '/plugins/controllers/' . $c . '.php';
-
-		JLoader::import('joomla.filesystem.file');
-		if (JFile::exists($alt_path))
-		{
-			// The requested controller exists and there you load it...
-			require_once($alt_path);
 		}
 
 		$this->input->set('view', $this->view);

@@ -9,6 +9,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * Akeeba Backup Configuration Wizard view class
  *
@@ -17,7 +20,7 @@ class AkeebaViewConfwiz extends F0FViewHtml
 {
 	public function onAdd($tpl = null)
 	{
-		$aeconfig = AEFactory::getConfiguration();
+		$aeconfig = Factory::getConfiguration();
 
 		// Load the Configuration Wizard Javascript file
 		AkeebaStrapper::addJSfile('media://com_akeeba/js/confwiz.js');

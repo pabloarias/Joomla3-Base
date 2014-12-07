@@ -16,7 +16,7 @@ defined('_JEXEC') or die();
  */
 class AkeebaControllerBrowser extends AkeebaControllerDefault
 {
-	public function display($cachable = false, $urlparams = false)
+	public function display($cachable = false, $urlparams = false, $tpl = null)
 	{
 		$folder = $this->input->get('folder', '', 'string');
 		$processfolder = $this->input->get('processfolder', 0, 'int');

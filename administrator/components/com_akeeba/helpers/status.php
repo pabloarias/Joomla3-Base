@@ -9,6 +9,9 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * A class with utility functions to get the backup readiness status,
  * as well as "quirks" information. In contrast with most helper functions,
@@ -54,11 +57,11 @@ class AkeebaHelperStatus extends JObject
 	{
 		parent::__construct();
 
-		$status = AEUtilQuirks::get_folder_status();
+		$status = Factory::getConfigurationChecks()->getFolderStatus();
 		$this->outputWritable = $this->status['output'];
 		$this->tempWritable = $this->status['temporary'];
-		$this->status = AEUtilQuirks::get_status();
-		$this->quirks = AEUtilQuirks::get_quirks();
+		$this->status = Factory::getConfigurationChecks()->getShortStatus();
+		$this->quirks = Factory::getConfigurationChecks()->getDetailedStatus();
 	}
 
 	/**
@@ -68,8 +71,8 @@ class AkeebaHelperStatus extends JObject
 	 */
 	public function getStatusCell()
 	{
-		$status = AEUtilQuirks::get_status();
-		$quirks = AEUtilQuirks::get_quirks();
+		$status = Factory::getConfigurationChecks()->getShortStatus();
+		$quirks = Factory::getConfigurationChecks()->getDetailedStatus();
 
 		if($status && empty($quirks))
 		{
@@ -94,7 +97,7 @@ class AkeebaHelperStatus extends JObject
 	public function getQuirksCell($onlyErrors = false)
 	{
 		$html = '';
-		$quirks = AEUtilQuirks::get_quirks();
+		$quirks = Factory::getConfigurationChecks()->getDetailedStatus();
 
 		if(!empty($quirks))
 		{
@@ -119,7 +122,7 @@ class AkeebaHelperStatus extends JObject
 	 */
 	public function hasQuirks()
 	{
-		$quirks = AEUtilQuirks::get_quirks();
+		$quirks = Factory::getConfigurationChecks()->getDetailedStatus();
 		return !empty($quirks);
 	}
 

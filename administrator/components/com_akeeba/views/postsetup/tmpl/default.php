@@ -33,7 +33,7 @@ JS;
 JFactory::getDocument()->addScriptDeclaration($script);
 
 ?>
-<?php if(!version_compare(PHP_VERSION, '5.3.0', 'ge') && AEUtilComconfig::getValue('displayphpwarning', 1) ): ?>
+<?php if(!version_compare(PHP_VERSION, '5.3.0', 'ge') && \Akeeba\Engine\Util\Comconfig::getValue('displayphpwarning', 1) ): ?>
 <div class="alert">
 	<a class="close" data-dismiss="alert" href="#">×</a>
 	<p><strong><?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_HEADER') ?></strong><br/>

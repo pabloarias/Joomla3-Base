@@ -114,4 +114,32 @@ class F0FModelFieldText extends F0FModelField
 	{
 		return '';
 	}
+
+	/**
+	 * Dummy method; this search makes no sense for text fields
+	 *
+	 * @param   mixed    $from     Ignored
+	 * @param   mixed    $to       Ignored
+	 * @param   boolean  $include  Ignored
+	 *
+	 * @return  string  Empty string
+	 */
+	public function range($from, $to, $include = false)
+	{
+		return '';
+	}
+
+	/**
+	 * Dummy method; this search makes no sense for text fields
+	 *
+	 * @param   mixed    $from     Ignored
+	 * @param   mixed    $to       Ignored
+	 * @param   boolean  $include  Ignored
+	 *
+	 * @return  string  Empty string
+	 */
+	public function modulo($from, $to, $include = false)
+	{
+		return '';
+	}
 }

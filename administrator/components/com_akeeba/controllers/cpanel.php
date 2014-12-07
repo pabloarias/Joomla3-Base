@@ -10,6 +10,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * The Control Panel controller class
  *
@@ -18,7 +21,7 @@ class AkeebaControllerCpanel extends F0FController
 {
 	public function execute($task)
 	{
-		if (!in_array($task, array('switchprofile', 'disablephpwarning', 'updateinfo')))
+		if ( !in_array($task, array('switchprofile', 'disablephpwarning', 'updateinfo', 'fastcheck')))
 		{
 			$task = 'browse';
 		}
@@ -32,20 +35,24 @@ class AkeebaControllerCpanel extends F0FController
 		if ($result)
 		{
 			$params = JComponentHelper::getParams('com_akeeba');
-			$model = $this->getThisModel();
-			$view = $this->getThisView();
+			$model  = $this->getThisModel();
+			$view   = $this->getThisView();
 
 			/** @var AkeebaModelCpanels $model */
 
 			$view->setModel($model);
 
-			$aeconfig = AEFactory::getConfiguration();
+			$aeconfig = Factory::getConfiguration();
 
 			// Invalidate stale backups
-			AECoreKettenrad::reset(array('global' => true, 'log' => false, 'maxrun' => $params->get('failure_timeout', 180)));
+			Factory::resetState(array(
+				'global' => true,
+				'log' => false,
+				'maxrun' => $params->get('failure_timeout', 180)
+			));
 
 			// Just in case the reset() loaded a stale configuration...
-			AEPlatform::getInstance()->load_configuration();
+			Platform::getInstance()->load_configuration();
 
 			// Let's make sure the temporary and output directories are set correctly and writable...
 			$wizmodel = F0FModel::getAnInstance('Confwiz', 'AkeebaModel');
@@ -65,7 +72,7 @@ class AkeebaControllerCpanel extends F0FController
 
 			// Check the last installed version and show the post-setup page on Joomla! 3.1 or earlier
 
-			if (!version_compare(JVERSION, '3.2.0', 'ge'))
+			if ( !version_compare(JVERSION, '3.2.0', 'ge'))
 			{
 				$versionLast = null;
 
@@ -89,7 +96,7 @@ class AkeebaControllerCpanel extends F0FController
 					}
 					else
 					{
-						$params = new JParameter($component->params);
+						$params = new JRegistry($component->params);
 					}
 
 					$versionLast = $params->get('lastversion', '');
@@ -117,24 +124,24 @@ class AkeebaControllerCpanel extends F0FController
 
 		$newProfile = $this->input->get('profileid', -10, 'int');
 
-		if (!is_numeric($newProfile) || ($newProfile <= 0))
+		if ( !is_numeric($newProfile) || ($newProfile <= 0))
 		{
-			$this->setRedirect(JURI::base() . 'index.php?option=com_akeeba', JText::_('PANEL_PROFILE_SWITCH_ERROR'), 'error');
+			$this->setRedirect(JUri::base() . 'index.php?option=com_akeeba', JText::_('PANEL_PROFILE_SWITCH_ERROR'), 'error');
 
 			return true;
 		}
 
 		$session = JFactory::getSession();
 		$session->set('profile', $newProfile, 'akeeba');
-		$url = '';
+		$url       = '';
 		$returnurl = $this->input->get('returnurl', '', 'base64');
-		if (!empty($returnurl))
+		if ( !empty($returnurl))
 		{
 			$url = base64_decode($returnurl);
 		}
 		if (empty($url))
 		{
-			$url = JURI::base() . 'index.php?option=com_akeeba';
+			$url = JUri::base() . 'index.php?option=com_akeeba';
 		}
 		$this->setRedirect($url, JText::_('PANEL_PROFILE_SWITCH_OK'));
 	}
@@ -148,15 +155,15 @@ class AkeebaControllerCpanel extends F0FController
 		}
 
 		// Fetch the component parameters
-		$db = JFactory::getDbo();
+		$db  = JFactory::getDbo();
 		$sql = $db->getQuery(true)
-			->select($db->qn('params'))
-			->from($db->qn('#__extensions'))
-			->where($db->qn('type') . ' = ' . $db->q('component'))
-			->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
+				  ->select($db->qn('params'))
+				  ->from($db->qn('#__extensions'))
+				  ->where($db->qn('type') . ' = ' . $db->q('component'))
+				  ->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
 		$db->setQuery($sql);
 		$rawparams = $db->loadResult();
-		$params = new JRegistry();
+		$params    = new JRegistry();
 		$params->loadString($rawparams, 'JSON');
 
 		// Set the displayphpwarning parameter to 0
@@ -164,25 +171,25 @@ class AkeebaControllerCpanel extends F0FController
 
 		// Save the component parameters
 		$data = $params->toString('JSON');
-		$sql = $db->getQuery(true)
-			->update($db->qn('#__extensions'))
-			->set($db->qn('params') . ' = ' . $db->q($data))
-			->where($db->qn('type') . ' = ' . $db->q('component'))
-			->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
+		$sql  = $db->getQuery(true)
+				   ->update($db->qn('#__extensions'))
+				   ->set($db->qn('params') . ' = ' . $db->q($data))
+				   ->where($db->qn('type') . ' = ' . $db->q('component'))
+				   ->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
 
 		$db->setQuery($sql);
 		$db->execute();
 
 		// Redirect back to the control panel
-		$url = '';
+		$url       = '';
 		$returnurl = $this->input->get('returnurl', '', 'base64');
-		if (!empty($returnurl))
+		if ( !empty($returnurl))
 		{
 			$url = base64_decode($returnurl);
 		}
 		if (empty($url))
 		{
-			$url = JURI::base() . 'index.php?option=com_akeeba';
+			$url = JUri::base() . 'index.php?option=com_akeeba';
 		}
 		$this->setRedirect($url);
 	}
@@ -191,7 +198,7 @@ class AkeebaControllerCpanel extends F0FController
 	{
 		/** @var AkeebaModelUpdates $updateModel */
 		$updateModel = F0FModel::getTmpInstance('Updates', 'AkeebaModel');
-		$updateInfo = (object)$updateModel->getUpdates();
+		$updateInfo  = (object)$updateModel->getUpdates();
 
 		$result = '';
 
@@ -223,6 +230,19 @@ ENDRESULT;
 		}
 
 		echo '###' . $result . '###';
+
+		// Cut the execution short
+		JFactory::getApplication()->close();
+	}
+
+	public function fastcheck()
+	{
+		/** @var AkeebaModelCpanels $model */
+		$model = $this->getThisModel();
+
+		$result = $model->fastCheckFiles();
+
+		echo '###' . ($result ? 'true' : 'false') . '###';
 
 		// Cut the execution short
 		JFactory::getApplication()->close();

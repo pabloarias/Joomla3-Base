@@ -10,6 +10,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * View class for the Filesystem Filters
  *
@@ -25,22 +28,22 @@ class AkeebaViewFsfilter extends F0FViewHtml
 		$toolbar = F0FToolbar::getAnInstance($this->input->get('option','com_foobar','cmd'), $this->config);
 		$toolbar->appendLink(
 			JText::_('FILTERS_LABEL_NORMALVIEW'),
-			JURI::base().'index.php?option=com_akeeba&view=fsfilter&task=normal',
+			JUri::base().'index.php?option=com_akeeba&view=fsfilter&task=normal',
 			($task == 'normal')
 		);
 		$toolbar->appendLink(
 			JText::_('FILTERS_LABEL_TABULARVIEW'),
-			JURI::base().'index.php?option=com_akeeba&view=fsfilter&task=tabular',
+			JUri::base().'index.php?option=com_akeeba&view=fsfilter&task=tabular',
 			($task == 'tabular')
 		);
 
-		$media_folder = JURI::base().'../media/com_akeeba/';
+		$media_folder = JUri::base().'../media/com_akeeba/';
 
 		// Get the root URI for media files
 		$this->mediadir = AkeebaHelperEscape::escapeJS($media_folder.'theme/');
 
 		// Get a JSON representation of the available roots
-		$filters = AEFactory::getFilters();
+		$filters = Factory::getFilters();
 		$root_info = $filters->getInclusions('dir');
 		$roots = array();
 		$options = array();
@@ -94,7 +97,7 @@ class AkeebaViewFsfilter extends F0FViewHtml
 		AkeebaHelperIncludes::addHelp('fsfilter');
 
 		// Get profile ID
-		$profileid = AEPlatform::getInstance()->get_active_profile();
+		$profileid = Platform::getInstance()->get_active_profile();
 		$this->profileid = $profileid;
 
 		// Get profile name

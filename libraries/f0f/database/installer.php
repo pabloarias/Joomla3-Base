@@ -26,7 +26,7 @@ class F0FDatabaseInstaller
 	 *
 	 * @param   array  $config  The configuration array
 	 */
-	function __construct($config = array())
+	public function __construct($config = array())
 	{
 		// Make sure $config is an array
 		if (is_object($config))

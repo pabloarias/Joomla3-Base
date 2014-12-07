@@ -89,7 +89,7 @@ class AkeebaViewPostsetup extends F0FViewHtml
 		}
 		else
 		{
-			$params = new JParameter($component->params);
+			$params = new JRegistry($component->params);
 		}
 
 		if (empty($enableconfwiz))

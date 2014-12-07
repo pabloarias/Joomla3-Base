@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+
 JHtml::_('behavior.framework');
 ?>
 <script language="javascript" type="text/javascript">
@@ -38,7 +40,7 @@ document.onkeydown = onKeyDown;
 
 // -- Get the log's file name
 $tag = $this->tag;
-$logName = AEUtilLogger::logName($tag);
+$logName = Factory::getLog()->getLogFilename($tag);
 
 // Load JFile class
 JLoader::import('joomla.filesystem.file');

@@ -9,6 +9,9 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Engine\Factory;
+use Akeeba\Engine\Platform;
+
 /**
  * The back-end backup model
  */
@@ -57,7 +60,7 @@ class AkeebaModelBackups extends F0FModel
 				}
 
 				// Try resetting the engine
-				AECoreKettenrad::reset(array(
+				Factory::resetState(array(
 					'maxrun' => 0
 				));
 
@@ -65,15 +68,16 @@ class AkeebaModelBackups extends F0FModel
 
 				if (empty($tag))
 				{
-					$tag = AEPlatform::getInstance()->get_backup_origin();
+					$tag = Platform::getInstance()->get_backup_origin();
 				}
 
 				$tempVarsTag = $tag;
 				$tempVarsTag .= empty($backupId) ? '' : ('.' . $backupId);
 
-				AEUtilTempvars::reset($tempVarsTag);
+				Factory::getFactoryStorage()->reset($tempVarsTag);
 
-				$kettenrad = AECoreKettenrad::load($tag, $backupId);
+				Factory::loadState($tag, $backupId);
+				$kettenrad = Factory::getKettenrad();
 				$kettenrad->setBackupId($backupId);
 
 				// Take care of System Restore Point setup
@@ -136,7 +140,7 @@ class AkeebaModelBackups extends F0FModel
 
 					// Set a custom finalization action queue
 					$configOverrides['volatile.core.finalization.action_handlers'] = array(
-						new AEFinalizationSrpquotas()
+						new Akeeba\Engine\Finalization\Srpquotas()
 					);
 					$configOverrides['volatile.core.finalization.action_queue'] = array(
 						'remove_temp_files',
@@ -146,49 +150,53 @@ class AkeebaModelBackups extends F0FModel
 					);
 
 					// Apply the configuration overrides, please
-					$platform = AEPlatform::getInstance();
+					$platform = Platform::getInstance();
 					$platform->configOverrides = $configOverrides;
 				}
+
 				$options = array(
 					'description' => $description,
 					'comment'     => $comment,
 					'jpskey'      => $jpskey,
 					'angiekey'    => $angiekey,
 				);
+
 				$kettenrad->setup($options);
 				$kettenrad->tick();
 
 				if (($kettenrad->getState() != 'running') && ($tag == 'restorepoint'))
 				{
-					AECoreKettenrad::save($tag, $backupId);
-					$kettenrad = AECoreKettenrad::load($tag, $backupId);
+					Factory::saveState($tag, $backupId);
+					Factory::loadState($tag, $backupId);
+					$kettenrad = Factory::getKettenrad();
 					$kettenrad->setBackupId($backupId);
 					$kettenrad->tick();
 				}
 
 				$ret_array = $kettenrad->getStatusArray();
 				$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-				AECoreKettenrad::save($tag, $backupId);
+				Factory::saveState($tag, $backupId);
 				break;
 
 			case 'step':
-				$kettenrad = AECoreKettenrad::load($tag, $backupId);
+				Factory::loadState($tag, $backupId);
+				$kettenrad = Factory::getKettenrad();
 				$kettenrad->setBackupId($backupId);
 
 				$kettenrad->tick();
 				$ret_array = $kettenrad->getStatusArray();
 				$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-				AECoreKettenrad::save($tag, $backupId);
+				Factory::saveState($tag, $backupId);
 
 				if ($ret_array['HasRun'] == 1)
 				{
 					// Clean up
-					AEFactory::nuke();
+					Factory::nuke();
 
 					$tempVarsTag = $tag;
 					$tempVarsTag .= empty($backupId) ? '' : ('.' . $backupId);
 
-					AEUtilTempvars::reset($tempVarsTag);
+					Factory::getFactoryStorage()->reset($tempVarsTag);
 				}
 				break;
 
@@ -215,7 +223,7 @@ class AkeebaModelBackups extends F0FModel
 			'akeeba.basic.archive_name'                   => 'restore-point-[DATE]-[TIME]',
 			'akeeba.basic.backup_type'                    => 'full',
 			'akeeba.advanced.archiver_engine'             => 'jpa',
-			'akeeba.advanced.proc_engine'                 => 'none',
+			'akeeba.advanced.postproc_engine'             => 'none',
 			'akeeba.advanced.embedded_installer'          => 'none',
 			'engine.archiver.common.dereference_symlinks' => true, // hopefully no extension has symlinks inside its own directories...
 			'core.filters.srp.type'                       => array($this->getState('type')),

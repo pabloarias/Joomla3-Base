@@ -32,11 +32,9 @@ JHtml::_('behavior.modal');
 
 <div class="akeeba-bootstrap" id="ftpdialog" title="<?php echo JText::_('CONFIG_UI_FTPBROWSER_TITLE') ?>" style="display:none;">
 	<p class="instructions alert alert-info">
-		<button class="close" data-dismiss="alert">×</button>
 		<?php echo JText::_('FTPBROWSER_LBL_INSTRUCTIONS'); ?>
 	</p>
 	<div class="error alert alert-error" id="ftpBrowserErrorContainer">
-		<button class="close" data-dismiss="alert">×</button>
 		<h2><?php echo JText::_('FTPBROWSER_LBL_ERROR'); ?></h2>
 		<p id="ftpBrowserError"></p>
 	</div>
@@ -51,11 +49,9 @@ JHtml::_('behavior.modal');
 
 <div class="akeeba-bootstrap" id="sftpdialog" title="<?php echo JText::_('CONFIG_UI_SFTPBROWSER_TITLE') ?>" style="display:none;">
 	<p class="instructions alert alert-info">
-		<button class="close" data-dismiss="alert">×</button>
 		<?php echo JText::_('SFTPBROWSER_LBL_INSTRUCTIONS'); ?>
 	</p>
 	<div class="error alert alert-error" id="sftpBrowserErrorContainer">
-		<button class="close" data-dismiss="alert">×</button>
 		<h2><?php echo JText::_('SFTPBROWSER_LBL_ERROR'); ?></h2>
 		<p id="sftpBrowserError"></p>
 	</div>
@@ -76,29 +72,24 @@ JHtml::_('behavior.modal');
 <div >
 	<?php if($this->securesettings == 1): ?>
 	<div class="alert alert-success">
-		<button class="close" data-dismiss="alert">×</button>
 		<?php echo JText::_('CONFIG_UI_SETTINGS_SECURED'); ?>
 	</div>
 	<div class="ak_clr"></div>
 	<?php elseif($this->securesettings == 0): ?>
 	<div class="alert alert-error">
-		<button class="close" data-dismiss="alert">×</button>
 		<?php echo JText::_('CONFIG_UI_SETTINGS_NOTSECURED'); ?>
 	</div>
 	<div class="ak_clr"></div>
 	<?php endif; ?>
 	
 	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">×</button>
 		<strong><?php echo JText::_('CPANEL_PROFILE_TITLE'); ?></strong>:
 		#<?php echo $this->profileid; ?> <?php echo $this->profilename; ?>
 	</div>
 	
 	<div class="alert">
-		<button class="close" data-dismiss="alert">×</button>
 		<?php echo JText::_('CONFIG_WHERE_ARE_THE_FILTERS'); ?>
 	</div>
-	
 </div>
 	
 <input type="hidden" name="option" value="com_akeeba" />
@@ -483,7 +474,7 @@ JHtml::_('behavior.modal');
 			};
 			
 			// URL to load the browser
-			var browserSrc = '<?php echo AkeebaHelperEscape::escapeJS(JURI::base().'index.php?option=com_akeeba&view=browser&tmpl=component&processfolder=1&folder=') ?>';
+			var browserSrc = '<?php echo AkeebaHelperEscape::escapeJS(JUri::base().'index.php?option=com_akeeba&view=browser&tmpl=component&processfolder=1&folder=') ?>';
 			browserSrc = browserSrc + encodeURIComponent(folder);
 
 			SqueezeBox.open(browserSrc, {
@@ -547,7 +538,7 @@ JHtml::_('behavior.modal');
 			ftp_dialog_element.dialog('open');
 			
 			// URL to load the browser
-			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS(JURI::base().'index.php?option=com_akeeba&view=ftpbrowser' ) ?>';
+			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS(JUri::base().'index.php?option=com_akeeba&view=ftpbrowser' ) ?>';
 
 			if(empty(akeeba_ftpbrowser_directory)) akeeba_ftpbrowser_directory = '';
 			
@@ -697,7 +688,7 @@ JHtml::_('behavior.modal');
 			sftp_dialog_element.dialog('open');
 
 			// URL to load the browser
-			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS(JURI::base().'index.php?option=com_akeeba&view=sftpbrowser' ) ?>';
+			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS(JUri::base().'index.php?option=com_akeeba&view=sftpbrowser' ) ?>';
 
 			if(empty(akeeba_sftpbrowser_directory)) akeeba_sftpbrowser_directory = '';
 

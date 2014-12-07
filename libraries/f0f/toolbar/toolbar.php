@@ -271,7 +271,7 @@ class F0FToolbar
 
 		$configProvider = new F0FConfigProvider;
 		$toolbar = $configProvider->get(
-			$component . '.views.' . '.toolbar'
+			$component . '.views.' . $view . '.toolbar.' . $task
 		);
 
 		// If we have a toolbar config specified
