@@ -1,4 +1,4 @@
-/* JCE Editor - 2.4.3 | 11 September 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* JCE Editor - 2.4.4 | 04 December 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 WFAggregator.add('youtube',{params:{width:425,height:350,embed:true},props:{rel:1,autohide:2,autoplay:0,controls:1,enablejsapi:0,loop:0,playlist:'',start:'',privacy:0},setup:function(){},getTitle:function(){return this.title||this.name;},getType:function(){return $('#youtube_embed:visible').is(':checked')?'flash':'iframe';},isSupported:function(v){if(typeof v=='object'){v=v.src||v.data||'';}
 if(/youtu(\.)?be(.+)?\/(.+)/.test(v)){return'youtube';}
 return false;},getValues:function(src){var self=this,data={},args={},type=this.getType(),id,query={};var u=this.parseURL(src);if(u.query){query=$.String.query(u.query);}
@@ -14,7 +14,7 @@ data.src=src;return data;},parseURL:function(url){var o={};url=/^(?:(?![^:@]+:[^
 var u=this.parseURL(src);if(u.query){query=$.String.query(u.query);}
 $.extend(data,query);src=src.replace(/^http(s)?:\/\//,'//');if(src.indexOf('youtube-nocookie')!==-1){data['privacy']=true;}
 if(data.param){data['embed']=true;}
-if(query.v){id=query.v;delete query.v;}else{var s=/\/?(embed|v)?\/([\w]+)\b/.exec(u.path);if(s&&$.type(s)==="array"){id=s.pop();}}
+if(query.v){id=query.v;delete query.v;}else{var s=/\/?(embed|v)?\/([\w-]+)\b/.exec(u.path);if(s&&$.type(s)==="array"){id=s.pop();}}
 if(data.playlist){data.playlist=decodeURIComponent(data.playlist);}
 if(data.playlist===id){data.playlist=null;}
 if(query.wmode){delete query.wmode;}

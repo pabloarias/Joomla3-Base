@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <install version="2.0" type="plugin" plugin="clipboard" core="1" editable="1">
     <name>WF_CLIPBOARD_TITLE</name>
-    <version>2.4.3</version>
-    <creationDate>11 September 2014</creationDate>
+    <version>2.4.4</version>
+    <creationDate>04 December 2014</creationDate>
     <author>Ryan Demmer</author>
     <authorEmail>info@joomlacontenteditor.net</authorEmail>
     <authorUrl>http://www.joomlacontenteditor.net/</authorUrl>
@@ -68,10 +68,10 @@
     </params>
     <params group="buttons">
         <param name="buttons" class="checklist buttonlist" type="list" multiple="multiple" default="cut,copy,paste,pastetext" label="WF_PARAM_BUTTONS" description="WF_PARAM_BUTTONS_DESC">
-            <option value="cut">Cut</option>
-            <option value="copy">Copy</option>
-            <option value="paste">Paste</option>
-            <option value="pastetext">Paste As Plain Text</option>
+            <option value="cut">WF_OPTION_CUT</option>
+            <option value="copy">WF_OPTION_COPY</option>
+            <option value="paste">WF_OPTION_PASTE</option>
+            <option value="pastetext">WF_OPTION_PASTE_TEXT</option>
         </param>
     </params>
     <help>

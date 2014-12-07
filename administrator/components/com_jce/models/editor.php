@@ -171,8 +171,22 @@ class WFModelEditor extends WFModelBase {
             $settings['toggle_label'] = htmlspecialchars($wf->getParam('editor.toggle_label', '[Toggle Editor]', '[Toggle Editor]'));
             $settings['toggle_state'] = $wf->getParam('editor.toggle_state', 1, 1);
         }// end profile
-        // set compression states
-        $compress = array('javascript' => intval($wf->getParam('editor.compress_javascript', 1)), 'css' => intval($wf->getParam('editor.compress_css', 1)));
+
+        // check for joomla debug mode
+        $config = JFactory::getConfig();
+        
+        if (defined('JPATH_PLATFORM')) {
+            $debug  = $config->get('debug');
+        } else {
+            $debug  = $config->getValue('config.debug');
+        }
+        
+        $compress = array('javascript' => false, 'css' => false);
+        
+         // set compression states
+        if ((int) $debug === 0) {
+            $compress = array('javascript' => (int) $wf->getParam('editor.compress_javascript', 1), 'css' => (int) $wf->getParam('editor.compress_css', 1));
+        }
 
         // set compression
         if ($compress['css']) {
@@ -821,8 +835,17 @@ class WFModelEditor extends WFModelBase {
                 $global_custom = $wf->getParam('editor.content_css_custom', '');
                 // Replace $template variable with site template name
                 $global_custom = str_replace('$template', $template, $global_custom);
-                // explode to array
-                $files = explode(',', $global_custom);
+                
+                foreach(explode(',', $global_custom) as $tmp) {
+                    $tmp = JPATH_SITE . '/' . $tmp;
+                    
+                    foreach(glob($tmp) as $file) {
+                        if (is_file($file) && preg_match('#\.(css|less)$#', $file)) {
+                            $files[] = substr($file, strlen(JPATH_SITE) + 1);
+                        }
+                    }
+                }
+                
                 break;
             // Template css (template.css or template_css.css)
             case 1 :
@@ -859,14 +882,25 @@ class WFModelEditor extends WFModelBase {
                 $profile_custom = $wf->getParam('editor.profile_content_css_custom', '');
                 // Replace $template variable with site template name (defaults to 'system')
                 $profile_custom = str_replace('$template', $template, $profile_custom);
-                // explode to array
-                $profile_custom = explode(',', $profile_custom);
+                
+                $custom = array();
+
+                foreach(explode(',', $profile_custom) as $tmp) {
+                    $tmp = JPATH_SITE . '/' . $tmp;
+                    
+                    foreach(glob($tmp) as $file) {
+                        if (is_file($file) && preg_match('#\.(css|less)$#', $file)) {
+                            $custom[] = substr($file, strlen(JPATH_SITE) + 1);
+                        }
+                    }
+                }
+
                 // add to existing list
-                if ($profile == 0) {
-                    $files = array_merge($files, $profile_custom);
+                if ($profile === 0) {
+                    $files = array_merge($files, $custom);
                     // overwrite global config value	
                 } else {
-                    $files = (array) $profile_custom;
+                    $files = (array) $custom;
                 }
                 break;
             // inherit global config value
@@ -881,11 +915,14 @@ class WFModelEditor extends WFModelBase {
 
         // check for existence of each file and make array of stylesheets
         foreach ($files as $file) {
+            if (empty($file)) {
+                continue;
+            }
+            
             // remove leading slash
             $file = ltrim($file, '/');
 
-            if ($file && JFile::exists(JPATH_SITE . '/' . $file)) {
-
+            if (JFile::exists(JPATH_SITE . '/' . $file)) {
                 $etag = "";
 
                 // add etag

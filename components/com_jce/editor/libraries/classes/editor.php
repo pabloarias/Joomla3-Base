@@ -21,7 +21,7 @@ defined('_JEXEC') or die('RESTRICTED');
 class WFEditor extends JObject {
 
     // Editor version
-    protected $_version = '2.4.3';
+    protected $_version = '2.4.4';
     
     // Editor instance 
     protected static $instance;
@@ -289,7 +289,7 @@ class WFEditor extends JObject {
             }
             
             // merge data and convert to json string
-            $data = WFParameter::mergeParams($editor_params, $profile_params);
+            $data = WFParameter::mergeParams($editor_params, $profile_params, true, false);
 
             self::$params[$signature] = new WFParameter($data, $options['path'], $options['key']);
         }

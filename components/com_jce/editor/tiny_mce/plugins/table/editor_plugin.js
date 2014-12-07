@@ -1,4 +1,4 @@
-/* JCE Editor - 2.4.3 | 11 September 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | © Copyright, Moxiecode Systems AB | http://www.tinymce.com/license */
+/* JCE Editor - 2.4.4 | 04 December 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | © Copyright, Moxiecode Systems AB | http://www.tinymce.com/license */
 (function(tinymce){var each=tinymce.each;function isAtStart(rng,par){var doc=par.ownerDocument,rng2=doc.createRange(),elm;rng2.setStartBefore(par);rng2.setEnd(rng.endContainer,rng.endOffset);elm=doc.createElement('body');elm.appendChild(rng2.cloneContents());return elm.innerHTML.replace(/<(br|img|object|embed|input|textarea)[^>]*>/gi,'-').replace(/<[^>]+>/g,'').length==0;}
 function getSpanVal(td,name){return parseInt(td.getAttribute(name)||1);}
 function TableGrid(table,dom,selection){var grid,startPos,endPos,selectedCell;buildGrid();selectedCell=dom.getParent(selection.getStart(),'th,td');if(selectedCell){startPos=getPos(selectedCell);endPos=findEndPos();selectedCell=getCell(startPos.x,startPos.y);}
