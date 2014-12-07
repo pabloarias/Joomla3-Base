@@ -45,13 +45,17 @@ RewriteRule .* index.php [F]
 # www redirect (or vice versa), place that code here. Ensure those
 # redirects use the correct RewriteRule syntax and the [R=301,L] flags.
 #
-# redirect www to no-www
-#RewriteCond %{HTTP_HOST} ^www\.(.+) [NC]
-#RewriteRule ^(.*) http://%1/$1 [R=301,NE,L]
+# Redirect www to no-www
+# RewriteCond %{HTTP_HOST} ^www\.(.+) [NC]
+# RewriteRule ^(.*) http://%1/$1 [R=301,NE,L]
 #
-#redirect no-www to www
-#RewriteCond %{HTTP_HOST} ^(?!www\.)(.+) [NC]
-#RewriteRule ^(.*) http://www.%1/$1 [R=301,NE,L]
+# Redirect no-www to www
+# RewriteCond %{HTTP_HOST} ^(?!www\.)(.+) [NC]
+# RewriteRule ^(.*) http://www.%1/$1 [R=301,NE,L]
+#
+# Redirect to Xmap sitemap
+# RewriteCond %{REQUEST_URI} ^/sitemap.xml
+# RewriteRule .* /index.php?option=com_xmap&id=1&view=xml
 #
 ## End - Custom redirects
 

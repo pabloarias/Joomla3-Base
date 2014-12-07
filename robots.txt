@@ -29,3 +29,6 @@ Disallow: /plugins/
 Disallow: /templates/
 Disallow: /tmp/
 
+# Absolute URL to sitemap (example: http://www.example.com/sitemap.xml).
+# In .htaccess uncomment the line to redirect sitemap.xml to xmap sitemap.
+# Sitemap: http://www.example.com/sitemap.xml
