@@ -85,13 +85,13 @@
                 token="JCE Editor" 
                 value="${name}"/>
             <replacefilter 
-                token="2.4.4" 
+                token="2.4.5" 
                 value="${version}"/>
             <replacefilter 
                 token="info@joomlacontenteditor.net" 
                 value="${e-mail}"/>
             <replacefilter 
-                token="04 December 2014" 
+                token="09 December 2014" 
                 value="${DATE}"/>
             <replacefilter 
                 token="GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html" 
