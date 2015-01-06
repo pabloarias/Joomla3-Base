@@ -281,14 +281,14 @@ abstract class F0FUtilsInstallscript
 			return false;
 		}
 
-		// Workarounds for notorious JInstaller bugs we submitted patches for but were rejected – yet the bugs were never
-		// fixed. Way to go, Joomla!...
-		if (in_array($type, array('install')))
+		// Workarounds for notorious JInstaller bugs we submitted patches for but were rejected – yet the bugs were
+		// never fixed. Way to go, Joomla!...
+		if (in_array($type, array('install', 'discover_install')))
 		{
 			// Bugfix for "Database function returned no error"
 			$this->bugfixDBFunctionReturnedNoError();
 		}
-		elseif ($type != 'discover_install')
+		else
 		{
 			// Bugfix for "Can not build admin menus"
 			$this->bugfixCantBuildAdminMenus();
@@ -780,7 +780,9 @@ abstract class F0FUtilsInstallscript
 			}
 		}
 
-		// Remove #__menu records for good measure!
+		// Remove #__menu records for good measure! –– I think this is not necessary and causes the menu item to
+		// disappear on extension update.
+		/**
 		$query = $db->getQuery(true);
 		$query->select('id')
 			->from('#__menu')
@@ -846,6 +848,7 @@ abstract class F0FUtilsInstallscript
 				}
 			}
 		}
+		/**/
 	}
 
 	/**

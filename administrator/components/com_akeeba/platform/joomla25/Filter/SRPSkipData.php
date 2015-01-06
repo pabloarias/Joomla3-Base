@@ -20,7 +20,7 @@ use Akeeba\Engine\Factory;
  */
 class SRPSkipData extends Base
 {
-	private $params = array();
+	protected $params = array();
 
 	function __construct()
 	{

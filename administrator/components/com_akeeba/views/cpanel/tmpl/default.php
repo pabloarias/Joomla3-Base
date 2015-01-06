@@ -65,19 +65,10 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 		<a href="index.php?option=com_akeeba&view=checkfiles" class="btn btn-large btn-primary">
 			<?php echo JText::_('COM_AKEEBA_CPANEL_CORRUPT_RUNFILES') ?>
 		</a>
-		<a href="#" onclick="ignoreCorrupt();" class="btn btn-danger">
-			<?php echo JText::_('COM_AKEEBA_CPANEL_CORRUPT_IGNORE') ?>
-		</a>
 	</p>
 </div>
 
 <div id="restOfCPanel">
-<div id="fastcheckNotice2" class="alert alert-danger" style="display: none">
-	<h3><?php echo JText::_('COM_AKEEBA_CPANEL_ERR_CORRUPT_HEAD') ?></h3>
-	<p>
-		<?php echo JText::_('COM_AKEEBA_CPANEL_ERR_CORRUPT_IGNORED') ?>
-	</p>
-</div>
 
 <?php if (AKEEBA_PRO && (version_compare(JVERSION, '2.5.19', 'lt') || (version_compare(JVERSION, '3.0.0', 'gt') && version_compare(JVERSION, '3.2.1', 'lt')))):?>
 <div class="alert alert-error">
@@ -169,6 +160,19 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 		<?php echo JText::_('AKEEBA_CPANEL_PIM_BUTTON'); ?>
 	</a>
 </div>
+<?php elseif(is_null($this->hasPostInstallationMessages)): ?>
+	<div class="alert alert-error">
+		<h3>
+			<?php echo JText::_('AKEEBA_CPANEL_PIM_ERROR_TITLE'); ?>
+		</h3>
+		<p>
+			<?php echo JText::_('AKEEBA_CPANEL_PIM_ERROR_DESC'); ?>
+		</p>
+		<a href="https://www.akeebabackup.com/documentation/troubleshooter/abpimerror.html"
+		   class="btn btn-primary btn-large">
+			<?php echo JText::_('AKEEBA_CPANEL_PIM_ERROR_BUTTON'); ?>
+		</a>
+	</div>
 <?php endif; ?>
 
 <div id="cpanel" class="row-fluid">
@@ -203,7 +207,7 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 
 		<div class="icon">
 			<a href="index.php?option=com_akeeba&view=schedule">
-				<div class="ak-icon ak-icon-schedule">&nbsp;</div>
+				<div class="ak-icon ak-icon-scheduling">&nbsp;</div>
 				<span><?php echo JText::_('AKEEBA_SCHEDULE'); ?></span>
 			</a>
 		</div>
@@ -360,18 +364,9 @@ if($this->statsIframe)
 					if (data == 'false')
 					{
 						$('#fastcheckNotice').show('fast');
-						$('#fastcheckNotice2').show('fast');
-						$('#restOfCPanel').hide('fast');
 					}
 				}
 			});
 		});
 	})(akeeba.jQuery);
-
-	function ignoreCorrupt()
-	{
-		akeeba.jQuery('#fastcheckNotice').hide('fast');
-		akeeba.jQuery('#fastcheckNotice2').show('fast');
-		akeeba.jQuery('#restOfCPanel').show('fast');
-	}
 </script>

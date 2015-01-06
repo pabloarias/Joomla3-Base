@@ -587,7 +587,10 @@ class AkeebaModelCpanels extends F0FModel
 	 * Returns true if we are installed in Joomla! 3.2 or later and we have post-installation messages for our component
 	 * which must be showed to the user.
 	 *
-	 * @return bool
+	 * Returns null if the com_postinstall component is broken because the user screwed up his Joomla! site following
+	 * some idiot's advice. Apparently there's no shortage of idiots giving terribly bad advice to Joomla! users.
+	 *
+	 * @return bool|null
 	 */
 	public function hasPostInstallMessages()
 	{
@@ -635,11 +638,21 @@ class AkeebaModelCpanels extends F0FModel
 		}
 
 		// Do I have messages?
-		$pimModel = FOFModel::getTmpInstance('Messages', 'PostinstallModel');
-		$pimModel->savestate(false);
-		$pimModel->setState('eid', $extension_id);
+		try
+		{
+			$pimModel = FOFModel::getTmpInstance('Messages', 'PostinstallModel');
+			$pimModel->savestate(false);
+			$pimModel->setState('eid', $extension_id);
 
-		return (count($pimModel->getList()) >= 1);
+			$list   = $pimModel->getList();
+			$result = count($list) >= 1;
+		}
+		catch (\Exception $e)
+		{
+			$result = null;
+		}
+
+		return ($result);
 	}
 
 	/**

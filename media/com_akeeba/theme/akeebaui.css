@@ -13,32 +13,27 @@
  * UI Icons - 32x32
  */
 div.akeeba-bootstrap div.icon { margin-top: 10px; margin-bottom: 0; }
-.ak-icon { display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden; background: transparent url(../icons/akeeba-ui-32.png) top left no-repeat; margin: 4px auto 6px; }
-.ak-icon-profiles { background-position: 0 0; }
-.ak-icon-configuration { background-position: -32px 0; }
-.ak-icon-backup { background-position: -64px 0; }
-.ak-icon-adminfiles { background-position: -96px 0; }
-.ak-icon-viewlog { background-position: -128px 0; }
-.ak-icon-fsfilter { background-position: -160px 0; }
-.ak-icon-dbfilter { background-position: -192px 0; }
-.ak-icon-extradirs { background-position: -224px 0; }
-.ak-icon-multidb { background-position: -256px 0; }
-.ak-icon-fsrx { background-position: -288px 0; }
-.ak-icon-dbrx { background-position: -320px 0; }
-.ak-icon-extfilter { background-position: -352px 0; }
-.ak-icon-restore { background-position: -384px 0; }
-.ak-icon-view { background-position: -416px 0; }
-.ak-icon-cancel { background-position: -448px 0; }
-.ak-icon-warning { background-position: -480px 0; }
-.ak-icon-ok { background-position: -512px 0; }
-.ak-icon-update { background-position: -544px 0; }
-.ak-icon-confwiz { background-position: -576px 0; }
-.ak-icon-download { background-position: -608px 0; }
-.ak-icon-delete { background-position: -640px 0; }
-.ak-icon-componentparams { background-position: -672px 0; }
-.ak-icon-acl { background-position: -704px 0; }
-.ak-icon-stw { background-position: -736px 0; }
-.ak-icon-schedule { background: transparent url(../icons/scheduling-32.png) top left no-repeat; }
+.ak-icon { display: block; width: 33px; height: 33px; text-indent: -99999px; overflow: hidden; background: transparent url("../icons/akeeba-ui-32.png") top left no-repeat; margin: 4px auto 6px; }
+.ak-icon-users { background-position: 0px 0; }
+.ak-icon-scheduling { background-position: -33px 0; }
+.ak-icon-alice { background-position: -66px 0; }
+.ak-icon-dbrx { background-position: -99px 0; }
+.ak-icon-configuration { background-position: -132px 0; }
+.ak-icon-adminfiles { background-position: -165px 0; }
+.ak-icon-fsrx { background-position: -198px 0; }
+.ak-icon-backup { background-position: -231px 0; }
+.ak-icon-fsfilter { background-position: -264px 0; }
+.ak-icon-viewlog { background-position: -297px 0; }
+.ak-icon-stw { background-position: -330px 0; }
+.ak-icon-multidb { background-position: -363px 0; }
+.ak-icon-profiles { background-position: -396px 0; }
+.ak-icon-confwiz { background-position: -429px 0; }
+.ak-icon-update { background-position: -462px 0; }
+.ak-icon-ok { background-position: -495px 0; }
+.ak-icon-extradirs { background-position: -528px 0; }
+.ak-icon-extfilter { background-position: -561px 0; }
+.ak-icon-dbfilter { background-position: -594px 0; }
+.ak-icon-componentparams { background-position: -627px 0; }
 
 /*
  * Joomla! 1.6 - 2.5 compatibility

@@ -1,4 +1,17 @@
 <?php die();?>
+Akeeba Backup 4.1.0
+================================================================================
++ Brand new icon set in the Control Panel page by Helvecio da Silva (http://hlvcdesign.com.br)
++ Warning added when Joomla!'s com_postinstall component is broken (with instructions to fix it)
+~ Less intrusive display of the file integrity check results
+# [HIGH] System Restore Points didn't really work
+# [HIGH] The Quick Icon - Akeeba Backup Notification plugin was broken since 4.1.0.rc1 (thanks Camden!)
+# [HIGH] Stack filters wouldn't load. As a result, voluminous and unwanted data of Joomla!'s Finder tables would always be included.
+# [MEDIUM] The backup ID was not returned to JSON API requests, making download after backup with Akeeba Remote CLI impossible (thanks Mikkel)
+# [LOW] Work around Joomla!'s bug causing it to not load its library translation strings while showing the installation status messages when System Restore Points are enabled
+# [LOW] Piecon could throw Javascript errors on some sites
+# [LOW] Upload to Dropbox may not work on servers without a global cacert.pem file
+
 Akeeba Backup 4.1.0.rc3
 ================================================================================
 ! DirectoryIterator::getExtension is not compatible with PHP 5.3.4 and 5.3.5

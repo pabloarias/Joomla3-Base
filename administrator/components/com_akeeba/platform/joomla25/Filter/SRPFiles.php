@@ -18,9 +18,9 @@ use Akeeba\Engine\Factory;
 /**
  * System Restore Point - Files
  */
-class SRPFiles extends Base
+class SRPFiles extends SRPDirectories
 {
-	private $allowedfiles = array();
+	protected $allowedfiles = array();
 
 	function __construct()
 	{
@@ -48,6 +48,8 @@ class SRPFiles extends Base
 
 	protected function init()
 	{
+		parent::init();
+
 		// Get the language name
 		$this->enabled = true;
 

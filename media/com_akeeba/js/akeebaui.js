@@ -1085,12 +1085,15 @@ function backup_start()
         }
 
 		// Initialise Piecon
-		Piecon.setOptions({
-			color: '#333333',
-			background: '#e0e0e0',
-			shadow: '#000000',
-			fallback: 'force'
-		});
+		try {
+			Piecon.setOptions({
+				color: '#333333',
+				background: '#e0e0e0',
+				shadow: '#000000',
+				fallback: 'force'
+			});
+		} catch (e)
+		{};
 
 		// Initialize steps
 		render_backup_steps('');
@@ -1134,14 +1137,17 @@ function backup_step(data)
 			'width':			data.Progress+'%'
 		});
 
-		if (data.Progress >= 100)
-		{
-			Piecon.setProgress(99);
+		try {
+			if (data.Progress >= 100)
+			{
+				Piecon.setProgress(99);
+			}
+			else
+			{
+				Piecon.setProgress(data.Progress);
+			}
 		}
-		else
-		{
-			Piecon.setProgress(data.Progress);
-		}
+		catch (e) {}
 
 		// Update step/substep display
 		$('#backup-step').html(data.Step);

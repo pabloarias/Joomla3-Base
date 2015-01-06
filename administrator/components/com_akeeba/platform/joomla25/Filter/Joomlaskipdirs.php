@@ -2,9 +2,10 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU GPL version 3 or, at your option, any later version
- * @package akeebaengine
+ * @license   GNU GPL version 3 or, at your option, any later version
+ * @package   akeebaengine
  *
  */
 
@@ -24,30 +25,35 @@ class Joomlaskipdirs extends Base
 {
 	public function __construct()
 	{
-		$this->object	= 'dir';
-		$this->subtype	= 'children';
-		$this->method	= 'direct';
+		$this->object      = 'dir';
+		$this->subtype     = 'children';
+		$this->method      = 'direct';
 		$this->filter_name = 'Joomlaskipdirs';
-
-		if(Factory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
 
 		// We take advantage of the filter class magic to inject our custom filters
 		$configuration = Factory::getConfiguration();
-		$jreg = \JFactory::getConfig();
-		if(version_compare(JVERSION, '3.0', 'ge')) {
+		$jreg          = \JFactory::getConfig();
+
+		if (version_compare(JVERSION, '3.0', 'ge'))
+		{
 			$tmpdir = $jreg->get('tmp_path');
-		} else {
+		}
+		else
+		{
 			$tmpdir = $jreg->getValue('config.tmp_path');
 		}
 
 		// Get the site's root
-		if($configuration->get('akeeba.platform.override_root',0)) {
+		if ($configuration->get('akeeba.platform.override_root', 0))
+		{
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');
-		} else {
+		}
+		else
+		{
 			$root = '[SITEROOT]';
 		}
 
-		$this->filter_data[$root] = array (
+		$this->filter_data[$root] = array(
 			// Output & temp directory of the component
 			$this->treatDirectory($configuration->get('akeeba.basic.output_directory')),
 			// Joomla! temporary directory
@@ -56,22 +62,22 @@ class Joomlaskipdirs extends Base
 			'tmp',
 			// Joomla! front- and back-end cache, as reported by Joomla!
 			$this->treatDirectory(JPATH_CACHE),
-			$this->treatDirectory(JPATH_ADMINISTRATOR.'/cache'),
-			$this->treatDirectory(JPATH_ROOT.'/cache'),
+			$this->treatDirectory(JPATH_ADMINISTRATOR . '/cache'),
+			$this->treatDirectory(JPATH_ROOT . '/cache'),
 			// cache directories fallback
 			'cache',
 			'administrator/cache',
 			// This is not needed except on sites running SVN or beta releases
-			$this->treatDirectory(JPATH_ROOT.'/installation'),
+			$this->treatDirectory(JPATH_ROOT . '/installation'),
 			// ...and the fallback
 			'installation',
 			// Joomla! front- and back-end cache, as calculated by us (redundancy, for funky server setups)
-			$this->treatDirectory( Platform::getInstance()->get_site_root().'/cache' ),
-			$this->treatDirectory( Platform::getInstance()->get_site_root().'/administrator/cache'),
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/cache'),
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/administrator/cache'),
 			// Default backup output (many people change it, forget to remove old backup archives and they end up backing up old backups)
 			'administrator/components/com_akeeba/backup',
 			// MyBlog's cache
-			$this->treatDirectory( Platform::getInstance()->get_site_root().'/components/libraries/cmslib/cache' ),
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/components/libraries/cmslib/cache'),
 			// ...and fallback
 			'components/libraries/cmslib/cache',
 			// The logs directory

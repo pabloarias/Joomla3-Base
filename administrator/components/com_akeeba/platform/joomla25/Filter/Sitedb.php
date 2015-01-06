@@ -2,9 +2,10 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU GPL version 3 or, at your option, any later version
- * @package akeebaengine
+ * @license   GNU GPL version 3 or, at your option, any later version
+ * @package   akeebaengine
  *
  */
 
@@ -24,60 +25,76 @@ class Sitedb extends Base
 	public function __construct()
 	{
 		// This is a directory inclusion filter.
-		$this->object	= 'db';
-		$this->subtype	= 'inclusion';
-		$this->method	= 'direct';
+		$this->object      = 'db';
+		$this->subtype     = 'inclusion';
+		$this->method      = 'direct';
 		$this->filter_name = 'Sitedb';
 
 		// Add a new record for the core Joomla! database
 		// Get core database options
 		$configuration = Factory::getConfiguration();
 
-		if($configuration->get('akeeba.platform.override_db',0)) {
+		if ($configuration->get('akeeba.platform.override_db', 0))
+		{
 			$options = array(
-				'port'		=> $configuration->get('akeeba.platform.dbport',''),
-				'host'		=> $configuration->get('akeeba.platform.dbhost',''),
-				'user'		=> $configuration->get('akeeba.platform.dbusername',''),
-				'password'	=> $configuration->get('akeeba.platform.dbpassword',''),
-				'database'	=> $configuration->get('akeeba.platform.dbname',''),
-				'prefix'	=> $configuration->get('akeeba.platform.dbprefix',''),
+				'port'     => $configuration->get('akeeba.platform.dbport', ''),
+				'host'     => $configuration->get('akeeba.platform.dbhost', ''),
+				'user'     => $configuration->get('akeeba.platform.dbusername', ''),
+				'password' => $configuration->get('akeeba.platform.dbpassword', ''),
+				'database' => $configuration->get('akeeba.platform.dbname', ''),
+				'prefix'   => $configuration->get('akeeba.platform.dbprefix', ''),
 			);
-			$driver = '\\Akeeba\\Engine\\Driver\\'.ucfirst($configuration->get('akeeba.platform.dbdriver','mysqli'));
-		} else {
+			$driver  = '\\Akeeba\\Engine\\Driver\\' . ucfirst($configuration->get('akeeba.platform.dbdriver', 'mysqli'));
+		}
+		else
+		{
 			$options = Platform::getInstance()->get_platform_database_options();
-			$driver = Platform::getInstance()->get_default_database_driver(true);
+			$driver  = Platform::getInstance()->get_default_database_driver(true);
 		}
 
 
 		$host = $options['host'];
-		$port	= array_key_exists('port', $options) ? $options['port'] : NULL;
-		if(empty($port)) $port = null;
-		$socket	= NULL;
-		$targetSlot = substr( strstr( $host, ":" ), 1 );
-		if (!empty( $targetSlot )) {
+		$port = array_key_exists('port', $options) ? $options['port'] : null;
+
+		if (empty($port))
+		{
+			$port = null;
+		}
+
+		$socket     = null;
+		$targetSlot = substr(strstr($host, ":"), 1);
+
+		if ( !empty($targetSlot))
+		{
 			// Get the port number or socket name
-			if (is_numeric( $targetSlot ) && is_null($port))
-				$port	= $targetSlot;
+			if (is_numeric($targetSlot) && is_null($port))
+			{
+				$port = $targetSlot;
+			}
 			else
-				$socket	= $targetSlot;
+			{
+				$socket = $targetSlot;
+			}
 
 			// Extract the host name only
-			$host = substr( $host, 0, strlen( $host ) - (strlen( $targetSlot ) + 1) );
+			$host = substr($host, 0, strlen($host) - (strlen($targetSlot) + 1));
 			// This will take care of the following notation: ":3306"
-			if($host == '')
+			if ($host == '')
+			{
 				$host = 'localhost';
+			}
 		}
 
 		// This is the format of the database inclusion filters
 		$entry = array(
-			'host' => $host,
-			'port' => is_null($socket) ? (is_null($port) ? '' : $port) : $socket,
+			'host'     => $host,
+			'port'     => is_null($socket) ? (is_null($port) ? '' : $port) : $socket,
 			'username' => $options['user'],
 			'password' => $options['password'],
 			'database' => $options['database'],
-			'prefix' => $options['prefix'],
+			'prefix'   => $options['prefix'],
 			'dumpFile' => 'site.sql',
-			'driver' => $driver
+			'driver'   => $driver
 		);
 
 		// We take advantage of the filter class magic to inject our custom filters

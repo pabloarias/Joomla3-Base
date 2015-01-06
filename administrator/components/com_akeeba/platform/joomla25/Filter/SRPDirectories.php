@@ -21,8 +21,19 @@ use Akeeba\Engine\Platform;
  */
 class SRPDirectories extends Base
 {
-	protected $params = array();
+	/** @var \stdClass Concentrates the SRP options in a single place */
+	protected $params = null;
+
+	/** @var string[] List of directories we are meant to back up */
 	protected $alloweddirs = array();
+
+	/**
+	 * Strictly-allowed directories. When a custom allowed file is in a directory which does not belong to the allowed
+	 * directories it would normally not be scanned, therefore not be backed up. The solution is to have a list of
+	 * directories which can be scanned, but not their subdirectories. These are the strictly allowed directories.
+	 *
+	 * @var string[]
+	 */
 	protected $strictalloweddirs = array();
 
 	function __construct()
@@ -143,14 +154,15 @@ class SRPDirectories extends Base
 						return false;
 					}
 
-					if (substr($test, 0, $len + 1) == $dir . '/')
+					// WTF?!
+/*					if (substr($test, 0, $len + 1) == $dir . '/')
 					{
                         // Double check that I'm not excluding a folder that I'll need later
                         if(!in_array($test, $this->alloweddirs))
                         {
                             return true;
                         }
-					}
+					}*/
 				}
 			}
 		}
@@ -159,10 +171,12 @@ class SRPDirectories extends Base
 		foreach ($this->alloweddirs as $dir)
 		{
 			$len = strlen($dir);
+
 			if (strlen($test) < $len)
 			{
 				// We have to allow scanning parent directories
 				$len = strlen($test);
+
 				if (substr($dir, 0, $len) == $test)
 				{
 					// We need a different slash count. If the slash count is the same

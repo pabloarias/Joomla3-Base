@@ -2,9 +2,10 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU GPL version 3 or, at your option, any later version
- * @package akeebaengine
+ * @license   GNU GPL version 3 or, at your option, any later version
+ * @package   akeebaengine
  *
  */
 
@@ -29,43 +30,58 @@ class Libraries extends Base
 {
 	public function __construct()
 	{
-		$this->object	= 'dir';
-		$this->subtype	= 'inclusion';
-		$this->method	= 'direct';
-		$this->filter_name	= 'Libraries';
+		$this->object      = 'dir';
+		$this->subtype     = 'inclusion';
+		$this->method      = 'direct';
+		$this->filter_name = 'Libraries';
 
-		if(Factory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+		if (Factory::getKettenrad()->getTag() == 'restorepoint')
+		{
+			$this->enabled = false;
+		}
 
 		// FIXME This filter doesn't work very well on many live hosts. Disabled for now.
 		parent::__construct();
+
 		return;
 
 
-
-		if(empty($this->filter_name)) $this->filter_name = strtolower(basename(__FILE__,'.php'));
+		if (empty($this->filter_name))
+		{
+			$this->filter_name = strtolower(basename(__FILE__, '.php'));
+		}
 
 		// Get the saved library path and compare it to the default
 		$jlibdir = Platform::getInstance()->get_platform_configuration_option('jlibrariesdir', '');
-		if(empty($jlibdir)) {
-			if(defined('JPATH_LIBRARIES')) {
+		if (empty($jlibdir))
+		{
+			if (defined('JPATH_LIBRARIES'))
+			{
 				$jlibdir = JPATH_LIBRARIES;
-			} elseif(defined('JPATH_PLATFORM')) {
+			}
+			elseif (defined('JPATH_PLATFORM'))
+			{
 				$jlibdir = JPATH_PLATFORM;
-			} else {
+			}
+			else
+			{
 				$jlibdir = false;
 			}
 		}
 
-		if($jlibdir !== false) {
-			$jlibdir = Factory::getFilesystemTools()->TranslateWinPath($jlibdir);
-			$defaultLibraries = Factory::getFilesystemTools()->TranslateWinPath(JPATH_SITE.'/libraries');
+		if ($jlibdir !== false)
+		{
+			$jlibdir          = Factory::getFilesystemTools()->TranslateWinPath($jlibdir);
+			$defaultLibraries = Factory::getFilesystemTools()->TranslateWinPath(JPATH_SITE . '/libraries');
 
-			if($defaultLibraries != $jlibdir)
+			if ($defaultLibraries != $jlibdir)
 			{
 				// The path differs, add it here
 				$this->filter_data['JPATH_LIBRARIES'] = $jlibdir;
 			}
-		} else {
+		}
+		else
+		{
 			$this->filter_data = array();
 		}
 		parent::__construct();

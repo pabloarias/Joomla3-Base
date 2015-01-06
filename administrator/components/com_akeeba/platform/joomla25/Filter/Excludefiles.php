@@ -2,9 +2,10 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU GPL version 3 or, at your option, any later version
- * @package akeebaengine
+ * @license   GNU GPL version 3 or, at your option, any later version
+ * @package   akeebaengine
  *
  */
 
@@ -23,24 +24,25 @@ class Excludefiles extends Base
 {
 	public function __construct()
 	{
-		$this->object	= 'file';
-		$this->subtype	= 'all';
-		$this->method	= 'direct';
+		$this->object      = 'file';
+		$this->subtype     = 'all';
+		$this->method      = 'direct';
 		$this->filter_name = 'Excludefiles';
-
-		if(Factory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
 
 		// Get the site's root
 		$configuration = Factory::getConfiguration();
 
-		if($configuration->get('akeeba.platform.override_root',0)) {
+		if ($configuration->get('akeeba.platform.override_root', 0))
+		{
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');
-		} else {
+		}
+		else
+		{
 			$root = '[SITEROOT]';
 		}
 
 		// We take advantage of the filter class magic to inject our custom filters
-		$this->filter_data[$root] = array (
+		$this->filter_data[$root] = array(
 			'kickstart.php',
 			'error_log',
 			'administrator/error_log'

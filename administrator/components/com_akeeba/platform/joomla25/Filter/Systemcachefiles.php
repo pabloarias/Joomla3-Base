@@ -2,9 +2,10 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU GPL version 3 or, at your option, any later version
- * @package akeebaengine
+ * @license   GNU GPL version 3 or, at your option, any later version
+ * @package   akeebaengine
  *
  */
 
@@ -22,23 +23,27 @@ class Systemcachefiles extends Base
 {
 	function __construct()
 	{
-		$this->object	= 'file';
-		$this->subtype	= 'all';
-		$this->method	= 'regex';
+		$this->object      = 'file';
+		$this->subtype     = 'all';
+		$this->method      = 'regex';
 		$this->filter_name = 'Systemcachefiles';
 
-		if(empty($this->filter_name)) $this->filter_name = strtolower(basename(__FILE__,'.php'));
-
-		if(Factory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
+		if (empty($this->filter_name))
+		{
+			$this->filter_name = strtolower(basename(__FILE__, '.php'));
+		}
 
 		parent::__construct();
 
 		// Get the site's root
 		$configuration = Factory::getConfiguration();
 
-		if($configuration->get('akeeba.platform.override_root',0)) {
+		if ($configuration->get('akeeba.platform.override_root', 0))
+		{
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');
-		} else {
+		}
+		else
+		{
 			$root = '[SITEROOT]';
 		}
 

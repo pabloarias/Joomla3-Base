@@ -183,7 +183,12 @@ class Filters extends Object
 				}
 
 				// Extract filter base name
-				$filter_name = 'Stack' . ucfirst($bare_name);
+				if (substr($bare_name, 0, 5) == 'stack')
+				{
+					$bare_name = substr($bare_name, 5);
+				}
+
+				$filter_name = 'Stack\\Stack' . ucfirst($bare_name);
 
 				// Skip already loaded filters
 				if (array_key_exists($filter_name, $this->filters))

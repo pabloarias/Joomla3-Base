@@ -2092,8 +2092,14 @@ class F0FModel extends F0FUtilsObject
 				$order = $db->qn($this->getTableAlias()) . '.' . $order;
 			}
 
-			$dir = $this->getState('filter_order_Dir', 'ASC', 'cmd');
-			$query->order($order . ' ' . $dir);
+			$dir = strtoupper($this->getState('filter_order_Dir', 'ASC', 'cmd'));
+			$dir = in_array($dir, array('DESC', 'ASC')) ? $dir : 'ASC';
+
+			// If the table cache is broken you may end up with an empty order by.
+			if (!empty($order) && ($order != $db->qn('')))
+			{
+				$query->order($order . ' ' . $dir);
+			}
 		}
 
 		// Call the behaviors

@@ -2,9 +2,10 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
+ *
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU GPL version 3 or, at your option, any later version
- * @package akeebaengine
+ * @license   GNU GPL version 3 or, at your option, any later version
+ * @package   akeebaengine
  *
  */
 
@@ -23,9 +24,9 @@ class Siteroot extends Base
 	public function __construct()
 	{
 		// This is a directory inclusion filter.
-		$this->object	= 'dir';
-		$this->subtype	= 'inclusion';
-		$this->method	= 'direct';
+		$this->object      = 'dir';
+		$this->subtype     = 'inclusion';
+		$this->method      = 'direct';
 		$this->filter_name = 'Siteroot';
 
 		// Directory inclusion format:
@@ -35,13 +36,16 @@ class Siteroot extends Base
 		// We take advantage of the filter class magic to inject our custom filters
 		$configuration = Factory::getConfiguration();
 
-		if($configuration->get('akeeba.platform.override_root',0)) {
+		if ($configuration->get('akeeba.platform.override_root', 0))
+		{
 			$root = $configuration->get('akeeba.platform.newroot', '[SITEROOT]');
-		} else {
+		}
+		else
+		{
 			$root = '[SITEROOT]';
 		}
 
-		$this->filter_data[] = array (
+		$this->filter_data[] = array(
 			$root,
 			$add_path
 		);

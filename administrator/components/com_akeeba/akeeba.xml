@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="component" method="upgrade">
 	<name>Akeeba</name>
-	<creationDate>2014-11-26</creationDate>
+	<creationDate>2014-12-27</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@dionysopoulos.me</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2006-2014 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU GPL v3 or later</license>
-	<version>4.1.0.rc3</version>
+	<version>4.1.0</version>
 	<description>Akeeba Backup Core - Full Joomla! site backup solution, Core Edition.</description>
 
 	<!-- Public front end files -->
 	<files folder="frontend">
 		<filename>akeeba.php</filename>
 		<filename>dispatcher.php</filename>
-		<filename>index.html</filename>
 		<folder>controllers</folder>
 		<folder>models</folder>
 		<folder>views</folder>
@@ -44,7 +43,6 @@
 			<filename>akeeba.php</filename>
 			<filename>dispatcher.php</filename>
 			<filename>fof.xml</filename>
-			<filename>index.html</filename>
 			<filename>toolbar.php</filename>
 			<filename>version.php</filename>
 			<filename>config.xml</filename>

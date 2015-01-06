@@ -715,6 +715,11 @@ class AkeebaModelJsons extends F0FModel
 			Factory::nuke();
 			Factory::getFactoryStorage()->reset();
 		}
+		else
+		{
+			$statistics = Factory::getStatistics();
+			$array['BackupID'] = $statistics->getId();
+		}
 
 		return $array;
 	}
