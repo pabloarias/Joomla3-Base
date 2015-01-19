@@ -18,7 +18,7 @@ Paquetes incluidos:
 - Idioma español 3.3.4.1
 - Editor JCE 2.4.5 + traducción al español
 - Xmap 2.3.4.
-- Akeeba Backup 4.1.0 + traducción al español
+- Akeeba Backup 4.1.1 + traducción al español
 - Title Manager 3.0
 
 Contenidos incluidos:
