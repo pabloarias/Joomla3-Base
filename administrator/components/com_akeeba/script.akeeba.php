@@ -368,19 +368,6 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
 			'action'				=> 'com_akeeba_postinstall_confwiz_action',
 		),
-		'angieupgrade' => array(
-			'type'					=> 'action',
-			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ANGIEUPGRADE',
-			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ANGIEUPGRADE',
-			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_ANGIEUPGRADE',
-			'language_extension'	=> 'com_akeeba',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '4.0.0',
-			'condition_file'		=> 'admin://components/com_akeeba/helpers/postinstall.php',
-			'condition_method'		=> 'com_akeeba_postinstall_angie_condition',
-			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
-			'action'				=> 'com_akeeba_postinstall_angie_action',
-		),
 
 		'accept_license' => array(
 			'type'					=> 'message',
@@ -527,6 +514,11 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 
 		parent::postflight($type, $parent);
 
+		if (version_compare(JVERSION, '3.2.0', 'ge'))
+		{
+			$this->uninstallObsoletePostinstallMessages();
+		}
+
 		// Make sure the two plugins folders exist in Core release and are empty
 		if (!$this->isPaid)
 		{
@@ -633,5 +625,23 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 		<h2>Akeeba Backup Uninstallation Status</h2>
 		<?php
 		parent::renderPostUninstallation($status, $parent);
+	}
+
+	private function uninstallObsoletePostinstallMessages()
+	{
+		$db = JFactory::getDbo();
+
+		// Remove the "Upgrade profiles to ANGIE" post-installation message
+		$query = $db->getQuery(true)
+			->delete($db->qn('#__postinstall_messages'))
+			->where($db->qn('title_key') . ' = ' . $db->q('AKEEBA_POSTSETUP_LBL_ANGIEUPGRADE'));
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			// Do nothing
+		}
 	}
 }

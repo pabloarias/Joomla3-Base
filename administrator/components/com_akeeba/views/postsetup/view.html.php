@@ -103,14 +103,12 @@ class AkeebaViewPostsetup extends F0FViewHtml
 		$acceptlicense = $params->get('acceptlicense', '0');
 		$acceptsupport = $params->get('acceptsupport', '0');
 		$acceptbackuptest = $params->get('acceptbackuptest', '0');
-		$angieupgrade = $params->get('angieupgrade', '0');
 
 		$this->enableconfwiz = $enableconfwiz;
 		$this->minstability = $minStability;
 		$this->acceptlicense = $acceptlicense;
 		$this->acceptsupport = $acceptsupport;
 		$this->acceptbackuptest = $acceptbackuptest;
-		$this->showangieupgrade = ($angieupgrade == 0);
 
 		return $enableconfwiz;
 	}

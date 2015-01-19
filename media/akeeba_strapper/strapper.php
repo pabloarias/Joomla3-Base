@@ -4,8 +4,8 @@
  * A handy distribution of namespaced jQuery, jQuery UI and Twitter
  * Bootstrapper for use with Akeeba components.
  *
- * @copyright (c) 2012-2014 Akeeba Ltd
- * @license GNU General Public License version 2 or later
+ * @copyright Copyright (C) 2010 - 2015 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
+ * @license   GNU General Public License version 2 or later
  */
 
 // Protect from unauthorized access

@@ -1,4 +1,11 @@
 <?php die();?>
+Akeeba Backup 4.1.1
+================================================================================
+- Removed the obsolete "Upgrade profiles to ANGIE" post-installation message
+# [LOW] Tooltips for backup comments not shown in Manage Backup page on Joomla! 3.x
+# [HIGH] gh-523 Fatal error on Joomla! 2.5 when logging in as Administrator (NOT Super User!) and you have published our Quick Icon plugin
+# [HIGH] Old PHP 5.3 versions have a bug regarding Interface implementation, causing a PHP fatal error
+
 Akeeba Backup 4.1.0
 ================================================================================
 + Brand new icon set in the Control Panel page by Helvecio da Silva (http://hlvcdesign.com.br)

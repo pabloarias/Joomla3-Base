@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2015 Nicholas K. Dionysopoulos
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -14,6 +14,7 @@ namespace Akeeba\Engine\Platform;
 // Protection against direct access
 defined('AKEEBAENGINE') or die();
 
+use Akeeba\Engine\Util\ParseIni;
 use Psr\Log\LogLevel;
 use Akeeba\Engine\Factory;
 
@@ -148,7 +149,7 @@ abstract class Base implements PlatformInterface
 				$secureSettings = Factory::getSecureSettings();
 				$ini_data_local = $secureSettings->decryptSettings($ini_data_local);
 
-				$ini_data_local = parse_ini_string($ini_data_local, true);
+				$ini_data_local = ParseIni::parse_ini_file($ini_data_local, true, true);
 				$ini_data = array();
 
 				foreach ($ini_data_local as $section => $row)

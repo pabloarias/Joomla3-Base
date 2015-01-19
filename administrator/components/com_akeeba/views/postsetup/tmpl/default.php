@@ -86,16 +86,6 @@ JFactory::getDocument()->addScriptDeclaration($script);
 	<div class="postsetup-desc"><?php echo JText::_('AKEEBA_POSTSETUP_DESC_confwiz');?></div>
 	<br/>
 
-	<?php if($this->showangieupgrade): ?>
-	<label for="angieupgrade" class="postsetup-main">
-		<input type="checkbox" id="angieupgrade" name="angieupgrade" checked="checked" />
-		<?php echo JText::_('AKEEBA_POSTSETUP_LBL_ANGIEUPGRADE')?>
-	</label>
-	</br>
-	<div class="postsetup-desc"><?php echo JText::_('AKEEBA_POSTSETUP_DESC_ANGIEUPGRADE');?></div>
-	<br/>
-	<?php endif; ?>
-
 	<h3><?php echo JText::_('AKEEBA_POSTSETUP_LBL_MANDATORYINFO') ?></h3>
 
 	<label for="acceptlicense" class="postsetup-main">

@@ -29,7 +29,7 @@
  */
 
 define('KICKSTART',1);
-define('VERSION', 'revD1046DC');
+define('VERSION', 'revC54B23C');
 define('KICKSTARTPRO', '0');
 // Uncomment the following line to enable Kickstart's debug mode
 //define('KSDEBUG', 1);
@@ -9991,7 +9991,7 @@ function echoHeadJavascript()
 	 */
 
 	var akeeba_update = {version: '0'};
-	var akeeba_version = 'revD1046DC';
+	var akeeba_version = 'revC54B23C';
 
 	function version_compare (v1, v2, operator) {
 		// BEGIN REDUNDANT
@@ -10210,7 +10210,7 @@ function echoPage()
 			<h2>Deprecated Internet Explorer version</h2>
 			<p>
 				This script is not guaranteed to work properly on Internet Explorer 8
-				or previous version, or on Internet Explorer 9 and higher running
+				or earlier versions, or on Internet Explorer 9 and higher running
 				in compatibility mode.
 			</p>
 			<p>
@@ -10241,7 +10241,7 @@ function echoPage()
 	</div>
 
 	<div id="header">
-		<div class="title">Akeeba Kickstart <?php echo $edition?> revD1046DC</div>
+		<div class="title">Akeeba Kickstart <?php echo $edition?> revC54B23C</div>
 	</div>
 
 	<div id="update-notification" style="display: none">

@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2015 Nicholas K. Dionysopoulos
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -14,17 +14,16 @@ namespace Akeeba\Engine\Util;
 // Protection against direct access
 defined('AKEEBAENGINE') or die();
 
-use Psr\Log\LoggerInterface as LoggerInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Psr\Log\InvalidArgumentException;
-use Akeeba\Engine\Util\Log\LogInterface;
 use Akeeba\Engine\Factory;
 use Akeeba\Engine\Platform;
 
 /**
  * Writes messages to the backup log file
  */
-class Logger implements LogInterface, LoggerInterface
+class Logger implements LoggerInterface
 {
 	/** @var  string  Full path to log file */
 	protected $logName = null;

@@ -29,7 +29,6 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 		$enableAutoupdate = $this->input->get('autoupdate', 0, 'bool');
 		$enableBackuponupdate = $this->input->get('backuponupdate', 0, 'bool');
 		$runConfwiz = $this->input->get('confwiz', 0, 'bool');
-		$angieupgrade = $this->input->get('angieupgrade', 0, 'bool');
 		$acceptlicense = $this->input->get('acceptlicense', 0, 'bool');
 		$acceptsupport = $this->input->get('acceptsupport', 0, 'bool');
 		$acceptbackuptest = $this->input->get('acceptbackuptest', 0, 'bool');
@@ -92,11 +91,6 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 		$db->setQuery($query);
 		$db->execute();
 
-		if ($angieupgrade)
-		{
-			$this->_angieUpgrade();
-		}
-
 		// Update last version check and minstability. DO NOT USE JCOMPONENTHELPER!
 		$sql = $db->getQuery(true)
 			->select($db->qn('params'))
@@ -136,7 +130,6 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 			$params->set('acceptlicense', $acceptlicense);
 			$params->set('acceptsupport', $acceptsupport);
 			$params->set('acceptbackuptest', $acceptbackuptest);
-			$params->set('angieupgrade', ($angieupgrade ? 1 : 0));
 		}
 		else
 		{
@@ -144,7 +137,6 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 			$params->setValue('acceptlicense', $acceptlicense);
 			$params->setValue('acceptsupport', $acceptsupport);
 			$params->setValue('acceptbackuptest', $acceptbackuptest);
-			$params->setValue('angieupgrade', ($angieupgrade ? 1 : 0));
 		}
 
 		$data = $params->toString('JSON');
@@ -201,35 +193,5 @@ class AkeebaControllerPostsetup extends AkeebaControllerDefault
 		$db = JFactory::getDbo();
 
 		return strtolower(substr($db->name, 0, 5)) == 'mysql';
-	}
-
-	private function _angieUpgrade()
-	{
-		// Get all profiles
-		$model = F0FModel::getTmpInstance('Cpanels', 'AkeebaModel');
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true)
-			->select(array(
-				$db->qn('id'),
-			))->from($db->qn('#__ak_profiles'))
-			->order($db->qn('id') . " ASC");
-		$db->setQuery($query);
-		$profiles = $db->loadColumn();
-
-		$session = JFactory::getSession();
-		$oldProfile = $session->get('profile', 1, 'akeeba');
-
-		foreach ($profiles as $profile_id)
-		{
-			Factory::nuke();
-			Platform::getInstance()->load_configuration($profile_id);
-			$config = Factory::getConfiguration();
-			$config->set('akeeba.advanced.embedded_installer', 'angie');
-			Platform::getInstance()->save_configuration($profile_id);
-		}
-
-		Factory::nuke();
-		Platform::getInstance()->load_configuration($oldProfile);
 	}
 }

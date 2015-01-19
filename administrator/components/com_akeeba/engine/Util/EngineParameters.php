@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2015 Nicholas K. Dionysopoulos
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -61,7 +61,7 @@ class EngineParameters
 
 			if (@file_exists($ini_file_name))
 			{
-				$raw_data = parse_ini_file($ini_file_name, false);
+				$raw_data = ParseIni::parse_ini_file($ini_file_name, false);
 				$domain_keys = explode('|', $raw_data['volatile.akeebaengine.domains']);
 				$domains = array();
 
@@ -606,7 +606,7 @@ class EngineParameters
 					continue;
 				}
 
-				$data = parse_ini_file($file->getRealPath(), true);
+				$data = ParseIni::parse_ini_file($file->getRealPath(), true);
 
 				if ($forDisplay)
 				{
@@ -803,7 +803,7 @@ class EngineParameters
 
 		$parameters = array();
 
-		$inidata = parse_ini_file($inifile, true);
+		$inidata = ParseIni::parse_ini_file($inifile, true);
 
 		foreach ($inidata as $section => $data)
 		{
@@ -862,7 +862,7 @@ class EngineParameters
 		);
 
 		$parameters = array();
-		$inidata = parse_ini_file($inifile, true);
+		$inidata = ParseIni::parse_ini_file($inifile, true);
 
 		foreach ($inidata as $section => $data)
 		{

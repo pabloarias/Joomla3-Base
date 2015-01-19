@@ -13,6 +13,15 @@ defined('_JEXEC') or die();
 JHtml::_('behavior.framework');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.modal');
+if (version_compare(JVERSION, '3.0.0', 'ge'))
+{
+	JHtml::_('bootstrap.popover', '.akeebaCommentPopover', array(
+		'animation'	=> true,
+		'html'		=> true,
+		'title'		=> JText::_('STATS_LABEL_COMMENT'),
+		'placement'	=> 'bottom'
+	));
+}
 
 $dateFormat = \Akeeba\Engine\Util\Comconfig::getValue('dateformat', '');
 $dateFormat = trim($dateFormat);
@@ -356,9 +365,18 @@ ENDHTML;
 
 		// Link for Show Comments lightbox
 		$info_link = "";
+
 		if (!empty($record['comment']))
 		{
-			$info_link = JHTML::_('tooltip', strip_tags($this->escape($record['comment']))) . '&ensp;';
+			if (version_compare(JVERSION, '3.0.0', 'lt'))
+			{
+				$info_link = JHTML::_('tooltip', strip_tags($this->escape($record['comment']))) . '&ensp;';
+			}
+			else
+			{
+				$info_link = "<span class=\"icon icon-info-sign akeebaCommentPopover\" rel=\"popover\" data-content=\"" .
+					$this->escape($record['comment']) ."\"></span>";
+			}
 		}
 
 		// Label class based on status
