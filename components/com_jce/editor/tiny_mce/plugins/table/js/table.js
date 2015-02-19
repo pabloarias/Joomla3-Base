@@ -1,4 +1,4 @@
-/* JCE Editor - 2.4.5 | 09 December 2014 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* JCE Editor - 2.4.6 | 19 January 2015 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 var TableDialog={settings:{},init:function(){var self=this,ed=tinyMCEPopup.editor,context=tinyMCEPopup.getWindowArg('context','table');this.html5=ed.settings.schema==="html5";if(!this.settings.file_browser){$('input.browser').removeClass('browser');}
 $.Plugin.init();if(context=='merge'){return this.initMerge();}
 addClassesToList('classlist',"table_styles");if(this.html5){$('#axis, #abbr, #scope, #summary, #char, #charoff, #tframe, #nowrap, #rules, #cellpadding, #cellspacing').each(function(){$(this).add('label[for="'+this.id+'"]').parent().hide();});function styles(v){if(typeof v==="undefined"){return tinyMCEPopup.dom.parseStyle($('#style').val());}
