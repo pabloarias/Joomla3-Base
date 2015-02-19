@@ -192,6 +192,12 @@ span.actionbutton { padding: 0.25em 0.5em; margin: 0 1em 0 0; cursor: pointer; }
 .file-container span.file-clickable:hover { font-weight: bold; color: #333399; }
 .file-container span.file-size { display: block; float: right; }
 
+.file-header{margin: 10px 0;}
+.file-header.file-container span.file-name{font-style: italic; padding-left: 20px}
+.folder-header{margin: 10px 0;}
+.folder-header.folder-container span.folder-name{font-style: italic; padding-left: 20px}
+.folder-header.folder-container span.folder-name:hover{color:#333; font-weight: normal; cursor: default;}
+
 #ak_list_container { padding: 4px; }
 .ak_filter_type { font-weight: bold; }
 .ak_filter_row span.ui-icon { float: left; cursor: pointer; margin-right: 4px; }

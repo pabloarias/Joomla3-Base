@@ -63,7 +63,7 @@ class AkeebaUsagestats
         // Should I create an iframe?
         if($useIframe)
         {
-            return '<iframe style="display: none" src="'.$url.'"></iframe>';
+            return '<!-- Anonymous usage statistics collection for Akeeba software --><iframe style="display: none" src="'.$url.'"></iframe>';
         }
         else
         {

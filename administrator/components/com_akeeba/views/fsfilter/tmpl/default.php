@@ -33,7 +33,7 @@ JHtml::_('behavior.framework');
 		</a>
 	</div>
 </div>
-	
+
 <div id="ak_crumbs_container" class="row-fluid">
 	<ul id="ak_crumbs" class="breadcrumb"></ul>
 </div>
@@ -95,7 +95,9 @@ akeeba.jQuery(document).ready(function($){
 	akeeba_translations['UI-ROOT'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('FILTERS_LABEL_UIROOT')) ?>';
 	akeeba_translations['UI-ERROR-FILTER'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('FILTERS_LABEL_UIERRORFILTER')) ?>';
 <?php
-	$filters = array('directories', 'skipfiles', 'skipdirs', 'files');
+	$filters = array('directories', 'skipfiles', 'skipdirs', 'files', 'directories_all', 'skipfiles_all', 'skipdirs_all',
+	            'files_all', 'applytoalldirs', 'applytoallfiles');
+
 	foreach($filters as $type)
 	{
 		echo "\takeeba_translations['UI-FILTERTYPE-".strtoupper($type)."'] = '".

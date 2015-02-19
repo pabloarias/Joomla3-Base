@@ -226,8 +226,15 @@ class AkeebaModelFsfilters extends F0FModel
 		$node = $this->glue_crumbs($crumbs, $child);
 
 		// Create the new crumbs
-		if(!is_array($crumbs)) $crumbs = array();
-		if(!empty($child)) $crumbs[] = $child;
+		if(!is_array($crumbs))
+        {
+            $crumbs = array();
+        }
+
+		if(!empty($child))
+        {
+            $crumbs[] = $child;
+        }
 
 		// Get listing with the filter info
 		$listing = $this->get_listing($root, $node);

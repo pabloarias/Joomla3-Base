@@ -49,7 +49,7 @@ class AkeebaModelCpanels extends F0FModel
 			return $ret;
 		}
 
-		$ini_data = parse_ini_file($path . '/' . $file, true);
+		$ini_data = \Akeeba\Engine\Util\ParseIni::parse_ini_file($path . '/' . $file, true);
 
 		if ( !empty($ini_data))
 		{

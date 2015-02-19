@@ -1601,6 +1601,85 @@ function fsfilter_render(data)
 				)
 				.appendTo(akfolders);
 		}
+
+        // Append the "Apply to all" buttons
+        if(Object.keys(data.folders).length > 0)
+        {
+            var headerFilters = ['directories_all', 'skipdirs_all', 'skipfiles_all'];
+            var headerDirs    = $(document.createElement('div')).addClass('folder-header folder-container');
+
+            $.each(headerFilters, function(index, filter)
+            {
+                var ui_icon = $(document.createElement('span')).addClass('folder-icon-container');
+                var applyTo = '';
+
+                switch(filter)
+                {
+                    case 'directories_all':
+                        applyTo = 'ui-icon-cancel';
+                        ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-cancel"></span>');
+                        break;
+                    case 'skipdirs_all':
+                        applyTo = 'ui-icon-folder-open';
+                        ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-folder-open"></span>');
+                        break;
+                    case 'skipfiles_all':
+                        applyTo = 'ui-icon-document';
+                        ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-document"></span>');
+                        break;
+                }
+
+                ui_icon.tooltip({
+                    top: 24,
+                    left: 0,
+                    track: false,
+                    delay: 0,
+                    showURL: false,
+                    opacity: 1,
+                    fixPNG: true,
+                    fade: 0,
+                    extraClass: 'ui-dialog ui-corner-all',
+                    bodyHandler: function() {
+                        html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>';
+                        return html;
+                    }
+                });
+
+                ui_icon.click(function(){
+                    var selected;
+
+                    if($(this).hasClass('ui-state-highlight')){
+                        $(this).removeClass('ui-state-highlight');
+                        selected = false;
+                    }
+                    else{
+                        $(this).addClass('ui-state-highlight');
+                        selected = true;
+                    }
+
+                    $.each(akfolders.find('.folder-container').not('.folder-header').find('span.'+applyTo), function(index, item){
+                        var hasClass = $(item).parent().hasClass('ui-state-highlight');
+
+                        // I have to exclude items that have the same state of the desidered one, otherwise I'll toggle it
+                        if((!selected && !hasClass) || (selected && hasClass))
+                        {
+                            return;
+                        }
+
+                        $(item).click();
+                    });
+                });
+
+                ui_icon.appendTo(headerDirs);
+            });
+
+            $(document.createElement('span')).addClass('folder-name')
+                .html('<span class="pull-left ui-icon ui-icon-arrowthick-1-w"></span>' + akeeba_translations['UI-FILTERTYPE-APPLYTOALLDIRS'])
+                .appendTo(headerDirs);
+
+            headerDirs.appendTo(akfolders);
+        }
+
 		$.each(data.folders, function(folder, def){
 			var uielement = $(document.createElement('div'))
 				.addClass('folder-container');
@@ -1697,6 +1776,65 @@ function fsfilter_render(data)
 		// ----- Render the files
 		var akfiles = $('#files');
 		akfiles.html('');
+
+        // Append the "Apply to all" buttons
+        if(Object.keys(data.files).length > 0)
+        {
+            var headerFiles = $(document.createElement('div')).addClass('file-header file-container');
+
+            var ui_icon = $(document.createElement('span')).addClass('file-icon-container');
+            ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-cancel"></span>');
+
+            ui_icon.tooltip({
+                top: 24,
+                left: 0,
+                track: false,
+                delay: 0,
+                showURL: false,
+                opacity: 1,
+                fixPNG: true,
+                fade: 0,
+                extraClass: 'ui-dialog ui-corner-all',
+                bodyHandler: function() {
+                    html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-FILES_ALL']+'</div>';
+                    return html;
+                }
+            });
+
+            ui_icon.click(function(){
+                var selected;
+
+                if($(this).hasClass('ui-state-highlight')){
+                    $(this).removeClass('ui-state-highlight');
+                    selected = false;
+                }
+                else{
+                    $(this).addClass('ui-state-highlight');
+                    selected = true;
+                }
+
+                $.each(akfiles.find('.file-container').not('.file-header').find('span.ui-icon-cancel'), function(index, item){
+                    var hasClass = $(item).parent().hasClass('ui-state-highlight');
+
+                    // I have to exclude items that have the same state of the desidered one, otherwise I'll toggle it
+                    if((!selected && !hasClass) || (selected && hasClass))
+                    {
+                        return;
+                    }
+
+                    $(item).click();
+                });
+            });
+
+            ui_icon.appendTo(headerFiles);
+
+            $(document.createElement('span')).addClass('file-name')
+                .html('<span class="pull-left ui-icon ui-icon-arrowthick-1-w"></span>' + akeeba_translations['UI-FILTERTYPE-APPLYTOALLFILES'])
+                .appendTo(headerFiles);
+
+            headerFiles.appendTo(akfiles);
+        }
+
 		$.each(data.files, function(file, def){
 			var uielement = $(document.createElement('div'))
 				.addClass('file-container');

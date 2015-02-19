@@ -23,7 +23,7 @@ class AkeebaModelConfwiz extends F0FModel
 	 * temporary directories should point, adjusting their permissions should
 	 * it be necessary.
 	 *
-	 * @param $dontRecurse int Used internally. Always skip this parameter when calling this method.
+	 * @param int $dontRecurse Used internally. Always skip this parameter when calling this method.
 	 *
 	 * @return bool True if we could fix the directories
 	 */
@@ -44,7 +44,8 @@ class AkeebaModelConfwiz extends F0FModel
 			// Test the writability of the directory
 			$filename = $outdir . '/test.dat';
 			$fixOut   = !@file_put_contents($filename, 'test');
-			if ( !$fixOut)
+
+			if (!$fixOut)
 			{
 				// Directory writable, remove the temp file
 				@unlink($filename);
@@ -55,7 +56,8 @@ class AkeebaModelConfwiz extends F0FModel
 				$this->chmod($outdir, 511);
 				// Repeat the test
 				$fixOut = !@file_put_contents($filename, 'test');
-				if ( !$fixOut)
+
+				if (!$fixOut)
 				{
 					// Directory writable, remove the temp file
 					@unlink($filename);
@@ -89,10 +91,10 @@ class AkeebaModelConfwiz extends F0FModel
 	/**
 	 * Creates a temporary file of a specific size
 	 *
-	 * @param $blocks int How many 128Kb blocks to write. Common values: 1, 2, 4, 16, 40, 80, 81
-	 * @param $tempdir
+	 * @param int         $blocks How many 128Kb blocks to write. Common values: 1, 2, 4, 16, 40, 80, 81
+	 * @param string|null $tempdir
 	 *
-	 * @return unknown_type
+	 * @return bool
 	 */
 	public function createTempFile($blocks = 1, $tempdir = null)
 	{
@@ -105,24 +107,27 @@ class AkeebaModelConfwiz extends F0FModel
 		$sixtyfourBytes = '012345678901234567890123456789012345678901234567890123456789ABCD';
 		$oneKilo        = '';
 		$oneBlock       = '';
-		for ($i = 0; $i < 16; $i++)
+
+		for ($i = 0; $i < 16; $i ++)
 		{
 			$oneKilo .= $sixtyfourBytes;
 		}
 
-		for ($i = 0; $i < 128; $i++)
+		for ($i = 0; $i < 128; $i ++)
 		{
 			$oneBlock .= $oneKilo;
 		}
 
 		$filename = tempnam($tempdir, 'confwiz') . '.jpa';
 		@unlink($filename);
+
 		$fp = @fopen($filename, 'w');
+
 		if ($fp !== false)
 		{
-			for ($i = 0; $i < $blocks; $i++)
+			for ($i = 0; $i < $blocks; $i ++)
 			{
-				if ( !@fwrite($fp, $oneBlock))
+				if (!@fwrite($fp, $oneBlock))
 				{
 					@fclose($fp);
 					@unlink($filename);
@@ -130,6 +135,7 @@ class AkeebaModelConfwiz extends F0FModel
 					return false;
 				}
 			}
+
 			@fclose($fp);
 			@unlink($filename);
 		}
@@ -163,43 +169,50 @@ class AkeebaModelConfwiz extends F0FModel
 			$memlimit = 16777216;
 		}
 
-		if ( !is_numeric($maxexec) || ($maxexec == 0))
+		// Unknown time limit; suppose 10s
+		if (!is_numeric($maxexec) || ($maxexec == 0))
 		{
 			$maxexec = 10;
-		} // Unknown time limit; suppose 10s
+		}
+
+		// Some servers report silly values, i.e. 30000, which Do Not Work™ :(
 		if ($maxexec > 180)
 		{
 			$maxexec = 10;
-		} // Some servers report silly values, i.e. 30000, which Do Not Work� :(
+		}
 
-// Sometimes memlimit comes with the M or K suffixes. Parse them.
+		// Sometimes memlimit comes with the M or K suffixes. Parse them.
 		if (is_string($memlimit))
 		{
 			$memlimit = strtoupper(trim(str_replace(' ', '', $memlimit)));
-			if (substr($memlimit, -1) == 'K')
+
+			if (substr($memlimit, - 1) == 'K')
 			{
-				$memlimit = 1024 * substr($memlimit, 0, -1);
+				$memlimit = 1024 * substr($memlimit, 0, - 1);
 			}
-			elseif (substr($memlimit, -1) == 'M')
+			elseif (substr($memlimit, - 1) == 'M')
 			{
-				$memlimit = 1024 * 1024 * substr($memlimit, 0, -1);
+				$memlimit = 1024 * 1024 * substr($memlimit, 0, - 1);
 			}
-			elseif (substr($memlimit, -1) == 'G')
+			elseif (substr($memlimit, - 1) == 'G')
 			{
-				$memlimit = 1024 * 1024 * 1024 * substr($memlimit, 0, -1);
+				$memlimit = 1024 * 1024 * 1024 * substr($memlimit, 0, - 1);
 			}
 		}
-		if ( !is_numeric($memlimit) || ($memlimit === 0))
+
+		// Unknown limit; suppose 16M
+		if (!is_numeric($memlimit) || ($memlimit === 0))
 		{
 			$memlimit = 16777216;
-		} // Unknown limit; suppose 16M
-		if ($memlimit === -1)
+		}
+
+		// No limit; suppose 128M
+		if ($memlimit === - 1)
 		{
 			$memlimit = 134217728;
-		} // No limit; suppose 128M
+		}
 
-
-// Get the current memory usage (or assume one if the metric is not available)
+		// Get the current memory usage (or assume one if the metric is not available)
 		if (function_exists('memory_get_usage'))
 		{
 			$usedram = memory_get_usage();
@@ -226,17 +239,21 @@ class AkeebaModelConfwiz extends F0FModel
 		// And now, run the silly loop to simulate the CPU usage pattern during backup
 		$start = microtime(true);
 		$loop  = true;
+
 		while ($loop)
 		{
 			// Waste some CPU power...
-			for ($i = 1; $i < 1000; $i++)
+			for ($i = 1; $i < 1000; $i ++)
 			{
 				$j = exp(($i * $i / 123 * 864) >> 2);
 			}
+
 			// ... then sleep for a millisec
 			usleep(1000);
+
 			// Are we done yet?
 			$end = microtime(true);
+
 			if (($end - $start) >= $secondsDelay)
 			{
 				$loop = false;
@@ -263,12 +280,13 @@ class AkeebaModelConfwiz extends F0FModel
 		{
 			$memlimit = 16777216;
 		}
-		if ( !is_numeric($memlimit) || ($memlimit === 0))
+
+		if (!is_numeric($memlimit) || ($memlimit === 0))
 		{
 			$memlimit = 16777216; // Unknown limit; suppose 16M
 		}
 
-		if ($memlimit === -1)
+		if ($memlimit === - 1)
 		{
 			$memlimit = 134217728; // No limit; suppose 128M
 		}
@@ -298,6 +316,7 @@ class AkeebaModelConfwiz extends F0FModel
 
 		// Get the table statistics
 		$db = $this->getDBO();
+
 		if (strtolower(substr($db->name, 0, 5)) == 'mysql')
 		{
 			// The table analyzer only works with MySQL
@@ -325,7 +344,8 @@ class AkeebaModelConfwiz extends F0FModel
 			else
 			{
 				$rowCount = 1000; // Start with the default value
-				if ( !empty($metrics))
+
+				if (!empty($metrics))
 				{
 					foreach ($metrics as $table)
 					{
@@ -336,17 +356,20 @@ class AkeebaModelConfwiz extends F0FModel
 						// Calculate RAM usage with current settings
 						$max_rows        = min($rows, $rowCount);
 						$max_ram_current = $max_rows * $avg_len;
+
 						if ($max_ram_current > $ram_allowance)
 						{
 							// Hm... over the allowance. Let's try to find a sweet spot.
-							$max_rows = (int)($ram_allowance / $avg_len);
+							$max_rows = (int) ($ram_allowance / $avg_len);
 							// Quantize to multiple of 10 rows
 							$max_rows = 10 * floor($max_rows / 10);
+
 							// Can't really go below 10 rows / batch
 							if ($max_rows < 10)
 							{
 								$max_rows = 10;
 							}
+
 							// If the new setting is less than the current $rowCount, use the new setting
 							if ($rowCount > $max_rows)
 							{
@@ -370,20 +393,26 @@ class AkeebaModelConfwiz extends F0FModel
 		{
 			$config->set('akeeba.advanced.dump_engine', 'reverse');
 		}
+
 		// Save the row count per batch
 		$config->set('engine.dump.common.batchsize', $rowCount);
+
 		// Enable SQL file splitting - default is 512K unless the part_size is less than that!
 		$splitsize = 524288;
 		$partsize  = $config->get('engine.archiver.common.part_size', 0);
+
 		if (($partsize < $splitsize) && !empty($partsize))
 		{
 			$splitsize = $partsize;
 		}
+
 		$config->set('engine.dump.common.splitsize', $splitsize);
+
 		// Enable extended INSERTs
 		$config->set('engine.dump.common.extended_inserts', '1');
+
 		// Determine optimal packet size (must be at most two fifths of the split size and no more than 256K)
-		$packet_size = (int)$splitsize * 0.4;
+		$packet_size = (int) $splitsize * 0.4;
 
 		if ($packet_size > 262144)
 		{
@@ -391,6 +420,7 @@ class AkeebaModelConfwiz extends F0FModel
 		}
 
 		$config->set('engine.dump.common.packet_size', $packet_size);
+
 		// Enable the native dump engine
 		$config->set('akeeba.advanced.dump_engine', 'native');
 
@@ -401,8 +431,8 @@ class AkeebaModelConfwiz extends F0FModel
 	 * Changes the permissions of a file or directory using direct file access or
 	 * Joomla!'s FTP layer, whichever works
 	 *
-	 * @param $path string Absolute path to the file/dir to chmod
-	 * @param $mode The permissions mode to apply
+	 * @param string $path Absolute path to the file/dir to chmod
+	 * @param string $mode The permissions mode to apply
 	 *
 	 * @return bool True on success
 	 */
@@ -424,6 +454,7 @@ class AkeebaModelConfwiz extends F0FModel
 		{
 			// Connect the FTP client
 			JLoader::import('joomla.client.ftp');
+
 			if (version_compare(JVERSION, '3.0', 'ge'))
 			{
 				$ftp = JClientFTP::getInstance(
@@ -454,6 +485,8 @@ class AkeebaModelConfwiz extends F0FModel
 		{
 			return false;
 		}
+
+		return $ret;
 	}
 
 	public function runAjax()
@@ -474,6 +507,14 @@ class AkeebaModelConfwiz extends F0FModel
 
 	private function ping()
 	{
+		// Get the profile ID
+		$profile_id = Platform::getInstance()->get_active_profile();
+
+		// Set the embedded installer to the default ANGIE installer
+		$aeconfig = Factory::getConfiguration();
+		$aeconfig->set('akeeba.advanced.embedded_installer', 'angie');
+		Platform::getInstance()->save_configuration($profile_id);
+
 		return true;
 	}
 
@@ -505,7 +546,7 @@ class AkeebaModelConfwiz extends F0FModel
 	{
 		// Get the user parameters
 		$iframes = $this->input->get('iframes', 0, 'int');
-		$minexec = $this->input->get('minecxec', 2.0, 'float');
+		$minexec = $this->input->get('minexec', 2.0, 'float');
 
 		// Save the settings
 		$profile_id = Platform::getInstance()->get_active_profile();
@@ -529,16 +570,8 @@ class AkeebaModelConfwiz extends F0FModel
 	 */
 	private function directories()
 	{
-		$timer = Factory::getTimer();
-		if (interface_exists('JModel'))
-		{
-			$model = JModelLegacy::getInstance('Confwiz', 'AkeebaModel');
-		}
-		else
-		{
-			$model = JModel::getInstance('Confwiz', 'AkeebaModel');
-		}
-		$result = $model->autofixDirectories();
+		$timer  = Factory::getTimer();
+		$result = $this->autofixDirectories();
 		$timer->enforce_min_exec_time(false);
 
 		return $result;
@@ -552,15 +585,7 @@ class AkeebaModelConfwiz extends F0FModel
 	private function database()
 	{
 		$timer = Factory::getTimer();
-		if (interface_exists('JModel'))
-		{
-			$model = JModelLegacy::getInstance('Confwiz', 'AkeebaModel');
-		}
-		else
-		{
-			$model = JModel::getInstance('Confwiz', 'AkeebaModel');
-		}
-		$model->analyzeDatabase();
+		$this->analyzeDatabase();
 		$timer->enforce_min_exec_time(false);
 
 		return true;
@@ -575,15 +600,7 @@ class AkeebaModelConfwiz extends F0FModel
 	{
 		$seconds = $this->input->get('seconds', 30, 'int');
 		$timer   = Factory::getTimer();
-		if (interface_exists('JModel'))
-		{
-			$model = JModelLegacy::getInstance('Confwiz', 'AkeebaModel');
-		}
-		else
-		{
-			$model = JModel::getInstance('Confwiz', 'AkeebaModel');
-		}
-		$result = $model->doNothing($seconds);
+		$result  = $this->doNothing($seconds);
 		$timer->enforce_min_exec_time(false);
 
 		return $result;
@@ -606,7 +623,6 @@ class AkeebaModelConfwiz extends F0FModel
 		$config->set('akeeba.tuning.max_exec_time', $maxexec);
 		$config->set('akeeba.tuning.run_time_bias', '75');
 		$config->set('akeeba.advanced.scan_engine', 'smart');
-		// @todo This should be an option (choose format, zip/jpa)
 		$config->set('akeeba.advanced.archiver_engine', 'jpa');
 		Platform::getInstance()->save_configuration($profile_id);
 
@@ -647,5 +663,4 @@ class AkeebaModelConfwiz extends F0FModel
 
 		return $result;
 	}
-
 }

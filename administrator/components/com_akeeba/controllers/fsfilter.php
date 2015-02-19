@@ -40,6 +40,7 @@ class AkeebaControllerFsfilter extends AkeebaControllerDefault
 		$action_json = $this->input->get('action', '', 'none', 2);
 		$action = json_decode($action_json);
 
+        /** @var AkeebaModelFsfilters $model */
 		$model = $this->getThisModel();
 		$model->setState('action', $action);
 

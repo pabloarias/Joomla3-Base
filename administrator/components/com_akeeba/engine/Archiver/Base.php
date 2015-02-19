@@ -694,7 +694,29 @@ abstract class Base extends BaseObject
 			// Fetch the name of the installer image
 			$installerDescriptors = Factory::getEngineParamsProvider()->getInstallerList();
 			$xform_source         = Platform::getInstance()->get_installer_images_path() .
-				'/foobar.jpa'; // We need this as a "safe fallback"
+			                        '/foobar.jpa'; // We need this as a "safe fallback"
+
+			// Try to find a sane default if we are not given a valid embedded installer
+			if (!array_key_exists($embedded_installer, $installerDescriptors))
+			{
+				$embedded_installer = 'angie';
+
+				if (!array_key_exists($embedded_installer, $installerDescriptors))
+				{
+					$allInstallers = array_keys($installerDescriptors);
+
+					foreach ($allInstallers as $anInstaller)
+					{
+						if ($anInstaller == 'none')
+						{
+							continue;
+						}
+
+						$embedded_installer = $anInstaller;
+						break;
+					}
+				}
+			}
 
 			if (array_key_exists($embedded_installer, $installerDescriptors))
 			{
@@ -742,17 +764,9 @@ abstract class Base extends BaseObject
 			// 2.3: Try to use sane default if the indicated installer doesn't exist
 			if ( !file_exists($xform_source) && (basename($xform_source) != 'angie.jpa'))
 			{
-				if ($index == 0)
-				{
-					$this->setWarning(__CLASS__ . ":: Selected embedded installer not found, using ANGIE instead");
-					$xform_source = dirname($xform_source) . '/angie.jpa';
-				}
-				else
-				{
-					$this->setError(__CLASS__ . ":: Installer package $xform_source not found.");
+				$this->setError(__CLASS__ . ":: Installer package $xform_source of embedded installer $embedded_installer not found. Please go to the configuration page, select an Embedded Installer, save the configuration and try backing up again.");
 
-					return false;
-				}
+				return false;
 			}
 
 			// Try opening the file

@@ -1,8 +1,20 @@
 <?php die();?>
+Akeeba Backup 4.1.2
+================================================================================
++ Added "Apply to all" button in Files and Directories Exclusion page
++ ANGIE for Wordpress: Db collation set to "utf8_general_ci" by default
+# [HIGH] Missing interface options on bad hosts which disable the innocent parse_ini_file PHP function
+# [HIGH] ANGIE (restoration): Some bad hosts disable the innocent parse_ini_file PHP function resulting in translation and functional issues during the restoration
+# [MEDIUM] ANGIE for Wordpress: Site url was not replaced when moving to a different server
+# [LOW] On some hosts you wouldn't get the correct installer included in the backup
+# [LOW] ANGIE for Wordpress: fixed changing Admin access details while restoring
+# [LOW] Configuration Wizard: detected minimum execution time was ignored; default value of 2 seconds always applied
+
 Akeeba Backup 4.1.1
 ================================================================================
 - Removed the obsolete "Upgrade profiles to ANGIE" post-installation message
 # [LOW] Tooltips for backup comments not shown in Manage Backup page on Joomla! 3.x
+# [HIGH] Control Panel icons not shown on some extremely low quality hosts which disable the innocuous parse_ini_file function. If you were affected SWITCH HOSTS, IMMEDIATELY!
 # [HIGH] gh-523 Fatal error on Joomla! 2.5 when logging in as Administrator (NOT Super User!) and you have published our Quick Icon plugin
 # [HIGH] Old PHP 5.3 versions have a bug regarding Interface implementation, causing a PHP fatal error
 
