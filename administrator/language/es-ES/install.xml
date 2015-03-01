@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<extension version="3.3" client="administrator" type="language" method="upgrade">
-    <name>Spanish (ES)</name>
-    <tag>es-ES</tag>
-    <version>3.3.4.1</version>
-    <creationDate>2014-9-28</creationDate>
-    <author>Spanish Translation Team: Comunidad Joomla</author>
-    <authorEmail>info@comunidadjoomla.org</authorEmail>
-    <authorUrl>www.comunidadjoomla.org</authorUrl>
-    <copyright>Copyright (C) 2005 - 2014 Open Source Matters and comunidadjoomla.org. All rights reserved.</copyright>
-    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <description>Spanish language pack for Joomla! 3.3.4 - Administrator</description>
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="3.4" client="administrator" type="language" method="upgrade">
+	<name>es-ES_joomla_lang_full_3.4.0v1</name>
+	<tag>es-ES</tag>
+	<version>3.4.0.1</version>
+	<creationDate>25/02/2015</creationDate>
+	<author>Spanish Translation Team: Comunidad Joomla</author>
+	<authorEmail>info@comunidadjoomla.org</authorEmail>
+	<authorUrl>http://www.comunidadjoomla.org</authorUrl>
+	<copyright>Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>es-ESsite language</description>
 	<files>
-		<filename>index.html</filename>
+		<filename>es-ES.ini</filename>
 		<filename>es-ES.com_admin.ini</filename>
 		<filename>es-ES.com_admin.sys.ini</filename>
-		<filename>es-ES.com_banners.ini</filename>
-		<filename>es-ES.com_banners.sys.ini</filename>
 		<filename>es-ES.com_ajax.ini</filename>
 		<filename>es-ES.com_ajax.sys.ini</filename>
+		<filename>es-ES.com_banners.ini</filename>
+		<filename>es-ES.com_banners.sys.ini</filename>
 		<filename>es-ES.com_cache.ini</filename>
 		<filename>es-ES.com_cache.sys.ini</filename>
 		<filename>es-ES.com_categories.ini</filename>
@@ -73,9 +73,7 @@
 		<filename>es-ES.com_weblinks.sys.ini</filename>
 		<filename>es-ES.com_wrapper.ini</filename>
 		<filename>es-ES.com_wrapper.sys.ini</filename>
-		<filename>es-ES.ini</filename>
 		<filename>es-ES.lib_joomla.ini</filename>
-		<filename>es-ES.localise.php</filename>
 		<filename>es-ES.mod_custom.ini</filename>
 		<filename>es-ES.mod_custom.sys.ini</filename>
 		<filename>es-ES.mod_feed.ini</filename>
@@ -134,12 +132,6 @@
 		<filename>es-ES.plg_content_pagenavigation.sys.ini</filename>
 		<filename>es-ES.plg_content_vote.ini</filename>
 		<filename>es-ES.plg_content_vote.sys.ini</filename>
-		<filename>es-ES.plg_editors_codemirror.ini</filename>
-		<filename>es-ES.plg_editors_codemirror.sys.ini</filename>
-		<filename>es-ES.plg_editors_none.ini</filename>
-		<filename>es-ES.plg_editors_none.sys.ini</filename>
-		<filename>es-ES.plg_editors_tinymce.ini</filename>
-		<filename>es-ES.plg_editors_tinymce.sys.ini</filename>
 		<filename>es-ES.plg_editors-xtd_article.ini</filename>
 		<filename>es-ES.plg_editors-xtd_article.sys.ini</filename>
 		<filename>es-ES.plg_editors-xtd_image.ini</filename>
@@ -148,6 +140,12 @@
 		<filename>es-ES.plg_editors-xtd_pagebreak.sys.ini</filename>
 		<filename>es-ES.plg_editors-xtd_readmore.ini</filename>
 		<filename>es-ES.plg_editors-xtd_readmore.sys.ini</filename>
+		<filename>es-ES.plg_editors_codemirror.ini</filename>
+		<filename>es-ES.plg_editors_codemirror.sys.ini</filename>
+		<filename>es-ES.plg_editors_none.ini</filename>
+		<filename>es-ES.plg_editors_none.sys.ini</filename>
+		<filename>es-ES.plg_editors_tinymce.ini</filename>
+		<filename>es-ES.plg_editors_tinymce.sys.ini</filename>
 		<filename>es-ES.plg_extension_joomla.ini</filename>
 		<filename>es-ES.plg_extension_joomla.sys.ini</filename>
 		<filename>es-ES.plg_finder_categories.ini</filename>
@@ -216,7 +214,10 @@
 		<filename>es-ES.tpl_hathor.sys.ini</filename>
 		<filename>es-ES.tpl_isis.ini</filename>
 		<filename>es-ES.tpl_isis.sys.ini</filename>
+		<filename>es-ES.localise.php</filename>
 		<filename file="meta">install.xml</filename>
 		<filename file="meta">es-ES.xml</filename>
+		<filename>index.html</filename>
 	</files>
+	<params />
 </extension>
