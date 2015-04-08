@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="3.4" client="site" type="language" method="upgrade">
-	<name>es-ES_joomla_lang_full_3.4.0v1</name>
+	<name>es-ES_joomla_lang_full_3.4.1v1</name>
 	<tag>es-ES</tag>
-	<version>3.4.0.1</version>
-	<creationDate>25/02/2015</creationDate>
-	<author>Spanish Translation Team: Comunidad Joomla</author>
+	<version>3.4.1.1</version>
+	<creationDate>29/03/2015</creationDate>
+	<author>Spanish Translation Team: Comunidad Joomla </author>
 	<authorEmail>info@comunidadjoomla.org</authorEmail>
 	<authorUrl>http://www.comunidadjoomla.org</authorUrl>
 	<copyright>Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>es-ESsite language</description>
+	<description>es-ES - Site language</description>
 	<files>
 		<filename>es-ES.ini</filename>
 		<filename>es-ES.com_ajax.ini</filename>
