@@ -197,6 +197,13 @@ class F0FModel extends F0FUtilsObject
 	protected $default_behaviors = array('filters');
 
 	/**
+	 * Behavior parameters
+	 *
+	 * @var    array
+	 */
+	protected $_behaviorParams = array();
+
+	/**
 	 * Returns a new model object. Unless overriden by the $config array, it will
 	 * try to automatically populate its state from the request variables.
 	 *
@@ -3189,5 +3196,61 @@ class F0FModel extends F0FUtilsObject
 
 		// Trigger the onContentCleanCache event.
 		F0FPlatform::getInstance()->runPlugins($this->event_clean_cache, $options);
+	}
+
+	/**
+	 * Set a behavior param
+	 *
+	 * @param   string  $name     The name of the param
+	 * @param   mixed   $value    The param value to set
+	 *
+	 * @return  FOFModel
+	 */
+	public function setBehaviorParam($name, $value)
+	{
+		$this->_behaviorParams[$name] = $value;
+
+		return $this;
+	}
+
+	/**
+	 * Get a behavior param
+	 *
+	 * @param   string  $name     The name of the param
+	 * @param   mixed   $default  The default value returned if not set
+	 *
+	 * @return  mixed
+	 */
+	public function getBehaviorParam($name, $default = null)
+	{
+		return isset($this->_behaviorParams[$name]) ? $this->_behaviorParams[$name] : $default;
+	}
+
+	/**
+	 * Set or get the backlisted filters
+	 *
+	 * @param   mixed    $list    A filter or list of filters to backlist. If null return the list of backlisted filter
+	 * @param   boolean  $reset   Reset the blacklist if true
+	 *
+	 * @return  void|array  Return an array of value if $list is null
+	 */
+	public function blacklistFilters($list = null, $reset = false)
+	{
+		if (!isset($list))
+		{
+			return $this->getBehaviorParam('blacklistFilters', array());
+		}
+
+		if (is_string($list))
+		{
+			$list = (array) $list;
+		}
+
+		if (!$reset)
+		{
+			$list = array_unique(array_merge($this->getBehaviorParam('blacklistFilters', array()), $list));
+		}
+
+		$this->setBehaviorParam('blacklistFilters', $list);
 	}
 }

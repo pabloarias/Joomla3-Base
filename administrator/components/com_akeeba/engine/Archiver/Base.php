@@ -453,6 +453,12 @@ abstract class Base extends BaseObject
 
 		if (($ret === false) || (abs(($ret - $len)) >= 1))
 		{
+			// Log debug information about the archive file's existence and current size. This helps us figure out if
+			// there is a server-imposed maximum file size limit.
+			clearstatcache();
+			$fileExists = @file_exists($filename) ? 'exists' : 'does NOT exist';
+			$currentSize = @filesize($filename);
+			Factory::getLog()->log(LogLevel::DEBUG, __CLASS__ . "::_fwrite() ERROR!! Cannot write to archive file $filename. The file $fileExists. File size $currentSize bytes after writing $ret of $len bytes. Please check the output directory permissions and make sure you have enough disk space available. If this does not help, please set up a Part Size for Split Archives LOWER than this size and retry backing up.");
 			$this->setError('Couldn\'t write to the archive file; check the output directory permissions and make sure you have enough disk space available.' . "[len=$ret / $len]");
 
 			return false;

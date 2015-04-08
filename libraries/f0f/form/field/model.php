@@ -187,7 +187,7 @@ class F0FFormFieldModel extends F0FFormFieldList implements F0FFormField
 
 		if (!empty($nonePlaceholder))
 		{
-			$options[] = JHtml::_('select.option', JText::_($nonePlaceholder), null);
+			$options[] = JHtml::_('select.option', null, JText::_($nonePlaceholder));
 		}
 
 		// Process field atrtibutes

@@ -11,7 +11,6 @@ defined('_JEXEC') or die();
 
 use Akeeba\Engine\Factory;
 
-JHtml::_('behavior.framework');
 ?>
 <script language="javascript" type="text/javascript">
 // Disable right-click

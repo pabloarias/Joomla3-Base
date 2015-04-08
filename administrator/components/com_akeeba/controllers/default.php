@@ -25,10 +25,8 @@ class AkeebaControllerDefault extends F0FController
 	private static $viewACLMap = array(
 		'backup'	=> 'akeeba.backup',
 		'upload'	=> 'akeeba.backup',
-		'stw'		=> 'akeeba.backup',
 		'buadmin'	=> 'akeeba.download',
 		'log'		=> 'akeeba.download',
-		'srprestore'=> 'akeeba.download',
 		's3import'	=> 'akeeba.download',
 		'restore'	=> 'akeeba.download',
 		'remotefile'=> 'akeeba.download',

@@ -34,14 +34,8 @@ class Joomlaskipdirs extends Base
 		$configuration = Factory::getConfiguration();
 		$jreg          = \JFactory::getConfig();
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$tmpdir = $jreg->get('tmp_path');
-		}
-		else
-		{
-			$tmpdir = $jreg->getValue('config.tmp_path');
-		}
+		$tmpdir = $jreg->get('tmp_path');
+		$logsdir = $jreg->get('log_path');
 
 		// Get the site's root
 		if ($configuration->get('akeeba.platform.override_root', 0))
@@ -58,6 +52,8 @@ class Joomlaskipdirs extends Base
 			$this->treatDirectory($configuration->get('akeeba.basic.output_directory')),
 			// Joomla! temporary directory
 			$this->treatDirectory($tmpdir),
+		    // Joomla! logs directory
+			$this->treatDirectory($logsdir),
 			// default temp directory
 			'tmp',
 			// Joomla! front- and back-end cache, as reported by Joomla!
@@ -80,8 +76,9 @@ class Joomlaskipdirs extends Base
 			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/components/libraries/cmslib/cache'),
 			// ...and fallback
 			'components/libraries/cmslib/cache',
-			// The logs directory
-			'logs'
+			// The logs and log directories, hardcoded
+			'logs',
+			'log'
 		);
 
 		parent::__construct();

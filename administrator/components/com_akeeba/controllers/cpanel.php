@@ -69,46 +69,6 @@ class AkeebaControllerCpanel extends F0FController
 			/** @var AkeebaModelUpdates $updateModel */
 			$updateModel = F0FModel::getTmpInstance('Updates', 'AkeebaModel');
 			$updateModel->refreshUpdateSite();
-
-			// Check the last installed version and show the post-setup page on Joomla! 3.1 or earlier
-
-			if ( !version_compare(JVERSION, '3.2.0', 'ge'))
-			{
-				$versionLast = null;
-
-				if (file_exists(JPATH_COMPONENT_ADMINISTRATOR . '/akeeba.lastversion.php'))
-				{
-					include_once JPATH_COMPONENT_ADMINISTRATOR . '/akeeba.lastversion.php';
-
-					if (defined('AKEEBA_LASTVERSIONCHECK'))
-					{
-						$versionLast = AKEEBA_LASTVERSIONCHECK;
-					}
-				}
-
-				if (is_null($versionLast))
-				{
-					$component = JComponentHelper::getComponent('com_akeeba');
-
-					if (is_object($component->params) && ($component->params instanceof JRegistry))
-					{
-						$params = $component->params;
-					}
-					else
-					{
-						$params = new JRegistry($component->params);
-					}
-
-					$versionLast = $params->get('lastversion', '');
-				}
-
-				if (version_compare(AKEEBA_VERSION, $versionLast, 'ne') || empty($versionLast))
-				{
-					$this->setRedirect('index.php?option=com_akeeba&view=postsetup');
-
-					return true;
-				}
-			}
 		}
 
 		return $result;

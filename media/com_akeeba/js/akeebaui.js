@@ -39,12 +39,6 @@ var akeeba_error_callback = dummy_error_handler;
 /** @var A URL to return to upon successful backup */
 var akeeba_return_url = '';
 
-/** @var Is this the Site Transfer Wizard? If so, we'll ask before redirecting */
-var akeeba_is_stw = false;
-
-/** @var System restore point setup information */
-var akeeba_srp_info = {};
-
 /** @var Should I auto resume backups with AJAX errors? */
 var akeeba_autoresume_enabled = true;
 
@@ -66,7 +60,6 @@ akeeba_translations['UI-CONFIG'] = 'Configure...';
 akeeba_translations['UI-LASTRESPONSE'] = 'Last server response %ss ago';
 akeeba_translations['UI-ROOT'] = '&lt;root&gt;';
 akeeba_translations['UI-ERROR-FILTER'] = 'An error occured while applying the filter for "%s"';
-akeeba_translations['UI-STW-CONTINUE'] = 'Transfer of your site is almost complete. Click on the OK button to go to your new site, run the restoration script and finish the restoration of your database and site setup. Remember to click on the link to remove the installation directory on the last page of the restoration script.';
 
 /** @var Engine definitions array */
 var akeeba_engines = new Array();
@@ -1101,7 +1094,6 @@ function backup_start()
 		start_timeout_bar(akeeba_max_execution_time, akeeba_time_bias);
 		// Perform Ajax request
 		akeeba_backup_id = null;
-		akeeba_backup_tag = akeeba_srp_info.tag;
 
 		var ajax_request = {
 			// Data to send to AJAX
@@ -1112,8 +1104,6 @@ function backup_start()
 			angiekey: angiekey,
 			tag: akeeba_backup_tag
 		};
-
-		ajax_request = array_merge(ajax_request, akeeba_srp_info);
 
 		doAjax(ajax_request, backup_step, backup_error, false );
 	})(akeeba.jQuery);
@@ -1328,11 +1318,6 @@ function backup_complete()
 		// Proceed to the return URL if it is set
 		if(akeeba_return_url != '')
 		{
-			// If it's the Site Transfer Wizard, show a message first
-			if(akeeba_is_stw) {
-				alert(akeeba_translations['UI-STW-CONTINUE']);
-			}
-
 			window.location = akeeba_return_url;
 		}
 	})(akeeba.jQuery);
@@ -2469,256 +2454,6 @@ function dbfilter_nuke()
 	doAjax(new_data, function(response){
 		dbfilter_render(response);
 	});
-}
-
-//=============================================================================
-//Akeeba Backup Core - System Restore Point roll-back
-//=============================================================================
-var akeeba_srprestoration_error_callback = akeeba_srprestoration_error_callback_default;
-var akeeba_srprestoration_stat_inbytes = 0;
-var akeeba_srprestoration_stat_outbytes = 0;
-var akeeba_srprestoration_stat_files = 0;
-var akeeba_srprestoration_factory = null;
-
-/**
- * Callback script for AJAX errors
- * @param msg
- * @return
- */
-function akeeba_srprestoration_error_callback_default(msg)
-{
-	(function($) {
-		$('#restoration-progress').hide();
-		$('#restoration-database-progress').hide();
-		$('#restoration-error').show();
-		$('#backup-error-message').html(msg);
-	})(akeeba.jQuery);
-}
-
-/**
- * Performs an AJAX request to the file restoration script
- * @param data
- * @param successCallback
- * @param errorCallback
- * @return
- */
-function doSRPRestorationAjax(data, successCallback, errorCallback)
-{
-    (function($) {
-        json = JSON.stringify(data);
-        var post_data = {json: json, ajax: data.ajax};
-
-        var structure =
-        {
-                type: "POST",
-                url: akeeba_srprestoration_ajax_url,
-                cache: false,
-                data: post_data,
-                timeout: 600000,
-                success: function(msg) {
-                        // Initialize
-                        var junk = null;
-                        var message = "";
-
-                        // Get rid of junk before the data
-                        var valid_pos = msg.indexOf('###');
-                        if( valid_pos == -1 ) {
-                                // Valid data not found in the response
-                                msg = 'Invalid AJAX data: ' + msg;
-                                if(errorCallback == null)
-                                {
-                                        if(akeeba_srprestoration_error_callback != null)
-                                        {
-                                                akeeba_srprestoration_error_callback(msg);
-                                        }
-                                }
-                                else
-                                {
-                                        errorCallback(msg);
-                                }
-                                return;
-                        } else if( valid_pos != 0 ) {
-                                // Data is prefixed with junk
-                                junk = msg.substr(0, valid_pos);
-                                message = msg.substr(valid_pos);
-                        }
-                        else
-                        {
-                                message = msg;
-                        }
-                        message = message.substr(3); // Remove triple hash in the beginning
-
-                        // Get of rid of junk after the data
-                        var valid_pos = message.lastIndexOf('###');
-                        message = message.substr(0, valid_pos); // Remove triple hash in the end
-
-                        try {
-                            var data = JSON.parse(message);
-                        } catch(err) {
-                            var msg = err.message + "\n<br/>\n<pre>\n" + message + "\n</pre>";
-                            if(errorCallback == null)
-                            {
-                                    if(akeeba_srprestoration_error_callback != null)
-                                    {
-                                            akeeba_srprestoration_error_callback(msg);
-                                    }
-                            }
-                            else
-                            {
-                                    errorCallback(msg);
-                            }
-                            return;
-                        }
-
-                        // Call the callback function
-                        successCallback(data);
-                },
-                error: function(Request, textStatus, errorThrown) {
-                        var message = 'AJAX Loading Error: '+textStatus;
-                        if(errorCallback == null)
-                        {
-                                if(akeeba_srprestoration_error_callback != null)
-                                {
-                                        akeeba_srprestoration_error_callback(message);
-                                }
-                        }
-                        else
-                        {
-                                errorCallback(message);
-                        }
-                }
-        };
-        $.ajax( structure );
-    })(akeeba.jQuery);
-}
-
-/**
- * Pings the restoration script (making sure its executable!!)
- * @return
- */
-function pingSRPRestoration()
-{
-	// Reset variables
-	akeeba_srprestoration_stat_inbytes = 0;
-	akeeba_srprestoration_stat_outbytes = 0;
-	akeeba_srprestoration_stat_files = 0;
-
-	// Do AJAX post
-	var post = {ajax : 'restoreFilesPing'};
-	start_timeout_bar(5000,80);
-	doSRPRestorationAjax(post, function(data){
-		startSRPRestoration(data);
-	});
-}
-
-/**
- * Starts the restoration
- * @return
- */
-function startSRPRestoration()
-{
-	// Reset variables
-	akeeba_srprestoration_stat_inbytes = 0;
-	akeeba_srprestoration_stat_outbytes = 0;
-	akeeba_srprestoration_stat_files = 0;
-
-	// Do AJAX post
-	var post = {ajax : 'restoreFilesStart'};
-	start_timeout_bar(5000,80);
-	doSRPRestorationAjax(post, function(data){
-		processSRPRestorationStep(data);
-	});
-}
-
-/**
- * Steps through the restoration
- * @param data
- * @return
- */
-function processSRPRestorationStep(data)
-{
-	reset_timeout_bar();
-	if(data.status == false)
-	{
-		// handle failure
-		akeeba_srprestoration_error_callback_default(data.message);
-	}
-	else
-	{
-		if(data.done)
-		{
-			(function($){
-				startSRPdbRestoration();
-			})(akeeba.jQuery);
-		}
-		else
-		{
-			// Add data to variables
-			akeeba_srprestoration_stat_inbytes += data.bytesIn;
-			akeeba_srprestoration_stat_outbytes += data.bytesOut;
-			akeeba_srprestoration_stat_files += data.files;
-
-			// Display data
-			(function($){
-				$('#extbytesin').html( akeeba_srprestoration_stat_inbytes );
-				$('#extbytesout').html( akeeba_srprestoration_stat_outbytes );
-				$('#extfiles').html( akeeba_srprestoration_stat_files );
-			})(akeeba.jQuery);
-
-			// Do AJAX post
-			post = {
-				ajax: 'restoreFilesStep',
-				factory: data.factory
-			};
-			start_timeout_bar(5000,80);
-			doSRPRestorationAjax(post, function(data){
-				processSRPRestorationStep(data);
-			});
-		}
-	}
-}
-
-function finalizeSRPRestoration()
-{
-	// Do AJAX post
-	var post = {ajax : 'restoreFilesFinalize', factory: akeeba_srprestoration_factory};
-	start_timeout_bar(5000,80);
-	doSRPRestorationAjax(post, function(data){
-		SRPRestorationFinished(data);
-	});
-}
-
-function startSRPdbRestoration() {
-	(function($){
-		$('#restoration-progress').hide();
-		$('#restoration-db-progress').show();
-	})(akeeba.jQuery);
-	var post = {ajax : 'dbRestoreStart'};
-	doSRPRestorationAjax(post, doSRPdbRestoration);
-}
-
-function doSRPdbRestoration(data) {
-	if(data.error) {
-		akeeba_srprestoration_error_callback_default(data.error);
-	} else if(data.done == 1) {
-		finalizeSRPRestoration();
-	} else {
-		// TODO Maybe add a progress bar?
-		(function($){
-			$('#restoration-db-progress-message').html(data.message);
-			var post = {ajax : 'dbRestore'};
-			doSRPRestorationAjax(post, doSRPdbRestoration);
-		})(akeeba.jQuery);
-	}
-}
-
-function SRPRestorationFinished()
-{
-	// We're just finished - return to the back-end Control Panel
-	(function($){
-		$('#restoration-db-progress').hide();
-		$('#restoration-done').show();
-	})(akeeba.jQuery);
 }
 
 //=============================================================================

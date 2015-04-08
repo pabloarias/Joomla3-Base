@@ -24,14 +24,12 @@ div.akeeba-bootstrap div.icon { margin-top: 10px; margin-bottom: 0; }
 .ak-icon-backup { background-position: -231px 0; }
 .ak-icon-fsfilter { background-position: -264px 0; }
 .ak-icon-viewlog { background-position: -297px 0; }
-.ak-icon-stw { background-position: -330px 0; }
 .ak-icon-multidb { background-position: -363px 0; }
 .ak-icon-profiles { background-position: -396px 0; }
 .ak-icon-confwiz { background-position: -429px 0; }
 .ak-icon-update { background-position: -462px 0; }
 .ak-icon-ok { background-position: -495px 0; }
 .ak-icon-extradirs { background-position: -528px 0; }
-.ak-icon-extfilter { background-position: -561px 0; }
 .ak-icon-dbfilter { background-position: -594px 0; }
 .ak-icon-componentparams { background-position: -627px 0; }
 
@@ -71,7 +69,7 @@ li.akeeba-changelog-fixed span		{ background-position: 0 -48px; }
  */
 #backup-steps div.label, #stepper-steps div.label{
 	display: block;
-	width: 100%;
+	/** width: 100%; **/
 	margin-top: 1px;
 }
 #backup-step, #stepper-step{
@@ -293,9 +291,6 @@ div.notok {
 .liveupdate-icon-notsupported,.liveupdate-icon-crashed { color: gray; }
 .liveupdate-icon-updates { font-weight: bold; color: red; }
 .liveupdate-icon-noupdates { color: green; }
-
-.postsetup-main { font-weight: bold; font-size: larger; }
-.postsetup-desc { margin-left: 20pt; text-align: justify; font-style: italic; color: #606060 }
 /**/
 
 /**

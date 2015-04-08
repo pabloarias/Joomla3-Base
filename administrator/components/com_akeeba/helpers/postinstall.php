@@ -12,50 +12,6 @@
 defined('_JEXEC') or die();
 
 /**
- * Should I show the SRP activation message?
- *
- * @return bool
- */
-function com_akeeba_postinstall_srp_condition()
-{
-	$db = JFactory::getDbo();
-
-	$isMySQL = strtolower(substr($db->name, 0, 5)) == 'mysql';
-
-	if (!$isMySQL)
-	{
-		return false;
-	}
-
-	$query = $db->getQuery(true)
-		->select($db->qn('enabled'))
-		->from($db->qn('#__extensions'))
-		->where($db->qn('element') . ' = ' . $db->q('srp'))
-		->where($db->qn('folder') . ' = ' . $db->q('system'));
-	$db->setQuery($query);
-
-	$enableSRP = $db->loadResult();
-
-	return !$enableSRP;
-}
-
-/**
- * Activate the SRP feature
- */
-function com_akeeba_postinstall_srp_action()
-{
-	$db = JFactory::getDBO();
-
-	$query = $db->getQuery(true)
-		->update($db->qn('#__extensions'))
-		->set($db->qn('enabled') . ' = ' . $db->q('1'))
-		->where($db->qn('element') . ' = ' . $db->q('srp'))
-		->where($db->qn('folder') . ' = ' . $db->q('system'));
-	$db->setQuery($query);
-	$db->execute();
-}
-
-/**
  * Should I show the backup on update message?
  *
  * @return bool

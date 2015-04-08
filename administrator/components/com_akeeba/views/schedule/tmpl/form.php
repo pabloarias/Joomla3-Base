@@ -9,7 +9,6 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.framework');
 ?>
     <ul id="runCheckTabs" class="nav nav-tabs">
         <li>

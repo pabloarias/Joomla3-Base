@@ -69,20 +69,6 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 			$model->setState('ajax', $this->input->get('ajax', '', 'cmd'));
 			$model->setState('autostart', $this->input->get('autostart', 0, 'int'));
 
-			$srpinfo = array(
-				'tag'           => $this->input->get('tag', 'backend', 'cmd'),
-				'type'          => $this->input->get('type', '', 'cmd'),
-				'name'          => $this->input->get('name', '', 'cmd'),
-				'group'         => $this->input->get('group', '', 'cmd'),
-				'customdirs'    => $this->input->get('customdirs', array(), 'array', 2),
-				'extraprefixes' => $this->input->get('extraprefixes', array(), 'array', 2),
-				'customtables'  => $this->input->get('customtables', array(), 'array', 2),
-				'skiptables'    => $this->input->get('skiptables', array(), 'array', 2),
-				'xmlname'       => $this->input->get('xmlname', '', 'string')
-			);
-
-			$model->setState('srpinfo', $srpinfo);
-
 			$description = $this->input->get('description', null, 'string', 2);
 
 			if (!empty($description))

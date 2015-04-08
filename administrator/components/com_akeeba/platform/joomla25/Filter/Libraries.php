@@ -35,11 +35,6 @@ class Libraries extends Base
 		$this->method      = 'direct';
 		$this->filter_name = 'Libraries';
 
-		if (Factory::getKettenrad()->getTag() == 'restorepoint')
-		{
-			$this->enabled = false;
-		}
-
 		// FIXME This filter doesn't work very well on many live hosts. Disabled for now.
 		parent::__construct();
 

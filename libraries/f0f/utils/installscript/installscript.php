@@ -1753,9 +1753,9 @@ abstract class F0FUtilsInstallscript
 				->where('home = 0');
 
 			$db->setQuery($query);
-			$menu_id = $db->loadResult();
+			$menu_ids_level1 = $db->loadColumn();
 
-			if (!$menu_id)
+			if (empty($menu_ids_level1))
 			{
 				// Oops! Could not get the menu ID. Go back and rollback changes.
 				JError::raiseWarning(1, $table->getError());
@@ -1764,10 +1764,27 @@ abstract class F0FUtilsInstallscript
 			}
 			else
 			{
+				$ids = implode(',', $menu_ids_level1);
+
+				$query->clear()
+					->select('id')
+					->from('#__menu')
+					->where('menutype = ' . $db->quote('main'))
+					->where('client_id = 1')
+					->where('type = ' . $db->quote('component'))
+					->where('parent_id in (' . $ids . ')')
+					->where('level = 2')
+					->where('home = 0');
+
+				$db->setQuery($query);
+				$menu_ids_level2 = $db->loadColumn();
+
+				$ids = implode(',', array_merge($menu_ids_level1, $menu_ids_level2));
+
 				// Remove the old menu item
 				$query->clear()
 					->delete('#__menu')
-					->where('id = ' . (int)$menu_id);
+					->where('id in (' . $ids . ')');
 
 				$db->setQuery($query);
 				$db->query();

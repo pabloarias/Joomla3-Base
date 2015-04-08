@@ -67,7 +67,7 @@ class Joomla25 extends BasePlatform
 			return false;
 		}
 
-		return version_compare(JVERSION, '2.5.0', 'ge');
+		return true;
 	}
 
 	/**
@@ -82,14 +82,7 @@ class Joomla25 extends BasePlatform
 		if (empty($stock_directories))
 		{
 			$jreg = \JFactory::getConfig();
-			if (version_compare(JVERSION, '3.0', 'ge'))
-			{
-				$tmpdir = $jreg->get('tmp_path');
-			}
-			else
-			{
-				$tmpdir = $jreg->getValue('config.tmp_path');
-			}
+			$tmpdir = $jreg->get('tmp_path');
 			$stock_directories['[SITEROOT]']       = $this->get_site_root();
 			$stock_directories['[ROOTPARENT]']     = @realpath($this->get_site_root() . '/..');
 			$stock_directories['[SITETMP]']        = $tmpdir;
@@ -243,14 +236,7 @@ class Joomla25 extends BasePlatform
 	{
 		\JLoader::import('joomla.utilities.date');
 		$jdate = new \JDate($date);
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			return $jdate->toSql();
-		}
-		else
-		{
-			return $jdate->toMySQL();
-		}
+		return $jdate->toSql();
 	}
 
 	/**
@@ -266,14 +252,7 @@ class Joomla25 extends BasePlatform
 		\JLoader::import('joomla.utilities.date');
 
 		$jregistry = \JFactory::getConfig();
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$tzDefault = $jregistry->get('offset');
-		}
-		else
-		{
-			$tzDefault = $jregistry->getValue('config.offset');
-		}
+		$tzDefault = $jregistry->get('offset');
 		$user = \JFactory::getUser();
 		$tz   = $user->getParam('timezone', $tzDefault);
 
@@ -322,14 +301,7 @@ class Joomla25 extends BasePlatform
 	public function get_site_name()
 	{
 		$jconfig = \JFactory::getConfig();
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			return $jconfig->get('sitename', '');
-		}
-		else
-		{
-			return $jconfig->getValue('config.sitename', '');
-		}
+		return $jconfig->get('sitename', '');
 	}
 
 	/**
@@ -343,14 +315,7 @@ class Joomla25 extends BasePlatform
 	public function get_default_database_driver($use_platform = true)
 	{
 		$jconfig = \JFactory::getConfig();
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$driver = $jconfig->get('dbtype');
-		}
-		else
-		{
-			$driver = $jconfig->getValue('config.dbtype');
-		}
+		$driver = $jconfig->get('dbtype');
 
 		// Let's see what driver Joomla! uses...
 		if ($use_platform)
@@ -453,26 +418,13 @@ class Joomla25 extends BasePlatform
 		if (empty($options))
 		{
 			$conf = \JFactory::getConfig();
-			if (version_compare(JVERSION, '3.0', 'ge'))
-			{
-				$options = array(
-					'host'     => $conf->get('host'),
-					'user'     => $conf->get('user'),
-					'password' => $conf->get('password'),
-					'database' => $conf->get('db'),
-					'prefix'   => $conf->get('dbprefix')
-				);
-			}
-			else
-			{
-				$options = array(
-					'host'     => $conf->getValue('config.host'),
-					'user'     => $conf->getValue('config.user'),
-					'password' => $conf->getValue('config.password'),
-					'database' => $conf->getValue('config.db'),
-					'prefix'   => $conf->getValue('config.dbprefix')
-				);
-			}
+			$options = array(
+				'host'     => $conf->get('host'),
+				'user'     => $conf->get('user'),
+				'password' => $conf->get('password'),
+				'database' => $conf->get('db'),
+				'prefix'   => $conf->get('dbprefix')
+			);
 		}
 
 		return $options;

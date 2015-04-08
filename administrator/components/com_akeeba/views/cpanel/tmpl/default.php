@@ -20,9 +20,8 @@ Platform::getInstance()->load_version_defines();
 $lang = JFactory::getLanguage();
 $icons_root = JUri::base().'components/com_akeeba/assets/images/';
 
-JHtml::_('behavior.framework');
 JHtml::_('behavior.modal');
-if (version_compare(JVERSION, '3.0.0', 'ge')) JHtml::_('formbehavior.chosen');
+JHtml::_('formbehavior.chosen');
 
 $script = <<<JS
 
@@ -53,6 +52,29 @@ JS;
 JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 
 ?>
+
+<?php
+// Obsolete PHP version check
+if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
+	JLoader::import('joomla.utilities.date');
+	$akeebaCommonDatePHP = new JDate('2014-08-14 00:00:00', 'GMT');
+	$akeebaCommonDateObsolescence = new JDate('2015-05-14 00:00:00', 'GMT');
+	?>
+	<div id="phpVersionCheck" class="alert alert-warning">
+		<h3><?php echo JText::_('AKEEBA_COMMON_PHPVERSIONTOOOLD_WARNING_TITLE'); ?></h3>
+		<p>
+			<?php echo JText::sprintf(
+				'AKEEBA_COMMON_PHPVERSIONTOOOLD_WARNING_BODY',
+				PHP_VERSION,
+				$akeebaCommonDatePHP->format(JText::_('DATE_FORMAT_LC1')),
+				$akeebaCommonDateObsolescence->format(JText::_('DATE_FORMAT_LC1')),
+				'5.5'
+			);
+			?>
+		</p>
+	</div>
+<?php endif; ?>
+
 <div id="fastcheckNotice" class="alert alert-danger" style="display: none">
 	<h3><?php echo JText::_('COM_AKEEBA_CPANEL_ERR_CORRUPT_HEAD') ?></h3>
 	<p>
@@ -69,16 +91,6 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 </div>
 
 <div id="restOfCPanel">
-
-<?php if (AKEEBA_PRO && (version_compare(JVERSION, '2.5.19', 'lt') || (version_compare(JVERSION, '3.0.0', 'gt') && version_compare(JVERSION, '3.2.1', 'lt')))):?>
-<div class="alert alert-error">
-	<?php echo JText::_('COM_AKEEBA_CPANEL_ERR_OLDJOOMLANOUPDATES'); ?>
-</div>
-<?php elseif (AKEEBA_PRO && version_compare(JVERSION, '2.5.999', 'lt') && !$this->update_plugin): ?>
-<div class="alert alert-warning">
-	<?php echo JText::_('COM_AKEEBA_CPANEL_ERR_NOPLUGINNOUPDATES'); ?>
-</div>
-<?php endif; ?>
 
 <?php if(!$this->schemaok): ?>
 <div style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;" id="notfixedperms">
@@ -213,19 +225,10 @@ JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 		</div>
 
 		<div class="icon">
-			<?php if(version_compare(JVERSION, '3.0', 'lt')): ?>
-			<a href="index.php?option=com_config&view=component&component=com_akeeba&path=&tmpl=component"
-				class="modal"
-				rel="{handler: 'iframe', size: {x: 660, y: 500}}">
-				<div class="ak-icon ak-icon-componentparams">&nbsp;</div>
-				<span><?php echo JText::_('CPANEL_LABEL_COMPONENTCONFIG'); ?></span>
-			</a>
-			<?php else: ?>
 			<a href="index.php?option=com_config&view=component&component=com_akeeba&path=&return=<?php echo base64_encode(JUri::getInstance()->toString()) ?>">
 				<div class="ak-icon ak-icon-componentparams">&nbsp;</div>
 				<span><?php echo JText::_('CPANEL_LABEL_COMPONENTCONFIG'); ?></span>
 			</a>
-			<?php endif; ?>
 		</div>
 
 		<div class="ak_clr"></div>

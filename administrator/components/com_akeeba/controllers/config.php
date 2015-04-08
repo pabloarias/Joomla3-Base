@@ -127,7 +127,7 @@ class AkeebaControllerConfig extends AkeebaControllerDefault
 		$model->dpeOuthOpen();
 		flush();
 
-		jexit();
+		JFactory::getApplication()->close();
 	}
 
 	/**
@@ -145,6 +145,24 @@ class AkeebaControllerConfig extends AkeebaControllerDefault
 		echo '###' . json_encode($model->dpeCustomAPICall()) . '###';
 		flush();
 
-		jexit();
+		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * Runs a custom API call against the selected data processing engine
+	 */
+	public function dpecustomapiraw()
+	{
+		/** @var AkeebaModelConfigs $model */
+		$model = $this->getThisModel();
+		$model->setState('engine', $this->input->get('engine', '', 'raw', 2));
+		$model->setState('method', $this->input->get('method', '', 'raw', 2));
+		$model->setState('params', $this->input->get('params', array(), 'array', 2));
+
+		@ob_end_clean();
+		echo $model->dpeCustomAPICall();
+		flush();
+
+		JFactory::getApplication()->close();
 	}
 }

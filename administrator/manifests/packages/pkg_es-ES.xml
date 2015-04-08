@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="package" version="3.4" method="upgrade">
-	<name>es-ES_joomla_lang_full_3.4.0v1</name>
+	<name>es-ES_joomla_lang_full_3.4.1v1</name>
 	<packagename>es-ES</packagename>
-	<version>3.4.0.1</version>
-	<creationDate>25/02/2015</creationDate>
-	<author>Spanish Translation Team: Comunidad Joomla</author>
+	<version>3.4.1.1</version>
+	<creationDate>29/03/2015</creationDate>
+	<author>Spanish Translation Team: Comunidad Joomla </author>
 	<authorEmail>info@comunidadjoomla.org</authorEmail>
 	<authorUrl>http://www.comunidadjoomla.org</authorUrl>
 	<copyright>Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.</copyright>
@@ -12,7 +12,7 @@
 	<url></url>
 	<packager>Valc (Rafa Gómez)</packager>
 	<packagerurl></packagerurl>
-	<description><![CDATA[<div style="text-align:left;"><h2>Successfully installed the spanish language pack for Joomla! 3.4.0.</h2><p></p><p>Please report any bugs or issues at the Comunidad Joomla! <a href="http://foro.comunidadjoomla.org/traduccion-ext/" target="_blank">Translation forum</a></p><p></p><p>Translated by: <a href="http://www.comunidadjoomla.org" target="_blank" title="">The spanish translation team of Comunidad Joomla!</a></p><h2>El paquete en español para Joomla! 3.4.0 se ha instalado correctamente.</h2><p></p><p>Por favor, reporte cualquier bug o asunto relacionado a nuestro <a href="http://foro.comunidadjoomla.org/traduccion-ext/" target="_blank">Foro de traducciones</a></p><p></p><p>Traducción: <a href="http://www.comunidadjoomla.org" target="_blank" title="">El equipo de traducción de Comunidad Joomla!</a></p></div>]]></description>
+	<description><![CDATA[<div style="text-align:left;"><h2>Successfully installed the spanish language pack for Joomla! 3.4.1.</h2><p></p><p>Please report any bugs or issues at the Comunidad Joomla! <a href="http://foro.comunidadjoomla.org/traduccion-ext/" target="_blank">Translation forum</a></p><p></p><p>Translated by: <a href="http://www.comunidadjoomla.org" target="_blank" title="">The spanish translation team of Comunidad Joomla!</a></p><h2>El paquete en español para Joomla! 3.4.1 se ha instalado correctamente.</h2><p></p><p>Por favor, reporte cualquier bug o asunto relacionado a nuestro <a href="http://foro.comunidadjoomla.org/traduccion-ext/" target="_blank">Foro de traducciones</a></p><p></p><p>Traducción: <a href="http://www.comunidadjoomla.org" target="_blank" title="">El equipo de traducción de Comunidad Joomla!</a></p></div>]]></description>
 	<files>
 		<file type="language" client="site" id="es-ES">site_es-ES.zip</file>
 		<file type="language" client="administrator" id="es-ES">admin_es-ES.zip</file>

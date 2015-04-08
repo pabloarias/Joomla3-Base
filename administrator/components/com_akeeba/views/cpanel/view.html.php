@@ -56,7 +56,6 @@ class AkeebaViewCpanel extends F0FViewHtml
 			$this->statscell = $statmodel->getLatestBackupDetails();
 
 			$this->fixedpermissions = $model->fixMediaPermissions(); // Fix media/com_akeeba permissions
-			$this->update_plugin = $model->isUpdatePluginEnabled();
 
 			$this->needsdlid = $model->needsDownloadID();
 			$this->needscoredlidwarning = $model->mustWarnAboutDownloadIDInCore();

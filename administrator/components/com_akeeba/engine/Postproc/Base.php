@@ -128,7 +128,7 @@ abstract class Base extends Object
 		}
 		else
 		{
-			return call_user_func_array(array($this, $method), $params);
+			return call_user_func_array(array($this, $method), array($params));
 		}
 	}
 

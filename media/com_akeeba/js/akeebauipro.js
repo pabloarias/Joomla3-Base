@@ -1363,3 +1363,26 @@ function akconfig_dropbox_gettoken()
 		});
 	})(akeeba.jQuery);
 }
+
+//=============================================================================
+//Akeeba Backup Pro - OneDrive integration
+//=============================================================================
+function akconfig_onedrive_openoauth()
+{
+	(function($) {
+		window.open('index.php?option=com_akeeba&view=config&task=dpeoauthopen&engine=onedrive','akeeba_onedrive_window','width=1010,height=500');
+	})(akeeba.jQuery);
+}
+
+function akeeba_onedrive_oauth_callback(data)
+{
+	(function($) {
+		// Update the tokens
+		$(document.getElementById('var[engine.postproc.onedrive.access_token]')).val(data.access_token);
+		$(document.getElementById('var[engine.postproc.onedrive.refresh_token]')).val(data.refresh_token);
+
+		// Close the window
+		myWindow = window.open("", "akeeba_onedrive_window");
+		myWindow.close();
+	})(akeeba.jQuery);
+}

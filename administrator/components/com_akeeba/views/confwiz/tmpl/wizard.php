@@ -10,7 +10,6 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.framework');
 ?>
 
 <!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->

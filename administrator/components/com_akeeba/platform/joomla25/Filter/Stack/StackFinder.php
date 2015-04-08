@@ -28,8 +28,6 @@ class StackFinder extends FilterBase
 		$this->object	= 'dbobject';
 		$this->subtype	= 'content';
 		$this->method	= 'api';
-
-		if(Factory::getKettenrad()->getTag() == 'restorepoint') $this->enabled = false;
 	}
 
 	protected function is_excluded_by_api($test, $root)

@@ -35,14 +35,7 @@ class Joomlaskipfiles extends Base
 
 		$jreg = \JFactory::getConfig();
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$tmpdir = $jreg->get('tmp_path');
-		}
-		else
-		{
-			$tmpdir = $jreg->getValue('config.tmp_path');
-		}
+		$tmpdir = $jreg->get('tmp_path');
 
 		// Get the site's root
 		if ($configuration->get('akeeba.platform.override_root', 0))

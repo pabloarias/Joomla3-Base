@@ -1,4 +1,22 @@
 <?php die();?>
+Akeeba Backup 4.2.0
+================================================================================
+- Removed Joomla! 2.5 support
+- Removed post-setup page; these messages are now handled through Joomla!'s Post-Installation Messages feature
+- Removed the Site Transfer Wizard. You can use the DirectFTP/DirectSFTP engines; or use Upload to FTP/SFTP and check the Upload Kickstart option (preferred method)
+- Removed the System Restore Point feature; please make a full site backup before updating your extensions. Joomla! 3.x requires full backups due to the way ACL, Categories, Tags and Content History work; that's why the SRP feature was removed.
+- Removed Extension Filters. For the same reasons we removed SRP: this cannot work as expected in Joomla! 3.x.
+- Removed Lite Mode in the front-end. Smartphones are now the norm and Joomla! 3.x offers a responsive back-end. Just use it from your smartphone!
++ Check for obsolete PHP versions and printing a warning
++ gh-528 Native support for Microsoft Live OneDrive
++ gh-529 Added support for uploading archives in subdirectories while using FTP post-processing engine
++ gh-530 Show profile title in a tooltip when hovering over the profile ID in Manage Backups page
++ gh-530 Profile filter in the Manage Backups page
++ Always exclude the configured Joomla! log directory, no matter where it is
+# [LOW] ANGIE would throw a memory outage error on extreme circumstances when the database server connected and disconnected immediately
+# [LOW] Prevent usage of negative profile ID in CLI backups
+# [MEDIUM] Import from S3 could be a byte off
+
 Akeeba Backup 4.1.2
 ================================================================================
 + Added "Apply to all" button in Files and Directories Exclusion page

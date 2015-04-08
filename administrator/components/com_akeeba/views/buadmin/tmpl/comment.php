@@ -9,8 +9,6 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.framework');
-
 $editor = JFactory::getEditor();
 $getText = $editor->getContent('comment');
 

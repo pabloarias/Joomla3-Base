@@ -10,8 +10,7 @@
 defined('_JEXEC') or die();
 if(empty($this->tag)) $this->tag = null;
 
-JHtml::_('behavior.framework');
-if (version_compare(JVERSION, '3.0.0', 'ge')) JHtml::_('formbehavior.chosen');
+JHtml::_('formbehavior.chosen');
 
 ?>
 <?php if(count($this->logs)): ?>

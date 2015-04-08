@@ -19,9 +19,7 @@ $formstyle = '';
 
 $configuration = Factory::getConfiguration();
 
-JHtml::_('behavior.framework');
-if (version_compare(JVERSION, '3.0.0', 'ge')) JHtml::_('formbehavior.chosen');
-
+JHtml::_('formbehavior.chosen');
 ?>
 <!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->
 <div id="nojquerywarning" style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;">
@@ -54,7 +52,6 @@ var akeeba_autoresume_maxretries = <?php echo (int)$configuration->get('akeeba.a
 akeeba.jQuery(document).ready(function($){
 	// The return URL
 	akeeba_return_url = '<?php echo AkeebaHelperEscape::escapeJS($this->returnurl) ?>';
-	akeeba_is_stw = <?php echo ($this->isSTW) ? 'true' : 'false' ?>;
 
 	// Used as parameters to start_timeout_bar()
 	akeeba_max_execution_time = <?php echo $this->maxexec; ?>;
@@ -66,7 +63,6 @@ akeeba.jQuery(document).ready(function($){
 
 	// Push some translations
 	akeeba_translations['UI-LASTRESPONSE'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('BACKUP_TEXT_LASTRESPONSE')) ?>';
-	akeeba_translations['UI-STW-CONTINUE'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('STW_MSG_CONTINUE')) ?>';
 
 	//Parse the domain keys
 	akeeba_domains = JSON.parse("<?php echo $this->domains ?>");
@@ -80,10 +76,7 @@ akeeba.jQuery(document).ready(function($){
 	// Setup the IFRAME mode
 	akeeba_use_iframe = <?php echo $this->useiframe ?>;
 
-	// Publish the SRP info
-	akeeba_srp_info = JSON.parse('<?php echo json_encode($this->srpinfo) ?>');
-
-	<?php if( !$this->unwritableoutput && (($this->srpinfo['tag'] == 'restorepoint') || ($this->autostart)) ):?>
+	<?php if( !$this->unwritableoutput && $this->autostart ):?>
 	backup_start();
 	<?php else: ?>
 	// Bind start button's click event
@@ -146,11 +139,8 @@ akeeba.jQuery(document).ready(function($){
 
 	<?php if($this->unwritableoutput): $formstyle="style=\"display: none;\"" ?>
 	<div id="akeeba-fatal-outputdirectory" class="alert alert-error">
-	<?php if($this->srpinfo['tag'] == 'restorepoint'): ?>
-	<p>
-		<?php echo JText::_('BACKUP_ERROR_UNWRITABLEOUTPUT_SRP') ?>
-	</p>
-	<?php elseif($this->autostart): ?>
+
+	<?php if($this->autostart): ?>
 	<p>
 		<?php echo JText::_('BACKUP_ERROR_UNWRITABLEOUTPUT_AUTOBACKUP') ?>
 	</p>

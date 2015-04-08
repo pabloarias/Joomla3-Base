@@ -19,7 +19,10 @@ use Akeeba\Engine\Platform;
  */
 class AkeebaViewBuadmin extends F0FViewHtml
 {
+
 	protected $lists = null;
+
+	protected $profiles = array();
 
 	function  __construct($config = array())
 	{
@@ -43,28 +46,9 @@ class AkeebaViewBuadmin extends F0FViewHtml
 		$session = JFactory::getSession();
 		$task    = $session->get('buadmin.task', 'default', 'akeeba');
 
-		if ($task != 'restorepoint')
-		{
-			$task = 'default';
-		}
+		$task = 'default';
 
 		$aeconfig = Factory::getConfiguration();
-
-		// Add custom submenus
-		if (AKEEBA_PRO)
-		{
-			$toolbar = F0FToolbar::getAnInstance($this->input->get('option', 'com_foobar', 'cmd'), $this->config);
-			$toolbar->appendLink(
-				JText::_('BUADMIN_LABEL_BACKUPS'),
-				JUri::base() . 'index.php?option=com_akeeba&view=buadmin&task=browse',
-				($task == 'default')
-			);
-			$toolbar->appendLink(
-				JText::_('BUADMIN_LABEL_SRP'),
-				JUri::base() . 'index.php?option=com_akeeba&view=buadmin&task=restorepoint',
-				($task == 'restorepoint')
-			);
-		}
 
 		if (AKEEBA_PRO && ($task == 'default'))
 		{
@@ -140,21 +124,30 @@ JS;
 		$model = new AkeebaModelStatistics();
 		$list  = $model->getStatisticsListWithMeta(false, $filters, $ordering);
 
+		$profilesModel = F0FModel::getTmpInstance('Profiles', 'AkeebaModel');
+		$profilesModel->reset()->clearState()->clearInput();
+		$profiles = $profilesModel->getItemList(true);
+
+		$profilesList = array(
+			JHtml::_('select.option', '', '–' . JText::_('STATS_LABEL_PROFILEID') . '–')
+		);
+
+		if (!empty($profiles))
+		{
+			foreach ($profiles as $profile)
+			{
+				$profilesList[] = JHtml::_('select.option', $profile->id, $profile->description);
+			}
+		}
+
 		// Assign data to the view
-		$this->lists      = $this->lists; // Filter lists
-		$this->list       = $list; // Data
-		$this->pagination = $model->getPagination($filters); // Pagination object
+		$this->profiles     = $profiles; // Profiles
+		$this->profilesList = $profilesList; // Profiles list for select box
+		$this->list         = $list; // Data
+		$this->pagination   = $model->getPagination($filters); // Pagination object
 
 		// Add live help
-		if ($task == 'restorepoint')
-		{
-			$this->setLayout('restorepoint');
-			AkeebaHelperIncludes::addHelp('restorepoint');
-		}
-		else
-		{
-			AkeebaHelperIncludes::addHelp('buadmin');
-		}
+		AkeebaHelperIncludes::addHelp('buadmin');
 
 		return true;
 	}
@@ -215,28 +208,17 @@ JS;
 			$filters[] = array(
 				'field'   => 'profile_id',
 				'operand' => '=',
-				'value'   => (int)$this->lists->fltProfile
+				'value'   => (int) $this->lists->fltProfile
 			);
 		}
 
-		$session = JFactory::getSession();
-		$task    = $session->get('buadmin.task', 'browse', 'akeeba');
-		if ($task == 'restorepoint')
-		{
-			$filters[] = array(
-				'field'   => 'tag',
-				'operand' => '=',
-				'value'   => 'restorepoint'
-			);
-		}
-		else
-		{
-			$filters[] = array(
-				'field'   => 'tag',
-				'operand' => '<>',
-				'value'   => 'restorepoint'
-			);
-		}
+		$session   = JFactory::getSession();
+		$task      = $session->get('buadmin.task', 'browse', 'akeeba');
+		$filters[] = array(
+			'field'   => 'tag',
+			'operand' => '<>',
+			'value'   => 'restorepoint'
+		);
 
 
 		if (empty($filters))

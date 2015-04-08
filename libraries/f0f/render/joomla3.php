@@ -55,6 +55,9 @@ class F0FRenderJoomla3 extends F0FRenderStrapper
 			return;
 		}
 
+		JHtml::_('behavior.core');
+		JHtml::_('jquery.framework');
+
 		if ($platform->isBackend())
 		{
 			// Wrap output in various classes

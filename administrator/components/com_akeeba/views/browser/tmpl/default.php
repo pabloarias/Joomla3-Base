@@ -10,8 +10,6 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.framework');
-
 $rootDirWarning = AkeebaHelperEscape::escapeJS(JText::_('CONFIG_UI_ROOTDIR'));
 JFactory::getDocument()->addScriptDeclaration(<<<JS
 

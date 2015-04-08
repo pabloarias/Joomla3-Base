@@ -188,6 +188,17 @@ abstract class F0FUtilsIp
 					// Do not apply IPv6 filtering on an IPv4 address
 					continue;
 				}
+				elseif ($ipv6 && strstr($maskbits, ':'))
+				{
+					// Perform an IPv6 CIDR check
+					if (self::checkIPv6CIDR($myIP, $ipExpression))
+					{
+						return true;
+					}
+
+					// If we didn't match it proceed to the next expression
+					continue;
+				}
 				elseif (!$ipv6 && strstr($maskbits, '.'))
 				{
 					// Convert IPv4 netmask to CIDR
@@ -325,6 +336,33 @@ abstract class F0FUtilsIp
 	}
 
 	/**
+	 * Works around the REMOTE_ADDR not containing the user's IP
+	 */
+	public static function workaroundIPIssues()
+	{
+		$ip = self::getIp();
+
+		if ($_SERVER['REMOTE_ADDR'] == $ip)
+		{
+			return;
+		}
+
+		if (array_key_exists('REMOTE_ADDR', $_SERVER))
+		{
+			$_SERVER['FOF_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
+		}
+		elseif (function_exists('getenv'))
+		{
+			if (getenv('REMOTE_ADDR'))
+			{
+				$_SERVER['FOF_REMOTE_ADDR'] = getenv('REMOTE_ADDR');
+			}
+		}
+
+		$_SERVER['REMOTE_ADDR'] = $ip;
+	}
+
+	/**
 	 * Gets the visitor's IP address. Automatically handles reverse proxies
 	 * reporting the IPs of intermediate devices, like load balancers. Examples:
 	 * https://www.akeebabackup.com/support/admin-tools/13743-double-ip-adresses-in-security-exception-log-warnings.html
@@ -439,5 +477,28 @@ abstract class F0FUtilsIp
 		}
 
 		return $binaryip;
+	}
+
+	/**
+	 * Checks if an IPv6 address $ip is part of the IPv6 CIDR block $cidrnet
+	 *
+	 * @param   string  $ip       The IPv6 address to check, e.g. 21DA:00D3:0000:2F3B:02AC:00FF:FE28:9C5A
+	 * @param   string  $cidrnet  The IPv6 CIDR block, e.g. 21DA:00D3:0000:2F3B::/64
+	 *
+	 * @return  bool
+	 */
+	protected static function checkIPv6CIDR($ip, $cidrnet)
+	{
+		$ip = inet_pton($ip);
+		$binaryip=self::inet_to_bits($ip);
+
+		list($net,$maskbits)=explode('/',$cidrnet);
+		$net=inet_pton($net);
+		$binarynet=self::inet_to_bits($net);
+
+		$ip_net_bits=substr($binaryip,0,$maskbits);
+		$net_bits   =substr($binarynet,0,$maskbits);
+
+		return $ip_net_bits === $net_bits;
 	}
 }

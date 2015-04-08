@@ -112,10 +112,10 @@ class F0FFormFieldCalendar extends JFormFieldCalendar implements F0FFormField
 		// PHP date doesn't use percentages (%) for the format, but the calendar Javascript
 		// DOES use it (@see: calendar-uncompressed.js). Therefore we have to convert it.
 		$formatJS  = $format;
-		$formatPHP = str_replace(array('%', 'H:M:S'), array('', 'H:i:s'), $formatJS);
+		$formatPHP = str_replace(array('%', 'H:M:S', 'B'), array('', 'H:i:s', 'F'), $formatJS);
 
 		// Check for empty date values
-		if (empty($this->value) || $this->value == '0000-00-00 00:00:00' || $this->value == '0000-00-00')
+		if (empty($this->value) || $this->value == F0FPlatform::getInstance()->getDbo()->getNullDate() || $this->value == '0000-00-00')
 		{
 			$this->value = $default;
 		}

@@ -106,10 +106,6 @@ class AkeebaToolbar extends F0FToolbar
 			default:
 				JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('BUADMIN').'</small>','akeeba');
 				break;
-
-			case 'restorepoint':
-				JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('BUADMINSRP').'</small>','akeeba');
-				break;
 		}
 
 		JToolBarHelper::spacer();
@@ -129,13 +125,6 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::cancel();
 
 		//$this->_renderDefaultSubmenus('buadmin');
-	}
-
-	public function onPostsetupsBrowse()
-	{
-		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('AKEEBA_POSTSETUP').'</small>','akeeba');
-		// Add a spacer, a help button and show the template
-		JToolBarHelper::spacer();
 	}
 
 	public function onDiscoversBrowse()
@@ -216,13 +205,6 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
 	}
 
-	public function onExtfilters()
-	{
-		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('EXTFILTER').'</small>','akeeba');
-		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
-		JToolBarHelper::spacer();
-	}
-
 	public function onEffsBrowse()
 	{
 		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('EXTRADIRS').'</small>','akeeba');
@@ -230,23 +212,9 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::spacer();
 	}
 
-	public function onStws()
-	{
-		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('SITETRANSFERWIZARD').'</small>','akeeba');
-		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
-		JToolBarHelper::spacer();
-	}
-
 	public function onRestores()
 	{
 		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('RESTORATION').'</small>','akeeba');
-		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
-		JToolBarHelper::spacer();
-	}
-
-	public function onSrprestores()
-	{
-		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('SRPRESTORATION').'</small>','akeeba');
 		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
 		JToolBarHelper::spacer();
 	}

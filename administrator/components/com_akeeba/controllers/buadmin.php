@@ -47,17 +47,6 @@ class AkeebaControllerBuadmin extends AkeebaControllerDefault
 				$this->task = 'browse';
 				break;
 
-			case 'restorepoint':
-				if (!AKEEBA_PRO)
-				{
-					JError::raiseError('403', JText::_('AKEEBA_POSTSETUP_NOTAVAILABLEINCORE'));
-					return false;
-				}
-
-				$session->set('buadmin.task', 'restorepoint', 'akeeba');
-				$this->task = 'browse';
-				break;
-
 			case 'showcomment':
 				$this->layout	 = 'comment';
 				$this->task		 = 'edit';

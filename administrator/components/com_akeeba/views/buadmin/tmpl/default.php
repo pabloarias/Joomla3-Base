@@ -10,18 +10,14 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.framework');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.modal');
-if (version_compare(JVERSION, '3.0.0', 'ge'))
-{
-	JHtml::_('bootstrap.popover', '.akeebaCommentPopover', array(
-		'animation'	=> true,
-		'html'		=> true,
-		'title'		=> JText::_('STATS_LABEL_COMMENT'),
-		'placement'	=> 'bottom'
-	));
-}
+JHtml::_('bootstrap.popover', '.akeebaCommentPopover', array(
+	'animation'	=> true,
+	'html'		=> true,
+	'title'		=> JText::_('STATS_LABEL_COMMENT'),
+	'placement'	=> 'bottom'
+));
 
 $dateFormat = \Akeeba\Engine\Util\Comconfig::getValue('dateformat', '');
 $dateFormat = trim($dateFormat);
@@ -63,21 +59,19 @@ foreach ($scripting['scripts'] as $key => $data)
 
 ?>
 
-<?php if (version_compare(JVERSION, '3.0', 'ge')): ?>
-	<script type="text/javascript">
-		Joomla.orderTable = function () {
-			table = document.getElementById("sortTable");
-			direction = document.getElementById("directionTable");
-			order = table.options[table.selectedIndex].value;
-			if (order != '<?php echo $this->escape($this->lists->order); ?>') {
-				dirn = 'asc';
-			} else {
-				dirn = direction.options[direction.selectedIndex].value;
-			}
-			Joomla.tableOrdering(order, dirn, '');
+<script type="text/javascript">
+	Joomla.orderTable = function () {
+		table = document.getElementById("sortTable");
+		direction = document.getElementById("directionTable");
+		order = table.options[table.selectedIndex].value;
+		if (order != '<?php echo $this->escape($this->lists->order); ?>') {
+			dirn = 'asc';
+		} else {
+			dirn = direction.options[direction.selectedIndex].value;
 		}
-	</script>
-<?php endif ?>
+		Joomla.tableOrdering(order, dirn, '');
+	}
+</script>
 
 <div class="alert alert-info">
 	<button class="close" data-dismiss="alert">×</button>
@@ -95,16 +89,15 @@ foreach ($scripting['scripts'] as $key => $data)
 <input type="hidden" name="filter_order_Dir" id="filter_order_Dir" value="<?php echo $this->lists->order_Dir ?>"/>
 <input type="hidden" name="<?php echo JFactory::getSession()->getFormToken() ?>" value="1"/>
 
-<?php if (version_compare(JVERSION, '3.0', 'ge')):
-
-// Construct the array of sorting fields
+<?php
+	// Construct the array of sorting fields
 	$sortFields = array(
-		'id'          => JText::_('STATS_LABEL_ID'),
-		'description' => JText::_('STATS_LABEL_DESCRIPTION'),
-		'backupstart' => JText::_('STATS_LABEL_START'),
-		'origin'      => JText::_('STATS_LABEL_ORIGIN'),
-		'type'        => JText::_('STATS_LABEL_TYPE'),
-		'profile_id'  => JText::_('STATS_LABEL_PROFILEID'),
+	'id'          => JText::_('STATS_LABEL_ID'),
+	'description' => JText::_('STATS_LABEL_DESCRIPTION'),
+	'backupstart' => JText::_('STATS_LABEL_START'),
+	'origin'      => JText::_('STATS_LABEL_ORIGIN'),
+	'type'        => JText::_('STATS_LABEL_TYPE'),
+	'profile_id'  => JText::_('STATS_LABEL_PROFILEID'),
 	);
 	JHtml::_('formbehavior.chosen', 'select');
 
@@ -112,16 +105,16 @@ foreach ($scripting['scripts'] as $key => $data)
 	<div id="filter-bar" class="btn-toolbar">
 		<div class="filter-search btn-group pull-left">
 			<input type="text" name="description" placeholder="<?php echo JText::_('STATS_LABEL_DESCRIPTION'); ?>"
-				   id="filter_description"
-				   value="<?php echo $this->escape($this->getModel()->getState('description', '')); ?>"
-				   title="<?php echo JText::_('STATS_LABEL_DESCRIPTION'); ?>"/>
+			       id="filter_description"
+			       value="<?php echo $this->escape($this->getModel()->getState('description', '')); ?>"
+			       title="<?php echo JText::_('STATS_LABEL_DESCRIPTION'); ?>"/>
 		</div>
 		<div class="btn-group pull-left hidden-phone">
-			<button class="btn tip hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i
+			<button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i
 					class="icon-search"></i></button>
-			<button class="btn tip hasTooltip" type="button"
-					onclick="document.id('filter_description').value='';this.form.submit();"
-					title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+			<button class="btn hasTooltip" type="button"
+			        onclick="document.id('filter_description').value='';this.form.submit();"
+			        title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 		</div>
 
 		<div class="filter-search btn-group pull-left hidden-phone">
@@ -131,18 +124,21 @@ foreach ($scripting['scripts'] as $key => $data)
 			<?php echo JHTML::_('calendar', $this->lists->fltTo, 'to', 'to', '%Y-%m-%d', array('class' => 'input-small')); ?>
 		</div>
 		<div class="btn-group pull-left hidden-phone">
-			<button class="btn tip hasTooltip" type="buttin" onclick="this.form.submit(); return false;"
-					title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+			<button class="btn hasTooltip" type="button" onclick="this.form.submit(); return false;"
+			        title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+		</div>
+		<div class="btn-group pull-left hidden-phone">
+			<?php echo JHTML::_('select.genericlist', $this->profilesList, 'profile', 'onchange="document.forms.adminForm.submit()" class="advancedSelect"', 'value', 'text', $this->lists->fltProfile); ?>
 		</div>
 
 		<div class="btn-group pull-right">
 			<label for="limit"
-				   class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
+			       class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
 			<?php echo $this->pagination->getLimitBox(); ?>
 		</div>
 		<div class="btn-group pull-right hidden-phone">
 			<label for="directionTable"
-				   class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
+			       class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
 			<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
 				<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
 				<option
@@ -165,7 +161,6 @@ foreach ($scripting['scripts'] as $key => $data)
 			</select>
 		</div>
 	</div>
-<?php endif; ?>
 
 <table class="table table-striped" id="itemsList">
 <thead>
@@ -203,32 +198,7 @@ foreach ($scripting['scripts'] as $key => $data)
 		<?php echo JText::_('STATS_LABEL_MANAGEANDDL'); ?>
 	</th>
 </tr>
-<?php if (version_compare(JVERSION, '3.0', 'lt')): ?>
-	<tr>
-		<td></td>
-		<td></td>
-		<td class="form-inline">
-			<input type="text" name="description" id="description"
-				   value="<?php echo $this->escape($this->lists->fltDescription) ?>"
-				   class="text_area input-medium" onchange="document.adminForm.submit();"/>
-			<button class="btn btn-mini"
-					onclick="this.form.submit(); return false;"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-			<button class="btn btn-mini"
-					onclick="document.adminForm.description.value='';this.form.submit(); return;"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
-		</td>
-		<td colspan="2">
-			<?php echo JHTML::_('calendar', $this->lists->fltFrom, 'from', 'from', '%Y-%m-%d', array('class' => 'input-mini')); ?> &mdash;
-			<?php echo JHTML::_('calendar', $this->lists->fltTo, 'to', 'to', '%Y-%m-%d', array('class' => 'input-mini')); ?>
-			<button class="btn btn-mini "
-					onclick="this.form.submit(); return false;"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-		</td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td colspan="2"></td>
-	</tr>
-<?php endif; ?>
+
 </thead>
 <tfoot>
 <tr>
@@ -368,15 +338,8 @@ ENDHTML;
 
 		if (!empty($record['comment']))
 		{
-			if (version_compare(JVERSION, '3.0.0', 'lt'))
-			{
-				$info_link = JHTML::_('tooltip', strip_tags($this->escape($record['comment']))) . '&ensp;';
-			}
-			else
-			{
-				$info_link = "<span class=\"icon icon-info-sign akeebaCommentPopover\" rel=\"popover\" data-content=\"" .
-					$this->escape($record['comment']) ."\"></span>";
-			}
+			$info_link = "<span class=\"icon icon-question-sign akeebaCommentPopover\" rel=\"popover\" data-content=\"" .
+			             $this->escape($record['comment']) ."\"></span>";
 		}
 
 		// Label class based on status
@@ -435,7 +398,19 @@ ENDHTML;
 				<?php echo $origin ?>
 			</td>
 			<td class="hidden-phone"><?php echo $type ?></td>
-			<td class="hidden-phone"><?php echo $record['profile_id'] ?></td>
+			<td class="hidden-phone">
+				<?php
+				$profileName = '&mdash;';
+
+				if (isset($this->profiles[$record['profile_id']]))
+				{
+					$profileName = $this->profiles[$record['profile_id']]->description;
+				}
+				?>
+				<span class="akeebaCommentPopover" rel="popover" title="<?php echo JText::_('STATS_LABEL_PROFILEID') . ' ' . $record['profile_id'] ?>" data-content="<?php echo $this->escape($profileName) ?>">
+				<?php echo $record['profile_id'] ?>
+				</span>
+			</td>
 			<td class="hidden-phone"><?php echo ($record['meta'] == 'ok') ? format_filesize($record['size']) : ($record['total_size'] > 0 ? "(<i>" . format_filesize($record['total_size']) . "</i>)" : '&mdash;') ?></td>
 			<td class="hidden-phone"><?php echo $filename_col; ?></td>
 		</tr>

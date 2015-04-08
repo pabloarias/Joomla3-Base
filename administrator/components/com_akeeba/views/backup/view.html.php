@@ -31,11 +31,7 @@ class AkeebaViewBackup extends F0FViewHtml
 		// Determine default description
 		JLoader::import('joomla.utilities.date');
 		$jregistry = JFactory::getConfig();
-		if(version_compare(JVERSION, '3.0', 'ge')) {
-			$tzDefault = $jregistry->get('offset');
-		} else {
-			$tzDefault = $jregistry->getValue('config.offset');
-		}
+		$tzDefault = $jregistry->get('offset');
 		$user = JFactory::getUser();
 		$tz = $user->getParam('timezone', $tzDefault);
 		$dateNow = new JDate('now', $tz);
@@ -57,23 +53,17 @@ class AkeebaViewBackup extends F0FViewHtml
 		$profilemodel = new AkeebaModelProfiles();
 		$profilemodel->setId($cpanelmodel->getProfileID());
 		$profile_data = $profilemodel->getProfile();
-		$isSTW = ($profile_data->description == 'Site Transfer Wizard (do not rename)') &&
-			!empty($returnurl);
-		$this->isSTW = $isSTW;
 
 		// Get the domain details from scripting facility
 		$registry = Factory::getConfiguration();
 		$tag = $model->getState('tag');
-		$script = ($tag == 'restorepoint') ? 'full' : $registry->get('akeeba.basic.backup_type','full');
+		$script = $registry->get('akeeba.basic.backup_type','full');
 		$scripting = Factory::getEngineParamsProvider()->loadScripting();
 		$domains = array();
 		if(!empty($scripting)) foreach( $scripting['scripts'][$script]['chain'] as $domain )
 		{
 			$description = JText::_($scripting['domains'][$domain]['text']);
 			$domain_key = $scripting['domains'][$domain]['domain'];
-			if( $isSTW && ($domain_key == 'Packing') ) {
-				$description = JText::_('BACKUP_LABEL_DOMAIN_PACKING_STW');
-			}
 			$domains[] = array($domain_key, $description);
 		}
 		$json_domains = AkeebaHelperEscape::escapeJS(json_encode($domains),'"\\');
@@ -126,20 +116,11 @@ class AkeebaViewBackup extends F0FViewHtml
 		$this->profileid = $cpanelmodel->getProfileID(); // Active profile ID
 		$this->profilelist = $cpanelmodel->getProfilesList(); // List of available profiles
 
-		// Pass on state information pertaining to SRP
-		$this->srpinfo = $model->getState('srpinfo');
-
 		// Add live help
 		AkeebaHelperIncludes::addHelp('backup');
 
 		// Set the toolbar title
-		if($this->srpinfo['tag'] == 'restorepoint') {
-			$subtitle = JText::_('AKEEBASRP');
-		} elseif($isSTW) {
-			$subtitle = JText::_('SITETRANSFERWIZARD');
-		} else {
-			$subtitle = JText::_('BACKUP');
-		}
+		$subtitle = JText::_('BACKUP');
 		JToolBarHelper::title(JText::_('AKEEBA').':: <small>'.$subtitle.'</small>','akeeba');
 
 		return true;

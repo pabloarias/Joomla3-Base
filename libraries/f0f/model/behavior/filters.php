@@ -35,9 +35,13 @@ class F0FModelBehaviorFilters extends F0FModelBehavior
 		$filterzero = $model->getState('_emptynonzero', null);
 
 		$fields = $model->getTableFields();
+		$backlist = $model->blacklistFilters();
 
 		foreach ($fields as $fieldname => $fieldtype)
 		{
+			if (in_array($fieldname, $backlist)) {
+				continue;
+			}
 			$field = new stdClass;
 			$field->name = $fieldname;
 			$field->type = $fieldtype;

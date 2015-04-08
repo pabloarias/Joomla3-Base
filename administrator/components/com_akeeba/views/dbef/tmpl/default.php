@@ -9,7 +9,6 @@
 
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.framework');
 ?>
 <div id="dialog" title="<?php echo JText::_('DBFILTER_ERROR_TITLE') ?>">
 </div>

@@ -137,14 +137,21 @@ class AkeebaModelConfigs extends F0FModel
 		$engine = $this->getState('engine');
 		$params = $this->getState('params', array());
 
-		$engine = Factory::getPostprocEngine($engine);
+		// Get a callback URI for OAuth 2
+		$params['callbackURI'] = JUri::base() . '/index.php?option=com_akeeba&view=config&task=dpecustomapiraw&engine=' . $engine;
 
-		if ($engine === false)
+		// Get the Input object
+		$params['input'] = $this->input->getData();
+
+		// Get the engine
+		$engineObject = Factory::getPostprocEngine($engine);
+
+		if ($engineObject === false)
 		{
 			return false;
 		}
 
-		$engine->oauthOpen($params);
+		$engineObject->oauthOpen($params);
 	}
 
 	/**
@@ -158,13 +165,16 @@ class AkeebaModelConfigs extends F0FModel
 		$method = $this->getState('method');
 		$params = $this->getState('params', array());
 
-		$engine = Factory::getPostprocEngine($engine);
+		// Get the Input object
+		$params['input'] = $this->input->getData();
 
-		if ($engine === false)
+		$engineObject = Factory::getPostprocEngine($engine);
+
+		if ($engineObject === false)
 		{
 			return false;
 		}
 
-		return $engine->customApiCall($method, $params);
+		return $engineObject->customApiCall($method, $params);
 	}
 }
