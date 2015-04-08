@@ -14,15 +14,15 @@ Archivos a eliminar antes del despliegue en producción:
 - readme.md
 
 Paquetes incluidos:
-- Joomla 3.4
-- Idioma español 3.4.0.1
+- Joomla 3.4.1
+- Idioma español 3.4.1.1
 - Editor JCE 2.4.6 + traducción al español
-- Xmap 2.3.4.
-- Akeeba Backup 4.1.2 + traducción al español
+- OSmap 3.0.2.
+- Akeeba Backup 4.2 + traducción al español
 - Title Manager 3.0
 
 Contenidos incluidos:
 - Nota legal
 - Política de privacidad
-- Mapa web (Xmap). Recuerda activar la redirección en el archivo robots.txt y .htaccess.
+- Mapa web (OSmap). Recuerda indicar en el archivo robots.txt la URL y, preferiblemente que sea algo como "sitemap.xml" a través de una redirección en el archivo .htaccess.
 - Menú en el pie de página con estos 3 elementos anteriores.
