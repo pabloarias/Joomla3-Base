@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="library" version="2.5" method="upgrade">
+    <name>Alledia Framework</name>
+    <libraryname>allediaframework</libraryname>
+    <author>Alledia</author>
+    <creationDate>March 04, 2015</creationDate>
+    <copyright>Copyright (C) 2015 Alledia.com</copyright>
+    <license>GPL v3</license>
+    <authorEmail>hello@alledia.com</authorEmail>
+    <authorUrl>https://www.alledia.com</authorUrl>
+    <version>1.2.0</version>
+    <description>Shared library for Alledia extensions</description>
+
+    <alledia>
+        <element>allediaframework</element>
+        <namespace>AllediaFramework</namespace>
+        <license>free</license>
+    </alledia>
+
+    <files>
+        <filename>include.php</filename>
+        <filename>AllediaPsr4AutoLoader.php</filename>
+        <folder>Framework</folder>
+    </files>
+
+    <updateservers>
+        <server type="extension" priority="1" name="Alledia Framework"><![CDATA[https://deploy.ostraining.com/client/update/free/stable/lib_allediaframework]]></server>
+    </updateservers>
+
+</extension>
