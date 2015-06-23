@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="package" version="3.4" method="upgrade">
-	<name>es-ES_joomla_lang_full_3.4.1v1</name>
+	<name>es-ES_joomla_lang_full_3.4.1v2</name>
 	<packagename>es-ES</packagename>
-	<version>3.4.1.1</version>
-	<creationDate>29/03/2015</creationDate>
+	<version>3.4.1.2</version>
+	<creationDate>01/05/2015</creationDate>
 	<author>Spanish Translation Team: Comunidad Joomla </author>
 	<authorEmail>info@comunidadjoomla.org</authorEmail>
 	<authorUrl>http://www.comunidadjoomla.org</authorUrl>
