@@ -2,7 +2,7 @@
 
 /**
  * @copyright      Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * Copyright (C) 2006 - 2014 Ryan Demmer. All rights reserved
+ * Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved
  * @@license@@
  */
 defined('_JEXEC') or die;

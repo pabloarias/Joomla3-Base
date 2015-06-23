@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -46,7 +46,9 @@ class WFFileBrowser extends JObject {
                 'chunk_size' => null,
                 'max_size' => 1024,
                 'validate_mimetype' => 1,
-                'add_random' => 0
+                'add_random' => 0,
+                'total_files' => 0,
+                'total_size' => 0
             ),
             'folder_tree' => 1,
             'list_limit' => 'all',
@@ -96,23 +98,9 @@ class WFFileBrowser extends JObject {
         // Get the Document instance
         $document = WFDocument::getInstance();
 
-        $document->addScript(array(
-            'tree',
-            'upload',
-            'browser',
-            'sort',
-            'filter',
-            'manager'
-                ), 'libraries');
+        $document->addScript(array('manager.full'), 'libraries');
 
-        $document->addScript(array(
-            'plupload.full',
-                ), 'jce.libraries.plupload');
-
-        //$document->addStyleSheet(array('files', 'tree', 'upload'), 'libraries');
         $document->addStyleSheet(array('manager'), 'libraries');
-        // custom stylesheet
-        //$document->addStyleSheet(array('custom'), 'libraries.css');
         // file browser options
         $document->addScriptDeclaration('WFFileBrowser.settings=' . json_encode($this->getSettings()) . ';');
     }
@@ -125,9 +113,9 @@ class WFFileBrowser extends JObject {
         $session = JFactory::getSession();
 
         $view = new WFView(array(
-                    'name' => 'browser',
-                    'layout' => 'file'
-                ));
+            'name' => 'browser',
+            'layout' => 'file'
+        ));
 
         // assign session data
         $view->assign('session', $session);
@@ -345,7 +333,7 @@ class WFFileBrowser extends JObject {
      */
     private function getFiles($relative, $filter = '.') {
         $filesystem = $this->getFileSystem();
-        
+
         $list = $filesystem->getFiles($relative, $filter);
 
         return $list;
@@ -356,7 +344,7 @@ class WFFileBrowser extends JObject {
      * @param string $relative The relative path of the folder
      * @return Folder list array
      */
-    private function getFolders($relative, $filter) {
+    private function getFolders($relative, $filter = '') {
         $filesystem = $this->getFileSystem();
         $list = $filesystem->getFolders($relative, $filter);
 
@@ -372,9 +360,9 @@ class WFFileBrowser extends JObject {
      */
     public function getItems($path, $limit = 25, $start = 0, $filter = '') {
         $filesystem = $this->getFileSystem();
-        
-        $files      = array();
-        $folders    = array();
+
+        $files = array();
+        $folders = array();
 
         clearstatcache();
 
@@ -386,33 +374,33 @@ class WFFileBrowser extends JObject {
         // get source dir from path eg: images/stories/fruit.jpg = images/stories
         $dir = $filesystem->getSourceDir($path);
 
-        $filetypes  = explode(',', $this->getFileTypes('list'));
-        $name       = '';
+        $filetypes = explode(',', $this->getFileTypes('list'));
+        $name = '';
 
-        if ($filter) {            
+        if ($filter) {
             if ($filter{0} == '.') {
                 $ext = WFUtility::makeSafe($filter);
-                
-                for($i = 0; $i < count($filetypes); $i++) {
+
+                for ($i = 0; $i < count($filetypes); $i++) {
                     if (preg_match('#^' . $ext . '#', $filetypes[$i]) === false) {
                         unset($filetypes[$i]);
                     }
-                }                
+                }
             } else {
                 $name = '^(?i)' . WFUtility::makeSafe($filter) . '.*';
             }
         }
 
         // get file list by filter
-        $files = self::getFiles($dir, $name . '\.(?i)(' . implode('|', $filetypes) . ')$');
-        
+        $files = $this->getFiles($dir, $name . '\.(?i)(' . implode('|', $filetypes) . ')$');
+
         if (empty($filter) || $filter{0} != '.') {
             // get folder list
-            $folders = self::getFolders($dir, '^(?i)' . WFUtility::makeSafe($filter) . '.*');
+            $folders = $this->getFolders($dir, '^(?i)' . WFUtility::makeSafe($filter) . '.*');
         }
 
-        $folderArray    = array();
-        $fileArray      = array();
+        $folderArray = array();
+        $fileArray = array();
 
         $items = array_merge($folders, $files);
 
@@ -487,18 +475,18 @@ class WFFileBrowser extends JObject {
      */
     private function escape($string) {
         return preg_replace(array(
-                    '/%2F/',
-                    '/%3F/',
-                    '/%40/',
-                    '/%2A/',
-                    '/%2B/'
-                        ), array(
-                    '/',
-                    '?',
-                    '@',
-                    '*',
-                    '+'
-                        ), rawurlencode($string));
+            '/%2F/',
+            '/%3F/',
+            '/%40/',
+            '/%2A/',
+            '/%2B/'
+                ), array(
+            '/',
+            '?',
+            '@',
+            '*',
+            '+'
+                ), rawurlencode($string));
     }
 
     /**
@@ -855,10 +843,9 @@ class WFFileBrowser extends JObject {
             throw new InvalidArgumentException('INVALID UPLOAD DATA');
         }
 
-        // check for invalid extension in file name
-        if (preg_match('#\.(php|php(3|4|5)|phtml|pl|py|jsp|asp|htm|html|shtml|sh|cgi)\.#i', $file['name'])) {
+        if ($this->validateFileName($file['name']) === false) {
             @unlink($file['tmp_name']);
-
+            
             throw new InvalidArgumentException('INVALID FILE NAME');
         }
 
@@ -938,6 +925,23 @@ class WFFileBrowser extends JObject {
             }
         }
     }
+    
+    /**
+     * Check upload file name for extensions
+     * Adapted from: https://github.com/joomla/joomla-cms/blob/staging/libraries/cms/helper/media.php
+     * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+     * @param type $name
+     * @return boolean
+     */
+    private function validateFileName($name) {        
+        // Media file names should never have executable extensions buried in them.
+        $executable = array(
+            'php', 'js', 'exe', 'phtml', 'java', 'perl', 'py', 'asp', 'dll', 'go', 'ade', 'adp', 'bat', 'chm', 'cmd', 'com', 'cpl', 'hta', 'ins', 'isp',
+            'jse', 'lib', 'mde', 'msc', 'msp', 'mst', 'pif', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh'
+        );
+        
+        return preg_match('#\.(' . implode('|', $executable) . ')\b#', $name);
+    }
 
     /**
      * Upload a file.
@@ -953,6 +957,7 @@ class WFFileBrowser extends JObject {
             JError::raiseError(403, 'Access to this resource is restricted');
         }
 
+        $filesystem = $this->getFileSystem();
         jimport('joomla.filesystem.file');
 
         // get uploaded file
@@ -965,7 +970,7 @@ class WFFileBrowser extends JObject {
 
         // HTTP headers for no cache etc
         //header('Content-type: text/plain; charset=UTF-8');
-        
+
         header('Content-Type: text/json;charset=UTF-8');
         header("Expires: Wed, 4 Apr 1984 13:00:00 GMT");
         header("Last-Modified: " . gmdate("D, d M_Y H:i:s") . " GMT");
@@ -982,13 +987,31 @@ class WFFileBrowser extends JObject {
         $dir = rawurldecode($dir);
         // check destination path
         WFUtility::checkPath($dir);
+
+        $upload = $this->get('upload');
+
+        // Check file number limits        
+        if (!empty($upload['total_files'])) {
+            if ($filesystem->countFiles($dir, true) > $upload['total_files']) {
+                throw new InvalidArgumentException(WFText::_('WF_MANAGER_FILE_LIMIT_ERROR'));
+            }
+        }
+
+        // Check total file size limit        
+        if (!empty($upload['total_size'])) {
+            $size = $filesystem->getTotalSize($dir);
+
+            if (($size / 1024 / 1024) > $upload['total_size']) {
+                throw new InvalidArgumentException(WFText::_('WF_MANAGER_FILE_SIZE_LIMIT_ERROR'));
+            }
+        }
+
         // decode name
         $name = rawurldecode($name);
         // check file name
         WFUtility::checkPath($name);
 
-        // check for invalid extensions
-        if (preg_match('#\.(php|phtml|pl|py|jsp|asp|shtml|sh|cgi)$#i', $name)) {
+        if ($this->validateFileName($name) === false) {
             throw new InvalidArgumentException('INVALID FILE NAME');
         }
 
@@ -1010,8 +1033,6 @@ class WFFileBrowser extends JObject {
             throw new InvalidArgumentException('INVALID FILE NAME');
         }
 
-        $upload = $this->get('upload');
-
         // add random string
         if ($upload['add_random']) {
             $name = $name . '_' . substr(md5(uniqid(rand(), 1)), 0, 5);
@@ -1023,7 +1044,6 @@ class WFFileBrowser extends JObject {
         // create a filesystem result object
         $result = new WFFileSystemResult();
 
-        $filesystem = $this->getFileSystem();
         $complete = false;
         $contentType = JRequest::getVar('CONTENT_TYPE', '', 'SERVER');
 
@@ -1032,7 +1052,11 @@ class WFFileBrowser extends JObject {
             $result = $filesystem->upload('multipart', trim($file['tmp_name']), $dir, $name);
 
             if (!$result->state) {
-                $result->message = WFText::_('WF_MANAGER_UPLOAD_ERROR');
+
+                if (empty($result->message)) {
+                    $result->message = WFText::_('WF_MANAGER_UPLOAD_ERROR');
+                }
+
                 $result->code = 103;
             }
 
@@ -1052,14 +1076,14 @@ class WFFileBrowser extends JObject {
             if ($result instanceof WFFileSystemResult) {
                 if ($result->state === true) {
 
-                    $path       = $result->path;
+                    $path = $result->path;
                     // get root dir eg: JPATH_SITE
-                    $root       = substr($filesystem->getBaseDir(), 0, -(strlen($filesystem->getRootDir())));
-                    
+                    $root = substr($filesystem->getBaseDir(), 0, -(strlen($filesystem->getRootDir())));
+
                     // get relative path
-                    $relative   = substr($path, strlen($root)); 
+                    $relative = substr($path, strlen($root));
                     // clean
-                    $relative   = WFUtility::cleanPath($relative, '/');
+                    $relative = WFUtility::cleanPath($relative, '/');
 
                     $this->setResult($this->fireEvent('onUpload', array($result->path, $relative)));
                     $this->setResult(basename($result->path), 'files');
@@ -1146,7 +1170,7 @@ class WFFileBrowser extends JObject {
         WFUtility::checkPath($destination);
 
         // check for extension in destination name
-        if (preg_match('#\.(php|php(3|4|5)|phtml|pl|py|jsp|asp|htm|html|shtml|sh|cgi)\b#i', $destination)) {
+        if ($this->validateFileName($destination) === false) {
             JError::raiseError(403, 'INVALID FILE NAME');
         }
 
@@ -1357,7 +1381,7 @@ class WFFileBrowser extends JObject {
         if (empty($upload['max_size'])) {
             $upload['max_size'] = 1024;
         }
-        
+
         // get upload size
         $size = intval(preg_replace('/[^0-9]/', '', $upload['max_size'])) . 'kb';
 

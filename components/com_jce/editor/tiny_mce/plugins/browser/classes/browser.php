@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -68,9 +68,6 @@ final class WFFileBrowserPlugin extends WFMediaManager {
 
             $document->addScriptDeclaration('jQuery(document).ready(function($){$.WFBrowserWidget.init(' . json_encode($options) . ');});');
 
-            $document->addStyleSheet(array(
-                'dialog'
-                    ), 'libraries');
         } else {
             $document->addScript(array('browser'), 'plugins');
             $document->addScriptDeclaration('BrowserDialog.settings=' . json_encode($settings) . ';');

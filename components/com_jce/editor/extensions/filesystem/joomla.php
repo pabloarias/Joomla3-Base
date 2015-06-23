@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2014 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -131,26 +131,25 @@ class WFJoomlaFileSystem extends WFFileSystem {
 
         return $FTPOptions['enabled'] == 1;
     }
-
-    /**
-     * Count the number of folders in a given folder
-     * @return integer Total number of folders
-     * @param string $path Absolute path to folder
-     */
-    public function countFolders($path) {
+    
+    public function getTotalSize($path, $recurse = true) {
         jimport('joomla.filesystem.folder');
+        
         $total = 0;
-
+        
         if (strpos($path, $this->getBaseDir()) === false) {
             $path = WFUtility::makePath($this->getBaseDir(), $path);
         }
-
+        
         if (JFolder::exists($path)) {
-            $folders = JFolder::folders($path);
-            return count($folders);
+            $files = JFolder::files($path, '.', $recurse, true, array('.svn', 'CVS', '.DS_Store', '__MACOSX', 'index.html', 'thumbs.db'));
+            
+            foreach($files as $file) {
+                $total += filesize($file);
+            }
         }
-
-        return 0;
+        
+        return $total;
     }
 
     /**
@@ -158,7 +157,7 @@ class WFJoomlaFileSystem extends WFFileSystem {
      * @return integer File total
      * @param string $path Absolute path to folder
      */
-    public function countFiles($path) {
+    public function countFiles($path, $recurse = false) {
         jimport('joomla.filesystem.file');
 
         if (strpos($path, $this->getBaseDir()) === false) {
@@ -166,7 +165,7 @@ class WFJoomlaFileSystem extends WFFileSystem {
         }
 
         if (JFolder::exists($path)) {
-            $files = JFolder::files($path, '.', false, false, array('index.html', 'thumbs.db'));
+            $files = JFolder::files($path, '.', $recurse, false, array('index.html', 'thumbs.db'));
             return count($files);
         }
 
@@ -329,16 +328,6 @@ class WFJoomlaFileSystem extends WFFileSystem {
 
         if (preg_match('#\.(jpg|jpeg|bmp|gif|tiff|png)#i', $file) && $count <= 100) {
             $props = @getimagesize($path);
-
-            /* if (preg_match('#\.(jpg|jpeg|tiff)#i', $file)) {
-              $data = exif_read_data($path, 'IDF0', true, false);
-
-              if ($data !== false) {
-              $idf 	= isset($data['IDF0']) ? $data['IDF0'] : array();
-              $exif 	= isset($data['EXIF']) ? $data['EXIF'] : array();
-              $data 	= array_merge($idf, $exif);
-              }
-              } */
 
             $width = $props[0];
             $height = $props[1];
