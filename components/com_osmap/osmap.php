@@ -25,7 +25,9 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'include.php';
+jimport('legacy.controller.legacy');
+
+require_once __DIR__ . '/include.php';
 
 $controller = JControllerLegacy::getInstance('OSMap');
 $controller->execute(JRequest::getVar('task'));

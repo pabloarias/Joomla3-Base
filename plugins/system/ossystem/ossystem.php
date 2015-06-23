@@ -2,7 +2,7 @@
 /**
  * @package   OSSystem
  * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2014 Alledia.com, All rights reserved
+ * @copyright 2015 Open Source Training, LLC. All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -36,33 +36,6 @@ if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
             parent::__construct($subject, $config);
         }
 
-        /**
-         * This method detects when Joomla is looking for updates and
-         * check if the Joomla CA Roots Certificates file need to be
-         * updated to accept the SSL certificate from our deployment
-         * server.
-         *
-         * @return void
-         */
-        public function onAfterRoute()
-        {
-            $app    = Factory::getApplication();
-            $option = $app->input->getCmd('option');
-            $view   = $app->input->getCmd('view');
-            $task   = $app->input->getCmd('task');
-
-            // Filter the request, to only trigger when the user is looking for an update
-            if ($app->getName() != 'administrator'
-                || $option !== 'com_installer'
-                || !in_array($view, array('install', 'update'))
-                || !in_array($task, array('install.install', 'update.find'))
-            ) {
-                return;
-            }
-
-            OSSystemHelper::checkAndUpdateCARootFile();
-        }
-
         public function onAfterRender()
         {
             $app       = Factory::getApplication();
@@ -78,6 +51,21 @@ if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
                 && !empty($extension)
             ) {
                 OSSystemHelper::addCustomFooterIntoNativeComponentOutput($extension);
+            }
+        }
+
+        /**
+         * This method looks for a backup of cacert.pem file created
+         * by an prior release of this plugin, restoring it if found.
+         *
+         * @return void
+         */
+        public function onAfterInitialise()
+        {
+            $app = Factory::getApplication();
+
+            if ($app->getName() === 'administrator') {
+                OSSystemHelper::revertCARootFileToOriginal();
             }
         }
     }
