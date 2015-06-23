@@ -84,8 +84,9 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::spacer();
 		JToolBarHelper::apply();
 		JToolBarHelper::save();
-		JToolBarHelper::cancel();
 		JToolBarHelper::spacer();
+		JToolBarHelper::custom('savenew', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
+		JToolBarHelper::cancel();
 
 		// $this->_renderDefaultSubmenus('config');
 	}

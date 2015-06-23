@@ -830,7 +830,7 @@ class Mysql extends Base
 	 *
 	 * @return void Updates $this->tables_data
 	 */
-	protected function  get_tables_data()
+	protected function get_tables_data()
 	{
 		Factory::getLog()->log(LogLevel::DEBUG, __CLASS__ . " :: Starting CREATE TABLE and dependency scanning");
 
@@ -1131,7 +1131,7 @@ class Mysql extends Base
 	 *
 	 * @return void Updates $this->tables_data and $this->tables
 	 */
-	protected function  get_tables_data_without_dependencies()
+	protected function get_tables_data_without_dependencies()
 	{
 		Factory::getLog()->log(LogLevel::DEBUG, __CLASS__ . " :: Pushing table data (without dependency tracking)");
 
@@ -1174,7 +1174,7 @@ class Mysql extends Base
 	 *
 	 * @return string The CREATE command, w/out newlines
 	 */
-	protected function  get_create($table_abstract, $table_name, &$type, &$dependencies)
+	protected function get_create($table_abstract, $table_name, &$type, &$dependencies)
 	{
 		$configuration = Factory::getConfiguration();
 		$notracking = $configuration->get('engine.dump.native.nodependencies', 0);

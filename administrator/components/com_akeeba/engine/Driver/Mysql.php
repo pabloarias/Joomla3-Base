@@ -423,6 +423,8 @@ class Mysql extends Base
 	 */
 	public function query()
 	{
+		static $isReconnecting = false;
+
 		if (!is_resource($this->connection))
 		{
 			throw new \RuntimeException($this->errorMsg, $this->errorNum);
@@ -456,8 +458,10 @@ class Mysql extends Base
 		if (!$this->cursor)
 		{
 			// Check if the server was disconnected.
-			if (!$this->connected())
+			if (!$this->connected() && !$isReconnecting)
 			{
+				$isReconnecting = true;
+
 				try
 				{
 					// Attempt to reconnect.
@@ -476,7 +480,10 @@ class Mysql extends Base
 				}
 
 				// Since we were able to reconnect, run the query again.
-				return $this->execute();
+				$result = $this->query();
+				$isReconnecting = false;
+
+				return $result;
 			}
 			// The server was not disconnected.
 			else
@@ -539,7 +546,19 @@ class Mysql extends Base
 	 */
 	public function setUTF()
 	{
-		return mysql_set_charset('utf8', $this->connection);
+		$result = false;
+
+		if ($this->supportsUtf8mb4())
+		{
+			$result = @mysql_set_charset('utf8mb4', $this->connection);
+		}
+
+		if (!$result)
+		{
+			$result = @mysql_set_charset('utf8', $this->connection);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -913,5 +932,30 @@ class Mysql extends Base
 		}
 
 		return $table_sql;
+	}
+
+	/**
+	 * Does this database server support UTF-8 four byte (utf8mb4) collation?
+	 *
+	 * libmysql supports utf8mb4 since 5.5.3 (same version as the MySQL server). mysqlnd supports utf8mb4 since 5.0.9.
+	 *
+	 * This method's code is based on WordPress' wpdb::has_cap() method
+	 *
+	 * @return  bool
+	 */
+	protected function supportsUtf8mb4()
+	{
+		$client_version = mysql_get_client_info();
+
+		if (strpos($client_version, 'mysqlnd') !== false)
+		{
+			$client_version = preg_replace('/^\D+([\d.]+).*/', '$1', $client_version);
+
+			return version_compare($client_version, '5.0.9', '>=');
+		}
+		else
+		{
+			return version_compare($client_version, '5.5.3', '>=');
+		}
 	}
 }

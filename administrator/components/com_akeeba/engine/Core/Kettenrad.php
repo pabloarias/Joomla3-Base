@@ -53,6 +53,14 @@ class Kettenrad extends Part
 	private $backup_id = '';
 
 	/**
+	 * Set to true when there are warnings available when getStatusArray() is called. This is used at the end of the
+	 * backup to send a different push message depending on whether the backup completed with or without warnings.
+	 *
+	 * @var  bool
+	 */
+	private $warnings_issued = false;
+
+	/**
 	 * Returns the unique Backup ID
 	 *
 	 * @return string
@@ -146,6 +154,14 @@ class Kettenrad extends Part
 		// Preparation is over
 		$this->array_cache = null;
 		$this->setState('prepared');
+
+		// Send a push message to mark the start of backup
+		$platform    = Platform::getInstance();
+		$timeStamp = date($platform->translate('DATE_FORMAT_LC2'));
+		$pushSubject = sprintf($platform->translate('COM_AKEEBA_PUSH_STARTBACKUP_SUBJECT'), $platform->get_site_name(), $platform->get_host());
+		$pushDetails = sprintf($platform->translate('COM_AKEEBA_PUSH_STARTBACKUP_BODY'), $platform->get_site_name(), $platform->get_host(), $timeStamp, $this->getLogTag());
+		Factory::getPush()->message($pushSubject, $pushDetails);
+
 		//restore_error_handler();
 	}
 
@@ -385,6 +401,16 @@ class Kettenrad extends Part
 		// All done.
 		Factory::getLog()->log(LogLevel::DEBUG, "Kettenrad :: Just finished");
 		$this->setState('finished');
+
+		// Send a push message to mark the end of backup
+		$pushSubjectKey = $this->warnings_issued ? 'COM_AKEEBA_PUSH_ENDBACKUP_WARNINGS_SUBJECT' : 'COM_AKEEBA_PUSH_ENDBACKUP_SUCCESS_SUBJECT';
+		$pushBodyKey = $this->warnings_issued ? 'COM_AKEEBA_PUSH_ENDBACKUP_WARNINGS_BODY' : 'COM_AKEEBA_PUSH_ENDBACKUP_SUCCESS_BODY';
+		$platform    = Platform::getInstance();
+		$timeStamp = date($platform->translate('DATE_FORMAT_LC2'));
+		$pushSubject = sprintf($platform->translate($pushSubjectKey), $platform->get_site_name(), $platform->get_host());
+		$pushDetails = sprintf($platform->translate($pushBodyKey), $platform->get_site_name(), $platform->get_host(), $timeStamp);
+		Factory::getPush()->message($pushSubject, $pushDetails);
+
 		//restore_error_handler();
 	}
 
@@ -399,6 +425,14 @@ class Kettenrad extends Part
 		{
 			// Get the default table
 			$array = $this->_makeReturnTable();
+
+			// Did we have warnings?
+			$warnings = $this->getWarnings();
+
+			if (count($warnings))
+			{
+				$this->warnings_issued = true;
+			}
 
 			// Get the current step number
 			$stepCounter = Factory::getConfiguration()->get('volatile.step_counter', 0);

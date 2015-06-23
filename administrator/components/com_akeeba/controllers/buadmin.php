@@ -424,7 +424,8 @@ class AkeebaControllerBuadmin extends AkeebaControllerDefault
 		$statistic['description']	 = $description;
 		$statistic['comment']		 = $comment;
 
-		Platform::getInstance()->set_or_update_statistics($this->input->get('id', 0, 'int'), $statistic, $self);
+		$dummy = null;
+		Platform::getInstance()->set_or_update_statistics($this->input->get('id', 0, 'int'), $statistic, $dummy);
 
 		if (!$this->getError())
 		{

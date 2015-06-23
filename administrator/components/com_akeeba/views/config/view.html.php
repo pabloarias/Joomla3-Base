@@ -35,7 +35,7 @@ class AkeebaViewConfig extends F0FViewHtml
 			->setId($profileid)
 			->getItem()
 			->description;
-		$this->profilename = $profileName;
+		$this->profilename = $this->escape($profileName);
 
 		// Get the root URI for media files
 		$this->mediadir = AkeebaHelperEscape::escapeJS($media_folder.'theme/');

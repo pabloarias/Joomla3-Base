@@ -475,7 +475,7 @@ class Finalization extends Part
 		{
 			Factory::getLog()->log(LogLevel::WARNING, 'Failed to process file ' . $filename);
 			Factory::getLog()->log(LogLevel::WARNING, 'Error received from the post-processing engine:');
-			Factory::getLog()->log(LogLevel::WARNING, implode("\n", $this->getWarnings()));
+            Factory::getLog()->log(LogLevel::WARNING, implode("\n", array_merge($this->getWarnings(), $this->getErrors())));
 			$this->setWarning('Failed to process file ' . $filename);
 		}
 		elseif ($result === true)

@@ -587,6 +587,8 @@ class Sqlsrv extends Base
 	 */
 	public function query()
 	{
+		static $isReconnecting = false;
+
 		$this->open();
 
 		if (!is_resource($this->connection))
@@ -632,8 +634,10 @@ class Sqlsrv extends Base
 		if (!$this->cursor)
 		{
 			// Check if the server was disconnected.
-			if (!$this->connected())
+			if (!$this->connected() && !$isReconnecting)
 			{
+				$isReconnecting = true;
+
 				try
 				{
 					// Attempt to reconnect.
@@ -653,7 +657,10 @@ class Sqlsrv extends Base
 				}
 
 				// Since we were able to reconnect, run the query again.
-				return $this->execute();
+				$result = $this->query();
+				$isReconnecting = false;
+
+				return $result;
 			}
 			// The server was not disconnected.
 			else

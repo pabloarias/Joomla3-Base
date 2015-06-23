@@ -44,7 +44,7 @@ class AkeebaViewProfiles extends F0FViewHtml
 		// Get profile name
 		$model->setId($profileid);
 		$profile_data = $model->getProfile();
-		$this->profilename = $profile_data->description;
+		$this->profilename = $this->escape($profile_data->description);
 
 		// Get Sort By fields
 		$this->sortFields = array(

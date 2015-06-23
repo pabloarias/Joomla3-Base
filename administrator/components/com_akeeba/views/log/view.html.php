@@ -40,7 +40,7 @@ class AkeebaViewLog extends F0FViewHtml
 		$pmodel = F0FModel::getAnInstance('Profiles', 'AkeebaModel');
 		$pmodel->setId($profileid);
 		$profile_data = $pmodel->getItem();
-		$this->profilename = $profile_data->description;
+		$this->profilename = $this->escape($profile_data->description);
 
 		return true;
 	}

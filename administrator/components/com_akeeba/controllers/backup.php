@@ -94,6 +94,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 
 	public function ajax()
 	{
+		/** @var AkeebaModelBackups $model */
 		$model = $this->getThisModel();
 
 		$model->setState('profile', $this->input->get('profileid', -10, 'int'));
@@ -104,6 +105,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 		$model->setState('angiekey', $this->input->get('angiekey', '', 'raw', 2));
 		$model->setState('backupid', $this->input->get('backupid', null, 'string', 2));
 		$model->setState('tag', $this->input->get('tag', 'backend', 'cmd'));
+		$model->setState('errorMessage', $this->input->getString('errorMessage', ''));
 
 		// System Restore Point backup state variables
 		$model->setState('type', strtolower($this->input->get('type', '', 'cmd')));

@@ -90,6 +90,22 @@ JHtml::_('behavior.modal');
 		<?php echo JText::_('CONFIG_WHERE_ARE_THE_FILTERS'); ?>
 	</div>
 </div>
+
+<div class="well">
+	<h4>
+		<?php echo JText::_('PROFILE_LABEL_DESCRIPTION') ?>
+	</h4>
+	<div class="control-group">
+		<label class="control-label" for="profilename" rel="popover"
+			data-original-title="<?php echo JText::_('PROFILE_LABEL_DESCRIPTION') ?>"
+			data-content="<?php echo JText::_('PROFILE_LABEL_DESCRIPTION_TOOLTIP') ?>">
+			<?php echo JText::_('PROFILE_LABEL_DESCRIPTION') ?>
+		</label>
+		<div class="controls">
+			<input type="text" name="profilename" id="profilename" value="<?php echo $this->escape($this->profilename); ?>" />
+		</div>
+	</div>
+</div>
 	
 <input type="hidden" name="option" value="com_akeeba" />
 <input type="hidden" name="view" value="config" />

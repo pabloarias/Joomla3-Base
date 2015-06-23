@@ -279,6 +279,8 @@ class Mysqli extends Mysql
 	 */
 	public function query()
 	{
+		static $isReconnecting = false;
+
 		$this->open();
 
 		if (!is_object($this->connection))
@@ -317,8 +319,10 @@ class Mysqli extends Mysql
 			$this->errorMsg = (string)mysqli_error($this->connection) . ' SQL=' . $query;
 
 			// Check if the server was disconnected.
-			if (!$this->connected())
+			if (!$this->connected() && !$isReconnecting)
 			{
+				$isReconnecting = true;
+
 				try
 				{
 					// Attempt to reconnect.
@@ -332,7 +336,10 @@ class Mysqli extends Mysql
 				}
 
 				// Since we were able to reconnect, run the query again.
-				return $this->execute();
+				$result = $this->query();
+				$isReconnecting = false;
+
+				return $result;
 			}
 			// The server was not disconnected.
 			else
@@ -373,7 +380,20 @@ class Mysqli extends Mysql
 	 */
 	public function setUTF()
 	{
-		return mysqli_set_charset($this->connection, 'utf8');
+		$result = false;
+
+		if ($this->supportsUtf8mb4())
+		{
+			$result = @mysqli_set_charset($this->connection, 'utf8mb4');
+		}
+
+		if (!$result)
+		{
+			$result = @mysqli_set_charset($this->connection, 'utf8');
+		}
+
+		return $result;
+
 	}
 
 	/**
@@ -423,5 +443,30 @@ class Mysqli extends Mysql
 	public function freeResult($cursor = null)
 	{
 		mysqli_free_result($cursor ? $cursor : $this->cursor);
+	}
+
+	/**
+	 * Does this database server support UTF-8 four byte (utf8mb4) collation?
+	 *
+	 * libmysql supports utf8mb4 since 5.5.3 (same version as the MySQL server). mysqlnd supports utf8mb4 since 5.0.9.
+	 *
+	 * This method's code is based on WordPress' wpdb::has_cap() method
+	 *
+	 * @return  bool
+	 */
+	public function supportsUtf8mb4()
+	{
+		$client_version = mysqli_get_client_info();
+
+		if (strpos($client_version, 'mysqlnd') !== false)
+		{
+			$client_version = preg_replace('/^\D+([\d.]+).*/', '$1', $client_version);
+
+			return version_compare($client_version, '5.0.9', '>=');
+		}
+		else
+		{
+			return version_compare($client_version, '5.5.3', '>=');
+		}
 	}
 }

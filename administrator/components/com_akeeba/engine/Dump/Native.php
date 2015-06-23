@@ -52,6 +52,11 @@ class Native extends Part
 			$database = array_key_exists('database', $this->_parametersArray) ? $this->_parametersArray['database'] : '';
 			$prefix = array_key_exists('prefix', $this->_parametersArray) ? $this->_parametersArray['prefix'] : '';
 
+			if (($driver == 'mysql') && !function_exists('mysql_connect'))
+			{
+				$driver = 'mysqli';
+			}
+
 			$options = array(
 				'driver'   => $driver,
 				'host'     => $host . ($port != '' ? ':' . $port : ''),

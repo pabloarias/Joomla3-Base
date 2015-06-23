@@ -43,7 +43,7 @@ class Excludefolders extends Base
 		// We take advantage of the filter class magic to inject our custom filters
 		$this->filter_data[$root] = array(
 			'awstats',
-			'cgi-bin'
+			'cgi-bin',
 		);
 
 		parent::__construct();

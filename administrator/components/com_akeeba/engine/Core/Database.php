@@ -22,6 +22,8 @@ use Akeeba\Engine\Platform;
  */
 class Database extends Object
 {
+    private static $instances = array();
+
 	/**
 	 * Returns a database connection object. It caches the created objects for future use.
 	 *
@@ -31,29 +33,27 @@ class Database extends Object
 	 */
 	public static function &getDatabase($options, $unset = false)
 	{
-		static $instances;
-
-		if (!isset($instances))
+		if (!is_array(self::$instances))
 		{
-			$instances = array();
+            self::$instances = array();
 		}
 
 		$signature = serialize($options);
 
 		if ($unset)
 		{
-			if (!empty($instances[$signature]))
+			if (!empty(self::$instances[$signature]))
 			{
-				$db = $instances[$signature];
+				$db = self::$instances[$signature];
 				$db = null;
-				unset($instances[$signature]);
+				unset(self::$instances[$signature]);
 			}
 			$null = null;
 
 			return $null;
 		}
 
-		if (empty($instances[$signature]))
+		if (empty(self::$instances[$signature]))
 		{
 			$driver = array_key_exists('driver', $options) ? $options['driver'] : '';
 			$select = array_key_exists('select', $options) ? $options['select'] : true;
@@ -83,14 +83,49 @@ class Database extends Object
 				}
 			}
 
-			$instances[$signature] = new $driver($options);
+            self::$instances[$signature] = new $driver($options);
 		}
 
-		return $instances[$signature];
+		return self::$instances[$signature];
 	}
 
 	public static function unsetDatabase($options)
 	{
 		self::getDatabase($options, true);
 	}
+
+    /**
+     * Forces a specific instance. This is supposed to be used only in Unit Tests.
+     *
+     * @param $key
+     * @param $instance
+     *
+     * @throws \Exception
+     */
+    public static function forceInstance($key, $instance)
+    {
+        if (!interface_exists('PHPUnit_Exception', false))
+        {
+            $method = __METHOD__;
+            throw new \Exception("You can only use $method in Unit Tests", 500);
+        }
+
+        self::$instances[$key] = $instance;
+    }
+
+    /**
+     * Reset all the instances. This is supposed to be used only in Unit Tests.
+     *
+     * @throws \Exception
+     */
+    public static function nukeInstances()
+    {
+        if (!interface_exists('PHPUnit_Exception', false))
+        {
+            $method = __METHOD__;
+            throw new \Exception("You can only use $method in Unit Tests", 500);
+        }
+
+        self::$instances = array();
+    }
 }

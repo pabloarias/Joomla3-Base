@@ -32,6 +32,7 @@ class AkeebaModelBackups extends F0FModel
 
 		switch ($ajaxTask)
 		{
+			// Start a new backup
 			case 'start':
 				// Description is passed through a strict filter which removes HTML
 				$description = $this->getState('description');
@@ -95,6 +96,7 @@ class AkeebaModelBackups extends F0FModel
 				Factory::saveState($tag, $backupId);
 				break;
 
+			// Step through a backup
 			case 'step':
 				Factory::loadState($tag, $backupId);
 				$kettenrad = Factory::getKettenrad();
@@ -115,6 +117,17 @@ class AkeebaModelBackups extends F0FModel
 
 					Factory::getFactoryStorage()->reset($tempVarsTag);
 				}
+				break;
+
+			// Send a push notification for backup failure
+			case 'pushFail':
+				Factory::loadState($tag, $backupId);
+				$errorMessage = $this->getState('errorMessage');
+				$platform    = Platform::getInstance();
+				$pushSubject = sprintf($platform->translate('COM_AKEEBA_PUSH_ENDBACKUP_FAIL_SUBJECT'), $platform->get_site_name(), $platform->get_host());
+				$key = empty($errorMessage) ? 'COM_AKEEBA_PUSH_ENDBACKUP_FAIL_BODY' : 'COM_AKEEBA_PUSH_ENDBACKUP_FAIL_BODY_WITH_MESSAGE';
+				$pushDetails = sprintf($platform->translate($key), $platform->get_site_name(), $platform->get_host(), $errorMessage);
+				Factory::getPush()->message($pushSubject, $pushDetails);
 				break;
 
 			default:

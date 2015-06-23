@@ -21,6 +21,9 @@ if(typeof(akeeba.jQuery) == 'undefined') {
 /** @var Root URI for theme files */
 var akeeba_ui_theme_root = "";
 
+/** @var URL for the icon used in notifications */
+var akeeba_notification_icon_url = "";
+
 /** @var The AJAX proxy URL */
 var akeeba_ajax_url = "";
 
@@ -1037,6 +1040,52 @@ function render_backup_steps(active_step)
 	})(akeeba.jQuery);
 }
 
+/**
+ * Checks if the user has granted us the permission to display notification. If no decision is made, ask for permission.
+ */
+function akeebaBackup_notifications_askPermission()
+{
+    if (window.Notification == undefined)
+    {
+        return;
+    }
+
+    if (window.Notification.permission == 'default')
+    {
+        window.Notification.requestPermission();
+    }
+}
+
+function akeebaBackup_notifications_notify(title, body)
+{
+    if (window.Notification == undefined)
+    {
+        return;
+    }
+
+    if (window.Notification.permission != 'granted')
+    {
+        return;
+    }
+
+    if (body == undefined)
+    {
+        body = '';
+    }
+
+    var n = new window.Notification(title, {
+        'body': body,
+        'icon': akeeba_notification_icon_url
+    });
+
+    setTimeout(function(notification) {
+        return function()
+        {
+            notification.close();
+        }
+    }(n), 5000);
+}
+
 function backup_start()
 {
 	(function($){
@@ -1087,6 +1136,9 @@ function backup_start()
 			});
 		} catch (e)
 		{};
+
+        var rightNow = new Date();
+        akeebaBackup_notifications_notify(akeeba_translations['UI-BACKUPSTARTED'] + ' ' + rightNow.toLocaleString());
 
 		// Initialize steps
 		render_backup_steps('');
@@ -1150,6 +1202,7 @@ function backup_step(data)
 				var newDiv = $(document.createElement('div'))
 					.html(warning)
 					.appendTo( $('#warnings-list') );
+                akeebaBackup_notifications_notify(akeeba_translations['UI-BACKUPWARNING'], warning);
 			});
 			if( $('#backup-warnings-panel').is(":hidden") )
 			{
@@ -1219,6 +1272,9 @@ function backup_error(message)
 
 		// Make sure the timer is stopped
 		akeeba_autoresume_try++;
+        var resumeNotificationMessage = akeeba_translations['UI-BACKUPHALT_DESC'];
+        var resumeNotificationMessageReplaced = resumeNotificationMessage.replace('%d', akeeba_autoresume_timeout.toFixed(0))
+        akeebaBackup_notifications_notify(akeeba_translations['UI-BACKUPHALT'], resumeNotificationMessageReplaced);
 		reset_retry_timeout();
 
 		// Hide progress and warnings
@@ -1264,6 +1320,9 @@ function akeeba_resume_backup()
 			$('#backup-warnings-panel').show("fast");
 		}
 
+        var rightNow = new Date();
+        akeebaBackup_notifications_notify(akeeba_translations['UI-BACKUPRESUME'] + ' ' + rightNow.toLocaleString());
+
 		// Restart the backup
 		set_ajax_timer();
 	})(akeeba.jQuery);
@@ -1289,14 +1348,27 @@ function backup_die(message)
 		$('#ab-viewlog-error').attr('href', viewLogUrl);
 
 		// Setup and show error pane
+        akeebaBackup_notifications_notify(akeeba_translations['UI-BACKUPFAILED'], message);
 		$('#backup-error-message').html(message);
 		$('#error-panel').show();
+
+        // Try to send a push notification for failed backups
+        doAjax({
+            // Data to send to AJAX
+            'ajax'	        : 'pushFail',
+            'tag'	        : akeeba_backup_tag,
+            'backupid'      : akeeba_backup_id,
+            'errorMessage'  : message
+        }, function(msg){});
 	})(akeeba.jQuery);
 }
 
 function backup_complete()
 {
 	(function($){
+        var rightNow = new Date();
+        akeebaBackup_notifications_notify(akeeba_translations['UI-BACKUPFINISHED'] + ' ' + rightNow.toLocaleString());
+
 		// Make sure the timer is stopped
 		reset_timeout_bar();
 
@@ -2483,4 +2555,6 @@ akeeba.jQuery(document).ready(function($){
 	   function(){$(this).addClass('ui-state-hover');},
 	   function(){$(this).removeClass('ui-state-hover');}
 	);
+    // Ask for notification permissions
+    akeebaBackup_notifications_askPermission();
 });

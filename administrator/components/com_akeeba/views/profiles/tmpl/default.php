@@ -147,7 +147,7 @@ $token = JFactory::getSession()->getFormToken();
 				</td>
 				<td>
 					<a href="<?php echo $link; ?>">
-						<?php echo $profile->description; ?>
+						<?php echo $this->escape($profile->description); ?>
 					</a>
 				</td>
 			</tr>

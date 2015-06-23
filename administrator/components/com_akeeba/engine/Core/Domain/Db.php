@@ -301,6 +301,9 @@ ENDDEF;
 			}
 			else
 			{
+				// We have to escape the password
+				$escapedPassword = addcslashes($definition['password'], "\"\\\n\r");
+
 				$this->databases_ini .= <<<ENDDEF
 [$section]
 dbtype = "$type"
@@ -309,7 +312,7 @@ dbname = "{$definition['database']}"
 sqlfile = "{$definition['dumpFile']}"
 dbhost = "{$definition['host']}"
 dbuser = "{$definition['username']}"
-dbpass = "{$definition['password']}"
+dbpass = "$escapedPassword"
 prefix = "{$definition['prefix']}"
 parts = "{$definition['parts']}"
 

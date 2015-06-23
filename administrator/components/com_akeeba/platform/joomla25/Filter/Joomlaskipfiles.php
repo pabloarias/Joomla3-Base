@@ -36,6 +36,7 @@ class Joomlaskipfiles extends Base
 		$jreg = \JFactory::getConfig();
 
 		$tmpdir = $jreg->get('tmp_path');
+		$logsdir = $jreg->get('log_path');
 
 		// Get the site's root
 		if ($configuration->get('akeeba.platform.override_root', 0))
@@ -50,10 +51,18 @@ class Joomlaskipfiles extends Base
 		$this->filter_data[$root] = array(
 			// Output & temp directory of the component
 			$this->treatDirectory($configuration->get('akeeba.basic.output_directory')),
+
 			// Joomla! temporary directory
 			$this->treatDirectory($tmpdir),
+
+			// Joomla! logs directory
+			$this->treatDirectory($logsdir),
+
 			// default temp directory
+			$this->treatDirectory(JPATH_SITE . '/tmp'),
 			'tmp',
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/tmp'),
+
 			// Joomla! front- and back-end cache, as reported by Joomla!
 			$this->treatDirectory(JPATH_CACHE),
 			$this->treatDirectory(JPATH_ADMINISTRATOR . '/cache'),
@@ -61,21 +70,36 @@ class Joomlaskipfiles extends Base
 			// cache directories fallback
 			'cache',
 			'administrator/cache',
-			// This is not needed except on sites running SVN or beta releases
-			$this->treatDirectory(JPATH_ROOT . '/installation'),
-			// ...and the fallback
-			'installation',
 			// Joomla! front- and back-end cache, as calculated by us (redundancy, for funky server setups)
 			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/cache'),
 			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/administrator/cache'),
+
+			// This is not needed except on sites running SVN or beta releases
+			$this->treatDirectory(JPATH_ROOT . '/installation'),
+			// ...and the fallbacks
+			'installation',
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/installation'),
+
 			// Default backup output (many people change it, forget to remove old backup archives and they end up backing up old backups)
+			$this->treatDirectory(JPATH_ADMINISTRATOR . '/components/com_akeeba/backup'),
 			'administrator/components/com_akeeba/backup',
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/administrator/components/com_akeeba/backup'),
+
 			// MyBlog's cache
-			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/components/libraries/cmslib/cache'),
-			// ...and fallback
+			$this->treatDirectory(JPATH_SITE . '/components/libraries/cmslib/cache'),
+			// ...and fallbacks
 			'components/libraries/cmslib/cache',
-			// The logs directory
-			'logs'
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/components/libraries/cmslib/cache'),
+
+			// Used by Plesk to store its logs. It's in the public root, owned by root and read-only. Yipee!
+			$this->treatDirectory(JPATH_ROOT . '/logs'),
+			'logs',
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/logs'),
+
+			// Some developers hardcode this path for their log files. I guess they never heard of Joomla!'s Global Configuration?
+			$this->treatDirectory(JPATH_ROOT . '/log'),
+			'log',
+			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/log'),
 		);
 
 		parent::__construct();

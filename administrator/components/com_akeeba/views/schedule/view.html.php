@@ -28,7 +28,7 @@ class AkeebaViewSchedule extends F0FViewHtml
 			->setId($profileid)
 			->getItem()
 			->description;
-		$this->profilename = $profileName;
+		$this->profilename = $this->escape($profileName);
 
 		// Get the CRON paths
 		$this->croninfo  = $this->getModel()->getPaths();

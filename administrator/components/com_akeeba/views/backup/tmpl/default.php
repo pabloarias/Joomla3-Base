@@ -61,8 +61,18 @@ akeeba.jQuery(document).ready(function($){
 	akeeba_comment_editor_save = function() {
 	}
 
+	// Push the icon URL
+	akeeba_notification_icon_url = '<?php echo JUri::base() . '../media/com_akeeba/icons/logo-48.png' ?>'
+
 	// Push some translations
 	akeeba_translations['UI-LASTRESPONSE'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('BACKUP_TEXT_LASTRESPONSE')) ?>';
+	akeeba_translations['UI-BACKUPSTARTED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPSTARTED')) ?>';
+	akeeba_translations['UI-BACKUPFINISHED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPFINISHED')) ?>';
+	akeeba_translations['UI-BACKUPHALT'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPHALT')) ?>';
+	akeeba_translations['UI-BACKUPRESUME'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPRESUME')) ?>';
+	akeeba_translations['UI-BACKUPHALT_DESC'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPHALT_DESC')) ?>';
+	akeeba_translations['UI-BACKUPFAILED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPFAILED')) ?>';
+	akeeba_translations['UI-BACKUPWARNING'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPWARNING')) ?>';
 
 	//Parse the domain keys
 	akeeba_domains = JSON.parse("<?php echo $this->domains ?>");

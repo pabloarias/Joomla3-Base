@@ -49,7 +49,7 @@ class Logger implements LoggerInterface
 	/**
 	 * Public constructor. Initialises the properties with the parameters from the backup profile and platform.
 	 */
-	function __construct()
+	public function __construct()
 	{
 		$this->initialiseWithProfileParameters();
 	}

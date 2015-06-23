@@ -95,7 +95,7 @@ class AkeebaViewDbef extends F0FViewHtml
 		$model = new AkeebaModelProfiles();
 		$model->setId($profileid);
 		$profile_data = $model->getProfile();
-		$this->profilename = $profile_data->description;
+		$this->profilename = $this->escape($profile_data->description);
 
 		return true;
 	}

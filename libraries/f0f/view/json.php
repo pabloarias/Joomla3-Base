@@ -106,7 +106,7 @@ class F0FViewJson extends F0FViewHtml
 			}
 
 			// JSONP support
-			$callback = $this->input->getVar('callback', null);
+			$callback = $this->input->get('callback', null, 'raw');
 
 			if (!empty($callback))
 			{

@@ -44,6 +44,24 @@ class AkeebaControllerConfig extends AkeebaControllerDefault
 		$model->setState('engineconfig', $data);
 		$model->saveEngineConfig();
 
+		// Finally, save the profile description if it has changed
+		$profileid = \Akeeba\Engine\Platform::getInstance()->get_active_profile();
+
+		// Get profile name
+		$profileRecord = F0FModel::getTmpInstance('Profiles','AkeebaModel')
+								 ->setId($profileid)
+								 ->getItem();
+		$oldProfileName = $profileRecord->description;
+		$profileName = $this->input->getString('profilename', null);
+		$profileName = trim($profileName);
+
+		if (!empty($profileName) && ($profileName != $oldProfileName))
+		{
+			$profileRecord->save(array(
+				'description' => $profileName
+			));
+		}
+
 		$this->setRedirect(JUri::base() . 'index.php?option=com_akeeba&view=config', JText::_('CONFIG_SAVE_OK'));
 	}
 
@@ -55,6 +73,38 @@ class AkeebaControllerConfig extends AkeebaControllerDefault
 	{
 		$this->apply();
 		$this->setRedirect(JUri::base() . 'index.php?option=com_akeeba', JText::_('CONFIG_SAVE_OK'));
+	}
+
+	/**
+	 * Handle the save task which saves settings, creates a new backup profile, activates it and proceed to the
+	 * configuration page once more.
+	 *
+	 */
+	public function savenew()
+	{
+		// Save the current profile
+		$this->apply();
+
+		// Create a new profile
+		/** @var AkeebaModelProfiles $profileModel */
+		$profileModel = F0FModel::getTmpInstance('Profiles', 'AkeebaModel');
+		/** @var AkeebaTableProfile $profileTable */
+		$profileTable = $profileModel->getTable();
+		$profileid = \Akeeba\Engine\Platform::getInstance()->get_active_profile();
+		$profileTable->load($profileid);
+		$profileTable->id = null;
+		$profileTable->save(array(
+			'id' => 0,
+			'description' => JText::_('COM_AKEEBA_CONFIG_SAVENEW_DEFAULT_PROFILE_NAME')
+		));
+		$newProfileId = (int)($profileTable->getId());
+
+		// Activate and edit the new profile
+		$returnUrl = base64_encode($this->redirect);
+		$token = JFactory::getSession()->getFormToken();
+		$url = JUri::base() . 'index.php?option=com_akeeba&task=switchprofile&profileid=' . $newProfileId .
+			'&returnurl=' . $returnUrl . '&' . $token . '=1';
+		$this->setRedirect($url);
 	}
 
 	/**

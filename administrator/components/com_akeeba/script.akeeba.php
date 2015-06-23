@@ -734,6 +734,23 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			return;
 		}
 
+		$query = $db->getQuery(true)
+					->select('manifest_cache')
+					->from($db->qn('#__extensions'))
+					->where($db->qn('type') . ' = ' . $db->q('component'))
+					->where($db->qn('element') . ' = ' . $db->q('com_poweradmin'))
+					->where($db->qn('enabled') . ' = ' . $db->q('1'));
+		$paramsJson = $db->setQuery($query)->loadResult();
+		$jsnPAManifest = new JRegistry();
+		$jsnPAManifest->loadString($paramsJson, 'JSON');
+		$version = $jsnPAManifest->get('version', '0.0.0');
+
+		if (version_compare($version, '2.1.2', 'ge'))
+		{
+			return;
+		}
+
+
 		echo <<< HTML
 <div class="well" style="margin: 2em 0;">
 <h1 style="font-size: 32pt; line-height: 120%; color: red; margin-bottom: 1em">WARNING: Menu items for {$this->componentName} might not be displayed on your site.</h1>

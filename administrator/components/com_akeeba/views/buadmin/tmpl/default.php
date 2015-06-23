@@ -404,7 +404,7 @@ ENDHTML;
 
 				if (isset($this->profiles[$record['profile_id']]))
 				{
-					$profileName = $this->profiles[$record['profile_id']]->description;
+					$profileName = $this->escape($this->profiles[$record['profile_id']]->description);
 				}
 				?>
 				<span class="akeebaCommentPopover" rel="popover" title="<?php echo JText::_('STATS_LABEL_PROFILEID') . ' ' . $record['profile_id'] ?>" data-content="<?php echo $this->escape($profileName) ?>">

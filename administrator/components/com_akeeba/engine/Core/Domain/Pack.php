@@ -1059,31 +1059,65 @@ ENDVCONTENT;
 		$volatileTotalSize += (int)@filesize($filename);
 		$configuration->set('volatile.engine.archiver.totalsize', $volatileTotalSize);
 
+        $timer     = Factory::getTimer();
+        $startTime = $timer->getRunningTime();
 		$post_proc = Factory::getPostprocEngine();
-		$result = $post_proc->processPart($filename);
+		$result    = $post_proc->processPart($filename);
 		$this->propagateFromObject($post_proc);
 
 		if ($result === false)
 		{
+            Factory::getLog()->log(LogLevel::WARNING, 'Failed to process file ' . $filename);
+            Factory::getLog()->log(LogLevel::WARNING, 'Error received from the post-processing engine:');
+            Factory::getLog()->log(LogLevel::WARNING, implode("\n", array_merge($this->getWarnings(), $this->getErrors())));
 			$this->setWarning('Failed to process file ' . basename($filename));
 		}
-		else
+		elseif($result === true)
 		{
 			Factory::getLog()->log(LogLevel::INFO, 'Successfully processed file ' . basename($filename));
 		}
+        else
+        {
+            // More work required
+            Factory::getLog()->log(LogLevel::INFO, 'More post-processing steps required for file ' . $filename);
+            $configuration->set('volatile.postproc.filename', $filename);
+
+            // Let's push back the file into the archiver stack
+            array_unshift($archiver->finishedPart, $filename);
+
+            // Do we need to break the step?
+            $endTime  = $timer->getRunningTime();
+            $stepTime = $endTime - $startTime;
+            $timeLeft = $timer->getTimeLeft();
+
+            if ($timeLeft < $stepTime)
+            {
+                // We predict that running yet another step would cause a timeout
+                $configuration->set('volatile.breakflag', true);
+            }
+            else
+            {
+                // We have enough time to run yet another step
+                $configuration->set('volatile.breakflag', false);
+            }
+        }
 
 		// Should we delete the file afterwards?
 		if (
 			$configuration->get('engine.postproc.common.delete_after', false)
 			&& $post_proc->allow_deletes
-			&& ($result !== false)
+			&& ($result === true)
 		)
 		{
 			Factory::getLog()->log(LogLevel::DEBUG, 'Deleting already processed file ' . basename($filename));
 			Platform::getInstance()->unlink($filename);
 		}
+        else
+        {
+            Factory::getLog()->log(LogLevel::DEBUG, 'Not removing processed file ' . $filename);
+        }
 
-		if ($post_proc->break_after && ($result !== false))
+		if ($post_proc->break_after && ($result === true))
 		{
 			$configuration->set('volatile.breakflag', true);
 

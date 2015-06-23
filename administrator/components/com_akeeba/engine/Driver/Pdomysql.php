@@ -29,7 +29,7 @@ class Pdomysql extends Mysql
 	protected $cursor;
 
 	/** @var string Connection character set */
-	protected $charset = 'UTF8';
+	protected $charset = 'utf8mb4';
 
 	/** @var array Driver options for PDO */
 	protected $driverOptions = array();
@@ -60,7 +60,7 @@ class Pdomysql extends Mysql
 		$database = array_key_exists('database', $options) ? $options['database'] : '';
 		$prefix = array_key_exists('prefix', $options) ? $options['prefix'] : '';
 		$select = array_key_exists('select', $options) ? $options['select'] : true;
-		$charset = array_key_exists('charset', $options) ? $options['charset'] : 'UTF8';
+		$charset = array_key_exists('charset', $options) ? $options['charset'] : 'utf8mb4';
 		$driverOptions = array_key_exists('driverOptions', $options) ? $options['driverOptions'] : array();
 		$connection = array_key_exists('connection', $options) ? $options['connection'] : null;
 		$socket = null;
@@ -132,7 +132,7 @@ class Pdomysql extends Mysql
 
 		if (!isset($this->charset))
 		{
-			$this->charset = 'UTF8';
+			$this->charset = 'utf8mb4';
 		}
 
 		$this->port = $this->port ? $this->port : 3306;
@@ -162,6 +162,15 @@ class Pdomysql extends Mysql
 		}
 		catch (\PDOException $e)
 		{
+			// If we tried connecting through utf8mb4 and we failed let's retry with regular utf8
+			if ($this->charset == 'utf8mb4')
+			{
+				$this->charset = 'UTF8';
+				$this->open();
+
+				return;
+			}
+
 			$this->errorNum = 2;
 			$this->errorMsg = 'Could not connect to MySQL via PDO: ' . $e->getMessage();
 
@@ -235,6 +244,8 @@ class Pdomysql extends Mysql
 	 */
 	public function query()
 	{
+		static $isReconnecting = false;
+
 		if (!is_object($this->connection))
 		{
 			$this->open();
@@ -281,8 +292,10 @@ class Pdomysql extends Mysql
 			$this->errorMsg = $errorInfo[2] . ' SQL=' . $query;
 
 			// Check if the server was disconnected.
-			if (!$this->connected())
+			if (!$this->connected() && !$isReconnecting)
 			{
+				$isReconnecting = true;
+
 				try
 				{
 					// Attempt to reconnect.
@@ -296,7 +309,10 @@ class Pdomysql extends Mysql
 				}
 
 				// Since we were able to reconnect, run the query again.
-				return $this->query();
+				$result = $this->query();
+				$isReconnecting = false;
+
+				return $result;
 			}
 			// The server was not disconnected.
 			else

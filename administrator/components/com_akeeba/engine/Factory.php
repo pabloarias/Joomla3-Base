@@ -15,6 +15,7 @@ namespace Akeeba\Engine;
 defined('AKEEBAENGINE') or die();
 
 use Akeeba\Engine\Core\Database;
+use Akeeba\Engine\Util\PushMessages;
 use Psr\Log\LogLevel;
 
 // Try to kill errors display
@@ -39,6 +40,9 @@ class Factory
 
 	/** @var   array  A list of instantiated objects which will NOT persist after serialisation / unserialisation */
 	protected $temporaryObjectList = array();
+
+    /** @var  string  The absolute path to Akeeba Engine's installation   */
+    private static $root;
 
 	/** Private constructor makes sure we can't directly instantiate the class */
 	private function __construct()
@@ -828,6 +832,16 @@ class Factory
 		return self::getTempObjectInstance('\\Akeeba\\Engine\\Util\\TemporaryFiles');
 	}
 
+	/**
+	 * Get the connector object for push messages
+	 *
+	 * @return  PushMessages
+	 */
+	public static function &getPush()
+	{
+		return self::getObjectInstance('Akeeba\\Engine\\Util\\PushMessages');
+	}
+
 	// ========================================================================
 	// Handy functions
 	// ========================================================================
@@ -839,14 +853,12 @@ class Factory
 	 */
 	public static function getAkeebaRoot()
 	{
-		static $root = null;
-
-		if (empty($root))
+		if (empty(self::$root))
 		{
-			$root = __DIR__;
+			self::$root = __DIR__;
 		}
 
-		return $root;
+		return self::$root;
 	}
 
 	// ========================================================================

@@ -1,4 +1,41 @@
 <?php die();?>
+Akeeba Backup 4.2.4
+================================================================================
+~ ANGIE: Improve memory efficiency of the database engine
+~ Switching the default log level to All Information and Debug
++ Support utf8mb4 in CRON jobs
+# [LOW] Desktop notifications for backup resume showed "%d" instead of the time to wait before resume
+# [LOW] Push notifications should not be enabled by default
+# [MEDIUM] Dropbox integration would not work under many PHP 5.5 and 5.6 servers due to a PHP issue. Workaround applied.
+# [HIGH] Restoring on MySQL would be impossible unless you used the MySQL PDO driver
+
+Akeeba Backup 4.2.3
+================================================================================
+! Packaging error leading to immediate backup failure
+
+Akeeba Backup 4.2.2
+================================================================================
++ Push notifications with Pushbullet
+# [HIGH] ANGIE: Restoration may fail or corrupt text on some servers due to UTF8MB4 support
+
+Akeeba Backup 4.2.1
+================================================================================
+~ Updated Import from S3 to use the official Amazon AWS SDK for PHP
+~ OneDrive: refresh the tokens if they expire in the middle of an upload
++ You can set the backup profile name directly from the Configuration page
++ You can create new backup profiles from the Configuration page using the Save & New button
++ Desktop notifications for backup start, finish, warning and error on compatible browsers (Chrome, Safari, Firefox)
++ UTF8MB4 (UTF-8 multibyte) support in restoration scripts, allows you to correctly restore content using multibyte Unicode characters (Emoji, Traditional Chinese, etc)
+~ The logs and log directories at the site's root are forcibly excluded if present (some developers hardcode them)
+~ ANGIE (restoration script): Reset OPcache after the restoration is complete (NB! Only if you use ANGIE's Remove Installation Directory feature)
+# [HIGH] Restoration might be impossible if your database passwords contains a double quote character
+# [MEDIUM] Dropbox and iDriveSync: could not upload under PHP 5.6 and some versions of PHP 5.5
+# [MEDIUM] OneDrive upload could fail in CLI CRON jobs if the upload of all parts takes more than 3600 seconds
+# [MEDIUM] Possible crash when the legacy MySQL driver is not available
+# [MEDIUM] Reupload from Manage Backups failed when the post-processing engine is configured to use chunked uploads
+# [LOW] White page when the ak_stats database table is broken
+# [LOW] Some installations didn't have the correct embedded installer selected. Now forcing the correct default if an invalid value is detected.
+
 Akeeba Backup 4.2.0
 ================================================================================
 - Removed Joomla! 2.5 support

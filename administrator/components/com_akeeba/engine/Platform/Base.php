@@ -14,6 +14,7 @@ namespace Akeeba\Engine\Platform;
 // Protection against direct access
 defined('AKEEBAENGINE') or die();
 
+use Akeeba\Engine\Base\Object;
 use Akeeba\Engine\Util\ParseIni;
 use Psr\Log\LogLevel;
 use Akeeba\Engine\Factory;
@@ -307,7 +308,10 @@ abstract class Base implements PlatformInterface
 			}
 			catch (\Exception $exc)
 			{
-				$caller->setError($exc->getMessage());
+				if (is_object($caller) && ($caller instanceof Object))
+				{
+					$caller->setError($exc->getMessage());
+				}
 
 				return false;
 			}
@@ -338,7 +342,10 @@ abstract class Base implements PlatformInterface
 			}
 			catch (\Exception $exc)
 			{
-				$caller->setError($exc->getMessage());
+				if (is_object($caller) && ($caller instanceof Object))
+				{
+					$caller->setError($exc->getMessage());
+				}
 
 				return false;
 			}
