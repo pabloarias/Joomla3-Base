@@ -248,9 +248,9 @@ class Init extends Part
 			Factory::getLog()->log(LogLevel::INFO, "--------------------------------------------------------------------------------");
 		}
 
-		if (!version_compare(PHP_VERSION, '5.3.4', 'ge'))
+		if (!version_compare(PHP_VERSION, '5.4.0', 'ge'))
 		{
-			Factory::getLog()->log(LogLevel::WARNING, "You are using an outdated version of PHP. Akeeba Engine may not work properly. Please upgrade to PHP 5.3.4 or later.");
+			Factory::getLog()->log(LogLevel::WARNING, "You are using an outdated version of PHP. Akeeba Engine may not work properly. Please upgrade to PHP 5.4.0 or later.");
 		}
 
 		// Report profile ID

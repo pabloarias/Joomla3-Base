@@ -233,6 +233,11 @@ class Statistics extends Object
 			$ret = null;
 		}
 
+		if (!empty($ret) && is_array($ret))
+		{
+			$ret = array_unique($ret);
+		}
+
 		return $ret;
 	}
 }

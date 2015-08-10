@@ -126,7 +126,8 @@ JS;
 
 		$profilesModel = F0FModel::getTmpInstance('Profiles', 'AkeebaModel');
 		$profilesModel->reset()->clearState()->clearInput();
-		$profiles = $profilesModel->getItemList(true);
+        // Let's create an array indexed with the profile id for better handling
+		$profiles = $profilesModel->getItemList(true, 'id');
 
 		$profilesList = array(
 			JHtml::_('select.option', '', '–' . JText::_('STATS_LABEL_PROFILEID') . '–')

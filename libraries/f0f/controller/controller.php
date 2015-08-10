@@ -1347,7 +1347,7 @@ class F0FController extends F0FUtilsObject
 				$customURL = base64_decode($customURL);
 			}
 
-			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . $this->view . '&task=edit&id=' . $id  . $this->getItemidURLSuffix();
+			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . $this->view . '&task=edit&id=' . $id . $this->getItemidURLSuffix();
 			$this->setRedirect($url, JText::_($textkey));
 		}
 

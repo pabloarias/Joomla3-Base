@@ -121,7 +121,6 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	protected $removeFilesFree = array(
 		'files'   => array(
 			// Pro component features
-			'administrator/components/com_akeeba/restore.php',
 			'administrator/components/com_akeeba/engine/Archiver/Directftp.php',
 			'administrator/components/com_akeeba/engine/Archiver/directftp.ini',
 			'administrator/components/com_akeeba/engine/Archiver/Directsftp.php',
@@ -463,14 +462,14 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.3.4';
+	protected $minimumPHPVersion = '5.4.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.2.1';
+	protected $minimumJoomlaVersion = '3.3.1';
 
 	/**
 	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the component. This is our last chance to

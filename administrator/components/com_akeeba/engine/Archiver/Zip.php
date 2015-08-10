@@ -481,7 +481,6 @@ class Zip extends Base
 		$this->_fwrite($this->fp, pack('v', $sizeOfComment)); /* ZIP file comment length. */
 		$this->_fwrite($this->fp, $this->_comment);
 		$this->_fclose($this->fp);
-		//sleep(2);
 
 		// If Split ZIP and there is no .zip file, rename the last fragment to .ZIP
 		if ($this->_useSplitZIP)
@@ -788,6 +787,14 @@ class Zip extends Base
 			}
 
 			$old_offset = @ftell($this->fp);
+
+			if ($this->_useSplitZIP && ($old_offset == 0))
+			{
+				// Because in split ZIPs we have the split ZIP marker in the first four bytes.
+				@fseek($this->fp, 4);
+				$old_offset = @ftell($this->fp);
+			}
+
 			/**
 			 * $seek_result = @fseek($this->fp, 0, SEEK_END);
 			 * $old_offset = ($seek_result == -1) ? false : @ftell($this->fp);

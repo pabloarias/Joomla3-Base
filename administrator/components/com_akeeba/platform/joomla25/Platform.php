@@ -14,6 +14,7 @@ namespace Akeeba\Engine\Platform;
 // Protection against direct access
 defined('AKEEBAENGINE') or die();
 
+use Akeeba\Engine\Finalization\TestExtract;
 use Akeeba\Engine\Util\Comconfig;
 use Psr\Log\LogLevel;
 use Akeeba\Engine\Factory;
@@ -34,6 +35,22 @@ class Joomla25 extends BasePlatform
 	public $priority = 53;
 
 	public $platformName = 'joomla25';
+
+	function __construct()
+	{
+		$configOverrides = array();
+
+		$configOverrides['volatile.core.finalization.action_handlers'] = array(
+			new TestExtract()
+		);
+		$configOverrides['volatile.core.finalization.action_queue_before'] = array(
+			'test_extract',
+		);
+
+		// Apply the configuration overrides, please
+		$this->configOverrides = $configOverrides;
+	}
+
 
 	/**
 	 * Loads the current configuration off the database table

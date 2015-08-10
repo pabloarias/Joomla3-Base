@@ -23,7 +23,7 @@ if(defined('PHP_VERSION')) {
 }
 
 // Old PHP version detected. EJECT! EJECT! EJECT!
-if(!version_compare($version, '5.3.0', '>='))
+if(!version_compare($version, '5.4.0', '>='))
 {
 	return JError::raise(E_ERROR, 500, 'This version of PHP is not compatible with Akeeba Backup');
 }

@@ -1,4 +1,20 @@
 <?php die();?>
+Akeeba Backup 4.3.1
+================================================================================
+# [LOW] Core: Archive integrity test would not run due to a file not being installed
+# [LOW] The Size in Manage Backups would be wrong as the last part's size was counted twice
+
+Akeeba Backup 4.3.0
+================================================================================
+! Minimum PHP version required is now 5.4.0
++ Automatically check the integrity of the backup archive (opt-in, please read the documentation)
++ ANGIE: Added option to enable/disable mail system while restoring a Joomla site
+# [LOW] The autoupdate script could not download the package in PRO versions
+# [LOW] Fixed profile description tooltip
+# [LOW] The SQL query would not be printed on database errors
+# [MEDIUM] ANGIE: You could not override the ANGIE password in the Backup Now page
+# [HIGH] Multipart ZIP archives were broken
+
 Akeeba Backup 4.2.4
 ================================================================================
 ~ ANGIE: Improve memory efficiency of the database engine

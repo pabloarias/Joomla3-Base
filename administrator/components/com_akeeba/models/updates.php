@@ -225,6 +225,22 @@ ENDBODY;
         if (isset($update->get('downloadurl')->_data))
         {
             $url = trim($update->downloadurl->_data);
+
+            $extra_query = $instance->extra_query;
+
+            if ($extra_query)
+            {
+                if (strpos($url, '?') === false)
+                {
+                    $url .= '?';
+                }
+                else
+                {
+                    $url .= '&amp;';
+                }
+
+                $url .= $extra_query;
+            }
         }
         else
         {
