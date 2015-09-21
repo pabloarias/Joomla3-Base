@@ -965,6 +965,28 @@ abstract class WFInstall {
             }
         }
 
+        // transfer hr to a plugin
+        if (version_compare($version, '2.5.8', '<')) {
+            $profiles = self::getProfiles();
+            $table = JTable::getInstance('Profiles', 'WFTable');
+
+            if (!empty($profiles)) {
+                foreach ($profiles as $item) {
+                    $table->load($item->id);
+
+                    $plugins = explode(',', $table->plugins);
+
+                    if (strpos($table->rows, 'hr') !== false) {
+                        $plugins[] = 'hr';
+                    }
+
+                    $table->plugins = implode(',', $plugins);
+
+                    $table->store();
+                }
+            }
+        }
+
         return true;
     }
 
@@ -1024,9 +1046,10 @@ abstract class WFInstall {
         JTable::addIncludePath(JPATH_LIBRARIES . '/joomla/database/table');
 
         $packages = array(
-            'editor' => array('jce'),
+            'editor'    => array('jce'),
+            'system'    => array('jce'),
             'quickicon' => array('jcefilebrowser'),
-            'module' => array('mod_jcefilebrowser')
+            'module'    => array('mod_jcefilebrowser')
         );
 
         foreach ($packages as $folder => $element) {
@@ -1034,10 +1057,10 @@ abstract class WFInstall {
             if (defined('JPATH_PLATFORM')) {
                 if ($folder == 'module') {
                     continue;
-                }
+                }                
                 // Joomla! 1.5  
             } else {
-                if ($folder == 'quickicon') {
+                if ($folder == 'quickicon' || $folder == 'system') {
                     continue;
                 }
             }
@@ -1078,6 +1101,18 @@ abstract class WFInstall {
                     $module->ordering = 100;
                     $module->published = 1;
                     $module->store();
+                }
+                
+                // enable jce system plugin
+                if ($folder == 'system') {
+                    $plugin = JTable::getInstance('extension');
+
+                    foreach ($element as $item) {
+                        $id = $plugin->find(array('type' => 'plugin', 'folder' => $folder, 'element' => $item));
+
+                        $plugin->load($id);
+                        $plugin->publish();
+                    }
                 }
 
                 // rename editor manifest

@@ -158,15 +158,35 @@ class WFJoomlaFileSystem extends WFFileSystem {
      * @param string $path Absolute path to folder
      */
     public function countFiles($path, $recurse = false) {
-        jimport('joomla.filesystem.file');
+        jimport('joomla.filesystem.folder');
 
         if (strpos($path, $this->getBaseDir()) === false) {
             $path = WFUtility::makePath($this->getBaseDir(), $path);
         }
 
         if (JFolder::exists($path)) {
-            $files = JFolder::files($path, '.', $recurse, false, array('index.html', 'thumbs.db'));
+            $files = JFolder::files($path, '.', $recurse, false, array('.svn', 'CVS', '.DS_Store', '__MACOSX', 'index.html', 'thumbs.db'));
             return count($files);
+        }
+
+        return 0;
+    }
+    
+    /**
+     * Count the number of folders in a folder
+     * @return integer Folder total
+     * @param string $path Absolute path to folder
+     */
+    public function countFolders($path) {
+        jimport('joomla.filesystem.folder');
+
+        if (strpos($path, $this->getBaseDir()) === false) {
+            $path = WFUtility::makePath($this->getBaseDir(), $path);
+        }
+
+        if (JFolder::exists($path)) {
+            $folders = JFolder::folders($path, '.', false, false, array('.svn', 'CVS', '.DS_Store', '__MACOSX'));
+            return count($folders);
         }
 
         return 0;
@@ -326,17 +346,22 @@ class WFJoomlaFileSystem extends WFFileSystem {
             'modified' => $date
         );
 
-        if (preg_match('#\.(jpg|jpeg|bmp|gif|tiff|png)#i', $file) && $count <= 100) {
-            $props = @getimagesize($path);
+        if (preg_match('#\.(jpg|jpeg|bmp|gif|tiff|png)#i', $file)) {
+            $data['preview'] = WFUtility::cleanPath($url, '/');
+            
+            $image = array();
 
-            $width = $props[0];
-            $height = $props[1];
+            if ($count <= 100) {
+                $props = @getimagesize($path);
 
-            $image = array(
-                'width' => $width,
-                'height' => $height,
-                'preview' => WFUtility::cleanPath($url, '/')
-            );
+                $width = $props[0];
+                $height = $props[1];
+
+                $image = array(
+                    'width'     => $width,
+                    'height'    => $height
+                );
+            }
 
             return array_merge_recursive($data, $image);
         }
