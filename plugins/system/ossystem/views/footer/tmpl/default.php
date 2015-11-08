@@ -1,3 +1,13 @@
+<?php
+/**
+ * @package   AllediaFreeDefaultFiles
+ * @copyright 2015 Alledia.com, All rights reserved.
+ * @author    Alledia <support@alledia.com>
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
+ */
+
+defined('_JEXEC') or die('Restricted access');
+?>
 <div class="row-fluid">
     <div id="footer" class="span12">
         <div>

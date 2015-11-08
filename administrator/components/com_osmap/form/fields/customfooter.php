@@ -71,7 +71,7 @@ class JFormFieldCustomFooter extends JFormFieldBase
         if (version_compare(JVERSION, '3.0', 'lt')) {
             $html .= "
             <script>
-                var footer = document.getElements('.alledia-footer')[0];
+                var footer = document.getElementsByClassName('alledia-footer')[0];
 
                 if (footer.parentElement.tagName === 'LI'
                     || footer.parentElement.parentElement.id === 'element-box') {
@@ -85,7 +85,7 @@ class JFormFieldCustomFooter extends JFormFieldBase
             $html .= "
             <script>
                 document.addEventListener('DOMContentLoaded', function(event) {
-                    var footer = document.getElements('.alledia-footer')[0],
+                    var footer = document.getElementsByClassName('alledia-footer')[0],
                         parent = footer.parentElement;
 
                     function hasClass(elem, className) {

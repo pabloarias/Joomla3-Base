@@ -104,7 +104,7 @@ class OSMapXmlDisplayer extends OSMapDisplayer
             $priority = $this->getProperty('priority', $node->priority, $node->id, 'xml', $node->uid);
 
             echo '<url>' . "\n";
-            echo '<loc>', $link, '</loc>' . "\n";
+            echo "<loc><![CDATA[" . trim($link) . "]]></loc>\n";
             if ($this->canEdit) {
                 if ($this->showTitle) {
                     echo '<title><![CDATA['.$node->name.']]></title>' . "\n";
@@ -175,9 +175,8 @@ class OSMapXmlDisplayer extends OSMapDisplayer
                 echo "</news:news>\n";
             }
             echo '</url>', "\n";
-        } else {
-            return empty($this->_links[$link]);
         }
+
         return true;
     }
 

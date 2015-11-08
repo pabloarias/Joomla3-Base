@@ -22,17 +22,35 @@
  * You should have received a copy of the GNU General Public License
  * along with OSMap. If not, see <http://www.gnu.org/licenses/>.
  */
-
-// no direct access
+// No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Access check
-if (!JFactory::getUser()->authorise('core.manage', 'com_osmap')) {
-    return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+jimport('joomla.application.component.controller');
+
+/**
+ * OSMap Ajax Controller
+ *
+ * @package      OSMap
+ * @subpackage   com_osmap
+ * @since        2.0
+ */
+class OSMapControllerXml extends JControllerLegacy
+{
+    /**
+     * Typical view method for MVC based architecture
+     *
+     * This function is provide as a default implementation, in most cases
+     * you will need to override it in your own controllers.
+     *
+     * @param   boolean  $cachable   If true, the view output will be cached
+     * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+     *
+     * @return  JControllerLegacy  A JControllerLegacy object to support chaining.
+     *
+     * @since   12.2
+     */
+    public function display($cachable = false, $urlparams = array())
+    {
+        parent::display(true, $urlparams);
+    }
 }
-
-require_once 'include.php';
-
-$controller = JControllerLegacy::getInstance('OSMap');
-$controller->execute(JFactory::getApplication()->input->getCmd('task'));
-$controller->redirect();
