@@ -48,7 +48,8 @@ class WFFileBrowser extends JObject {
                 'validate_mimetype' => 1,
                 'add_random' => 0,
                 'total_files' => 0,
-                'total_size' => 0
+                'total_size' => 0,
+                'remove_exif' => 0
             ),
             'folder_tree' => 1,
             'list_limit' => 'all',
@@ -824,28 +825,33 @@ class WFFileBrowser extends JObject {
     private function validateUploadedFile($file) {
         // check the POST data array
         if (empty($file)) {
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
+            throw new InvalidArgumentException('Upload Failed: No data');
         }
         // tmp name must exist
         if (empty($file['tmp_name'])) {
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
+            throw new InvalidArgumentException('Upload Failed: No data');
         }
 
         // check for tmp_name and is valid uploaded file
         if (!is_uploaded_file($file['tmp_name'])) {
             @unlink($file['tmp_name']);
-
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
+            throw new InvalidArgumentException('Upload Failed: Not an uploaded file');
         }
-        
+
+        $upload = $this->get('upload');
+
+        // remove exif data
+        if (!empty($upload['remove_exif']) && preg_match('#\.(jpg|jpeg|png)$#i', $file['name'])) {
+            if (WFUtility::removeExifData($file['tmp_name']) === false) {
+                @unlink($file['tmp_name']);
+                throw new InvalidArgumentException(WFText::_('WF_MANAGER_UPLOAD_EXIF_REMOVE_ERROR'));
+            }
+        }
+
+        // check file for various issues
         if (WFUtility::isSafeFile($file) !== true) {
             @unlink($file['tmp_name']);
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
-        }
-        
-        if (WFUtility::validateFileName($file['name']) === false) {
-            @unlink($file['tmp_name']);
-            throw new InvalidArgumentException('INVALID UPLOAD DATA');
+            throw new InvalidArgumentException('Upload Failed: Invalid file');
         }
 
         // get extension
@@ -859,17 +865,7 @@ class WFFileBrowser extends JObject {
             throw new InvalidArgumentException(WFText::_('WF_MANAGER_UPLOAD_INVALID_EXT_ERROR'));
         }
 
-        // validate image
-        if (preg_match('#\.(jpeg|jpg|jpe|png|gif|wbmp|bmp|tiff|tif|webp|psd|swc|iff|jpc|jp2|jpx|jb2|xbm|ico|xcf|odg)$#i', $file['name'])) {
-            if (@getimagesize($file['tmp_name']) === false) {
-                @unlink($file['tmp_name']);
-
-                throw new InvalidArgumentException('INVALID IMAGE FILE');
-            }
-        }
-
-        $upload = $this->get('upload');
-        $size   = round(filesize($file['tmp_name']) / 1024);
+        $size = round(filesize($file['tmp_name']) / 1024);
         
         if (empty($upload['max_size'])) {
             $upload['max_size'] = 1024;
@@ -888,23 +884,7 @@ class WFFileBrowser extends JObject {
 
             if (WFMimeType::check($file['name'], $file['tmp_name']) === false) {
                 @unlink($file['tmp_name']);
-
-                throw new InvalidArgumentException('INVALID MIME TYPE');
-            }
-        }
-
-        // check for html tags in files (IE XSS bug)
-        if (!preg_match('#\.(htm|html|xml|txt)$#i', $file['name'])) {
-            $data = JFile::read($file['tmp_name'], false, 256);
-            $tags = 'a,abbr,acronym,address,area,b,base,bdo,big,blockquote,body,br,button,caption,cite,code,col,colgroup,dd,del,dfn,div,dl,dt,em,fieldset,form,h1,h2,h3,h4,h5,h6,head,hr,html,i,img,input,ins,kbd,label,legend,li,link,map,meta,noscript,object,ol,optgroup,option,p,param,pre,q,samp,script,select,small,span,strong,style,sub,sup,table,tbody,td,textarea,tfoot,th,thead,title,tr,tt,ul,var';
-
-            foreach (explode(',', $tags) as $tag) {
-                // check for tag eg: <body> or <body
-                if (stripos($data, '<' . $tag . '>') !== false || stripos($data, '<' . $tag . ' ') !== false) {
-                    @unlink($file['tmp_name']);
-
-                    throw new InvalidArgumentException('INVALID TAG IN FILE');
-                }
+                throw new InvalidArgumentException(WFText::_('WF_MANAGER_UPLOAD_MIME_ERROR'));
             }
         }
     }
@@ -938,8 +918,6 @@ class WFFileBrowser extends JObject {
         // validate file data
         $this->validateUploadedFile($file);
 
-        $wf = WFEditor::getInstance();
-
         // get file name
         $name = JRequest::getVar('name', $file['name']);
         
@@ -948,7 +926,7 @@ class WFFileBrowser extends JObject {
         
         // check name
         if (WFUtility::validateFileName($name) === false) {
-            throw new InvalidArgumentException('INVALID FILE NAME');
+            throw new InvalidArgumentException('Upload Failed: The file name contains an invalid extension.');
         }
         
         // check file name
@@ -957,6 +935,14 @@ class WFFileBrowser extends JObject {
         // get extension from file name
         $ext = WFUtility::getExtension($file['name']);
 
+        // trim extension
+        $ext = trim($ext);
+
+        // check extension exists
+        if (empty($ext) || $ext === $file['name']) {
+            throw new InvalidArgumentException('Upload Failed: The file name does not contain a valid extension.');
+        }
+
         // strip extension
         $name = WFUtility::stripExtension($name);
         // make file name 'web safe'
@@ -964,7 +950,7 @@ class WFFileBrowser extends JObject {
 
         // check name
         if (WFUtility::validateFileName($name) === false) {
-            throw new InvalidArgumentException('INVALID FILE NAME');
+            throw new InvalidArgumentException('Upload Failed: The file name contains an invalid extension.');
         }
 
         // target directory
@@ -1006,6 +992,9 @@ class WFFileBrowser extends JObject {
         $complete = false;
         $contentType = JRequest::getVar('CONTENT_TYPE', '', 'SERVER');
 
+        // relative path
+        $relative = WFUtility::makePath($dir, $name);
+
         // Only multipart uploading is supported for now
         if ($contentType && strpos($contentType, "multipart") !== false) {
             $result = $filesystem->upload('multipart', trim($file['tmp_name']), $dir, $name);
@@ -1034,16 +1023,6 @@ class WFFileBrowser extends JObject {
 
             if ($result instanceof WFFileSystemResult) {
                 if ($result->state === true) {
-
-                    $path = $result->path;
-                    // get root dir eg: JPATH_SITE
-                    $root = substr($filesystem->getBaseDir(), 0, -(strlen($filesystem->getRootDir())));
-
-                    // get relative path
-                    $relative = substr($path, strlen($root));
-                    // clean
-                    $relative = WFUtility::cleanPath($relative, '/');
-
                     $this->setResult($this->fireEvent('onUpload', array($result->path, $relative)));
                     $this->setResult(basename($result->path), 'files');
                 } else {

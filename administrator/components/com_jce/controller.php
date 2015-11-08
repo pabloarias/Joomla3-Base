@@ -170,8 +170,7 @@ class WFController extends WFControllerBase {
         $params = new WFParameter($component->params);
 
         $theme = $params->get('preferences.theme', 'jce');
-        $site_path = JPATH_COMPONENT_SITE . '/editor/libraries/css';
-        $admin_path = JPATH_COMPONENT_ADMINISTRATOR . '/media/css';
+        $site_path = JPATH_SITE . '/component/com_jce/editor/libraries/css';
 
         // Load styles
         $styles = array();
@@ -311,10 +310,12 @@ class WFController extends WFControllerBase {
         $input = (array) $input;
 
         foreach ($input as $k => $v) {
-            if (is_array($v)) {
-                $input[$k] = $this->cleanInput($v, $method);
-            } else {
-                $input[$k] = $filter->clean($v, $method);
+            if (!empty($v)) {
+                if (is_array($v)) {
+                    $input[$k] = $this->cleanInput($v, $method);
+                } else {
+                    $input[$k] = $filter->clean($v, $method);
+                }
             }
         }
 
