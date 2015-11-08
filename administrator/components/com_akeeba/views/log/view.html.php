@@ -20,9 +20,6 @@ class AkeebaViewLog extends F0FViewHtml
 {
 	public function onBrowse($tpl = null)
 	{
-		// Add live help
-		AkeebaHelperIncludes::addHelp('log');
-
 		// Get a list of log names
 		/** @var AkeebaModelLogs $model */
 		$model = $this->getModel();

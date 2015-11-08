@@ -29,7 +29,7 @@
  */
 
 define('KICKSTART',1);
-define('VERSION', 'rev44FA5E4');
+define('VERSION', 'rev620DEEA');
 define('KICKSTARTPRO', '0');
 // Uncomment the following line to enable Kickstart's debug mode
 //define('KSDEBUG', 1);
@@ -233,6 +233,12 @@ function debugMsg($msg)
 
 	fwrite($fp, $msg . "\n");
 	fclose($fp);
+
+	// Echo to stdout if KSDEBUGCLI is defined
+	if (defined('KSDEBUGCLI'))
+	{
+		echo $msg . "\n";
+	}
 }
 
 /**
@@ -4447,7 +4453,9 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 			$this->nextFile();
 		}
 
-		debugMsg('Reading file signature');
+		$this->currentPartOffset = ftell($this->fp);
+
+		debugMsg("Reading file signature; part {$this->currentPartNumber}, offset {$this->currentPartOffset}");
 		// Get and decode Entity Description Block
 		$signature = fread($this->fp, 3);
 
@@ -4570,6 +4578,7 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 		$this->fileHeader->file = $file;
 		$this->fileHeader->compressed = $header_data['compsize'];
 		$this->fileHeader->uncompressed = $header_data['uncompsize'];
+
 		switch($header_data['type'])
 		{
 			case 0:
@@ -5095,6 +5104,8 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 			$this->nextFile();
 		}
 
+		$this->currentPartOffset = ftell($this->fp);
+
 		if($this->expectDataDescriptor)
 		{
 			// The last file had bit 3 of the general purpose bit flag set. This means that we have a
@@ -5389,6 +5400,8 @@ class AKUnarchiverJPS extends AKUnarchiverJPA
 		if( $this->isEOF(true) ) {
 			$this->nextFile();
 		}
+
+		$this->currentPartOffset = ftell($this->fp);
 
 		// Get and decode Entity Description Block
 		$signature = fread($this->fp, 3);
@@ -6318,6 +6331,7 @@ class AKText extends AKAbstractObject
 		'BTN_TESTSFTPCON' => 'Test SFTP connection',
 		'BTN_GOTOSTART' => 'Start over',
 		'FINE_TUNE' => 'Fine tune',
+        'BTN_SHOW_FINE_TUNE' => 'Show advanced options (for experts)',
 		'MIN_EXEC_TIME' => 'Minimum execution time:',
 		'MAX_EXEC_TIME' => 'Maximum execution time:',
 		'SECONDS_PER_STEP' => 'seconds per step',
@@ -7797,9 +7811,15 @@ class AKKickstartUtils
 		$basePathSlash = (empty($basePath) ? '.' : rtrim($basePath, '/\\')) . '/';
 
 		$paths = array(
+			// Root, same as the directory we're in
 			$basePath,
+			// Standard temporary directory
+			$basePath . '/kicktemp',
+			// Akeeba Backup for Joomla!, default output directory
 			$basePathSlash . 'administrator/components/com_akeeba/backup',
+			// Akeeba Solo, default output directory
 			$basePathSlash . 'backups',
+			// Akeeba Backup for WordPress, default output directory
 			$basePathSlash . 'wp-content/plugins/akeebabackupwp/app/backups',
 		);
 
@@ -7830,6 +7850,37 @@ class AKKickstartUtils
 			$path .= '/';
 		}
 
+		return $path;
+	}
+
+	/**
+	 * Gets the most appropriate temporary path
+	 *
+	 * @return string
+	 */
+	public static function getTemporaryPath()
+	{
+		$path = self::getPath();
+
+		$candidateDirs = array(
+			$path,
+			$path . '/kicktemp',
+		);
+
+		if (function_exists('sys_get_temp_dir'))
+		{
+			$candidateDirs[] = sys_get_temp_dir();
+		}
+
+		foreach ($candidateDirs as $dir)
+		{
+			if (is_dir($dir) && is_writable($dir))
+			{
+				return $dir;
+			}
+		}
+
+		// Failsafe
 		return $path;
 	}
 
@@ -8131,6 +8182,14 @@ function getListing($directory, $host, $port, $username, $password, $passive, $s
 			);
 		}
 	}
+	else
+	{
+		$directory = @ftp_pwd($con);
+
+		$parsed_dir  = trim($directory, '/');
+		$parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
+		$parent_directory = $this->directory;
+	}
 
 	// Get a raw directory listing (hoping it's a UNIX server!)
 	$list = @ftp_rawlist($con,'.');
@@ -8235,6 +8294,30 @@ function getSftpListing($directory, $host, $port, $username, $password)
 	// Get a raw directory listing (hoping it's a UNIX server!)
 	$list = array();
 	$dir  = ltrim($dir, '/');
+
+	if (empty($dir))
+	{
+		$dir = ssh2_sftp_realpath($sftphandle, ".");
+		$directory = $dir;
+
+		// Parse directory to parts
+		$parsed_dir  = trim($dir, '/');
+		$parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
+
+		// Find the path to the parent directory
+		if (!empty($parts)) {
+			$copy_of_parts = $parts;
+			array_pop($copy_of_parts);
+
+			if (!empty($copy_of_parts)) {
+				$parent_directory = '/' . implode('/', $copy_of_parts);
+			} else {
+				$parent_directory = '/';
+			}
+		} else {
+			$parent_directory = '';
+		}
+	}
 
 	$handle = opendir("ssh2.sftp://$sftphandle/$dir");
 
@@ -9101,6 +9184,10 @@ function echoHeadJavascript()
 		$('#gotoSite').click(function(event){window.open('index.php','finalstepsite'); window.close();});
 		$('#gotoAdministrator').click(function(event){window.open('administrator/index.php','finalstepadmin'); window.close();});
 		$('#gotoStart').click( onGotoStartClick );
+        $('#showFineTune').click(function(){
+            $('#fine-tune-holder').show();
+            $(this).hide();
+        });
 
 		// Reset the progress bar
 		setProgressBar(0);
@@ -9601,7 +9688,7 @@ function echoHeadJavascript()
 						$('#ftpBrowserFolderList').show();
 
 						$.each(data.list, function(i, item) {
-							akeeba_ftpbrowser_create_link(akeeba_ftpbrowser_directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
+							akeeba_ftpbrowser_create_link(data.directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
 						});
 					} else {
 						$('#ftpBrowserFolderList').css('display','none');
@@ -9743,7 +9830,7 @@ function echoHeadJavascript()
 						$('#ftpBrowserFolderList').css('display','block');
 
 						$.each(data.list, function(i, item) {
-							akeeba_sftpbrowser_create_link(akeeba_sftpbrowser_directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
+							akeeba_sftpbrowser_create_link(data.directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
 						});
 					} else {
 						$('#ftpBrowserFolderList').css('display','none');
@@ -10005,7 +10092,7 @@ function echoHeadJavascript()
 	 */
 
 	var akeeba_update = {version: '0'};
-	var akeeba_version = 'rev44FA5E4';
+	var akeeba_version = 'rev620DEEA';
 
 	function version_compare (v1, v2, operator) {
 		// BEGIN REDUNDANT
@@ -10255,7 +10342,7 @@ function echoPage()
 	</div>
 
 	<div id="header">
-		<div class="title">Akeeba Kickstart <?php echo $edition?> rev44FA5E4</div>
+		<div class="title">Akeeba Kickstart <?php echo $edition?> rev620DEEA</div>
 	</div>
 
 	<div id="update-notification" style="display: none">
@@ -10348,7 +10435,7 @@ function echoPage()
 
 						<label for="kickstart.ftp.tempdir">FTP_TEMPDIR</label>
 				<span class="field">
-					<input type="text" id="kickstart.ftp.tempdir" value="<?php echo htmlentities(AKKickstartUtils::getPath()) ?>" />
+					<input type="text" id="kickstart.ftp.tempdir" value="<?php echo htmlentities(AKKickstartUtils::getTemporaryPath()) ?>" />
 					<span class="button" id="checkFTPTempDir">BTN_CHECK</span>
 					<span class="button" id="resetFTPTempDir">BTN_RESET</span>
 				</span><br />
@@ -10366,7 +10453,10 @@ function echoPage()
 			<div class="step3">
 				<div class="circle">3</div>
 				<h2>FINE_TUNE</h2>
-				<div class="area-container">
+                <div style="text-align: center;">
+                    <span id="showFineTune" class="button bluebutton loprofile" style="margin: 0">BTN_SHOW_FINE_TUNE</span>
+                </div>
+				<div id="fine-tune-holder" class="area-container" style="display: none">
 					<label for="kickstart.tuning.min_exec_time">MIN_EXEC_TIME</label>
 					<span class="field"><input type="text" id="kickstart.tuning.min_exec_time" value="1" /></span> <span>SECONDS_PER_STEP</span><br />
 					<label for="kickstart.tuning.max_exec_time">MAX_EXEC_TIME</label>

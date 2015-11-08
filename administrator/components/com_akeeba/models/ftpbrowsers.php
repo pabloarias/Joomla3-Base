@@ -1,10 +1,10 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
+ * @license   GNU General Public License version 3, or later
  *
- * @since 3.0
+ * @since     3.0
  */
 
 // Protect from unauthorized access
@@ -37,37 +37,53 @@ class AkeebaModelFtpbrowsers extends F0FModel
 		$dir = $this->directory;
 
 		// Parse directory to parts
-		$parsed_dir = trim($dir,'/');
+		$parsed_dir  = trim($dir, '/');
 		$this->parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
 
 		// Find the path to the parent directory
-		if(!empty($parts)) {
+		if (!empty($parts))
+		{
 			$copy_of_parts = $parts;
 			array_pop($copy_of_parts);
-			if(!empty($copy_of_parts)) {
+
+			if (!empty($copy_of_parts))
+			{
 				$this->parent_directory = '/' . implode('/', $copy_of_parts);
-			} else {
+			}
+			else
+			{
 				$this->parent_directory = '/';
 			}
-		} else {
+		}
+		else
+		{
 			$this->parent_directory = '';
 		}
 
 		// Connect to the server
-		if($this->ssl) {
+		if ($this->ssl)
+		{
 			$con = @ftp_ssl_connect($this->host, $this->port);
-		} else {
+		}
+		else
+		{
 			$con = @ftp_connect($this->host, $this->port);
 		}
-		if($con === false) {
+
+		if ($con === false)
+		{
 			$this->setError(JText::_('FTPBROWSER_ERROR_HOSTNAME'));
+
 			return false;
 		}
 
 		// Login
-		$result = @ftp_login($con,$this->username,$this->password);
-		if($result === false) {
+		$result = @ftp_login($con, $this->username, $this->password);
+
+		if ($result === false)
+		{
 			$this->setError(JText::_('FTPBROWSER_ERROR_USERPASS'));
+
 			return false;
 		}
 
@@ -75,44 +91,63 @@ class AkeebaModelFtpbrowsers extends F0FModel
 		@ftp_pasv($con, $this->passive);
 
 		// Try to chdir to the specified directory
-		if(!empty($dir)) {
+		if (!empty($dir))
+		{
 			$result = @ftp_chdir($con, $dir);
-			if($result === false) {
+
+			if ($result === false)
+			{
 				$this->setError(JText::_('FTPBROWSER_ERROR_NOACCESS'));
+
 				return false;
 			}
 		}
+		else
+		{
+			$this->directory = @ftp_pwd($con);
+
+			$parsed_dir  = trim($this->directory, '/');
+			$this->parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
+			$this->parent_directory = $this->directory;
+		}
 
 		// Get a raw directory listing (hoping it's a UNIX server!)
-		$list = @ftp_rawlist($con,'.');
+		$list = @ftp_rawlist($con, '.');
+
 		ftp_close($con);
 
-		if($list === false) {
+		if ($list === false)
+		{
 			$this->setError(JText::_('FTPBROWSER_ERROR_UNSUPPORTED'));
+
 			return false;
 		}
 
 		// Parse the raw listing into an array
 		$folders = $this->parse_rawlist($list);
+
 		return $folders;
 	}
 
 	private function parse_rawlist($list)
 	{
 		$folders = array();
-		foreach($list as $v)
+		foreach ($list as $v)
 		{
-			$info = array();
-    		$vinfo = preg_split("/[\s]+/", $v, 9);
-    		if ($vinfo[0] !== "total") {
-    			$perms = $vinfo[0];
-    			if(substr($perms,0,1) == 'd') {
-    				$folders[] = $vinfo[8];
-    			}
-    		}
+			$info  = array();
+			$vinfo = preg_split("/[\s]+/", $v, 9);
+			if ($vinfo[0] !== "total")
+			{
+				$perms = $vinfo[0];
+				if (substr($perms, 0, 1) == 'd')
+				{
+					$folders[] = $vinfo[8];
+				}
+			}
 		}
 
 		asort($folders);
+
 		return $folders;
 	}
 
@@ -121,11 +156,11 @@ class AkeebaModelFtpbrowsers extends F0FModel
 		$list = $this->getListing();
 
 		$response_array = array(
-			'error'			=> $this->getError(),
-			'list'			=> $list,
-			'breadcrumbs'	=> $this->parts,
-			'directory'		=> $this->directory,
-			'parent'		=> $this->parent_directory
+			'error'       => $this->getError(),
+			'list'        => $list,
+			'breadcrumbs' => $this->parts,
+			'directory'   => $this->directory,
+			'parent'      => $this->parent_directory
 		);
 
 		return $response_array;

@@ -12,23 +12,6 @@ defined('_JEXEC') or die();
 
 ?>
 
-<!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->
-<div id="nojquerywarning" style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;">
-	<h1 style="margin: 1em 0; color: red; font-size: 22pt;"><?php echo JText::_('AKEEBA_CPANEL_WARN_ERROR') ?></h1>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L1B'); ?></p>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L2'); ?></p>
-</div>
-<script type="text/javascript" language="javascript">
-	if(typeof akeeba.jQuery == 'function')
-	{
-		if(typeof akeeba.jQuery.ui == 'object')
-		{
-			akeeba.jQuery('#nojquerywarning').css('display','none');
-			akeeba.jQuery('#notfixedperms').css('display','none');
-		}
-	}
-</script>
-
 <div id="akeeba-confwiz">
 
 <div id="backup-progress-pane" class="ui-widget" style="x-display: none">

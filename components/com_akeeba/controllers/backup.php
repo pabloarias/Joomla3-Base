@@ -96,7 +96,15 @@ class AkeebaControllerBackup extends F0FController
 		$kettenrad->tick();
 		$kettenrad->tick();
 		$array = $kettenrad->getStatusArray();
-		Factory::saveState(AKEEBA_BACKUP_ORIGIN, $backupId);
+
+		try
+		{
+			Factory::saveState(AKEEBA_BACKUP_ORIGIN, $backupId);
+		}
+		catch (\RuntimeException $e)
+		{
+			$array['Error'] = $e->getMessage();
+		}
 
 		if ($array['Error'] != '')
 		{
@@ -110,6 +118,8 @@ class AkeebaControllerBackup extends F0FController
 			if ($noredirect != 0)
 			{
 				@ob_end_clean();
+				header('Content-type: text/plain');
+				header('Connection: close');
 				echo "301 More work required";
 				flush();
 				JFactory::getApplication()->close();
@@ -165,7 +175,15 @@ class AkeebaControllerBackup extends F0FController
 		$kettenrad->tick();
 		$array = $kettenrad->getStatusArray();
 		$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-		Factory::saveState(AKEEBA_BACKUP_ORIGIN, $backupId);
+
+		try
+		{
+			Factory::saveState(AKEEBA_BACKUP_ORIGIN, $backupId);
+		}
+		catch (\RuntimeException $e)
+		{
+			$array['Error'] = $e->getMessage();
+		}
 
 		if ($array['Error'] != '')
 		{
@@ -180,6 +198,8 @@ class AkeebaControllerBackup extends F0FController
 			Factory::nuke();
 			Factory::getFactoryStorage()->reset();
 			@ob_end_clean();
+			header('Content-type: text/plain');
+			header('Connection: close');
 			echo '200 OK';
 			flush();
 			JFactory::getApplication()->close();
@@ -191,6 +211,8 @@ class AkeebaControllerBackup extends F0FController
 			if ($noredirect != 0)
 			{
 				@ob_end_clean();
+				header('Content-type: text/plain');
+				header('Connection: close');
 				echo "301 More work required";
 				flush();
 				JFactory::getApplication()->close();
@@ -278,6 +300,7 @@ class AkeebaControllerBackup extends F0FController
 		header('HTTP/1.1 ' . $header);
 		header('Location: ' . $url);
 		header('Content-Type: text/plain');
+		header('Connection: close');
 
 		JFactory::getApplication()->close(0);
 	}

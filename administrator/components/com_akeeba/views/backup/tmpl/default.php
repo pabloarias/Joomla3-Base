@@ -21,22 +21,13 @@ $configuration = Factory::getConfiguration();
 
 JHtml::_('formbehavior.chosen');
 ?>
-<!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->
-<div id="nojquerywarning" style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;">
-	<h1 style="margin: 1em 0; color: red; font-size: 22pt;"><?php echo JText::_('AKEEBA_CPANEL_WARN_ERROR') ?></h1>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L1B'); ?></p>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L2'); ?></p>
-</div>
-
-<script type="text/javascript" language="javascript">
-	if(typeof akeeba.jQuery == 'function')
-	{
-		if(typeof akeeba.jQuery.ui == 'object')
-		{
-			akeeba.jQuery('#nojquerywarning').css('display','none');
-		}
-	}
-</script>
+<?php
+// Configuration Wizard prompt
+if (!\Akeeba\Engine\Factory::getConfiguration()->get('akeeba.flag.confwiz', 0))
+{
+	echo $this->loadAnyTemplate('admin:com_akeeba/config/confwiz_modal');
+}
+?>
 
 <script type="text/javascript" language="javascript">
 // Initialization
@@ -86,6 +77,11 @@ akeeba.jQuery(document).ready(function($){
 	// Setup the IFRAME mode
 	akeeba_use_iframe = <?php echo $this->useiframe ?>;
 
+	if (<?php echo $this->desktop_notifications; ?>)
+	{
+		akeebaBackup_notifications_askPermission();
+	}
+
 	<?php if( !$this->unwritableoutput && $this->autostart ):?>
 	backup_start();
 	<?php else: ?>
@@ -102,7 +98,7 @@ akeeba.jQuery(document).ready(function($){
 });
 </script>
 
-<?php if(!version_compare(PHP_VERSION, '5.3.0', 'ge') && \Akeeba\Engine\Util\Comconfig::getValue('displayphpwarning', 1)): ?>
+<?php if(!version_compare(PHP_VERSION, '5.4.0', 'ge') && \Akeeba\Engine\Util\Comconfig::getValue('displayphpwarning', 1)): ?>
 <div class="alert">
 	<a class="close" data-dismiss="alert" href="#">×</a>
 	<p><strong><?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_HEADER') ?></strong><br/>

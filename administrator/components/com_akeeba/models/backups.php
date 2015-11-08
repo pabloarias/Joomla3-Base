@@ -93,7 +93,15 @@ class AkeebaModelBackups extends F0FModel
 
 				$ret_array = $kettenrad->getStatusArray();
 				$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-				Factory::saveState($tag, $backupId);
+				try
+				{
+					Factory::saveState($tag, $backupId);
+				}
+				catch (\RuntimeException $e)
+				{
+					$ret_array['Error'] = $e->getMessage();
+				}
+
 				break;
 
 			// Step through a backup
@@ -105,7 +113,15 @@ class AkeebaModelBackups extends F0FModel
 				$kettenrad->tick();
 				$ret_array = $kettenrad->getStatusArray();
 				$kettenrad->resetWarnings(); // So as not to have duplicate warnings reports
-				Factory::saveState($tag, $backupId);
+
+				try
+				{
+					Factory::saveState($tag, $backupId);
+				}
+				catch (\RuntimeException $e)
+				{
+					$ret_array['Error'] = $e->getMessage();
+				}
 
 				if ($ret_array['HasRun'] == 1)
 				{

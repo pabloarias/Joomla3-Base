@@ -67,7 +67,7 @@ class FactoryStorage
 				$tag = 'storage';
 			}
 
-			return $basepath . 'akeeba_' . $tag . '.php';
+			return $basepath . 'akeeba_' . $tag;
 		}
 	}
 
@@ -140,7 +140,6 @@ class FactoryStorage
 				}
 
 				// Add a header
-				fputs($fp, "<?php die; ?>\n");
 				fwrite($fp, $this->encode($value));
 				fclose($fp);
 
@@ -200,21 +199,12 @@ class FactoryStorage
 		switch ($this->storageEngine)
 		{
 			case 'file':
-				$rawdata = @file_get_contents($storage_filename);
+				$data = @file_get_contents($storage_filename);
 
-				if ($rawdata === false)
+				if ($data === false)
 				{
 					return $ret;
 				}
-
-				if (strpos($rawdata, "\n") === false)
-				{
-					return $ret;
-				}
-
-				list($header, $data) = explode("\n", $rawdata);
-				unset($rawdata);
-				unset($header);
 
 				break;
 

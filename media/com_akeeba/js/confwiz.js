@@ -3,7 +3,7 @@
  * The modular PHP5 site backup software solution
  * This file contains the configuration-wizard client-side business logic
  * @package akeebaui
- * @copyright Copyright (c)2010-2014 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2015 Nicholas K. Dionysopoulos
  * @license GNU GPL version 3 or, at your option, any later version
  * @version $Id: confwiz.js 527 2011-03-31 14:47:36Z nikosdion $
  **/

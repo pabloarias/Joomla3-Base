@@ -31,11 +31,11 @@ class AkeebaViewConfig extends F0FViewHtml
 		$this->profileid = $profileid;
 
 		// Get profile name
-		$profileName = F0FModel::getTmpInstance('Profiles','AkeebaModel')
+		$profile = F0FModel::getTmpInstance('Profiles','AkeebaModel')
 			->setId($profileid)
-			->getItem()
-			->description;
-		$this->profilename = $this->escape($profileName);
+			->getItem();
+		$this->profilename = $this->escape($profile->description);
+		$this->quickicon = (int) $profile->quickicon;
 
 		// Get the root URI for media files
 		$this->mediadir = AkeebaHelperEscape::escapeJS($media_folder.'theme/');
@@ -54,8 +54,5 @@ class AkeebaViewConfig extends F0FViewHtml
 				$this->securesettings = 0;
 			}
 		}
-
-		// Add live help
-		AkeebaHelperIncludes::addHelp('config');
 	}
 }

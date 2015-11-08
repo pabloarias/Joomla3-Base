@@ -1,10 +1,10 @@
 <?php
 /**
- * @package AkeebaBackup
+ * @package   AkeebaBackup
  * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
- * @license GNU General Public License version 3, or later
+ * @license   GNU General Public License version 3, or later
  *
- * @since 3.0
+ * @since     3.0
  */
 
 // Protect from unauthorized access
@@ -37,19 +37,26 @@ class AkeebaModelSftpbrowsers extends F0FModel
 		$dir = $this->directory;
 
 		// Parse directory to parts
-		$parsed_dir = trim($dir,'/');
+		$parsed_dir  = trim($dir, '/');
 		$this->parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
 
 		// Find the path to the parent directory
-		if(!empty($parts)) {
+		if (!empty($parts))
+		{
 			$copy_of_parts = $parts;
 			array_pop($copy_of_parts);
-			if(!empty($copy_of_parts)) {
+
+			if (!empty($copy_of_parts))
+			{
 				$this->parent_directory = '/' . implode('/', $copy_of_parts);
-			} else {
+			}
+			else
+			{
 				$this->parent_directory = '/';
 			}
-		} else {
+		}
+		else
+		{
 			$this->parent_directory = '';
 		}
 
@@ -58,7 +65,7 @@ class AkeebaModelSftpbrowsers extends F0FModel
 		$sftphandle = null;
 
 		// Open a connection
-		if(!function_exists('ssh2_connect'))
+		if (!function_exists('ssh2_connect'))
 		{
 			$this->setError("Your web server does not have the SSH2 PHP module, therefore can not connect and upload archives to SFTP servers.");
 
@@ -76,9 +83,9 @@ class AkeebaModelSftpbrowsers extends F0FModel
 
 		// Connect to the server
 
-		if(!empty($this->pubkey) && !empty($this->privkey))
+		if (!empty($this->pubkey) && !empty($this->privkey))
 		{
-			if(!ssh2_auth_pubkey_file($connection, $this->username, $this->pubkey, $this->privkey, $this->password))
+			if (!ssh2_auth_pubkey_file($connection, $this->username, $this->pubkey, $this->privkey, $this->password))
 			{
 				$this->setError('Certificate error');
 
@@ -87,7 +94,7 @@ class AkeebaModelSftpbrowsers extends F0FModel
 		}
 		else
 		{
-			if(!ssh2_auth_password($connection, $this->username, $this->password))
+			if (!ssh2_auth_password($connection, $this->username, $this->password))
 			{
 				$this->setError('Could not authenticate access to SFTP server; check your username and password.');
 
@@ -97,7 +104,7 @@ class AkeebaModelSftpbrowsers extends F0FModel
 
 		$sftphandle = ssh2_sftp($connection);
 
-		if($sftphandle === false)
+		if ($sftphandle === false)
 		{
 			$this->setWarning("Your SSH server does not allow SFTP connections");
 
@@ -106,7 +113,38 @@ class AkeebaModelSftpbrowsers extends F0FModel
 
 		// Get a raw directory listing (hoping it's a UNIX server!)
 		$list = array();
-		$dir = ltrim($dir, '/');
+		$dir  = ltrim($dir, '/');
+
+		if (empty($dir))
+		{
+			$dir = ssh2_sftp_realpath($sftphandle, ".");
+
+			$this->directory = $dir;
+
+			// Parse directory to parts
+			$parsed_dir  = trim($dir, '/');
+			$this->parts = empty($parsed_dir) ? array() : explode('/', $parsed_dir);
+
+			// Find the path to the parent directory
+			if (!empty($parts))
+			{
+				$copy_of_parts = $parts;
+				array_pop($copy_of_parts);
+
+				if (!empty($copy_of_parts))
+				{
+					$this->parent_directory = '/' . implode('/', $copy_of_parts);
+				}
+				else
+				{
+					$this->parent_directory = '/';
+				}
+			}
+			else
+			{
+				$this->parent_directory = '';
+			}
+		}
 
 		$handle = opendir("ssh2.sftp://$sftphandle/$dir");
 
@@ -147,11 +185,11 @@ class AkeebaModelSftpbrowsers extends F0FModel
 		$list = $this->getListing();
 
 		$response_array = array(
-			'error'			=> $this->getError(),
-			'list'			=> $list,
-			'breadcrumbs'	=> $this->parts,
-			'directory'		=> $this->directory,
-			'parent'		=> $this->parent_directory
+			'error'       => $this->getError(),
+			'list'        => $list,
+			'breadcrumbs' => $this->parts,
+			'directory'   => $this->directory,
+			'parent'      => $this->parent_directory
 		);
 
 		return $response_array;

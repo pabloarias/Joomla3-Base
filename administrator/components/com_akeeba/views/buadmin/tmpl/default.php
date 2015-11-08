@@ -10,6 +10,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+/** @var  AkeebaViewBuadmin  $this */
+
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.modal');
 JHtml::_('bootstrap.popover', '.akeebaCommentPopover', array(
@@ -18,6 +20,8 @@ JHtml::_('bootstrap.popover', '.akeebaCommentPopover', array(
 	'title'		=> JText::_('STATS_LABEL_COMMENT'),
 	'placement'	=> 'bottom'
 ));
+
+JFactory::getDocument()->addStyleSheet('https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
 
 $dateFormat = \Akeeba\Engine\Util\Comconfig::getValue('dateformat', '');
 $dateFormat = trim($dateFormat);
@@ -73,12 +77,23 @@ foreach ($scripting['scripts'] as $key => $data)
 	}
 </script>
 
+<?php
+// Restoration information prompt
+$proKey = (defined('AKEEBA_PRO') && AKEEBA_PRO) ? 'PRO' : 'CORE';
+if (\Akeeba\Engine\Platform::getInstance()->get_platform_configuration_option('show_howtorestoremodal', 1)):
+	echo $this->loadAnyTemplate('admin:com_akeeba/buadmin/howtorestore_modal');
+else:
+?>
 <div class="alert alert-info">
 	<button class="close" data-dismiss="alert">×</button>
 	<h4 class="alert-heading"><?php echo JText::_('BUADMIN_LABEL_HOWDOIRESTORE_LEGEND') ?></h4>
 
-	<p><?php echo JText::sprintf('BUADMIN_LABEL_HOWDOIRESTORE_TEXT', 'https://www.akeebabackup.com/documentation/quick-start-guide/restoring-backups.html', 'https://www.akeebabackup.com/documentation/video-tutorials/item/1024-ab04.html') ?></p>
+	<?php echo JText::sprintf('COM_AKEEBA_BUADMIN_LABEL_HOWDOIRESTORE_TEXT_' . $proKey,
+			'https://www.akeebabackup.com/documentation/video-tutorials/item/1024-ab04.html',
+			'index.php?option=com_akeeba&view=transfer'); ?>
 </div>
+<?php endif; ?>
+
 <div id="j-main-container">
 <form action="index.php" method="post" name="adminForm" id="adminForm">
 <input type="hidden" name="option" id="option" value="com_akeeba"/>
@@ -95,8 +110,6 @@ foreach ($scripting['scripts'] as $key => $data)
 	'id'          => JText::_('STATS_LABEL_ID'),
 	'description' => JText::_('STATS_LABEL_DESCRIPTION'),
 	'backupstart' => JText::_('STATS_LABEL_START'),
-	'origin'      => JText::_('STATS_LABEL_ORIGIN'),
-	'type'        => JText::_('STATS_LABEL_TYPE'),
 	'profile_id'  => JText::_('STATS_LABEL_PROFILEID'),
 	);
 	JHtml::_('formbehavior.chosen', 'select');
@@ -110,9 +123,9 @@ foreach ($scripting['scripts'] as $key => $data)
 			       title="<?php echo JText::_('STATS_LABEL_DESCRIPTION'); ?>"/>
 		</div>
 		<div class="btn-group pull-left hidden-phone">
-			<button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i
+			<button class="btn" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i
 					class="icon-search"></i></button>
-			<button class="btn hasTooltip" type="button"
+			<button class="btn" type="button"
 			        onclick="document.id('filter_description').value='';this.form.submit();"
 			        title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 		</div>
@@ -124,7 +137,7 @@ foreach ($scripting['scripts'] as $key => $data)
 			<?php echo JHTML::_('calendar', $this->lists->fltTo, 'to', 'to', '%Y-%m-%d', array('class' => 'input-small')); ?>
 		</div>
 		<div class="btn-group pull-left hidden-phone">
-			<button class="btn hasTooltip" type="button" onclick="this.form.submit(); return false;"
+			<button class="btn" type="button" onclick="this.form.submit(); return false;"
 			        title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 		</div>
 		<div class="btn-group pull-left hidden-phone">
@@ -170,26 +183,17 @@ foreach ($scripting['scripts'] as $key => $data)
 	<th width="20" class="hidden-phone">
 		<?php echo JHTML::_('grid.sort', 'STATS_LABEL_ID', 'id', $this->lists->order_Dir, $this->lists->order, 'default'); ?>
 	</th>
-	<th width="240">
+	<th>
 		<?php echo JHTML::_('grid.sort', 'STATS_LABEL_DESCRIPTION', 'description', $this->lists->order_Dir, $this->lists->order, 'default'); ?>
 	</th>
-	<th width="80">
-		<?php echo JHTML::_('grid.sort', 'STATS_LABEL_START', 'backupstart', $this->lists->order_Dir, $this->lists->order, 'default'); ?>
-	</th>
-	<th width="80" class="hidden-phone">
-		<?php echo JText::_('STATS_LABEL_DURATION'); ?>
-	</th>
-	<th width="80">
-		<?php echo JText::_('STATS_LABEL_STATUS'); ?>
-	</th>
-	<th width="80" class="hidden-phone">
-		<?php echo JHTML::_('grid.sort', 'STATS_LABEL_ORIGIN', 'origin', $this->lists->order_Dir, $this->lists->order, 'default'); ?>
-	</th>
-	<th width="80" class="hidden-phone">
-		<?php echo JHTML::_('grid.sort', 'STATS_LABEL_TYPE', 'type', $this->lists->order_Dir, $this->lists->order, 'default'); ?>
-	</th>
-	<th width="20" class="hidden-phone">
+	<th  class="hidden-phone">
 		<?php echo JHTML::_('grid.sort', 'STATS_LABEL_PROFILEID', 'profile_id', $this->lists->order_Dir, $this->lists->order, 'default'); ?>
+	</th>
+	<th width="5%">
+		<?php echo JText::_('STATS_LABEL_DURATION') ?>
+	</th>
+	<th width="40">
+		<?php echo JText::_('STATS_LABEL_STATUS'); ?>
 	</th>
 	<th width="80" class="hidden-phone">
 		<?php echo JText::_('STATS_LABEL_SIZE'); ?>
@@ -215,12 +219,48 @@ foreach ($scripting['scripts'] as $key => $data)
 		$check = JHTML::_('grid.id', ++$i, $record['id']);
 
 		$backupId = isset($record['backupid']) ? $record['backupid'] : '';
-		$origin_lbl = 'STATS_LABEL_ORIGIN_' . strtoupper($record['origin']);
-		$origin = JText::_($origin_lbl);
+		$originLanguageKey = 'STATS_LABEL_ORIGIN_' . strtoupper($record['origin']);
+		$originDescription = JText::_($originLanguageKey);
 
-		if (empty($origin_lbl))
+		switch (strtolower($record['origin']))
 		{
-			$origin = '&ndash;';
+			case 'backend':
+				$originIcon = 'fa-desktop';
+				break;
+
+			case 'frontend':
+				$originIcon = 'fa-globe';
+				break;
+
+			case 'json':
+				$originIcon = 'fa-cloud';
+				break;
+
+			case 'cli':
+				$originIcon = 'fa-keyboard-o';
+				break;
+
+			case 'xmlrpc':
+				$originIcon = 'fa-code';
+				break;
+
+			case 'restorepoint':
+				$originIcon = 'fa-refresh';
+				break;
+
+			case 'lazy':
+				$originIcon = 'fa-joomla';
+				break;
+
+			default:
+				$originIcon = 'fa-question';
+				break;
+		}
+
+		if (empty($originLanguageKey) || ($originDescription == $originLanguageKey))
+		{
+			$originDescription = '&ndash;';
+			$originIcon = 'fa-question';
 		}
 
 		if (array_key_exists($record['type'], $backup_types))
@@ -250,88 +290,13 @@ foreach ($scripting['scripts'] as $key => $data)
 		}
 		else
 		{
-			$duration = '-';
+			$duration = '';
 		}
-		/*
+
 		$user = JFactory::getUser();
-		$userTZ = $user->getParam('timezone',0);
-		$startTime->setOffset($userTZ);
-		*/
-
-		$filename_col = '';
-
-		if (!empty($record['remote_filename']) && (AKEEBA_PRO == 1))
-		{
-			// If we have a remote filename we allow for remote file management in the Pro release
-			$remotemgmttext = JText::_('STATS_LABEL_REMOTEFILEMGMT');
-			$filename_col = <<<ENDHTML
-<a
-	class="modal akeeba_remote_management_link btn btn-mini"
-	href="index.php?option=com_akeeba&view=remotefiles&tmpl=component&task=listactions&id={$record['id']}";
-	rel="{handler: 'iframe', size: {x: 450, y: 280}, onClose: function(){window.location='index.php?option=com_akeeba&view=buadmin'}}"
->&raquo; $remotemgmttext &laquo;</a>
-ENDHTML;
-			if ($record['meta'] != 'obsolete')
-			{
-				$filename_col .= '<hr/>' . JText::_('REMOTEFILES_LBL_LOCALFILEHEADER');
-			}
-		}
-		elseif (@empty($record['remote_filename']) && ($this->enginesPerProfile[$record['profile_id']] != 'none') && ($record['meta'] != 'obsolete') && (AKEEBA_PRO == 1))
-		{
-			$postProcEngine = $this->enginesPerProfile[$record['profile_id']];
-			if (!empty($postProcEngine))
-			{
-				$filename_col .= '<a '
-					. 'class="modal akeeba_upload" '
-					. 'href="index.php?option=com_akeeba&view=upload&tmpl=component&task=start&id=' . $record['id'] . '" '
-					. 'rel="{handler: \'iframe\', size: {x: 350, y: 200}, onClose: function(){window.location=\'index.php?option=com_akeeba&view=buadmin\'}}" '
-					. 'title="' . JText::sprintf('AKEEBA_TRANSFER_DESC', JText::_("ENGINE_POSTPROC_{$postProcEngine}_TITLE")) . '">' .
-					JText::_('AKEEBA_TRANSFER_TITLE') . ' (<em>' . $postProcEngine . '</em>)' .
-					'</a>';
-				$filename_col .= '<hr/>' . JText::_('REMOTEFILES_LBL_LOCALFILEHEADER');
-			}
-		}
-
-		if ($record['meta'] == 'ok')
-		{
-			// Get the download links for downloads for completed, valid backups
-			$thisPart = '';
-			$thisID = urlencode($record['id']);
-			$filename_col .= '<code>' . $record['archivename'] . "</code><br/>";
-			if ($record['multipart'] == 0)
-			{
-				// Single part file -- Create a simple link
-				$filename_col .= "<a class=\"btn btn-mini\" href=\"javascript:confirmDownload('$thisID', '$thisPart');\"><i class=\"icon-download-alt\"></i>" . JText::_('STATS_LOG_DOWNLOAD') . "</a>";
-			}
-			else
-			{
-				for ($count = 0; $count < $record['multipart']; $count++)
-				{
-					$thisPart = urlencode($count);
-					$label = JText::sprintf('STATS_LABEL_PART', $count);
-					$filename_col .= ($count > 0) ? ' &bull; ' : '';
-					$filename_col .= "<a class=\"btn btn-mini\" href=\"javascript:confirmDownload('$thisID', '$thisPart');\"><i class=\"icon-download-alt\"></i>$label</a>";
-				}
-			}
-		}
-		else
-		{
-			// If the backup is not complete, just show dashes
-			if (empty($filename_col))
-			{
-				$filename_col .= '&mdash;';
-			}
-		}
-
-		// If there is a backup ID, show the view log button
-		if (($record['meta'] == 'ok') && isset($record['backupid']) && !empty($record['backupid']))
-		{
-			$viewLogTag = $record['tag'] . '.' . $record['backupid'];
-			$viewLogUrl = JUri::base() . 'index.php?option=com_akeeba&view=log&tag=' . $viewLogTag . '&profileid=' . $record['profile_id'];
-			$viewLogLabel = JText::_('VIEWLOG');
-			$filename_col .= '<br><a class="btn btn-mini" href="' . $viewLogUrl . '">' .
-				'<span class="icon icon-list-alt"></span>' . $viewLogLabel . '</a>';
-		}
+		$userTZ = $user->getParam('timezone', 'UTC');
+		$tz = new DateTimeZone($userTZ);
+		$startTime->setTimezone($tz);
 
 		// Link for Show Comments lightbox
 		$info_link = "";
@@ -348,16 +313,23 @@ ENDHTML;
 		switch ($record['meta'])
 		{
 			case 'ok':
+				$statusIcon = 'fa-check';
 				$statusClass = 'label-success';
 				break;
 			case 'pending':
+				$statusIcon = 'fa-play-circle-o';
 				$statusClass = 'label-warning';
 				break;
 			case 'fail':
+				$statusIcon = 'fa-times';
 				$statusClass = 'label-important';
 				break;
 			case 'remote':
+				$statusIcon = 'fa-cloud';
 				$statusClass = 'label-info';
+				break;
+			default:
+				$statusIcon = 'fa-trash-o';
 				break;
 		}
 
@@ -374,30 +346,20 @@ ENDHTML;
 				<?php echo $record['id']; ?>
 			</td>
 			<td>
+				<span class="fa fa-fw <?php echo $originIcon ?> akeebaCommentPopover" rel="popover"
+					  title="<?php echo JText::_('STATS_LABEL_ORIGIN'); ?>"
+					data-content="<?php echo htmlentities($originDescription) ?>"
+					></span>
 				<?php echo $info_link ?>
 				<a href="<?php echo $edit_link; ?>"><?php echo $this->escape($record['description']) ?></a>
-				<?php if ($backupId): ?>
-					<br/>
+				<br/>
+				<div class="akeeba-buadmin-startdate" title="<?php echo JText::_('STATS_LABEL_START') ?>">
 					<small>
-						<?php echo $backupId ?>
+						<span class="fa fa-fw fa-calendar"></span>
+						<?php echo $startTime->format($dateFormat); ?>
 					</small>
-				<?php endif; ?>
+				</div>
 			</td>
-			<td>
-				<?php echo $startTime->format($dateFormat, true); ?>
-			</td>
-			<td class="hidden-phone">
-				<?php echo $duration; ?>
-			</td>
-			<td>
-				<span class="label <?php echo $statusClass; ?>">
-					<?php echo $status ?>
-				</span>
-			</td>
-			<td class="hidden-phone">
-				<?php echo $origin ?>
-			</td>
-			<td class="hidden-phone"><?php echo $type ?></td>
 			<td class="hidden-phone">
 				<?php
 				$profileName = '&mdash;';
@@ -407,12 +369,29 @@ ENDHTML;
 					$profileName = $this->escape($this->profiles[$record['profile_id']]->description);
 				}
 				?>
-				<span class="akeebaCommentPopover" rel="popover" title="<?php echo JText::_('STATS_LABEL_PROFILEID') . ' ' . $record['profile_id'] ?>" data-content="<?php echo $this->escape($profileName) ?>">
-				<?php echo $record['profile_id'] ?>
+				#<?php echo $record['profile_id'] ?>. <?php echo $profileName ?>
+				<br/>
+				<small>
+					<em><?php echo $type ?></em>
+				</small>
+			</td>
+			<td>
+				<?php echo $duration; ?>
+			</td>
+			<td>
+				<span class="label <?php echo $statusClass; ?> akeebaCommentPopover" rel="popover"
+					  title="<?php echo JText::_('STATS_LABEL_STATUS')?>"
+					  data-content="<?php echo $status ?>"
+					>
+					<span class="fa fa-fw <?php echo $statusIcon; ?>"></span>
 				</span>
 			</td>
 			<td class="hidden-phone"><?php echo ($record['meta'] == 'ok') ? format_filesize($record['size']) : ($record['total_size'] > 0 ? "(<i>" . format_filesize($record['total_size']) . "</i>)" : '&mdash;') ?></td>
-			<td class="hidden-phone"><?php echo $filename_col; ?></td>
+			<td class="hidden-phone">
+				<?php echo $this->loadAnyTemplate('admin:com_akeeba/buadmin/manage_column', array(
+					'record' => &$record,
+				)); ?>
+			</td>
 		</tr>
 	<?php endforeach; ?>
 <?php endif; ?>

@@ -21,7 +21,7 @@ class AkeebaControllerCpanel extends F0FController
 {
 	public function execute($task)
 	{
-		if ( !in_array($task, array('switchprofile', 'disablephpwarning', 'updateinfo', 'fastcheck')))
+		if (!in_array($task, array('switchprofile', 'disablephpwarning', 'updateinfo', 'fastcheck', 'applydlid')))
 		{
 			$task = 'browse';
 		}
@@ -47,7 +47,7 @@ class AkeebaControllerCpanel extends F0FController
 			// Invalidate stale backups
 			Factory::resetState(array(
 				'global' => true,
-				'log' => false,
+				'log'    => false,
 				'maxrun' => $params->get('failure_timeout', 180)
 			));
 
@@ -84,7 +84,7 @@ class AkeebaControllerCpanel extends F0FController
 
 		$newProfile = $this->input->get('profileid', -10, 'int');
 
-		if ( !is_numeric($newProfile) || ($newProfile <= 0))
+		if (!is_numeric($newProfile) || ($newProfile <= 0))
 		{
 			$this->setRedirect(JUri::base() . 'index.php?option=com_akeeba', JText::_('PANEL_PROFILE_SWITCH_ERROR'), 'error');
 
@@ -95,7 +95,7 @@ class AkeebaControllerCpanel extends F0FController
 		$session->set('profile', $newProfile, 'akeeba');
 		$url       = '';
 		$returnurl = $this->input->get('returnurl', '', 'base64');
-		if ( !empty($returnurl))
+		if (!empty($returnurl))
 		{
 			$url = base64_decode($returnurl);
 		}
@@ -143,7 +143,7 @@ class AkeebaControllerCpanel extends F0FController
 		// Redirect back to the control panel
 		$url       = '';
 		$returnurl = $this->input->get('returnurl', '', 'base64');
-		if ( !empty($returnurl))
+		if (!empty($returnurl))
 		{
 			$url = base64_decode($returnurl);
 		}
@@ -206,5 +206,53 @@ ENDRESULT;
 
 		// Cut the execution short
 		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * Applies the Download ID when the user is prompted about it in the Control Panel
+	 */
+	public function applydlid()
+	{
+		// CSRF prevention
+		if ($this->csrfProtection)
+		{
+			$this->_csrfProtection();
+		}
+
+		$msg = JText::_('COM_AKEEBA_CPANEL_ERR_INVALIDDOWNLOADID');
+		$msgType = 'error';
+		$dlid = $this->input->getString('dlid', '');
+
+		// If the Download ID seems legit let's apply it
+		if (preg_match('/^([0-9]{1,}:)?[0-9a-f]{32}$/i', $dlid))
+		{
+			$msg = null;
+			$msgType = null;
+
+			JLoader::import('joomla.application.component.helper');
+			$params = JComponentHelper::getParams('com_akeeba');
+			$params->set('update_dlid', $dlid);
+
+			$db = JFactory::getDbo();
+
+			$sql = $db->getQuery(true)
+				->update($db->qn('#__extensions'))
+				->set($db->qn('params') . ' = ' . $db->q($params->toString('JSON')))
+				->where($db->qn('element') . " = " . $db->q('com_akeeba'));
+			$db->setQuery($sql)->execute();
+		}
+
+		// Redirect back to the control panel
+		$url       = '';
+		$returnurl = $this->input->get('returnurl', '', 'base64');
+		if (!empty($returnurl))
+		{
+			$url = base64_decode($returnurl);
+		}
+		if (empty($url))
+		{
+			$url = JUri::base() . 'index.php?option=com_akeeba';
+		}
+		$this->setRedirect($url, $msg, $msgType);
 	}
 }

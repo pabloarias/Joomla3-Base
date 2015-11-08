@@ -1,4 +1,60 @@
 <?php die();?>
+Akeeba Backup 4.4.3
+================================================================================
++ One-click backup icons. Select which profiles to display as one-click icons in Akeeba Backup's control panel
++ More prominent site restoration and transfer instructions in the Manage Backups page
++ ANGIE: Added support for PrestaShop 1.4.x
+# [HIGH] Chunked upload to OneDrive would result in an error
+# [HIGH] Only 5Mb would be transferred to Amazon S3 on some hosts with PHP compiled against a broken libcurl library; workaround applied.
+# [HIGH] Multipart upload to S3 fails when the file size is an integer multiple of the chunk size
+# [HIGH] Amazon S3 has a major bug with Content-Length on some hosts when using single part uploads. We are now working around it.
+# [MEDIUM] Using "Manage remote files" in the Manage Backups page could mangle backup profiles under some circumstances
+# [LOW] Extra databases definition page, trying to validate the connection without any information entered results in a success message
+# [LOW] Fixed supplying additional Download ID directly from the Control Panel page
+# [LOW] Fixed backing up multiple external folders
+
+Akeeba Backup 4.4.2
+================================================================================
+# [HIGH] Under rare circumstances temporary data could be committed to the database and break future backups.
+# [HIGH] Amazon S3 has a major bug with Content-Length on some hosts when using multipart uploads. We are now working around it.
+# [HIGH] Google Storage and DreamObjects would not work
+# [HIGH] Upload to S3 would fail due to cacert.pem issues with some hosts and versions of PHP
+# [HIGH] Upload to S3 would fail if a file was an integer multiple of the Amazon S3 chunk size (5242880)
+# [HIGH] Obsolete jQuery Tooltip plugin could cause JavaScript errors
+
+Akeeba Backup 4.4.2.b1
+================================================================================
+- Removed the "Upload to Amazon S3 (legacy API)" post-processing engine. Existing backup profiles will be automatically migrated to the "Upload to Amazon S3" engine. [PRO]
+- Removed post-installation messages
++ Akeeba Backup will ask you to enter your Download ID before showing you available updates. [PRO]
++ Akeeba Backup will ask you to run the Configuration Wizard when it detects it's necessary. One less thing for you to remember!
++ JSON API: Return an error if preflight configuration checks indicate a critical error (e.g. output directory not writeable)
++ "Exclude error logs" filter, enabled by default, to prevent broken backup archives when error logs change their size / are rotated while the backup is in progress
+~ CLI scripts should now print a warning instead of immediately dying if you try running them in PHP 5.2 or earlier (what are you doing with this kind of archaic PHP versions on your production servers anyway?!!) [PRO]
+~ The profile ID is displayed in the profile selection drop-down
+~ Desktop notifications are now optional. If you have already enabled them don't worry, they won't be disabled (your browser remembers the previous setting).
+~ Improved layout for the Control Panel page
+~ New icon colour palette for easier identification of the Control Panel icons
+~ No more yellow flash when loading the Akeeba Backup control panel page
+~ Manage Backups: "Part 00" would be displayed when there is just one backup part present. Button label changed to "Download".
+~ Manage Backups: Simplified the page layout
+~ ANGIE: Removed the confusing messages about restoring to a different site or PHP version
+~ ANGIE: Simplified the final page ("Finished")
+~ Make it more obvious that the Scheduling Information tabs actually DO work when you click on them
+~ Remove the title from the popover tips
++ ANGIE: Added throttle speed for replacing data
++ Automatically exclude folders related to version control systems
+# [HIGH] No error thrown when the engine state cannot be saved while the backup is in progress
+# [HIGH] The database storage option for the temporary data didn't work
+# [MEDIUM] Updated Dropbox post processing engine due to changes on their servers [PRO]
+# [MEDIUM] FTP/SFTP browser would fail on some servers when you don't provide a starting directory [PRO]
+# [LOW] Database schema self-healing was disabled
+# [LOW] The backup size would be inflated if "Upload each part immediately" is enabled and it takes multiple step to post process a single archive part [PRO]
+
+Akeeba Backup 4.4.0 and 4.4.1
+================================================================================
+~ These versions were removed shortly after release due to high priority issues in the Amazon S3 API.
+
 Akeeba Backup 4.3.1
 ================================================================================
 # [LOW] Core: Archive integrity test would not run due to a file not being installed

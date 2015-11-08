@@ -143,6 +143,13 @@
 	</fieldset>
 
 	<fieldset name="push" label="COM_AKEEBA_CONFIG_PUSH_HEADER_LABEL" description="COM_AKEEBA_CONFIG_PUSH_HEADER_DESC">
+		<field name="desktop_notifications" type="list" default="0"
+			   label="COM_AKEEBA_CONFIG_DESKTOP_NOTIFICATIONS_LABEL"
+			   description="COM_AKEEBA_CONFIG_DESKTOP_NOTIFICATIONS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field name="push_preference" type="list" default="0"
 			   label="COM_AKEEBA_CONFIG_PUSH_PREFERENCE_LABEL"
 			   description="COM_AKEEBA_CONFIG_PUSH_PREFERENCE_DESC">

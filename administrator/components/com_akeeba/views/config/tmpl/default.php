@@ -11,23 +11,16 @@ defined('_JEXEC') or die();
 
 JHtml::_('behavior.modal');
 
+/** @var  AkeebaViewConfig  $this */
 ?>
 
-<!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->
-<div id="nojquerywarning" style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;">
-	<h1 style="margin: 1em 0; color: red; font-size: 22pt;"><?php echo JText::_('AKEEBA_CPANEL_WARN_ERROR') ?></h1>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L1B'); ?></p>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L2'); ?></p>
-</div>
-<script type="text/javascript" language="javascript">
-	if(typeof akeeba.jQuery == 'function')
-	{
-		if(typeof akeeba.jQuery.ui == 'object')
-		{
-			akeeba.jQuery('#nojquerywarning').css('display','none');
-		}
-	}
-</script>
+<?php
+// Configuration Wizard prompt
+if (!\Akeeba\Engine\Factory::getConfiguration()->get('akeeba.flag.confwiz', 0))
+{
+	echo $this->loadAnyTemplate('admin:com_akeeba/config/confwiz_modal');
+}
+?>
 
 <div class="akeeba-bootstrap" id="ftpdialog" title="<?php echo JText::_('CONFIG_UI_FTPBROWSER_TITLE') ?>" style="display:none;">
 	<p class="instructions alert alert-info">
@@ -80,12 +73,12 @@ JHtml::_('behavior.modal');
 	</div>
 	<div class="ak_clr"></div>
 	<?php endif; ?>
-	
+
 	<div class="alert alert-info">
 		<strong><?php echo JText::_('CPANEL_PROFILE_TITLE'); ?></strong>:
 		#<?php echo $this->profileid; ?> <?php echo $this->profilename; ?>
 	</div>
-	
+
 	<div class="alert">
 		<?php echo JText::_('CONFIG_WHERE_ARE_THE_FILTERS'); ?>
 	</div>
@@ -95,6 +88,7 @@ JHtml::_('behavior.modal');
 	<h4>
 		<?php echo JText::_('PROFILE_LABEL_DESCRIPTION') ?>
 	</h4>
+
 	<div class="control-group">
 		<label class="control-label" for="profilename" rel="popover"
 			data-original-title="<?php echo JText::_('PROFILE_LABEL_DESCRIPTION') ?>"
@@ -105,8 +99,19 @@ JHtml::_('behavior.modal');
 			<input type="text" name="profilename" id="profilename" value="<?php echo $this->escape($this->profilename); ?>" />
 		</div>
 	</div>
+
+	<div class="control-group">
+		<label class="control-label" for="quickicon" rel="popover"
+			   data-original-title="<?php echo JText::_('COM_AKEEBA_CONFIG_QUICKICON_LABEL') ?>"
+			   data-content="<?php echo JText::_('COM_AKEEBA_CONFIG_QUICKICON_DESC') ?>">
+			<?php echo JText::_('COM_AKEEBA_CONFIG_QUICKICON_LABEL') ?>
+		</label>
+		<div class="controls">
+			<input type="checkbox" name="quickicon" id="quickicon" <?php echo $this->quickicon ? 'checked="checked"' : ''; ?>/>
+		</div>
+	</div>
 </div>
-	
+
 <input type="hidden" name="option" value="com_akeeba" />
 <input type="hidden" name="view" value="config" />
 <input type="hidden" name="task" value="" />
@@ -123,7 +128,7 @@ JHtml::_('behavior.modal');
 
 	// Hook for DirectFTP connection test
 	var directftp_test_connection = null;
-	
+
 	var directsftp_test_connection = null;
 
 	<?php if(defined('AKEEBA_PRO')): ?>
@@ -242,7 +247,7 @@ JHtml::_('behavior.modal');
 				button.addClass('ui-state-default');
 
 				var dialog_element = new Element('div');
-				
+
 				var dlgHead = new Element('h3');
 				dlgHead.set('html','<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_DIRECTFTP_TEST_DIALOG_TITLE')) ?>');
 				dlgHead.inject(dialog_element);
@@ -268,7 +273,7 @@ JHtml::_('behavior.modal');
 				});
 			});
 		}
-		
+
 		// Create the DirectSFTP connection test hook
 		directsftp_test_connection = function()
 		{
@@ -286,22 +291,22 @@ JHtml::_('behavior.modal');
 
 			// Construct the query
 			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS('index.php?option=com_akeeba&view=config&task=testsftp') ?>';
-			
+
 			var dialog_element = new Element('div');
-				
+
 			var dlgHead = new Element('h3');
 			dlgHead.set('html','<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_DIRECTSFTP_TEST_DIALOG_TITLE')) ?>');
 			dlgHead.inject(dialog_element);
-			
+
 			var dlgPara = new Element('p');
 			dlgPara.set('html','<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_DIRECTSFTP_PLEASE_WAIT')) ?>');
 			dlgPara.inject(dialog_element);
-			
+
 			SqueezeBox.open(new Element(dialog_element), {
 				handler:	'adopt',
 				size:		{x: 400, y: 200}
 			});
-			
+
 			doAjax(data, function(res){
 				var button = $(document.getElementById('engine.archiver.directsftp.sftp_test'));
 				button.removeClass('ui-state-disabled');
@@ -357,7 +362,7 @@ JHtml::_('behavior.modal');
 				button.addClass('ui-state-default');
 
 				var dialog_element = new Element('div');
-				
+
 				var dlgHead = new Element('h3');
 				dlgHead.set('html','<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_POSTPROCFTP_TEST_DIALOG_TITLE')) ?>');
 				dlgHead.inject(dialog_element);
@@ -453,7 +458,7 @@ JHtml::_('behavior.modal');
 			    path = '/' + (path+'').replace(re, '');
 				$(document.getElementById('var[engine.postproc.ftp.initial_directory]')).val(path);
 			}
-			
+
 			akeeba_ftpbrowser_hook( akeeba_postprocftp_callback );
 		}
 
@@ -487,7 +492,7 @@ JHtml::_('behavior.modal');
 				$(element).val( myFolder );
 				SqueezeBox.close();
 			};
-			
+
 			// URL to load the browser
 			var browserSrc = '<?php echo AkeebaHelperEscape::escapeJS(JUri::base().'index.php?option=com_akeeba&view=browser&tmpl=component&processfolder=1&folder=') ?>';
 			browserSrc = browserSrc + encodeURIComponent(folder);
@@ -515,7 +520,7 @@ JHtml::_('behavior.modal');
 			    path = '/' + (path+'').replace(re, '');
 				$(document.getElementById('var[engine.archiver.directftp.initial_directory]')).val(path);
 			}
-			
+
 			akeeba_ftpbrowser_hook( akeeba_directftp_callback );
 		}
 
@@ -527,7 +532,7 @@ JHtml::_('behavior.modal');
 				callback(akeeba_ftpbrowser_directory);
 				ftp_dialog_element.dialog("close");
 			};
-			
+
 			ftp_dialog_element.css('display','block');
 			ftp_dialog_element.removeClass('ui-state-error');
 			ftp_dialog_element.dialog({
@@ -551,12 +556,12 @@ JHtml::_('behavior.modal');
 			$('#ftpBrowserCrumbs').html('');
 
 			ftp_dialog_element.dialog('open');
-			
+
 			// URL to load the browser
 			akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS(JUri::base().'index.php?option=com_akeeba&view=ftpbrowser' ) ?>';
 
 			if(empty(akeeba_ftpbrowser_directory)) akeeba_ftpbrowser_directory = '';
-			
+
 			var data = {
 				'host'		: akeeba_ftpbrowser_host,
 				'username'	: akeeba_ftpbrowser_username,
@@ -590,7 +595,7 @@ JHtml::_('behavior.modal');
 							var relativePath = '/';
 
 							akeeba_ftpbrowser_addcrumb(akeeba_translations['UI-ROOT'], '/', callback);
-														
+
 							$.each(data.breadcrumbs, function(i, crumb) {
 								relativePath += '/'+crumb;
 
@@ -604,11 +609,11 @@ JHtml::_('behavior.modal');
 						if(!empty(data.list)) {
 							$('#ftpBrowserFolderList').css('display','block');
 							//akeeba_ftpbrowser_directory = $.data($('#ftpdialog'), 'directory');
-							//if(empty(akeeba_ftpbrowser_directory)) akeeba_ftpbrowser_directory = '';
-							
+							if(empty(akeeba_ftpbrowser_directory)) akeeba_ftpbrowser_directory = data.directory;
+
 							$.each(data.list, function(i, item) {
-								akeeba_ftpbrowser_create_link(akeeba_ftpbrowser_directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
-							});							
+								akeeba_ftpbrowser_create_link(data.directory+'/'+item, item, $('#ftpBrowserFolderList'), callback );
+							});
 						} else {
 							$('#ftpBrowserFolderList').css('display','none');
 						}
@@ -649,7 +654,7 @@ JHtml::_('behavior.modal');
 		{
 			if(empty(last)) last = false;
 			var li = $(document.createElement('li'));
-			
+
 			$(document.createElement('a'))
 				.html(crumb)
 				.click(function(e){
@@ -658,17 +663,17 @@ JHtml::_('behavior.modal');
 					e.preventDefault();
 				})
 				.appendTo(li);
-				
+
 			if(!last) {
 				$(document.createElement('span'))
 					.text('/')
 					.addClass('divider')
 					.appendTo(li);
 			}
-				
+
 			li.appendTo('#ak_crumbs');
 		}
-		
+
 		// FTP browser function
 		akeeba_sftpbrowser_hook = function( callback )
 		{
@@ -755,10 +760,10 @@ JHtml::_('behavior.modal');
 						if(!empty(data.list)) {
 							$('#sftpBrowserFolderList').css('display','block');
 							//akeeba_sftpbrowser_directory = $.data($('#sftpdialog'), 'directory');
-							//if(empty(akeeba_sftpbrowser_directory)) akeeba_sftpbrowser_directory = '';
+							if(empty(akeeba_sftpbrowser_directory)) akeeba_sftpbrowser_directory = data.directory;
 
 							$.each(data.list, function(i, item) {
-								akeeba_sftpbrowser_create_link(akeeba_sftpbrowser_directory+'/'+item, item, $('#sftpBrowserFolderList'), callback );
+								akeeba_sftpbrowser_create_link(data.directory+'/'+item, item, $('#sftpBrowserFolderList'), callback );
 							});
 						} else {
 							$('#sftpBrowserFolderList').css('display','none');

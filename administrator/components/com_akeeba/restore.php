@@ -117,6 +117,12 @@ function debugMsg($msg)
 
 	fwrite($fp, $msg . "\n");
 	fclose($fp);
+
+	// Echo to stdout if KSDEBUGCLI is defined
+	if (defined('KSDEBUGCLI'))
+	{
+		echo $msg . "\n";
+	}
 }
 
 /**
@@ -4331,7 +4337,9 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 			$this->nextFile();
 		}
 
-		debugMsg('Reading file signature');
+		$this->currentPartOffset = ftell($this->fp);
+
+		debugMsg("Reading file signature; part {$this->currentPartNumber}, offset {$this->currentPartOffset}");
 		// Get and decode Entity Description Block
 		$signature = fread($this->fp, 3);
 
@@ -4454,6 +4462,7 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 		$this->fileHeader->file = $file;
 		$this->fileHeader->compressed = $header_data['compsize'];
 		$this->fileHeader->uncompressed = $header_data['uncompsize'];
+
 		switch($header_data['type'])
 		{
 			case 0:
@@ -4979,6 +4988,8 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 			$this->nextFile();
 		}
 
+		$this->currentPartOffset = ftell($this->fp);
+
 		if($this->expectDataDescriptor)
 		{
 			// The last file had bit 3 of the general purpose bit flag set. This means that we have a
@@ -5273,6 +5284,8 @@ class AKUnarchiverJPS extends AKUnarchiverJPA
 		if( $this->isEOF(true) ) {
 			$this->nextFile();
 		}
+
+		$this->currentPartOffset = ftell($this->fp);
 
 		// Get and decode Entity Description Block
 		$signature = fread($this->fp, 3);
@@ -6202,6 +6215,7 @@ class AKText extends AKAbstractObject
 		'BTN_TESTSFTPCON' => 'Test SFTP connection',
 		'BTN_GOTOSTART' => 'Start over',
 		'FINE_TUNE' => 'Fine tune',
+        'BTN_SHOW_FINE_TUNE' => 'Show advanced options (for experts)',
 		'MIN_EXEC_TIME' => 'Minimum execution time:',
 		'MAX_EXEC_TIME' => 'Maximum execution time:',
 		'SECONDS_PER_STEP' => 'seconds per step',

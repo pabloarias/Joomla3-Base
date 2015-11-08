@@ -44,6 +44,8 @@ class AkeebaControllerCheck extends F0FController
         $message .= implode(', ', $result['message']);
 
         @ob_end_clean();
+		header('Content-type: text/plain');
+		header('Connection: close');
         echo $message;
         flush();
         JFactory::getApplication()->close();

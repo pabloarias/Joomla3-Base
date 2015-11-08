@@ -20,6 +20,7 @@ CREATE TABLE "#__ak_profiles" (
 	"description" character varying(255) NOT NULL,
 	"configuration" text,
 	"filters" text,
+	"quickicon" smallint NOT NULL DEFAULT '1',
 	PRIMARY KEY ("id")
 );
             ]]></query>
@@ -33,8 +34,8 @@ SELECT COUNT(*) FROM "#__ak_profiles" WHERE "id" = 1;
 
             <query><![CDATA[
 INSERT INTO "#__ak_profiles"
-("id","description", "configuration", "filters") VALUES
-(1,'Default Backup Profile','','');
+("id","description", "configuration", "filters", "quickicon") VALUES
+(1,'Default Backup Profile','','',1);
             ]]></query>
         </action>
 
@@ -90,6 +91,15 @@ CREATE TABLE "#__ak_storage" (
             <query><![CDATA[
 ALTER TABLE "#__ak_stats"
 ADD COLUMN "backupid" character varying(255) DEFAULT NULL
+            ]]></query>
+        </action>
+
+        <!-- Add the quickicon column to #__ak_profiles if it's missing -->
+        <action table="#__ak_profiles" canfail="1">
+            <condition type="missing" value="quickicon" />
+            <query><![CDATA[
+ALTER TABLE "#__ak_profiles"
+ADD COLUMN "quickicon" smallint NOT NULL DEFAULT '1'
             ]]></query>
         </action>
     </sql>

@@ -606,4 +606,35 @@ ENDBODY;
         return $datetime;
     }
 
+	/**
+	 * Set the flag to hide the restoration instructions modal from the Manage Backups page
+	 *
+	 * @return  void
+	 */
+	public function hideRestorationInstructionsModal()
+	{
+		$component = JComponentHelper::getComponent('com_akeeba');
+
+		if (is_object($component->params) && ($component->params instanceof JRegistry))
+		{
+			$params = $component->params;
+		}
+		else
+		{
+			$params = new JRegistry($component->params);
+		}
+
+		$params->set('show_howtorestoremodal', 0);
+
+		$params->set('jversion', '1.6');
+		$db   = JFactory::getDBO();
+		$data = $params->toString();
+		$sql  = $db->getQuery(true)
+				   ->update($db->qn('#__extensions'))
+				   ->set($db->qn('params') . ' = ' . $db->q($data))
+				   ->where($db->qn('element') . ' = ' . $db->q('com_akeeba'))
+				   ->where($db->qn('type') . ' = ' . $db->q('component'));
+		$db->setQuery($sql);
+		$db->execute();
+	}
 }

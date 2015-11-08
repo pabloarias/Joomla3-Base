@@ -210,7 +210,15 @@ class F0FToolbar
 	                if (version_compare(JVERSION, '3.0', 'ge'))
 	                {
 		                JHtml::_('jquery.framework');
-		                JHtml::_('behavior.core');
+
+						if (version_compare(JVERSION, '3.3.0', 'ge'))
+						{
+							JHtml::_('behavior.core');
+						}
+						else
+						{
+							JHtml::_('behavior.framework', true);
+						}
 	                }
 	                else
 	                {

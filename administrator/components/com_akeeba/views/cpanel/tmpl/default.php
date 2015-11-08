@@ -28,6 +28,11 @@ $script = <<<JS
 ;// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
 // due to missing trailing semicolon and/or newline in their code.
 (function($){
+	if ({$this->desktop_notifications})
+	{
+		akeebaBackup_notifications_askPermission();
+	}
+
 	$(document).ready(function(){
 		$('#btnchangelog').click(showChangelog);
 	});
@@ -51,6 +56,14 @@ $script = <<<JS
 JS;
 JFactory::getDocument()->addScriptDeclaration($script,'text/javascript');
 
+?>
+
+<?php
+// Configuration Wizard prompt
+if (!\Akeeba\Engine\Factory::getConfiguration()->get('akeeba.flag.confwiz', 0))
+{
+	echo $this->loadAnyTemplate('admin:com_akeeba/config/confwiz_modal');
+}
 ?>
 
 <?php
@@ -92,19 +105,9 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 
 <div id="restOfCPanel">
 
-<?php if(!$this->schemaok): ?>
-<div style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;" id="notfixedperms">
-	<h1 style="margin: 1em 0; color: red; font-size: 22pt;"><?php echo JText::_('CPANEL_SCHEMAERROR_TITLE') ?></h1>
-	<p><?php echo JText::_('CPANEL_SCHEMAERROR_BODY') ?></p>
-</div>
-<?php
-	return;
-	endif;
-?>
-
-<?php if(!$this->fixedpermissions): ?>
-<div style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;" id="notfixedperms">
-	<h1 style="margin: 1em 0; color: red; font-size: 22pt;"><?php echo JText::_('AKEEBA_CPANEL_WARN_WARNING') ?></h1>
+<?php if (!$this->fixedpermissions): ?>
+<div id="notfixedperms" class="alert alert-error">
+	<h3><?php echo JText::_('AKEEBA_CPANEL_WARN_WARNING') ?></h3>
 	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_PERMS_L1') ?></p>
 	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_PERMS_L2') ?></p>
 	<ol>
@@ -114,23 +117,6 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_PERMS_L4') ?></p>
 </div>
 <?php endif; ?>
-
-<!-- jQuery & jQuery UI detection. Also shows a big, fat warning if they're missing -->
-<div id="nojquerywarning" style="margin: 1em; padding: 1em; background: #ffff00; border: thick solid red; color: black; font-size: 14pt;">
-	<h1 style="margin: 1em 0; color: red; font-size: 22pt;"><?php echo JText::_('AKEEBA_CPANEL_WARN_ERROR') ?></h1>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L1B'); ?></p>
-	<p><?php echo JText::_('AKEEBA_CPANEL_WARN_JQ_L2'); ?></p>
-</div>
-<script type="text/javascript" language="javascript">
-	if(typeof akeeba.jQuery == 'function')
-	{
-		if(typeof akeeba.jQuery.ui == 'object')
-		{
-			akeeba.jQuery('#nojquerywarning').css('display','none');
-			akeeba.jQuery('#notfixedperms').css('display','none');
-		}
-	}
-</script>
 
 <?php if(!version_compare(PHP_VERSION, '5.3.0', 'ge') && Comconfig::getValue('displayphpwarning', 1)): ?>
 <div class="alert">
@@ -148,8 +134,27 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 <?php endif; ?>
 
 <?php if($this->needsdlid): ?>
-<div class="alert">
-	<?php echo JText::sprintf('COM_AKEEBA_LBL_CPANEL_NEEDSDLID','https://www.akeebabackup.com/instructions/1435-akeeba-backup-download-id.html'); ?>
+<div class="alert alert-success">
+	<h3>
+		<?php echo JText::_('COM_AKEEBA_CPANEL_MSG_MUSTENTERDLID') ?>
+	</h3>
+	<p>
+		<?php echo JText::sprintf('COM_AKEEBA_LBL_CPANEL_NEEDSDLID','https://www.akeebabackup.com/instructions/1435-akeeba-backup-download-id.html'); ?>
+	</p>
+	<form name="dlidform" action="index.php" method="post" class="form-inline">
+		<input type="hidden" name="option" value="com_akeeba" />
+		<input type="hidden" name="view" value="cpanel" />
+		<input type="hidden" name="task" value="applydlid" />
+		<input type="hidden" name="<?php echo JFactory::getSession()->getFormToken()?>" value="1" />
+		<span>
+			<?php echo JText::_('COM_AKEEBA_CPANEL_MSG_PASTEDLID') ?>
+		</span>
+		<input type="text" name="dlid" placeholder="<?php echo JText::_('CONFIG_DOWNLOADID_LABEL')?>" class="input-xlarge">
+		<button type="submit" class="btn btn-success">
+			<span class="icon icon-checkbox"></span>
+			<?php echo JText::_('COM_AKEEBA_CPANEL_MSG_APPLYDLID') ?>
+		</button>
+	</form>
 </div>
 <?php elseif ($this->needscoredlidwarning): ?>
 <div class="alert alert-danger">
@@ -158,34 +163,6 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 <?php endif; ?>
 
 <div id="updateNotice"></div>
-
-<?php if($this->hasPostInstallationMessages): ?>
-<div class="alert alert-info">
-	<h3>
-		<?php echo JText::_('AKEEBA_CPANEL_PIM_TITLE'); ?>
-	</h3>
-	<p>
-		<?php echo JText::_('AKEEBA_CPANEL_PIM_DESC'); ?>
-	</p>
-	<a href="index.php?option=com_postinstall&eid=<?php echo $this->extension_id?>"
-		class="btn btn-primary btn-large">
-		<?php echo JText::_('AKEEBA_CPANEL_PIM_BUTTON'); ?>
-	</a>
-</div>
-<?php elseif(is_null($this->hasPostInstallationMessages)): ?>
-	<div class="alert alert-error">
-		<h3>
-			<?php echo JText::_('AKEEBA_CPANEL_PIM_ERROR_TITLE'); ?>
-		</h3>
-		<p>
-			<?php echo JText::_('AKEEBA_CPANEL_PIM_ERROR_DESC'); ?>
-		</p>
-		<a href="https://www.akeebabackup.com/documentation/troubleshooter/abpimerror.html"
-		   class="btn btn-primary btn-large">
-			<?php echo JText::_('AKEEBA_CPANEL_PIM_ERROR_BUTTON'); ?>
-		</a>
-	</div>
-<?php endif; ?>
 
 <div id="cpanel" class="row-fluid">
 	<div class="span8">
@@ -198,24 +175,91 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 				<?php echo JText::_('CPANEL_PROFILE_TITLE'); ?>: #<?php echo $this->profileid; ?>
 			</label>
 			<?php echo JHTML::_('select.genericlist', $this->profilelist, 'profileid', 'onchange="document.forms.adminForm.submit()" class="advancedSelect"', 'value', 'text', $this->profileid); ?>
-			<button class="btn" onclick="this.form.submit(); return false;">
-				<i class="icon-retweet"></i>
+			<button class="btn hidden-phone" onclick="this.form.submit(); return false;">
+				<span class="icon-retweet"></span>
 				<?php echo JText::_('CPANEL_PROFILE_BUTTON'); ?>
 			</button>
 		</form>
 
-		<h3><?php echo JText::_('CPANEL_HEADER_BASICOPS'); ?></h3>
+		<?php if(!empty($this->quickIconProfiles)):
+		$token = JFactory::getApplication()->getSession()->getToken();
+		?>
+		<h3><?php echo JText::_('COM_AKEEBA_CPANEL_HEADER_QUICKBACKUP'); ?></h3>
 
-		<?php foreach($this->icondefs['operations'] as $icon): ?>
+		<?php foreach($this->quickIconProfiles as $qiProfile): ?>
 		<div class="icon">
-			<a href="<?php echo 'index.php?option=com_akeeba'.
-				(is_null($icon['view']) ? '' : '&amp;view='.$icon['view']).
-				(is_null($icon['task']) ? '' : '&amp;task='.$icon['task']); ?>">
-			<div class="ak-icon ak-icon-<?php echo $icon['icon'] ?>">&nbsp;</div>
-			<span><?php echo $icon['label']; ?></span>
+			<a href="index.php?option=com_akeeba&view=backup&autostart=1&profileid=<?php echo (int) $qiProfile->id ?>&<?php echo $token ?>=1">
+				<div class="ak-icon ak-icon-backup">&nbsp;</div>
+				<span>
+					<?php echo htmlentities($qiProfile->description) ?>
+				</span>
 			</a>
 		</div>
 		<?php endforeach; ?>
+
+		<div class="ak_clr"></div>
+		<?php endif; ?>
+
+		<h3><?php echo JText::_('CPANEL_HEADER_BASICOPS'); ?></h3>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=backup">
+				<div class="ak-icon ak-icon-backup">&nbsp;</div>
+				<span><?php echo JText::_('BACKUP'); ?></span>
+			</a>
+		</div>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=transfer">
+				<div class="ak-icon ak-icon-stw">&nbsp;</div>
+				<span><?php echo JText::_('COM_AKEEBA_TRANSFER');?></span>
+			</a>
+		</div>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=buadmin">
+				<div class="ak-icon ak-icon-manage">&nbsp;</div>
+				<span><?php echo JText::_('BUADMIN'); ?></span>
+			</a>
+		</div>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=config">
+				<div class="ak-icon ak-icon-configuration">&nbsp;</div>
+				<span><?php echo JText::_('CONFIGURATION'); ?></span>
+			</a>
+		</div>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=profiles">
+				<div class="ak-icon ak-icon-profiles">&nbsp;</div>
+				<span><?php echo JText::_('PROFILES'); ?></span>
+			</a>
+		</div>
+
+		<div class="ak_clr"></div>
+
+		<h3><?php echo JText::_('COM_AKEEBA_CPANEL_HEADER_TROUBLESHOOTING'); ?></h3>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=log">
+				<div class="ak-icon ak-icon-viewlog">&nbsp;</div>
+				<span><?php echo JText::_('VIEWLOG'); ?></span>
+			</a>
+		</div>
+
+		<?php if (AKEEBA_PRO): ?>
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=alices">
+				<div class="ak-icon ak-icon-viewlog">&nbsp;</div>
+				<span><?php echo JText::_('AKEEBA_ALICE'); ?></span>
+			</a>
+		</div>
+		<?php endif; ?>
+
+		<div class="ak_clr"></div>
+
+		<h3><?php echo JText::_('COM_AKEEBA_CPANEL_HEADER_ADVANCED'); ?></h3>
 
 		<div class="icon">
 			<a href="index.php?option=com_akeeba&view=schedule">
@@ -224,41 +268,72 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 			</a>
 		</div>
 
+		<?php if (AKEEBA_PRO): ?>
 		<div class="icon">
-			<a href="index.php?option=com_config&view=component&component=com_akeeba&path=&return=<?php echo base64_encode(JUri::getInstance()->toString()) ?>">
-				<div class="ak-icon ak-icon-componentparams">&nbsp;</div>
-				<span><?php echo JText::_('CPANEL_LABEL_COMPONENTCONFIG'); ?></span>
+			<a href="index.php?option=com_akeeba&view=discover">
+				<div class="ak-icon ak-icon-import">&nbsp;</div>
+				<span><?php echo JText::_('DISCOVER'); ?></span>
 			</a>
 		</div>
 
-		<div class="ak_clr"></div>
-
-		<?php if(!empty($this->icondefs['inclusion'])): ?>
-		<h3><?php echo JText::_('CPANEL_HEADER_INCLUSION'); ?></h3>
-		<?php foreach($this->icondefs['inclusion'] as $icon): ?>
 		<div class="icon">
-			<a href="<?php echo 'index.php?option=com_akeeba'.
-				(is_null($icon['view']) ? '' : '&amp;view='.$icon['view']).
-				(is_null($icon['task']) ? '' : '&amp;task='.$icon['task']); ?>">
-			<div class="ak-icon ak-icon-<?php echo $icon['icon'] ?>">&nbsp;</div>
-			<span><?php echo $icon['label']; ?></span>
+			<a href="index.php?option=com_akeeba&view=s3import">
+				<div class="ak-icon ak-icon-s3import">&nbsp;</div>
+				<span><?php echo JText::_('S3IMPORT'); ?></span>
 			</a>
 		</div>
-		<?php endforeach; ?>
-		<div class="ak_clr"></div>
 		<?php endif; ?>
 
-		<h3><?php echo JText::_('CPANEL_HEADER_EXCLUSION'); ?></h3>
-		<?php foreach($this->icondefs['exclusion'] as $icon): ?>
+		<div class="ak_clr"></div>
+
+		<h3><?php echo JText::_('COM_AKEEBA_CPANEL_HEADER_INCLUDEEXCLUDE'); ?></h3>
+
+		<?php if (AKEEBA_PRO): ?>
 		<div class="icon">
-			<a href="<?php echo 'index.php?option=com_akeeba'.
-				(is_null($icon['view']) ? '' : '&amp;view='.$icon['view']).
-				(is_null($icon['task']) ? '' : '&amp;task='.$icon['task']); ?>">
-			<div class="ak-icon ak-icon-<?php echo $icon['icon'] ?>">&nbsp;</div>
-			<span><?php echo $icon['label']; ?></span>
+			<a href="index.php?option=com_akeeba&view=multidb">
+				<div class="ak-icon ak-icon-multidb">&nbsp;</div>
+				<span><?php echo JText::_('MULTIDB'); ?></span>
 			</a>
 		</div>
-		<?php endforeach; ?>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=eff">
+				<div class="ak-icon ak-icon-extradirs">&nbsp;</div>
+				<span><?php echo JText::_('EXTRADIRS'); ?></span>
+			</a>
+		</div>
+		<?php endif; ?>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=fsfilter">
+				<div class="ak-icon ak-icon-fsfilter">&nbsp;</div>
+				<span><?php echo JText::_('FSFILTERS'); ?></span>
+			</a>
+		</div>
+
+		<div class="icon">
+			<a href="index.php?option=com_akeeba&view=dbef">
+				<div class="ak-icon ak-icon-dbfilter">&nbsp;</div>
+				<span><?php echo JText::_('DBEF'); ?></span>
+			</a>
+		</div>
+
+		<?php if (AKEEBA_PRO): ?>
+			<div class="icon">
+				<a href="index.php?option=com_akeeba&view=regexfsfilter">
+					<div class="ak-icon ak-icon-regexfiles">&nbsp;</div>
+					<span><?php echo JText::_('REGEXFSFILTERS'); ?></span>
+				</a>
+			</div>
+
+			<div class="icon">
+				<a href="index.php?option=com_akeeba&view=regexdbfilter">
+					<div class="ak-icon ak-icon-regexdb">&nbsp;</div>
+					<span><?php echo JText::_('REGEXDBFILTERS'); ?></span>
+				</a>
+			</div>
+		<?php endif; ?>
+
 		<div class="ak_clr"></div>
 
 	</div>
@@ -318,10 +393,10 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 <div class="row-fluid footer">
 	<div class="span12">
 		<p style="height: 6em">
-			<?php echo JText::sprintf('COPYRIGHT', date('Y')); ?><br/>
-			<?php echo JText::_('LICENSE'); ?>
+			<?php echo JText::sprintf('Copyright &copy;2006-%s <a href="http://www.akeebabackup.com">Akeeba Ltd</a>. All Rights Reserved.', date('Y')); ?><br/>
+			Akeeba Backup is Free Software and is distributed under the terms of the <a href="http://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License</a>, version 3 or - at your option - any later version.
 			<?php if(AKEEBA_PRO != 1): ?>
-			<br/>If you use Akeeba Backup Core, please post a rating and a review at the <a href="http://extensions.joomla.org/extensions/access-a-security/site-security/backup/1606">Joomla! Extensions Directory</a>.
+			<br/>If you use Akeeba Backup Core, please post a rating and a review at the <a href="http://extensions.joomla.org/extensions/extension/access-a-security/site-security/akeeba-backup">Joomla! Extensions Directory</a>.
 			<?php endif; ?>
 			<br/><br/>
 			<strong><?php echo JText::_('TRANSLATION_CREDITS')?></strong>:
@@ -343,6 +418,7 @@ if($this->statsIframe)
 <script type="text/javascript">
 	(function($) {
 		$(document).ready(function(){
+			<?php if (!$this->needsdlid): ?>
 			$.ajax('index.php?option=com_akeeba&view=cpanel&task=updateinfo&tmpl=component', {
 				success: function(msg, textStatus, jqXHR)
 				{
@@ -356,6 +432,7 @@ if($this->statsIframe)
 					}
 				}
 			});
+			<?php endif; ?>
 
 			$.ajax('index.php?option=com_akeeba&view=cpanel&task=fastcheck&tmpl=component', {
 				success: function (msg, textStatus, jqXHR)

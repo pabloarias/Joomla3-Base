@@ -83,7 +83,7 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			),
 			'system'    => array(
 				'akeebaupdatecheck' => 0,
-				'backuponupdate'    => 0,
+				'backuponupdate'    => 1,
 			),
 		)
 	);
@@ -342,6 +342,24 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			// Lite mode (because smartphones are the norm since ~2010 or so)
 			'components/com_akeeba/controllers/light.php',
 			'components/com_akeeba/models/lights.php',
+
+			// Old view INI files
+			'administrator/components/com_akeeba/views/proviews.ini',
+			'administrator/components/com_akeeba/views/views.ini',
+
+			// Live Help (which had stopped working a long time ago and nobody even noticed)
+			'administrator/components/com_akeeba/helpers/includes.php',
+
+			// JSON library, which only made sense in PHP 5.2 and lower (Joomla! 3 won't even run without JSON support)
+			'administrator/components/com_akeeba/helpers/jsonlib.php',
+
+			// Old self-heal db support
+			'administrator/components/com_akeeba/models/selfheal.php',
+
+			// Obsolete Amazon S3 integration
+			'administrator/components/com_akeeba/engine/Postproc/Connector/Amazons3.php',
+			'administrator/components/com_akeeba/engine/Postproc/S3.php',
+			'administrator/components/com_akeeba/engine/Postproc/s3.ini',
 		),
 		'folders' => array(
 			// Directories used in version 4.1 and earlier
@@ -375,6 +393,10 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 
 			// We no longer have a front-end views folder
 			'components/com_akeeba/views',
+
+			// Obsolete Amazon S3 integration
+			'administrator/components/com_akeeba/engine/Postproc/Connector/Amazon',
+			'administrator/components/com_akeeba/engine/Postproc/Connector/Amazons3',
 		)
 	);
 
@@ -392,72 +414,6 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	);
 
 	/**
-	 * Post-installation message definitions for Joomla! 3.2 or later.
-	 *
-	 * This array contains the message definitions for the Post-installation Messages component added in Joomla! 3.2 and
-	 * later versions. Each element is also a hashed array. For the keys used in these message definitions please
-	 * @see F0FUtilsInstallscript::addPostInstallationMessage
-	 *
-	 * @var array
-	 */
-	protected $postInstallationMessages = array(
-		'backuponupdate' => array(
-			'type'					=> 'action',
-			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_BACKUPONUPDATE',
-			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_BACKUPONUPDATE',
-			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_ENABLE_FEATURE',
-			'language_extension'	=> 'com_akeeba',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '4.0.0',
-			'condition_file'		=> 'admin://components/com_akeeba/helpers/postinstall.php',
-			'condition_method'		=> 'com_akeeba_postinstall_backuponupdate_condition',
-			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
-			'action'				=> 'com_akeeba_postinstall_backuponupdate_action',
-		),
-		'confwiz' => array(
-			'type'					=> 'action',
-			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_CONFWIZ',
-			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_CONFWIZ',
-			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_RUN_CONFWIZ',
-			'language_extension'	=> 'com_akeeba',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '4.0.0',
-			'condition_file'		=> 'admin://components/com_akeeba/helpers/postinstall.php',
-			'condition_method'		=> 'com_akeeba_postinstall_confwiz_condition',
-			'action_file'			=> 'admin://components/com_akeeba/helpers/postinstall.php',
-			'action'				=> 'com_akeeba_postinstall_confwiz_action',
-		),
-
-		'accept_license' => array(
-			'type'					=> 'message',
-			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ACCEPTLICENSE',
-			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ACCEPTLICENSE',
-			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_I_CONFIRM_THIS',
-			'language_extension'	=> 'com_akeeba',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '4.0.0'
-		),
-		'accept_support' => array(
-			'type'					=> 'message',
-			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ACCEPTSUPPORT',
-			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ACCEPTSUPPORT',
-			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_I_CONFIRM_THIS',
-			'language_extension'	=> 'com_akeeba',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '4.0.0'
-		),
-		'accept_backuptest' => array(
-			'type'					=> 'message',
-			'title_key'				=> 'AKEEBA_POSTSETUP_LBL_ACCEPTBACKUPTEST',
-			'description_key'		=> 'AKEEBA_POSTSETUP_DESC_ACCEPTBACKUPTEST',
-			'action_key'			=> 'AKEEBA_POSTSETUP_BTN_I_CONFIRM_THIS',
-			'language_extension'	=> 'com_akeeba',
-			'language_client_id'	=> '1',
-			'version_introduced'	=> '4.0.0'
-		),
-	);
-
-	/**
 	 * The minimum PHP version required to install this extension
 	 *
 	 * @var   string
@@ -470,6 +426,19 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	 * @var   string
 	 */
 	protected $minimumJoomlaVersion = '3.3.1';
+
+	/**
+	 * Runs on installation
+	 *
+	 * @param   JInstaller $parent The parent object
+	 */
+	public function install($parent)
+	{
+		if (!defined('AKEEBA_THIS_IS_INSTALLATION_FROM_SCRATCH'))
+		{
+			define('AKEEBA_THIS_IS_INSTALLATION_FROM_SCRATCH', 1);
+		}
+	}
 
 	/**
 	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the component. This is our last chance to
@@ -557,11 +526,6 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	{
 		$this->isPaid = is_dir($parent->getParent()->getPath('source') . '/backend/alice');
 
-		if (!$this->isPaid)
-		{
-			unset($this->postInstallationMessages['backuponupdate']);
-		}
-
         // Let's install common tables
         $model = F0FModel::getTmpInstance('Stats', 'AkeebaModel');
 
@@ -586,6 +550,34 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			{
 				JFolder::create(JPATH_ADMINISTRATOR . '/components/com_akeeba/akeeba/plugins');
 			}
+		}
+
+		// If this is a new installation tell it to NOT mark the backup profiles as configured.
+		if (defined('AKEEBA_THIS_IS_INSTALLATION_FROM_SCRATCH'))
+		{
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true)
+				->select($db->qn('params'))
+				->from($db->qn('#__extensions'))
+				->where($db->qn('type') . ' = ' . $db->q('component'))
+				->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
+			$jsonData = $db->setQuery($query)->loadResult();
+			$reg = new JRegistry($jsonData);
+			$reg->set('confwiz_upgrade', 1);
+			$jsonData = $reg->toString('JSON');
+			$query = $db->getQuery()
+				->update($db->qn('#__extensions'))
+				->set($db->qn('params') . ' = ' . $db->q($jsonData))
+				->where($db->qn('type') . ' = ' . $db->q('component'))
+				->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
+			$db->setQuery($query)->execute();
+		}
+
+		// This is an update of an existing installation
+		if (!defined('AKEEBA_THIS_IS_INSTALLATION_FROM_SCRATCH'))
+		{
+			// Migrate profiles if necessary
+			$this->migrateProfiles();
 		}
 	}
 
@@ -612,53 +604,22 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 
 		<fieldset>
 			<p>
-				We strongly recommend reading the
-				<a href="https://www.akeebabackup.com/documentation/quick-start-guide.html" target="_blank">Quick Start
-					Guide</a>
-				(short, suitable for beginners) or
-				<a href="https://www.akeebabackup.com/documentation/akeeba-backup-documentation.html" target="_blank">Akeeba
-					Backup User's Guide</a>
-				(lengthy, technical) before proceeding with using this component. Alternatively, you can
-				<a href="https://www.akeebabackup.com/documentation/video-tutorials.html" target="_blank">watch some
-					video tutorials</a>
-				which will get you up to speed with backing up and restoring your site.
+				We strongly recommend watching our
+				<a href="https://www.akeebabackup.com/videos/63-video-tutorials/1529-akeeba-backup-video-course-with-brian-teeman.html">video
+				tutorials</a> before using this component.
 			</p>
 
 			<p>
-				When you're done with the documentation, you can go ahead and run the
-				<a href="index.php?option=com_akeeba">Post-Installation Wizard</a>
-				which will help you configure Akeeba Backup's optional settings. If this
-				is the first time you installed Akeeba Backup, we strongly recommend
-				clicking the last checkbox, or click on the Configuration Wizard button
-				in Akeeba Backup's control panel page.
+				If this is the first time you install Akeeba Backup on your site please run the
+				<a href="index.php?option=com_akeeba&view=confwiz">Configuration Wizard</a>. Akeeba Backup will
+				configure itself optimally for your site.
 			</p>
 
 			<p>
-				Should you get stuck somewhere, our
-				<a href="https://www.akeebabackup.com/documentation/troubleshooter.html" target="_blank">Troubleshooting
-					Wizard</a>
-				is right there to help you. If you need one-to-one support, you can get
-				it from our <a href="https://www.akeebabackup.com/support.html" target="_blank">support ticket
-					system</a>,
-				directly from Akeeba Backup's team.<br/>
-				<?php if (is_dir($parent->getParent()->getPath('source') . '/backend/alice')): ?>
-				As a subscriber to Akeeba Backup Professional (AKEEBAPRO or AKEEBADELUXE subscription level),
-				you have full access to our ticket system for the term of your subscription period. If your
-				subscription expires, you will have to renew it in order to request further support.<br/>
-				<small>Note: if this component was installed on your site by a third party, e.g. your
-					site developer, and you and/or your company do not have an active subscription with
-					AkeebaBackup.com, please contact the person who installed the component on your site for
-					support.
-					<?php else: ?>
-						While Akeeba Backup Core is free, access to its support is not. You will need an active
-						subscription to request support.
-					<?php
-					endif; ?>
-			</p>
-			<p>
-				<strong>Remember, you can always get on-line help for the Akeeba Backup
-					page you are currently viewing by clicking on the help icon in the top
-					right corner of that page.</strong>
+				By installing this component you are implicitly accepting
+				<a href="https://www.akeebabackup.com/license.html">its license (GNU GPLv3)</a> and our
+				<a href="https://www.akeebabackup.com/privacy-policy.html">Terms of Service</a>,
+				including our Support Policy.
 			</p>
 		</fieldset>
 	<?php
@@ -693,6 +654,11 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'AKEEBA_POSTSETUP_LBL_ANGIEUPGRADE',
 			// Remove "Enable System Restore Points"
 			'AKEEBA_POSTSETUP_LBL_SRP',
+			'AKEEBA_POSTSETUP_LBL_BACKUPONUPDATE',
+			'AKEEBA_POSTSETUP_LBL_CONFWIZ',
+			'AKEEBA_POSTSETUP_LBL_ACCEPTLICENSE',
+			'AKEEBA_POSTSETUP_LBL_ACCEPTSUPPORT',
+			'AKEEBA_POSTSETUP_LBL_ACCEPTBACKUPTEST',
 		);
 
 		foreach ($obsoleteTitleKeys as $obsoleteKey)
@@ -766,5 +732,131 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 
 HTML;
 
+	}
+
+	/**
+	 * Loads the Akeeba Engine if it's not already loaded
+	 */
+	private function loadAkeebaEngine()
+	{
+		if (class_exists('\\Akeeba\\Engine\\Platform'))
+		{
+			return;
+		}
+
+		// Load the language files
+		$paths	 = array(JPATH_ADMINISTRATOR, JPATH_ROOT);
+		$jlang	 = JFactory::getLanguage();
+		$jlang->load('com_akeeba', $paths[0], 'en-GB', true);
+		$jlang->load('com_akeeba', $paths[1], 'en-GB', true);
+		$jlang->load('com_akeeba' . '.override', $paths[0], 'en-GB', true);
+		$jlang->load('com_akeeba' . '.override', $paths[1], 'en-GB', true);
+
+		// Load the version file
+		@include_once JPATH_ADMINISTRATOR . '/components/com_akeeba/version.php';
+
+		if (!defined('AKEEBA_PRO'))
+		{
+			define('AKEEBA_PRO', '0');
+		}
+
+		// Enable Akeeba Engine
+		if (!defined('AKEEBAENGINE'))
+		{
+			define('AKEEBAENGINE', 1);
+		}
+
+		// Load the engine
+		$factoryPath = JPATH_ADMINISTRATOR . '/components/com_akeeba/engine/Factory.php';
+		define('AKEEBAROOT', JPATH_ADMINISTRATOR . '/components/com_akeeba/engine');
+
+		require_once $factoryPath;
+
+		// Assign the correct platform
+		\Akeeba\Engine\Platform::addPlatform('joomla25', JPATH_ADMINISTRATOR . '/components/com_akeeba/platform/joomla25');
+	}
+
+	/**
+	 * Migrates existing backup profiles. The changes currently made are:
+	 * – Change post-processing from "s3" (legacy) to "amazons3" (current version)
+	 * – Fix profiles with invalid embedded installer settings
+	 *
+	 * @return  void
+	 */
+	private function migrateProfiles()
+	{
+		$this->loadAkeebaEngine();
+
+		// Get a list of backup profiles
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true)
+					->select($db->qn('id'))
+					->from($db->qn('#__ak_profiles'));
+		$profiles = $db->setQuery($query)->loadColumn();
+
+		// Normally this should never happen as we're supposed to have at least profile #1
+		if (empty($profiles))
+		{
+			return;
+		}
+
+		// Migrate each profile
+		foreach ($profiles as $profile)
+		{
+			// Initialization
+			$dirty = false;
+
+			// Load the profile configuration
+			\Akeeba\Engine\Platform::getInstance()->load_configuration($profile);
+			$config = \Akeeba\Engine\Factory::getConfiguration();
+
+			// -- Migrate obsolete "s3" engine to "amazons3"
+			$postProcType = $config->get('akeeba.advanced.postproc_engine', '');
+
+			if ($postProcType == 's3')
+			{
+				$config->setKeyProtection('akeeba.advanced.postproc_engine', false);
+				$config->setKeyProtection('engine.postproc.amazons3.signature', false);
+				$config->setKeyProtection('engine.postproc.amazons3.accesskey', false);
+				$config->setKeyProtection('engine.postproc.amazons3.secretkey', false);
+				$config->setKeyProtection('engine.postproc.amazons3.usessl', false);
+				$config->setKeyProtection('engine.postproc.amazons3.bucket', false);
+				$config->setKeyProtection('engine.postproc.amazons3.directory', false);
+				$config->setKeyProtection('engine.postproc.amazons3.rrs', false);
+				$config->setKeyProtection('engine.postproc.amazons3.customendpoint', false);
+				$config->setKeyProtection('engine.postproc.amazons3.legacy', false);
+
+				$config->set('akeeba.advanced.postproc_engine', 'amazons3');
+				$config->set('engine.postproc.amazons3.signature', 's3');
+				$config->set('engine.postproc.amazons3.accesskey', $config->get('engine.postproc.s3.accesskey'));
+				$config->set('engine.postproc.amazons3.secretkey', $config->get('engine.postproc.s3.secretkey'));
+				$config->set('engine.postproc.amazons3.usessl', $config->get('engine.postproc.s3.usessl'));
+				$config->set('engine.postproc.amazons3.bucket', $config->get('engine.postproc.s3.bucket'));
+				$config->set('engine.postproc.amazons3.directory', $config->get('engine.postproc.s3.directory'));
+				$config->set('engine.postproc.amazons3.rrs', $config->get('engine.postproc.s3.rrs'));
+				$config->set('engine.postproc.amazons3.customendpoint', $config->get('engine.postproc.s3.customendpoint'));
+				$config->set('engine.postproc.amazons3.legacy', $config->get('engine.postproc.s3.legacy'));
+
+				$dirty = true;
+			}
+
+			// Fix profiles with invalid embedded installer settings
+			$embeddedInstaller = $config->get('akeeba.advanced.embedded_installer');
+
+			if (empty($embeddedInstaller) || ($embeddedInstaller == 'angie-joomla') || (
+					(substr($embeddedInstaller, 0, 5) != 'angie') && ($embeddedInstaller != 'none')
+				))
+			{
+				$config->setKeyProtection('akeeba.advanced.embedded_installer', false);
+				$config->set('akeeba.advanced.embedded_installer', 'angie');
+				$dirty = true;
+			}
+
+			// Save dirty records
+			if ($dirty)
+			{
+				\Akeeba\Engine\Platform::getInstance()->save_configuration($profile);
+			}
+		}
 	}
 }

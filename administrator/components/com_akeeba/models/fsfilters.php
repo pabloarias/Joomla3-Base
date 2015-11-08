@@ -54,30 +54,6 @@ class AkeebaModelFsfilters extends F0FModel
 		// Get a filters instance
 		$filters = Factory::getFilters();
 
-		// Detect PHP 5.2.5or earlier, with broken json_decode implementation
-		$phpversion = PHP_VERSION;
-		$vparts = explode('.',$phpversion);
-		if(
-			(($vparts[0] == 5) && ($vparts[1] == 2) && ($vparts[2] <= 5)) ||
-			(($vparts[0] == 5) && ($vparts[1] == 1) )
-		)
-		{
-			define('AKEEBA_SAFE_JSON',false);
-			require_once JPATH_COMPONENT_ADMINISTRATOR.'/helpers/jsonlib.php';
-		}
-		else
-		{
-			$test = '-test-';
-			$tj = json_encode($test);
-			$test = json_decode($test);
-			if($test == '-test-') {
-				define('AKEEBA_SAFE_JSON',true);
-			} else {
-				define('AKEEBA_SAFE_JSON',false);
-				require_once JPATH_COMPONENT_ADMINISTRATOR.'/helpers/jsonlib.php';
-			}
-		}
-
 		// Get a listing of folders and process it
 		$folders = Factory::getFileLister()->getFolders($directory);
 		asort($folders);
@@ -88,17 +64,9 @@ class AkeebaModelFsfilters extends F0FModel
 			{
 				$folder = Factory::getFilesystemTools()->TranslateWinPath($folder);
 				// Filter out files whose names result to an empty JSON representation
-				if(AKEEBA_SAFE_JSON)
-				{
-					$json_folder = json_encode($folder);
-					$folder = json_decode($json_folder);
-				}
-				else
-				{
-					$jsonobj = new Akeeba_Services_JSON(0);
-					$json_folder = $jsonobj->encode($folder);
-					$folder = $jsonobj->decode($json_folder);
-				}
+				$json_folder = json_encode($folder);
+				$folder = json_decode($json_folder);
+
 				if(empty($folder)) continue;
 
 				$test = $node.$folder;
@@ -132,17 +100,9 @@ class AkeebaModelFsfilters extends F0FModel
 			foreach($files as $file)
 			{
 				// Filter out files whose names result to an empty JSON representation
-				if(AKEEBA_SAFE_JSON)
-				{
-					$json_file = json_encode($file);
-					$file = json_decode($json_file);
-				}
-				else
-				{
-					$jsonobj = new Akeeba_Services_JSON(0);
-					$json_file = $jsonobj->encode($file);
-					$file = $jsonobj->decode($json_file);
-				}
+				$json_file = json_encode($file);
+				$file = json_decode($json_file);
+
 				if(empty($file)) continue;
 
 				$test = $node.$file;

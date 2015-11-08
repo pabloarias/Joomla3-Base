@@ -30,10 +30,6 @@ class AkeebaControllerJson extends F0FController
 	 */
 	public function json()
 	{
-		// Many versions of PHP suffer from a brain-dead buggy JSON library. Let's
-		// load our own (actually it's PEAR's Services_JSON).
-		require_once JPATH_SITE.'/administrator/components/com_akeeba/helpers/jsonlib.php';
-
 		// Use the model to parse the JSON message
 		if(function_exists('ob_start')) @ob_start();
 		$sourceJSON = $this->input->get('json', null, 'raw', 2);
@@ -48,9 +44,11 @@ class AkeebaControllerJson extends F0FController
 		/** @var AkeebaModelJsons $model */
 		$model = $this->getThisModel();
 		$json = $model->execute($sourceJSON);
-		if(function_exists('ob_clean')) @ob_clean();
+		if(function_exists('ob_end_clean')) @ob_end_clean();
 
 		// Just dump the JSON and tear down the application, without plugins executing
+		header('Content-type: text/plain');
+		header('Connection: close');
 		echo $json;
 		$app = JFactory::getApplication();
 		$app->close();

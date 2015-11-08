@@ -3,7 +3,7 @@
  * The modular PHP5 site backup software solution
  * This file contains the jQuery-based client-side user interface logic
  * @package akeebaui
- * @copyright Copyright (c)2009-2014 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2009-2015 Nicholas K. Dionysopoulos
  * @license GNU GPL version 3 or, at your option, any later version
  * @version $Id$
  **/
@@ -244,7 +244,7 @@ function doAjax(data, successCallback, errorCallback, useCaching, timeout)
 			url: akeeba_ajax_url,
 			cache: false,
 			data: data,
-			timeout: 600000,
+			timeout: timeout,
 			success: function(msg) {
 				// Initialize
 				var junk = null;
@@ -306,10 +306,11 @@ function doAjax(data, successCallback, errorCallback, useCaching, timeout)
 				successCallback(data);
 			},
 			error: function(Request, textStatus, errorThrown) {
+                var text = Request.responseText ? Request.responseText : '';
 				var message = '<strong>AJAX Loading Error</strong><br/>HTTP Status: '+Request.status+' ('+Request.statusText+')<br/>';
 				message = message + 'Internal status: '+textStatus+'<br/>';
 				message = message + 'XHR ReadyState: ' + Request.readyState + '<br/>';
-				message = message + 'Raw server response:<br/>' + sanitize_error_message(Request.responseText);
+				message = message + 'Raw server response:<br/>' + sanitize_error_message(text);
 
 				if(errorCallback == null)
 				{
@@ -1686,21 +1687,11 @@ function fsfilter_render(data)
                         break;
                 }
 
-                ui_icon.tooltip({
-                    top: 24,
-                    left: 0,
-                    track: false,
-                    delay: 0,
-                    showURL: false,
-                    opacity: 1,
-                    fixPNG: true,
-                    fade: 0,
-                    extraClass: 'ui-dialog ui-corner-all',
-                    bodyHandler: function() {
-                        html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>';
-                        return html;
-                    }
-                });
+                ui_icon.attr('title', '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>')
+					.tooltip({
+						html: true,
+						placement: 'top'
+                	});
 
                 ui_icon.click(function(){
                     var selected;
@@ -1717,7 +1708,7 @@ function fsfilter_render(data)
                     $.each(akfolders.find('.folder-container').not('.folder-header').find('span.'+applyTo), function(index, item){
                         var hasClass = $(item).parent().hasClass('ui-state-highlight');
 
-                        // I have to exclude items that have the same state of the desidered one, otherwise I'll toggle it
+                        // I have to exclude items that have the same state of the desired one, otherwise I'll toggle it
                         if((!selected && !hasClass) || (selected && hasClass))
                         {
                             return;
@@ -1759,21 +1750,12 @@ function fsfilter_render(data)
 						ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-document"></span>');
 						break;
 				}
-				ui_icon.tooltip({
-					top: 24,
-					left: 0,
-					track: false,
-					delay: 0,
-					showURL: false,
-					opacity: 1,
-					fixPNG: true,
-					fade: 0,
-					extraClass: 'ui-dialog ui-corner-all',
-					bodyHandler: function() {
-						html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>';
-						return html;
-					}
-				});
+
+				ui_icon.attr('title', '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>')
+					.tooltip({
+						html: true,
+						placement: 'top'
+					});
 
 				switch(def[filter])
 				{
@@ -1842,21 +1824,11 @@ function fsfilter_render(data)
             var ui_icon = $(document.createElement('span')).addClass('file-icon-container');
             ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-cancel"></span>');
 
-            ui_icon.tooltip({
-                top: 24,
-                left: 0,
-                track: false,
-                delay: 0,
-                showURL: false,
-                opacity: 1,
-                fixPNG: true,
-                fade: 0,
-                extraClass: 'ui-dialog ui-corner-all',
-                bodyHandler: function() {
-                    html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-FILES_ALL']+'</div>';
-                    return html;
-                }
-            });
+			ui_icon.attr('title', '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-FILES_ALL']+'</div>')
+				.tooltip({
+					html: true,
+					placement: 'top'
+				});
 
             ui_icon.click(function(){
                 var selected;
@@ -1906,21 +1878,13 @@ function fsfilter_render(data)
 						ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-cancel"></span>');
 						break;
 				}
-				ui_icon.tooltip({
-					top: 24,
-					left: 0,
-					track: false,
-					delay: 0,
-					showURL: false,
-					opacity: 1,
-					fixPNG: true,
-					fade: 0,
-					extraClass: 'ui-dialog ui-corner-all',
-					bodyHandler: function() {
-						html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>';
-						return html;
-					}
-				});
+
+				ui_icon.attr('title', '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>')
+					.tooltip({
+						html: true,
+						placement: 'top'
+					});
+
 				switch(def[filter])
 				{
 					case 2:
@@ -2211,21 +2175,12 @@ function dbfilter_render(data)
 						ui_icon.append('<span class="ak-toggle-button ui-icon ui-icon-contact"></span>');
 						break;
 				}
-				ui_icon.tooltip({
-					top: 24,
-					left: 0,
-					track: false,
-					delay: 0,
-					showURL: false,
-					opacity: 1,
-					fixPNG: true,
-					fade: 0,
-					extraClass: 'ui-dialog ui-corner-all',
-					bodyHandler: function() {
-						html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>';
-						return html;
-					}
-				});
+
+				ui_icon.attr('title', '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations['UI-FILTERTYPE-'+filter.toUpperCase()]+'</div>')
+					.tooltip({
+						html: true,
+						placement: 'top'
+					});
 
 				switch(dbef[filter])
 				{
@@ -2299,20 +2254,10 @@ function dbfilter_render(data)
 						.addClass('ui-icon')
 						.addClass(iconclass)
 					)
+					.attr('title', '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations[icontip]+'</div>'+'</div>')
 					.tooltip({
-						top: 24,
-						left: 0,
-						track: false,
-						delay: 0,
-						showURL: false,
-						opacity: 1,
-						fixPNG: true,
-						fade: 0,
-						extraClass: 'ui-dialog ui-corner-all',
-						bodyHandler: function() {
-							html = '<div class="tooltip-arrow-up-leftaligned"></div><div>'+akeeba_translations[icontip]+'</div>';
-							return html;
-						}
+						html: true,
+						placement: 'top'
 					})
 				)
 				.appendTo(uielement);
@@ -2555,6 +2500,4 @@ akeeba.jQuery(document).ready(function($){
 	   function(){$(this).addClass('ui-state-hover');},
 	   function(){$(this).removeClass('ui-state-hover');}
 	);
-    // Ask for notification permissions
-    akeebaBackup_notifications_askPermission();
 });

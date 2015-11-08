@@ -493,4 +493,12 @@ class AkeebaControllerBuadmin extends AkeebaControllerDefault
 		$this->setRedirect(JUri::base() . 'index.php?option=com_akeeba&view=buadmin&task=' . $task);
 	}
 
+	public function hidemodal()
+	{
+		/** @var AkeebaModelStatistics $model */
+		$model = $this->getModel('Statistics');
+		$model->hideRestorationInstructionsModal();
+
+		$this->setRedirect(JUri::base() . 'index.php?option=com_akeeba&view=buadmin');
+	}
 }

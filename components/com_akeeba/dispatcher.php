@@ -77,14 +77,7 @@ class AkeebaDispatcher extends F0FDispatcher
 			unset($akeebaEngineConfig);
 
 			// Preload helpers
-			require_once JPATH_ADMINISTRATOR.'/components/com_akeeba/helpers/includes.php';
 			require_once JPATH_ADMINISTRATOR.'/components/com_akeeba/helpers/escape.php';
-
-			// If JSON functions don't exist, load our compatibility layer
-			if( (!function_exists('json_encode')) || (!function_exists('json_decode')) )
-			{
-				require_once JPATH_COMPONENT_ADMINISTRATOR.'/helpers/jsonlib.php';
-			}
 
 			// Load Akeeba Strapper
 			include_once JPATH_ROOT.'/media/akeeba_strapper/strapper.php';

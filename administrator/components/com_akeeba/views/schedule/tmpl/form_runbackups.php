@@ -3,6 +3,10 @@
 defined('_JEXEC') or die;
 ?>
 <div class="tab-pane fade" id="absTabRunBackups">
+    <h3>
+        <?php echo JText::_('COM_AKEEBA_SCHEDULE_LBL_RUN_BACKUPS'); ?>
+    </h3>
+
     <p>
         <?php echo JText::_('COM_AKEEBA_SCHEDULE_LBL_HEADERINFO'); ?>
     </p>

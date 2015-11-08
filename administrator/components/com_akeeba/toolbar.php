@@ -61,7 +61,6 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::spacer();
 		JToolBarHelper::deleteList();
 		JToolBarHelper::spacer();
-		AkeebaHelperIncludes::addHelp('profiles');
 	}
 
 	public function onProfilesEdit()
@@ -87,6 +86,22 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom('savenew', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 		JToolBarHelper::cancel();
+		JToolBarHelper::spacer();
+
+		// Configuration wizard button. We apply styling to it.
+		$bar = JToolbar::getInstance('toolbar');
+		$bar->appendButton('Link', 'lightning', '<strong>' . JText::_('AKEEBA_CONFWIZ') . '</strong>', 'index.php?option=com_akeeba&view=confwiz');
+
+		$js = <<< JS
+;;
+
+jQuery(document).ready(function(){
+	jQuery('#toolbar-lightning>button').addClass('btn-primary');
+});
+
+JS;
+		JFactory::getDocument()->addScriptDeclaration($js);
+
 
 		// $this->_renderDefaultSubmenus('config');
 	}
@@ -225,6 +240,17 @@ class AkeebaToolbar extends F0FToolbar
 		// Set the toolbar title
 		JToolBarHelper::title(JText::_('AKEEBA').':: <small>'.JText::_('AKEEBA_SCHEDULE').'</small>','akeeba');
 		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
+	}
+
+	public function onTransfers()
+	{
+		// Set the toolbar title
+		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('COM_AKEEBA_TRANSFER').'</small>','akeeba');
+		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
+
+		$bar = JToolbar::getInstance('toolbar');
+		$bar->appendButton('Link', 'loop', 'COM_AKEEBA_TRANSFER_BTN_RESET', 'index.php?option=com_akeeba&view=transfer&task=reset');
+
 	}
 
 	private function _renderDefaultSubmenus($active = '')

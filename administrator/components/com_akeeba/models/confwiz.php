@@ -504,6 +504,9 @@ class AkeebaModelConfwiz extends F0FModel
 		// Set the embedded installer to the default ANGIE installer
 		$aeconfig = Factory::getConfiguration();
 		$aeconfig->set('akeeba.advanced.embedded_installer', 'angie');
+		// And mark this profile as already configured
+		$aeconfig->set('akeeba.flag.confwiz', 1);
+
 		Platform::getInstance()->save_configuration($profile_id);
 
 		return true;

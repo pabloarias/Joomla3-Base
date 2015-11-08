@@ -140,7 +140,6 @@ class AkeebaDispatcher extends F0FDispatcher
 		unset($akeebaEngineConfig);
 
 		// Preload helpers
-		require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/includes.php';
 		require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/escape.php';
 
 		// Load the utils helper library
@@ -149,12 +148,6 @@ class AkeebaDispatcher extends F0FDispatcher
 		// Create a versioning tag for our static files
 		$staticFilesVersioningTag = md5(AKEEBA_VERSION . AKEEBA_DATE);
 		define('AKEEBAMEDIATAG', $staticFilesVersioningTag);
-
-		// If JSON functions don't exist, load our compatibility layer
-		if (( !function_exists('json_encode')) || ( !function_exists('json_decode')))
-		{
-			require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/jsonlib.php';
-		}
 
 		$this->input->set('view', $this->view);
 

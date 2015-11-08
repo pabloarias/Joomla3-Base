@@ -239,6 +239,8 @@ class Factory
 	 * @param string $backupId The backup ID to save. Leave empty to get from already loaded Kettenrad instance.
 	 *
 	 * @return  void
+	 *
+	 * @throws  \RuntimeException  When the state save fails for any reason
 	 */
 	public static function saveState($tag = null, $backupId = null)
 	{
@@ -267,7 +269,23 @@ class Factory
 			Factory::getLog()->log(LogLevel::DEBUG, "Saving Kettenrad instance $tag");
 
 			// Save a Factory snapshot
-			self::getFactoryStorage()->set(self::serialize(), $saveTag);
+			$factoryStorage = self::getFactoryStorage();
+			$engine = self::getConfiguration()->get('akeeba.core.usedbstorage', 0) ? 'db' : 'file';
+			$factoryStorage->setStorageEngine($engine);
+
+			$logger = self::getLog();
+
+			$serializedFactoryData = self::serialize();
+			$result = $factoryStorage->set($serializedFactoryData, $saveTag);
+
+			if (!$result)
+			{
+				$saveKey = $factoryStorage->get_storage_filename($saveTag);
+				$errorMessage = "Cannot save factory state in $engine storage, storage key $saveKey";
+				$logger->error($errorMessage);
+
+				throw new \RuntimeException($errorMessage);
+			}
 		}
 	}
 

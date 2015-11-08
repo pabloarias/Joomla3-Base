@@ -19,57 +19,14 @@ use Akeeba\Engine\Platform;
 class AkeebaModelCpanels extends F0FModel
 {
 	/**
-	 * Get an array of icon definitions for the Control Panel
-	 *
-	 * @return array
-	 */
-	public function getIconDefinitions()
-	{
-		Platform::getInstance()->load_version_defines();
-		$core = $this->loadIconDefinitions(JPATH_COMPONENT_ADMINISTRATOR . '/views');
-		if (AKEEBA_PRO)
-		{
-			$pro = $this->loadIconDefinitions(JPATH_COMPONENT_ADMINISTRATOR . '/views', 'proviews.ini');
-		}
-		else
-		{
-			$pro = array();
-		}
-		$ret = array_merge_recursive($core, $pro);
-
-		return $ret;
-	}
-
-	private function loadIconDefinitions($path, $file = 'views.ini')
-	{
-		$ret = array();
-
-		if ( !@file_exists($path . '/views.ini'))
-		{
-			return $ret;
-		}
-
-		$ini_data = \Akeeba\Engine\Util\ParseIni::parse_ini_file($path . '/' . $file, true);
-
-		if ( !empty($ini_data))
-		{
-			foreach ($ini_data as $view => $def)
-			{
-				$task                 = array_key_exists('task', $def) ? $def['task'] : null;
-				$ret[$def['group']][] = $this->_makeIconDefinition($def['icon'], JText::_($def['label']), $view, $task);
-			}
-		}
-
-		return $ret;
-	}
-
-	/**
 	 * Returns a list of available backup profiles, to be consumed by JHTML in order to build
 	 * a drop-down
 	 *
-	 * @return array
+	 * @param   bool  $includeId  Should I include the profile ID in front of the name?
+	 *
+	 * @return  array
 	 */
-	public function getProfilesList()
+	public function getProfilesList($includeId = true)
 	{
 		$db = $this->getDbo();
 
@@ -90,10 +47,45 @@ class AkeebaModelCpanels extends F0FModel
 
 		foreach ($rawList as $row)
 		{
-			$options[] = JHTML::_('select.option', $row['id'], $row['description']);
+			$description = $row['description'];
+
+			if ($includeId)
+			{
+				$description = '#' . $row['id'] . '. ' . $description;
+			}
+
+			$options[] = JHTML::_('select.option', $row['id'], $description);
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Gets a list of profiles which will be displayed as quick icons in the interface
+	 *
+	 * @return  stdClass[]  Array of objects; each has the properties `id` and `description`
+	 */
+	public function getQuickIconProfiles()
+	{
+		$db = $this->getDbo();
+
+		$query = $db->getQuery(true)
+					->select(array(
+						$db->qn('id'),
+						$db->qn('description')
+					))->from($db->qn('#__ak_profiles'))
+					->where($db->qn('quickicon') . ' = ' . $db->q(1))
+					->order($db->qn('id') . " ASC");
+		$db->setQuery($query);
+
+		$ret = $db->loadObjectList();
+
+		if (empty($ret))
+		{
+			$ret = array();
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -408,6 +400,7 @@ class AkeebaModelCpanels extends F0FModel
 	public function updateMagicParameters()
 	{
 		$component = JComponentHelper::getComponent('com_akeeba');
+
 		if (is_object($component->params) && ($component->params instanceof JRegistry))
 		{
 			$params = $component->params;
@@ -416,7 +409,15 @@ class AkeebaModelCpanels extends F0FModel
 		{
 			$params = new JRegistry($component->params);
 		}
+
+		if (!$params->get('confwiz_upgrade', 0))
+		{
+			$this->markOldProfilesConfigured();
+		}
+
+		$params->set('confwiz_upgrade', 1);
 		$params->set('siteurl', str_replace('/administrator', '', JUri::base()));
+
 		if (defined('JPATH_LIBRARIES'))
 		{
 			$params->set('jlibrariesdir', Factory::getFilesystemTools()->TranslateWinPath(JPATH_LIBRARIES));
@@ -425,7 +426,7 @@ class AkeebaModelCpanels extends F0FModel
 		{
 			$params->set('jlibrariesdir', Factory::getFilesystemTools()->TranslateWinPath(JPATH_PLATFORM));
 		}
-		$joomla16 = true;
+
 		$params->set('jversion', '1.6');
 		$db   = JFactory::getDBO();
 		$data = $params->toString();
@@ -506,71 +507,6 @@ class AkeebaModelCpanels extends F0FModel
 	}
 
 	/**
-	 * Returns true if we are installed in Joomla! 3.2 or later and we have post-installation messages for our component
-	 * which must be showed to the user.
-	 *
-	 * Returns null if the com_postinstall component is broken because the user screwed up his Joomla! site following
-	 * some idiot's advice. Apparently there's no shortage of idiots giving terribly bad advice to Joomla! users.
-	 *
-	 * @return bool|null
-	 */
-	public function hasPostInstallMessages()
-	{
-		// Get the extension ID for our component
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('extension_id')
-			  ->from('#__extensions')
-			  ->where($db->qn('element') . ' = ' . $db->q('com_akeeba'));
-		$db->setQuery($query);
-
-		try
-		{
-			$ids = $db->loadColumn();
-		}
-		catch (Exception $exc)
-		{
-			return false;
-		}
-
-		if (empty($ids))
-		{
-			return false;
-		}
-
-		$extension_id = array_shift($ids);
-
-		$this->setState('extension_id', $extension_id);
-
-		if ( !defined('FOF_INCLUDED'))
-		{
-			include_once JPATH_SITE . '/libraries/fof/include.php';
-		}
-
-		if ( !defined('FOF_INCLUDED'))
-		{
-			return false;
-		}
-
-		// Do I have messages?
-		try
-		{
-			$pimModel = FOFModel::getTmpInstance('Messages', 'PostinstallModel');
-			$pimModel->savestate(false);
-			$pimModel->setState('eid', $extension_id);
-
-			$list   = $pimModel->getList();
-			$result = count($list) >= 1;
-		}
-		catch (\Exception $e)
-		{
-			$result = null;
-		}
-
-		return ($result);
-	}
-
-	/**
 	 * Perform a fast check of Akeeba Backup's files
 	 *
 	 * @return bool False if some of the files are missing or tampered with
@@ -580,5 +516,42 @@ class AkeebaModelCpanels extends F0FModel
 		$checker = new F0FUtilsFilescheck('com_akeeba', AKEEBA_VERSION, AKEEBA_DATE);
 
 		return $checker->fastCheck();
+	}
+
+	/**
+	 * Akeeba Backup 4.3.2 displays a popup if your profile is not already configured by Configuration Wizard, the
+	 * Configuration page or imported from the Profiles page. This bit of code makes sure that existing profiles will
+	 * be marked as already configured just the FIRST time you upgrade to the new version from an old version.
+	 */
+	public function markOldProfilesConfigured()
+	{
+		// Get all profiles
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true)
+					->select(array(
+						$db->qn('id'),
+					))->from($db->qn('#__ak_profiles'))
+					->order($db->qn('id') . " ASC");
+		$db->setQuery($query);
+		$profiles = $db->loadColumn();
+
+		// Save the current profile number
+		$session = JFactory::getSession();
+		$oldProfile = $session->get('profile', 1, 'akeeba');
+
+		// Update all profiles
+		foreach ($profiles as $profile_id)
+		{
+			\Akeeba\Engine\Factory::nuke();
+			\Akeeba\Engine\Platform::getInstance()->load_configuration($profile_id);
+			$config = \Akeeba\Engine\Factory::getConfiguration();
+			$config->set('akeeba.flag.confwiz', 1);
+			\Akeeba\Engine\Platform::getInstance()->save_configuration($profile_id);
+		}
+
+		// Restore the old profile
+		\Akeeba\Engine\Factory::nuke();
+		\Akeeba\Engine\Platform::getInstance()->load_configuration($oldProfile);
 	}
 }

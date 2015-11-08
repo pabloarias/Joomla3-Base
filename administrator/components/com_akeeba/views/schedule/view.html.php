@@ -33,8 +33,5 @@ class AkeebaViewSchedule extends F0FViewHtml
 		// Get the CRON paths
 		$this->croninfo  = $this->getModel()->getPaths();
         $this->checkinfo = $this->getModel()->getCheckPaths();
-
-		// Add live help
-		AkeebaHelperIncludes::addHelp('schedule');
 	}
 }

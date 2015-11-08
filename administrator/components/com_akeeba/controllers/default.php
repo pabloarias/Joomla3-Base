@@ -31,6 +31,7 @@ class AkeebaControllerDefault extends F0FController
 		'restore'	=> 'akeeba.download',
 		'remotefile'=> 'akeeba.download',
 		'discover'	=> 'akeeba.download',
+		'transfer'	=> 'akeeba.download',
 	);
 
 	/**

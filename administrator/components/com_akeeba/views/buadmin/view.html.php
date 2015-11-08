@@ -43,12 +43,9 @@ class AkeebaViewBuadmin extends F0FViewHtml
 
 	public function onBrowse($tpl = null)
 	{
-		$session = JFactory::getSession();
-		$task    = $session->get('buadmin.task', 'default', 'akeeba');
+		$this->loadHelper('Utils');
 
 		$task = 'default';
-
-		$aeconfig = Factory::getConfiguration();
 
 		if (AKEEBA_PRO && ($task == 'default'))
 		{
@@ -137,7 +134,7 @@ JS;
 		{
 			foreach ($profiles as $profile)
 			{
-				$profilesList[] = JHtml::_('select.option', $profile->id, $profile->description);
+				$profilesList[] = JHtml::_('select.option', $profile->id, '#' . $profile->id . '. ' . $profile->description);
 			}
 		}
 
@@ -146,9 +143,6 @@ JS;
 		$this->profilesList = $profilesList; // Profiles list for select box
 		$this->list         = $list; // Data
 		$this->pagination   = $model->getPagination($filters); // Pagination object
-
-		// Add live help
-		AkeebaHelperIncludes::addHelp('buadmin');
 
 		return true;
 	}
@@ -187,7 +181,6 @@ JS;
 		{
 			JLoader::import('joomla.utilities.date');
 			$to     = new JDate($this->lists->fltTo);
-			$toUnix = $to->toUnix();
 			$to     = date('Y-m-d') . ' 23:59:59';
 
 			$filters[] = array(
@@ -214,7 +207,6 @@ JS;
 		}
 
 		$session   = JFactory::getSession();
-		$task      = $session->get('buadmin.task', 'browse', 'akeeba');
 		$filters[] = array(
 			'field'   => 'tag',
 			'operand' => '<>',

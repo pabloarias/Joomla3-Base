@@ -76,7 +76,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 				$model->setState('description', $description);
 			}
 
-			$comment = $this->input->get('comment', null, 'string', 2);
+			$comment = $this->input->get('comment', null, 'html', 2);
 
 			if (!empty($comment))
 			{
@@ -100,7 +100,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 		$model->setState('profile', $this->input->get('profileid', -10, 'int'));
 		$model->setState('ajax', $this->input->get('ajax', '', 'cmd'));
 		$model->setState('description', $this->input->get('description', '', 'string'));
-		$model->setState('comment', $this->input->get('comment', '', 'default', 'string', 4));
+		$model->setState('comment', $this->input->get('comment', '', 'html', 2));
 		$model->setState('jpskey', $this->input->get('jpskey', '', 'raw', 2));
 		$model->setState('angiekey', $this->input->get('angiekey', '', 'raw', 2));
 		$model->setState('backupid', $this->input->get('backupid', null, 'string', 2));
@@ -126,6 +126,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 
 		@ob_end_clean();
 		header('Content-type: text/plain');
+		header('Connection: close');
 		echo '###' . json_encode($ret_array) . '###';
 		flush();
 		JFactory::getApplication()->close();

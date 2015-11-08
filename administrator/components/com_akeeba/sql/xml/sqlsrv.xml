@@ -20,6 +20,7 @@ CREATE TABLE [#__ak_profiles] (
 	[description] [NVARCHAR](255) NOT NULL,
 	[configuration] TEXT NULL,
 	[filters] TEXT NULL,
+	[quickicon] [TINYINT] NOT NULL DEFAULT ('1'),
 	CONSTRAINT [PK_#__ak_profiles] PRIMARY KEY CLUSTERED
 	(
 		[id] ASC
@@ -31,12 +32,13 @@ CREATE TABLE [#__ak_profiles] (
         <!-- Insert into #__ak_profiles if id=1 is not there -->
         <action table="#__ak_profiles" canfail="1">
             <condition type="equals" operator="not" value="1"><![CDATA[
-SELECT COUNT(*) FROM #__ak_profiles WHERE id = 1;
+SELECT COUNT(*) FROM [#__ak_profiles] WHERE id = 1;
             ]]></condition>
 
+            <!-- SQL Server does not allow an explicit value for an auto increment field -->
             <query><![CDATA[
-INSERT INTO #__ak_profiles (id, description, configuration, filters)
-SELECT 1, 'Default Backup profile', '', ''
+INSERT INTO #__ak_profiles (description, configuration, filters, quickicon)
+SELECT 'Default Backup profile', '', '', 1
             ]]></query>
         </action>
 
@@ -107,5 +109,15 @@ ALTER TABLE [#__ak_stats]
 ADD [backupid] [NVARCHAR](255) DEFAULT NULL
             ]]></query>
         </action>
-    </sql>
+
+		<!-- Add the quickicon column to #__ak_profiles if it's missing -->
+		<action table="#__ak_profiles" canfail="1">
+			<condition type="missing" value="quickicon" />
+			<query><![CDATA[
+ALTER TABLE [#__ak_profiles]
+ADD [quickicon] [TINYINT] NOT NULL DEFAULT ('1')
+            ]]></query>
+		</action>
+
+	</sql>
 </schema>

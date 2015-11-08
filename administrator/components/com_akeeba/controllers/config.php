@@ -38,6 +38,7 @@ class AkeebaControllerConfig extends AkeebaControllerDefault
 
 		// Get the var array from the request
 		$data = $this->input->get('var', array(), 'array', 4);
+		$data['akeeba.flag.confwiz'] = 1;
 
 		/** @var AkeebaModelConfigs $model */
 		$model = $this->getThisModel();
@@ -52,13 +53,22 @@ class AkeebaControllerConfig extends AkeebaControllerDefault
 								 ->setId($profileid)
 								 ->getItem();
 		$oldProfileName = $profileRecord->description;
+		$oldQuickIcon = $profileRecord->quickicon;
+
 		$profileName = $this->input->getString('profilename', null);
 		$profileName = trim($profileName);
 
-		if (!empty($profileName) && ($profileName != $oldProfileName))
+		$quickIconValue = $this->input->getCmd('quickicon', '');
+		$quickIcon = !empty($quickIconValue);
+
+		$mustSaveProfile = !empty($profileName) && ($profileName != $oldProfileName);
+		$mustSaveProfile = $mustSaveProfile || ($quickIcon != $oldQuickIcon);
+
+		if ($mustSaveProfile)
 		{
 			$profileRecord->save(array(
-				'description' => $profileName
+				'description' => $profileName,
+				'quickicon'   => $quickIcon
 			));
 		}
 

@@ -116,8 +116,9 @@ class AkeebaViewBackup extends F0FViewHtml
 		$this->profileid = $cpanelmodel->getProfileID(); // Active profile ID
 		$this->profilelist = $cpanelmodel->getProfilesList(); // List of available profiles
 
-		// Add live help
-		AkeebaHelperIncludes::addHelp('backup');
+		// Should I ask for permission to display desktop notifications?
+		JLoader::import('joomla.application.component.helper');
+		$this->desktop_notifications = \Akeeba\Engine\Util\Comconfig::getValue('desktop_notifications', '0') ? 1 : 0;
 
 		// Set the toolbar title
 		$subtitle = JText::_('BACKUP');

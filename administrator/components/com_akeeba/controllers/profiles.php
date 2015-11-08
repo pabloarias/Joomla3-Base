@@ -110,6 +110,8 @@ class AkeebaControllerProfiles extends AkeebaControllerDefault
 				unset($data['id']);
 			}
 
+			$data['akeeba.flag.confwiz'] = 1;
+
 			// Try saving the profile
 			$result = $this->getThisModel()->getTable()->save($data);
 

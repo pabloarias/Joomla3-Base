@@ -83,9 +83,6 @@ class AkeebaViewDbef extends F0FViewHtml
 				break;
 		}
 
-		// Add live help
-		AkeebaHelperIncludes::addHelp('dbef');
-
 		// Get profile ID
 		$profileid = Platform::getInstance()->get_active_profile();
 		$this->profileid = $profileid;

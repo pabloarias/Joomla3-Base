@@ -168,7 +168,8 @@ class Kettenrad extends Part
 	protected function _run()
 	{
 		$logTag = $this->getLogTag();
-		Factory::getLog()->open($logTag);
+		$logger = Factory::getLog();
+		$logger->open($logTag);
 
 		if (!static::$registeredErrorHandler)
 		{
@@ -194,12 +195,12 @@ class Kettenrad extends Part
 		$registry->set('volatile.step_counter', ++$stepCounter);
 
 		// Log step start number
-		Factory::getLog()->log(LogLevel::DEBUG, '====== Starting Step number ' . $stepCounter . ' ======');
+		$logger->log(LogLevel::DEBUG, '====== Starting Step number ' . $stepCounter . ' ======');
 
 		if (defined('AKEEBADEBUG'))
 		{
 			$root = Platform::getInstance()->get_site_root();
-			Factory::getLog()->log(LogLevel::DEBUG, 'Site root: ' . $root);
+			$logger->log(LogLevel::DEBUG, 'Site root: ' . $root);
 		}
 
 		$timer = Factory::getTimer();
@@ -256,9 +257,11 @@ class Kettenrad extends Part
 			// Switch domain if necessary
 			if ($have_to_switch)
 			{
+				$logger->debug('Kettenrad :: Switching domains');
+
 				if (!Factory::getConfiguration()->get('akeeba.tuning.nobreak.domains', 0))
 				{
-					Factory::getLog()->log(LogLevel::DEBUG, "Kettenrad :: BREAKING STEP BEFORE SWITCHING DOMAIN");
+					$logger->log(LogLevel::DEBUG, "Kettenrad :: BREAKING STEP BEFORE SWITCHING DOMAIN");
 					$registry->set('volatile.breakflag', true);
 				}
 
@@ -269,8 +272,8 @@ class Kettenrad extends Part
 				{
 					// Aw, we're done! No more domains to run.
 					$this->setState('postrun');
-					Factory::getLog()->log(LogLevel::DEBUG, "Kettenrad :: No more domains to process");
-					Factory::getLog()->log(LogLevel::DEBUG, '====== Finished Step number ' . $stepCounter . ' ======');
+					$logger->log(LogLevel::DEBUG, "Kettenrad :: No more domains to process");
+					$logger->log(LogLevel::DEBUG, '====== Finished Step number ' . $stepCounter . ' ======');
 					$this->array_cache = null;
 
 					//restore_error_handler();
@@ -283,6 +286,7 @@ class Kettenrad extends Part
 
 				if (array_key_exists('class', $new_definition))
 				{
+					$logger->debug("Switching to domain {$new_definition['domain']}, class {$new_definition['class']}");
 					$this->domain = $new_definition['domain'];
 					$this->class = $new_definition['class'];
 					// Get a working object
@@ -291,7 +295,7 @@ class Kettenrad extends Part
 				}
 				else
 				{
-					Factory::getLog()->log(LogLevel::WARNING, "Kettenrad :: No class defined trying to switch domains. The backup will crash.");
+					$logger->log(LogLevel::WARNING, "Kettenrad :: No class defined trying to switch domains. The backup will crash.");
 					$this->domain = null;
 					$this->class = null;
 				}
@@ -300,14 +304,17 @@ class Kettenrad extends Part
 			{
 				if (!is_object($object))
 				{
+					$logger->debug("Kettenrad :: Getting domain object of class {$this->class}");
 					$object = Factory::getDomainObject($this->class);
 				}
 			}
 
 			// Tick the object
+			$logger->debug('Kettenrad :: Ticking the domain object');
 			$result = $object->tick();
 
 			// Propagate errors
+			$logger->debug('Kettenrad :: Domain object returned; propagating');
 			$this->propagateFromObject($object);
 
 			// Advance operation counter
@@ -322,6 +329,7 @@ class Kettenrad extends Part
 
 			// Check for BREAKFLAG
 			$breakFlag = $registry->get('volatile.breakflag', false);
+			$logger->debug("Kettenrad :: Break flag status: " . ($breakFlag ? 'YES' : 'no'));
 
 			// Process errors
 			$error = false;
@@ -335,45 +343,46 @@ class Kettenrad extends Part
 			$finished = $error ? true : !($result['HasRun']);
 
 			// Log operation end
-			Factory::getLog()->log(LogLevel::DEBUG, '----- Finished operation ' . $currentOperationNumber . ' ------');
+			$logger->log(LogLevel::DEBUG, '----- Finished operation ' . $currentOperationNumber . ' ------');
 		}
 
 		// Log the result
 		if (!$error)
 		{
-			Factory::getLog()->log(LogLevel::DEBUG, "Successful Smart algorithm on " . get_class($object));
+			$logger->log(LogLevel::DEBUG, "Successful Smart algorithm on " . get_class($object));
 		}
 		else
 		{
-			Factory::getLog()->log(LogLevel::ERROR, "Failed Smart algorithm on " . get_class($object));
+			$logger->log(LogLevel::ERROR, "Failed Smart algorithm on " . get_class($object));
 		}
 
 		// Log if we have to do more work or not
 		if (!is_object($object))
 		{
-			Factory::getLog()->log(LogLevel::WARNING, "Kettenrad :: Empty object found when processing domain '" . $this->domain . "'. This should never happen.");
+			$logger->log(LogLevel::WARNING, "Kettenrad :: Empty object found when processing domain '" . $this->domain . "'. This should never happen.");
 		}
 		else
 		{
 			if ($object->getState() == 'running')
 			{
-				Factory::getLog()->log(LogLevel::DEBUG, "Kettenrad :: More work required in domain '" . $this->domain . "'");
+				$logger->log(LogLevel::DEBUG, "Kettenrad :: More work required in domain '" . $this->domain . "'");
 				// We need to set the break flag for the part processing to not batch successive steps
 				$registry->set('volatile.breakflag', true);
 			}
 			elseif ($object->getState() == 'finished')
 			{
-				Factory::getLog()->log(LogLevel::DEBUG, "Kettenrad :: Domain '" . $this->domain . "' has finished.");
+				$logger->log(LogLevel::DEBUG, "Kettenrad :: Domain '" . $this->domain . "' has finished.");
 				$registry->set('volatile.breakflag', false);
 			}
 		}
 
 		// Log step end
-		Factory::getLog()->log(LogLevel::DEBUG, '====== Finished Step number ' . $stepCounter . ' ======');
+		$logger->log(LogLevel::DEBUG, '====== Finished Step number ' . $stepCounter . ' ======');
 
 		if (!$registry->get('akeeba.tuning.nobreak.domains', 0))
 		{
 			// Force break between steps
+			$logger->debug('Kettenrad :: Setting the break flag between domains');
 			$registry->set('volatile.breakflag', true);
 		}
 		//restore_error_handler();

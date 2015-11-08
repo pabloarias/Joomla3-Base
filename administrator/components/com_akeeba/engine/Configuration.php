@@ -542,6 +542,11 @@ class Configuration
 		$namespaces = $this->getNameSpaces();
 		foreach ($namespaces as $namespace)
 		{
+			if ($namespace == 'volatile')
+			{
+				continue;
+			}
+
 			$inidata .= "[$namespace]\n";
 			$ns = $this->registry[$namespace]['data'];
 			$inidata .= $this->dumpObject($ns);
