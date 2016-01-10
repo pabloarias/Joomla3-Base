@@ -1,4 +1,4 @@
-/* JCE Editor - 2.5.11 | 26 October 2015 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* JCE Editor - 2.5.12 | 06 January 2016 | http://www.joomlacontenteditor.net | Copyright (C) 2006 - 2016 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 WFAggregator.add('youtube',{params:{width:425,height:350,embed:true},props:{rel:1,autohide:2,autoplay:0,controls:1,enablejsapi:0,loop:0,playlist:'',start:'',privacy:0},setup:function(){},getTitle:function(){return this.title||this.name;},getType:function(){return $('#youtube_embed:visible').is(':checked')?'flash':'iframe';},isSupported:function(v){if(typeof v=='object'){v=v.src||v.data||'';}
 if(/youtu(\.)?be(.+)?\/(.+)/.test(v)){return'youtube';}
 return false;},getValues:function(src){var self=this,data={},args={},type=this.getType(),id,query={};var u=this.parseURL(src);if(u.query){query=$.String.query(u.query);}
@@ -8,7 +8,7 @@ if(self.props[k]===v||v===''){return;}
 args[k]=v;});src=src.replace(/youtu(\.)?be([^\/]+)?\/(.+)/,function(a,b,c,d){d=d.replace(/(watch\?v=|v\/|embed\/)/,'');if(b&&!c){c='.com';}
 id=d.replace(/([^\?&#]+)/,function($0,$1){return $1;});return'youtube'+c+'/'+(type=='iframe'?'embed':'v')+'/'+d;});if(id&&args.loop&&!args.playlist){args.playlist=id;}
 if($('#youtube_privacy').is(':checked')){src=src.replace(/youtube\./,'youtube-nocookie.');}else{src=src.replace(/youtube-nocookie\./,'youtube.');}
-if(type=='iframe'){$.extend(data,{allowfullscreen:true,frameborder:0});args['wmode']='opaque';}else{$.extend(true,data,{param:{allowfullscreen:true,wmode:'opaque'}});}
+if(type=='iframe'){$.extend(data,{allowfullscreen:true,frameborder:0});}else{$.extend(true,data,{param:{allowfullscreen:true,wmode:'opaque'}});}
 var q=$.param(args);if(q){src=src+(/\?/.test(src)?'&':'?')+q;}
 data.src=src;return data;},parseURL:function(url){var o={};url=/^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@\/]*):?([^:@\/]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/.exec(url);$.each(["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],function(i,v){var s=url[i];if(s){o[v]=s;}});return o;},setValues:function(data){var self=this,id='',src=data.src||data.data||'',query={};if(!src){return data;}
 var u=this.parseURL(src);if(u.query){query=$.String.query(u.query);}

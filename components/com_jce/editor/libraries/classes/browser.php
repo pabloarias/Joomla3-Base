@@ -2,7 +2,7 @@
 
 /**
  * @package   	JCE
- * @copyright 	Copyright (c) 2009-2015 Ryan Demmer. All rights reserved.
+ * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -824,11 +824,7 @@ class WFFileBrowser extends JObject {
 
     private function validateUploadedFile($file) {
         // check the POST data array
-        if (empty($file)) {
-            throw new InvalidArgumentException('Upload Failed: No data');
-        }
-        // tmp name must exist
-        if (empty($file['tmp_name'])) {
+        if (empty($file) || empty($file['tmp_name'])) {
             throw new InvalidArgumentException('Upload Failed: No data');
         }
 
@@ -992,9 +988,6 @@ class WFFileBrowser extends JObject {
         $complete = false;
         $contentType = JRequest::getVar('CONTENT_TYPE', '', 'SERVER');
 
-        // relative path
-        $relative = WFUtility::makePath($dir, $name);
-
         // Only multipart uploading is supported for now
         if ($contentType && strpos($contentType, "multipart") !== false) {
             $result = $filesystem->upload('multipart', trim($file['tmp_name']), $dir, $name);
@@ -1023,8 +1016,14 @@ class WFFileBrowser extends JObject {
 
             if ($result instanceof WFFileSystemResult) {
                 if ($result->state === true) {
-                    $this->setResult($this->fireEvent('onUpload', array($result->path, $relative)));
-                    $this->setResult(basename($result->path), 'files');
+                    $name = basename($result->path);
+
+                    if (empty($result->url)) {
+                        $result->url = WFUtility::makePath($filesystem->getRootDir(), WFUtility::makePath($dir, $name));
+                    }
+
+                    $this->setResult($this->fireEvent('onUpload', array($result->path, $result->url)));
+                    $this->setResult($name, 'files');
                 } else {
                     $this->setResult($result->message, 'error');
                 }
