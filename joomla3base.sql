@@ -2,10 +2,10 @@
 -- version 4.0.10deb1
 -- http://www.phpmyadmin.net
 --
--- Servidor: localhost
--- Tiempo de generación: 08-11-2015 a las 23:22:12
--- Versión del servidor: 5.5.46-0ubuntu0.14.04.2
--- Versión de PHP: 5.5.9-1ubuntu4.14
+-- Host: localhost
+-- Generation Time: Jan 10, 2016 at 12:53 PM
+-- Server version: 5.5.46-0ubuntu0.14.04.2
+-- PHP Version: 5.5.9-1ubuntu4.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,13 +17,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Base de datos: `joomla3base`
+-- Database: `joomla3base`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_akeeba_common`
+-- Table structure for table `awh8v_akeeba_common`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_akeeba_common` (
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_akeeba_common` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_ak_profiles`
+-- Table structure for table `awh8v_ak_profiles`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_ak_profiles` (
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_ak_profiles` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Volcado de datos para la tabla `awh8v_ak_profiles`
+-- Dumping data for table `awh8v_ak_profiles`
 --
 
 INSERT INTO `awh8v_ak_profiles` (`id`, `description`, `configuration`, `filters`, `quickicon`) VALUES
@@ -57,7 +57,7 @@ INSERT INTO `awh8v_ak_profiles` (`id`, `description`, `configuration`, `filters`
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_ak_stats`
+-- Table structure for table `awh8v_ak_stats`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_ak_stats` (
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_ak_stats` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
 
 --
--- Volcado de datos para la tabla `awh8v_ak_stats`
+-- Dumping data for table `awh8v_ak_stats`
 --
 
 INSERT INTO `awh8v_ak_stats` (`id`, `description`, `comment`, `backupstart`, `backupend`, `status`, `origin`, `type`, `profile_id`, `archivename`, `absolute_path`, `multipart`, `tag`, `backupid`, `filesexist`, `remote_filename`, `total_size`) VALUES
@@ -93,7 +93,7 @@ INSERT INTO `awh8v_ak_stats` (`id`, `description`, `comment`, `backupstart`, `ba
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_ak_storage`
+-- Table structure for table `awh8v_ak_storage`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_ak_storage` (
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_ak_storage` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_assets`
+-- Table structure for table `awh8v_assets`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_assets` (
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_assets` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=61 ;
 
 --
--- Volcado de datos para la tabla `awh8v_assets`
+-- Dumping data for table `awh8v_assets`
 --
 
 INSERT INTO `awh8v_assets` (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`) VALUES
@@ -192,7 +192,7 @@ INSERT INTO `awh8v_assets` (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `t
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_associations`
+-- Table structure for table `awh8v_associations`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_associations` (
@@ -206,7 +206,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_associations` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_banners`
+-- Table structure for table `awh8v_banners`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_banners` (
@@ -255,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_banners` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_banner_clients`
+-- Table structure for table `awh8v_banner_clients`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_banner_clients` (
@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_banner_clients` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_banner_tracks`
+-- Table structure for table `awh8v_banner_tracks`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_banner_tracks` (
@@ -298,7 +298,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_banner_tracks` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_categories`
+-- Table structure for table `awh8v_categories`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_categories` (
@@ -340,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_categories` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 --
--- Volcado de datos para la tabla `awh8v_categories`
+-- Dumping data for table `awh8v_categories`
 --
 
 INSERT INTO `awh8v_categories` (`id`, `asset_id`, `parent_id`, `lft`, `rgt`, `level`, `path`, `extension`, `title`, `alias`, `note`, `description`, `published`, `checked_out`, `checked_out_time`, `access`, `params`, `metadesc`, `metakey`, `metadata`, `created_user_id`, `created_time`, `modified_user_id`, `modified_time`, `hits`, `language`, `version`) VALUES
@@ -355,7 +355,7 @@ INSERT INTO `awh8v_categories` (`id`, `asset_id`, `parent_id`, `lft`, `rgt`, `le
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_contact_details`
+-- Table structure for table `awh8v_contact_details`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_contact_details` (
@@ -416,7 +416,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_contact_details` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_content`
+-- Table structure for table `awh8v_content`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_content` (
@@ -462,7 +462,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_content` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
--- Volcado de datos para la tabla `awh8v_content`
+-- Dumping data for table `awh8v_content`
 --
 
 INSERT INTO `awh8v_content` (`id`, `asset_id`, `title`, `alias`, `introtext`, `fulltext`, `state`, `catid`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `checked_out`, `checked_out_time`, `publish_up`, `publish_down`, `images`, `urls`, `attribs`, `version`, `ordering`, `metakey`, `metadesc`, `access`, `hits`, `metadata`, `featured`, `language`, `xreference`) VALUES
@@ -472,7 +472,7 @@ INSERT INTO `awh8v_content` (`id`, `asset_id`, `title`, `alias`, `introtext`, `f
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_contentitem_tag_map`
+-- Table structure for table `awh8v_contentitem_tag_map`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_contentitem_tag_map` (
@@ -493,7 +493,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_contentitem_tag_map` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_content_frontpage`
+-- Table structure for table `awh8v_content_frontpage`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_content_frontpage` (
@@ -505,7 +505,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_content_frontpage` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_content_rating`
+-- Table structure for table `awh8v_content_rating`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_content_rating` (
@@ -519,7 +519,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_content_rating` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_content_types`
+-- Table structure for table `awh8v_content_types`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_content_types` (
@@ -536,7 +536,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_content_types` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
 
 --
--- Volcado de datos para la tabla `awh8v_content_types`
+-- Dumping data for table `awh8v_content_types`
 --
 
 INSERT INTO `awh8v_content_types` (`type_id`, `type_title`, `type_alias`, `table`, `rules`, `field_mappings`, `router`, `content_history_options`) VALUES
@@ -559,7 +559,7 @@ INSERT INTO `awh8v_content_types` (`type_id`, `type_title`, `type_alias`, `table
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_core_log_searches`
+-- Table structure for table `awh8v_core_log_searches`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_core_log_searches` (
@@ -570,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_core_log_searches` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_extensions`
+-- Table structure for table `awh8v_extensions`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_extensions` (
@@ -595,10 +595,10 @@ CREATE TABLE IF NOT EXISTS `awh8v_extensions` (
   KEY `element_clientid` (`element`,`client_id`),
   KEY `element_folder_clientid` (`element`,`folder`,`client_id`),
   KEY `extension` (`type`,`element`,`folder`,`client_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10056 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10058 ;
 
 --
--- Volcado de datos para la tabla `awh8v_extensions`
+-- Dumping data for table `awh8v_extensions`
 --
 
 INSERT INTO `awh8v_extensions` (`extension_id`, `name`, `type`, `element`, `folder`, `client_id`, `enabled`, `access`, `protected`, `manifest_cache`, `params`, `custom_data`, `system_data`, `checked_out`, `checked_out_time`, `ordering`, `state`) VALUES
@@ -635,7 +635,7 @@ INSERT INTO `awh8v_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 (32, 'com_postinstall', 'component', 'com_postinstall', '', 1, 1, 1, 1, '{"name":"com_postinstall","type":"component","creationDate":"September 2013","author":"Joomla! Project","copyright":"(C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.2.0","description":"COM_POSTINSTALL_XML_DESCRIPTION","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (101, 'SimplePie', 'library', 'simplepie', '', 0, 1, 1, 1, '{"name":"SimplePie","type":"library","creationDate":"2004","author":"SimplePie","copyright":"Copyright (c) 2004-2009, Ryan Parman and Geoffrey Sneddon","authorEmail":"","authorUrl":"http:\\/\\/simplepie.org\\/","version":"1.2","description":"LIB_SIMPLEPIE_XML_DESCRIPTION","group":"","filename":"simplepie"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (102, 'phputf8', 'library', 'phputf8', '', 0, 1, 1, 1, '{"name":"phputf8","type":"library","creationDate":"2006","author":"Harry Fuecks","copyright":"Copyright various authors","authorEmail":"hfuecks@gmail.com","authorUrl":"http:\\/\\/sourceforge.net\\/projects\\/phputf8","version":"0.5","description":"LIB_PHPUTF8_XML_DESCRIPTION","group":"","filename":"phputf8"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(103, 'Joomla! Platform', 'library', 'joomla', '', 0, 1, 1, 1, '{"name":"Joomla! Platform","type":"library","creationDate":"2008","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"http:\\/\\/www.joomla.org","version":"13.1","description":"LIB_JOOMLA_XML_DESCRIPTION","group":"","filename":"joomla"}', '{"mediaversion":"cc1c7f35d345870d364c275cee2aed92"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(103, 'Joomla! Platform', 'library', 'joomla', '', 0, 1, 1, 1, '{"name":"Joomla! Platform","type":"library","creationDate":"2008","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"http:\\/\\/www.joomla.org","version":"13.1","description":"LIB_JOOMLA_XML_DESCRIPTION","group":"","filename":"joomla"}', '{"mediaversion":"9e6a2230a04647789a49c2b81ce9a646"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (104, 'IDNA Convert', 'library', 'idna_convert', '', 0, 1, 1, 1, '{"name":"IDNA Convert","type":"library","creationDate":"2004","author":"phlyLabs","copyright":"2004-2011 phlyLabs Berlin, http:\\/\\/phlylabs.de","authorEmail":"phlymail@phlylabs.de","authorUrl":"http:\\/\\/phlylabs.de","version":"0.8.0","description":"LIB_IDNA_XML_DESCRIPTION","group":"","filename":"idna_convert"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (105, 'FOF', 'library', 'fof', '', 0, 1, 1, 1, '{"name":"FOF","type":"library","creationDate":"2015-04-22 13:15:32","author":"Nicholas K. Dionysopoulos \\/ Akeeba Ltd","copyright":"(C)2011-2015 Nicholas K. Dionysopoulos","authorEmail":"nicholas@akeebabackup.com","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"2.4.3","description":"LIB_FOF_XML_DESCRIPTION","group":"","filename":"fof"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (106, 'PHPass', 'library', 'phpass', '', 0, 1, 1, 1, '{"name":"PHPass","type":"library","creationDate":"2004-2006","author":"Solar Designer","copyright":"","authorEmail":"solar@openwall.com","authorUrl":"http:\\/\\/www.openwall.com\\/phpass\\/","version":"0.3","description":"LIB_PHPASS_XML_DESCRIPTION","group":"","filename":"phpass"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
@@ -738,21 +738,21 @@ INSERT INTO `awh8v_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 (507, 'isis', 'template', 'isis', '', 1, 1, 1, 0, '{"name":"isis","type":"template","creationDate":"3\\/30\\/2012","author":"Kyle Ledbetter","copyright":"Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"","version":"1.0","description":"TPL_ISIS_XML_DESCRIPTION","group":"","filename":"templateDetails"}', '{"templateColor":"","logoFile":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (600, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '{"name":"English (en-GB)","type":"language","creationDate":"2013-03-07","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.3","description":"en-GB site language","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (601, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '{"name":"English (en-GB)","type":"language","creationDate":"2013-03-07","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.3","description":"en-GB administrator language","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(700, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '{"name":"files_joomla","type":"file","creationDate":"October 2015","author":"Joomla! Project","copyright":"(C) 2005 - 2015 Open Source Matters. All rights reserved","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.5","description":"FILES_JOOMLA_XML_DESCRIPTION","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(700, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '{"name":"files_joomla","type":"file","creationDate":"December 2015","author":"Joomla! Project","copyright":"(C) 2005 - 2015 Open Source Matters. All rights reserved","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.8","description":"FILES_JOOMLA_XML_DESCRIPTION","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (801, 'pkg_weblinks', 'package', 'pkg_weblinks', '', 0, 1, 1, 0, '{"name":"pkg_weblinks","type":"package","creationDate":"December 2012","author":"Joomla! Project","copyright":"(C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.1","description":"PKG_WEBLINKS_XML_DESCRIPTION","group":"","filename":"pkg_weblinks"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10000, 'plg_installer_webinstaller', 'plugin', 'webinstaller', 'installer', 0, 1, 1, 0, '{"name":"plg_installer_webinstaller","type":"plugin","creationDate":"18 December 2013","author":"Joomla! Project","copyright":"Copyright (C) 2013 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"1.0.5","description":"PLG_INSTALLER_WEBINSTALLER_XML_DESCRIPTION","group":""}', '{"tab_position":"0"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10001, 'plg_editors_jce', 'plugin', 'jce', 'editors', 0, 1, 1, 0, '{"name":"plg_editors_jce","type":"plugin","creationDate":"26 October 2015","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved","authorEmail":"info@joomlacontenteditor.net","authorUrl":"http:\\/\\/www.joomlacontenteditor.net","version":"2.5.11","description":"WF_EDITOR_PLUGIN_DESC","group":"","filename":"jce"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10002, 'plg_quickicon_jcefilebrowser', 'plugin', 'jcefilebrowser', 'quickicon', 0, 1, 1, 0, '{"name":"plg_quickicon_jcefilebrowser","type":"plugin","creationDate":"26 October 2015","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved","authorEmail":"@@email@@","authorUrl":"www.joomalcontenteditor.net","version":"2.5.11","description":"PLG_QUICKICON_JCEFILEBROWSER_XML_DESCRIPTION","group":"","filename":"jcefilebrowser"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10003, 'JCE', 'component', 'com_jce', '', 1, 1, 0, 0, '{"name":"JCE","type":"component","creationDate":"26 October 2015","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved","authorEmail":"info@joomlacontenteditor.net","authorUrl":"www.joomlacontenteditor.net","version":"2.5.11","description":"WF_ADMIN_DESC","group":"","filename":"jce"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10001, 'plg_editors_jce', 'plugin', 'jce', 'editors', 0, 1, 1, 0, '{"name":"plg_editors_jce","type":"plugin","creationDate":"06 January 2016","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2016 Ryan Demmer. All rights reserved","authorEmail":"info@joomlacontenteditor.net","authorUrl":"http:\\/\\/www.joomlacontenteditor.net","version":"2.5.12","description":"WF_EDITOR_PLUGIN_DESC","group":"","filename":"jce"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10002, 'plg_quickicon_jcefilebrowser', 'plugin', 'jcefilebrowser', 'quickicon', 0, 1, 1, 0, '{"name":"plg_quickicon_jcefilebrowser","type":"plugin","creationDate":"06 January 2016","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2016 Ryan Demmer. All rights reserved","authorEmail":"@@email@@","authorUrl":"www.joomalcontenteditor.net","version":"2.5.12","description":"PLG_QUICKICON_JCEFILEBROWSER_XML_DESCRIPTION","group":"","filename":"jcefilebrowser"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10003, 'JCE', 'component', 'com_jce', '', 1, 1, 0, 0, '{"name":"JCE","type":"component","creationDate":"06 January 2016","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2016 Ryan Demmer. All rights reserved","authorEmail":"info@joomlacontenteditor.net","authorUrl":"www.joomlacontenteditor.net","version":"2.5.12","description":"WF_ADMIN_DESC","group":"","filename":"jce"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10004, 'joomla_lang_full', 'language', 'es-ES', '', 0, 1, 0, 0, '{"name":"joomla_lang_full","type":"language","creationDate":"09\\/09\\/2015","author":"Spanish Translation Team: Comunidad Joomla","copyright":"Copyright (C) 2005 - 2015 comunididadjomla.org. All rights reserved.","authorEmail":"info@comunidadjoomla.org","authorUrl":"","version":"3.4.4.1","description":"es-ESsite language","group":"","filename":"install"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10005, 'joomla_lang_full', 'language', 'es-ES', '', 1, 1, 0, 0, '{"name":"joomla_lang_full","type":"language","creationDate":"09\\/09\\/2015","author":"Spanish Translation Team: Comunidad Joomla","copyright":"Copyright (C) 2005 - 2015 comunididadjomla.org. All rights reserved.","authorEmail":"info@comunidadjoomla.org","authorUrl":"","version":"3.4.4.1","description":"es-ESsite language","group":"","filename":"install"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10006, 'joomla_lang_full', 'package', 'pkg_es-ES', '', 0, 1, 1, 0, '{"name":"joomla_lang_full","type":"package","creationDate":"09\\/09\\/2015","author":"Spanish Translation Team: Comunidad Joomla","copyright":"Copyright (C) 2005 - 2015 comunididadjomla.org. All rights reserved.","authorEmail":"info@comunidadjoomla.org","authorUrl":"","version":"3.4.4.1","description":"<div style=\\"text-align:left;\\"><h2>Successfully installed the spanish language pack for Joomla! 3.4.4.<\\/h2><p><\\/p><p>Please report any bugs or issues at the Comunidad Joomla! <a href=\\"http:\\/\\/foro.comunidadjoomla.org\\/traduccion-ext\\/\\" target=\\"_blank\\">Translation forum<\\/a><\\/p><p><\\/p><p>Translated by: <a href=\\"http:\\/\\/www.comunidadjoomla.org\\" target=\\"_blank\\" title=\\"\\">The spanish translation team of Comunidad Joomla!<\\/a><\\/p><h2>El paquete en espa\\u00f1ol para Joomla! 3.4.4 se ha instalado correctamente.<\\/h2><p><\\/p><p>Por favor, reporte cualquier bug o asunto relacionado a nuestro <a href=\\"http:\\/\\/foro.comunidadjoomla.org\\/traduccion-ext\\/\\" target=\\"_blank\\">Foro de traducciones<\\/a><\\/p><p><\\/p><p>Traducci\\u00f3n: <a href=\\"http:\\/\\/www.comunidadjoomla.org\\" target=\\"_blank\\" title=\\"\\">El equipo de traducci\\u00f3n de Comunidad Joomla!<\\/a><\\/p><\\/div>","group":"","filename":"pkg_es-ES"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10007, 'Akeeba', 'component', 'com_akeeba', '', 1, 1, 0, 0, '{"name":"Akeeba","type":"component","creationDate":"2015-10-29","author":"Nicholas K. Dionysopoulos","copyright":"Copyright (c)2006-2014 Nicholas K. Dionysopoulos","authorEmail":"nicholas@dionysopoulos.me","authorUrl":"http:\\/\\/www.akeebabackup.com","version":"4.4.3","description":"Akeeba Backup Core - Full Joomla! site backup solution, Core Edition.","group":"","filename":"akeeba"}', '{"siteurl":"http:\\/\\/localhost\\/Joomla3-Base\\/","jlibrariesdir":"\\/home\\/pablo\\/public_html\\/Joomla3-Base\\/libraries","jversion":"1.6","lastversion":"3.11.4","acceptlicense":true,"acceptsupport":true,"acceptbackuptest":true,"angieupgrade":1}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10007, 'Akeeba', 'component', 'com_akeeba', '', 1, 1, 0, 0, '{"name":"Akeeba","type":"component","creationDate":"2015-12-22","author":"Nicholas K. Dionysopoulos","copyright":"Copyright (c)2006-2014 Nicholas K. Dionysopoulos","authorEmail":"nicholas@dionysopoulos.me","authorUrl":"http:\\/\\/www.akeebabackup.com","version":"4.5.1","description":"Akeeba Backup Core - Full Joomla! site backup solution, Core Edition.","group":"","filename":"akeeba"}', '{"siteurl":"http:\\/\\/localhost\\/Joomla3-Base\\/","jlibrariesdir":"\\/home\\/pablo\\/public_html\\/Joomla3-Base\\/libraries","jversion":"1.6","lastversion":"3.11.4","acceptlicense":true,"acceptsupport":true,"acceptbackuptest":true,"angieupgrade":1}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10009, 'AkeebaStrapper', 'file', 'files_strapper', '', 0, 1, 0, 0, '{"name":"AkeebaStrapper","type":"file","creationDate":"2015-01-06 16:06:22","author":"Nicholas K. Dionysopoulos","copyright":"(C) 2012-2013 Akeeba Ltd.","authorEmail":"nicholas@dionysopoulos.me","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"rev699A630-1420553182","description":"Namespaced jQuery, jQuery UI and Bootstrap for Akeeba products.","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10010, 'akeebabackup - es-ES', 'file', 'es-ES', '', 0, 1, 0, 0, '{"name":"akeebabackup - es-ES","type":"file","creationDate":"06 May 2014","author":"AkeebaBackup.com","copyright":"Copyright (C)2014 AkeebaBackup.com. All rights reserved.","authorEmail":"","authorUrl":"","version":"\\/Users\\/nicholas\\/Projects\\/akeeba\\/abcore\\/build\\/..","description":"Spanish (Spain) translation file for Akeeba Backup","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10020, 'plg_system_titlemanager', 'plugin', 'titlemanager', 'system', 0, 1, 1, 0, '{"name":"plg_system_titlemanager","type":"plugin","creationDate":"April 2013","author":"Ercan \\u00d6zkaya","copyright":"(C) 2013 Ercan \\u00d6zkaya. All rights reserved.","authorEmail":"ercan@ozkaya.net","authorUrl":"http:\\/\\/ercanozkaya.com\\/","version":"3.0","description":"Title Manager","group":""}', '{"position":"after","frontpage":"1","separator":"{s}|{s}","sitename":"","frontpage_sitename":""}', '', '', 0, '0000-00-00 00:00:00', 2, 0),
-(10028, 'AkeebaStrapper', 'file', 'AkeebaStrapper', '', 0, 1, 0, 0, '{"name":"AkeebaStrapper","type":"file","creationDate":"2015-10-17 19:42:53","author":"Nicholas K. Dionysopoulos","copyright":"(C) 2012-2013 Akeeba Ltd.","authorEmail":"nicholas@dionysopoulos.me","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"revFE521CF-1445103773","description":"Namespaced jQuery, jQuery UI and Bootstrap for Akeeba products.","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10029, 'com_osmap', 'component', 'com_osmap', '', 1, 1, 0, 0, '{"name":"com_osmap","type":"component","creationDate":"November 05 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved. \\/ Forked from XMap - Guillermo Vargas - guille@vargas.co.cr","authorEmail":"support@alledia.com","authorUrl":"http:\\/\\/www.alledia.com","version":"3.1.7","description":"OSMap - the easiest way to create a Joomla sitemap.","group":"","filename":"osmap"}', '{}', '{"author":"Alledia"}', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10028, 'AkeebaStrapper', 'file', 'AkeebaStrapper', '', 0, 1, 0, 0, '{"name":"AkeebaStrapper","type":"file","creationDate":"2015-12-21 11:41:04","author":"Nicholas K. Dionysopoulos","copyright":"(C) 2012-2013 Akeeba Ltd.","authorEmail":"nicholas@dionysopoulos.me","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"2.5.1","description":"Namespaced jQuery, jQuery UI and Bootstrap for Akeeba products.","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10029, 'com_osmap', 'component', 'com_osmap', '', 1, 1, 0, 0, '{"name":"com_osmap","type":"component","creationDate":"November 13 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved. \\/ Forked from XMap - Guillermo Vargas - guille@vargas.co.cr","authorEmail":"support@alledia.com","authorUrl":"http:\\/\\/www.alledia.com","version":"3.1.8","description":"OSMap - the easiest way to create a Joomla sitemap.","group":"","filename":"osmap"}', '{}', '{"author":"Alledia"}', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10031, 'plg_system_ossystem', 'plugin', 'ossystem', 'system', 0, 1, 1, 0, '{"name":"plg_system_ossystem","type":"plugin","creationDate":"May 01, 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved.","authorEmail":"support@alledia.com","authorUrl":"http:\\/\\/www.alledia.com","version":"1.0.7","description":"PLG_SYSTEM_OSSYSTEM_DESCRIPTION","group":"","filename":"ossystem"}', '[]', '{"author":"Alledia"}', '', 0, '0000-00-00 00:00:00', 1, 0),
 (10041, 'OSMap - Content Plugin', 'plugin', 'com_content', 'osmap', 0, 1, 1, 0, '{"name":"OSMap - Content Plugin","type":"plugin","creationDate":"April 22, 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved. \\/ Forked from XMap - Guillermo Vargas - guille@vargas.co.cr","authorEmail":"support@alledia.com","authorUrl":"http:\\/\\/www.alledia.com","version":"3.1.0","description":"OSMAP_CONTENT_PLUGIN_DESCRIPTION","group":"","filename":"com_content"}', '{"expand_categories":"1","expand_featured":"1","include_archived":"2","show_unauth":"0","add_pagebreaks":"1","max_art":"0","max_art_age":"0","add_images":"1","cat_priority":"-1","cat_changefreq":"-1","art_priority":"-1","art_changefreq":"-1","keywords":"1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10042, 'OSMAP_PLUGIN_K2', 'plugin', 'com_k2', 'osmap', 0, 0, 1, 0, '{"name":"OSMAP_PLUGIN_K2","type":"plugin","creationDate":"April 22, 2015","author":"Mohammad Hasani Eghtedar","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved. \\/ Forked from XMap - Guillermo Vargas - guille@vargas.co.cr \\/ Copyright (C) Mohammad Hasani Eghtedar - m.h.eghtedar@gmail.com","authorEmail":"support@alledia.com","authorUrl":"https:\\/\\/www.alledia.com","version":"3.1.0","description":"OSMAP_PLUGIN_K2_DESC","group":"","filename":"com_k2"}', '{"subcategories":"no","showk2items":"always","suppressdups":"no","priority":"0.5","changefreq":"weekly"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
@@ -761,14 +761,14 @@ INSERT INTO `awh8v_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 (10045, 'OSMap - SobiPro Plugin', 'plugin', 'com_sobipro', 'osmap', 0, 0, 1, 0, '{"name":"OSMap - SobiPro Plugin","type":"plugin","creationDate":"April 22, 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved. \\/ Forked from XMap - Guillermo Vargas - guille@vargas.co.cr","authorEmail":"guille@vargas.co.cr","authorUrl":"joomla.vargas.co.cr","version":"3.1.0","description":"OSMap Plugin for SobiPro component","group":"","filename":"com_sobipro"}', '{"include_entries":"1","max_entries":"","max_age":"","entries_order":"a.ordering","entries_orderdir":"DESC","cat_priority":"-1","cat_changefreq":"weekly","entry_priority":"-1","entry_changefreq":"weekly"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10046, 'OSMap - Virtuemart Plugin', 'plugin', 'com_virtuemart', 'osmap', 0, 0, 1, 0, '{"name":"OSMap - Virtuemart Plugin","type":"plugin","creationDate":"April 22, 2015","author":"Alledia \\/ Guillermo Vargas","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved. \\/ Forked from XMap - Guillermo Vargas - guille@vargas.co.cr","authorEmail":"support@alledia.com","authorUrl":"http:\\/\\/www.alledia.com","version":"3.1.0","description":"OSMAP_VM_PLUGIN_DESCRIPTION","group":"","filename":"com_virtuemart"}', '{"include_products":"1","cat_priority":"-1","cat_changefreq":"-1","prod_priority":"-1","prod_changefreq":"-1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (10047, 'OSMap - WebLinks Plugin', 'plugin', 'com_weblinks', 'osmap', 0, 0, 1, 0, '{"name":"OSMap - WebLinks Plugin","type":"plugin","creationDate":"April 22, 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved. \\/ Forked from XMap - Guillermo Vargas - guille@vargas.co.cr","authorEmail":"support@alledia.com","authorUrl":"http:\\/\\/www.alledia.com","version":"3.1.0","description":"OSMAP_WL_PLUGIN_DESCRIPTION","group":"","filename":"com_weblinks"}', '{"include_links":"1","max_links":"","cat_priority":"-1","cat_changefreq":"-1","link_priority":"-1","link_changefreq":"-1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10053, 'plg_system_jce', 'plugin', 'jce', 'system', 0, 1, 1, 0, '{"name":"plg_system_jce","type":"plugin","creationDate":"26 October 2015","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2015 Ryan Demmer. All rights reserved","authorEmail":"info@joomlacontenteditor.net","authorUrl":"http:\\/\\/www.joomlacontenteditor.net","version":"2.5.11","description":"PLG_JCE_XML_DESCRIPTION","group":"","filename":"jce"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10054, 'F0F (NEW) DO NOT REMOVE', 'library', 'lib_f0f', '', 0, 1, 1, 0, '{"name":"F0F (NEW) DO NOT REMOVE","type":"library","creationDate":"2015-10-17 19:42:53","author":"Nicholas K. Dionysopoulos \\/ Akeeba Ltd","copyright":"(C)2011-2014 Nicholas K. Dionysopoulos","authorEmail":"nicholas@akeebabackup.com","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"revFE521CF-1445103773","description":"Framework-on-Framework (FOF) newer version - DO NOT REMOVE - The rapid component development framework for Joomla!. This package is the newer version of FOF, not the one shipped with Joomla! as the official Joomla! RAD Layer. The Joomla! RAD Layer has ceased development in March 2014. DO NOT UNINSTALL THIS PACKAGE, IT IS *** N O T *** A DUPLICATE OF THE ''FOF'' PACKAGE. REMOVING EITHER FOF PACKAGE WILL BREAK YOUR SITE.","group":"","filename":"lib_f0f"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(10055, 'Alledia Framework', 'library', 'allediaframework', '', 0, 1, 1, 0, '{"name":"Alledia Framework","type":"library","creationDate":"August 19, 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved.","authorEmail":"support@alledia.com","authorUrl":"https:\\/\\/www.alledia.com","version":"1.4.2","description":"Shared library for Alledia extensions","group":"","filename":"allediaframework"}', '{}', '{"author":"Alledia"}', '', 0, '0000-00-00 00:00:00', 0, 0);
+(10053, 'plg_system_jce', 'plugin', 'jce', 'system', 0, 1, 1, 0, '{"name":"plg_system_jce","type":"plugin","creationDate":"06 January 2016","author":"Ryan Demmer","copyright":"Copyright (C) 2006 - 2016 Ryan Demmer. All rights reserved","authorEmail":"info@joomlacontenteditor.net","authorUrl":"http:\\/\\/www.joomlacontenteditor.net","version":"2.5.12","description":"PLG_JCE_XML_DESCRIPTION","group":"","filename":"jce"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10056, 'F0F (NEW) DO NOT REMOVE', 'library', 'lib_f0f', '', 0, 1, 1, 0, '{"name":"F0F (NEW) DO NOT REMOVE","type":"library","creationDate":"2015-12-21 11:41:04","author":"Nicholas K. Dionysopoulos \\/ Akeeba Ltd","copyright":"(C)2011-2014 Nicholas K. Dionysopoulos","authorEmail":"nicholas@akeebabackup.com","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"2.5.1","description":"Framework-on-Framework (FOF) newer version - DO NOT REMOVE - The rapid component development framework for Joomla!. This package is the newer version of FOF, not the one shipped with Joomla! as the official Joomla! RAD Layer. The Joomla! RAD Layer has ceased development in March 2014. DO NOT UNINSTALL THIS PACKAGE, IT IS *** N O T *** A DUPLICATE OF THE ''FOF'' PACKAGE. REMOVING EITHER FOF PACKAGE WILL BREAK YOUR SITE.","group":"","filename":"lib_f0f"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(10057, 'Alledia Framework', 'library', 'allediaframework', '', 0, 1, 1, 0, '{"name":"Alledia Framework","type":"library","creationDate":"August 19, 2015","author":"Alledia","copyright":"Copyright (C) 2015 Open Source Training, LLC. All rights reserved.","authorEmail":"support@alledia.com","authorUrl":"https:\\/\\/www.alledia.com","version":"1.4.2","description":"Shared library for Alledia extensions","group":"","filename":"allediaframework"}', '{}', '{"author":"Alledia"}', '', 0, '0000-00-00 00:00:00', 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_filters`
+-- Table structure for table `awh8v_finder_filters`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_filters` (
@@ -792,7 +792,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_filters` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links`
+-- Table structure for table `awh8v_finder_links`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links` (
@@ -827,7 +827,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms0`
+-- Table structure for table `awh8v_finder_links_terms0`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms0` (
@@ -842,7 +842,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms0` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms1`
+-- Table structure for table `awh8v_finder_links_terms1`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms1` (
@@ -857,7 +857,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms1` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms2`
+-- Table structure for table `awh8v_finder_links_terms2`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms2` (
@@ -872,7 +872,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms2` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms3`
+-- Table structure for table `awh8v_finder_links_terms3`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms3` (
@@ -887,7 +887,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms3` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms4`
+-- Table structure for table `awh8v_finder_links_terms4`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms4` (
@@ -902,7 +902,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms4` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms5`
+-- Table structure for table `awh8v_finder_links_terms5`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms5` (
@@ -917,7 +917,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms5` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms6`
+-- Table structure for table `awh8v_finder_links_terms6`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms6` (
@@ -932,7 +932,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms6` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms7`
+-- Table structure for table `awh8v_finder_links_terms7`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms7` (
@@ -947,7 +947,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms7` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms8`
+-- Table structure for table `awh8v_finder_links_terms8`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms8` (
@@ -962,7 +962,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms8` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_terms9`
+-- Table structure for table `awh8v_finder_links_terms9`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms9` (
@@ -977,7 +977,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_terms9` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_termsa`
+-- Table structure for table `awh8v_finder_links_termsa`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsa` (
@@ -992,7 +992,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsa` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_termsb`
+-- Table structure for table `awh8v_finder_links_termsb`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsb` (
@@ -1007,7 +1007,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsb` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_termsc`
+-- Table structure for table `awh8v_finder_links_termsc`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsc` (
@@ -1022,7 +1022,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsc` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_termsd`
+-- Table structure for table `awh8v_finder_links_termsd`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsd` (
@@ -1037,7 +1037,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsd` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_termse`
+-- Table structure for table `awh8v_finder_links_termse`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termse` (
@@ -1052,7 +1052,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termse` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_links_termsf`
+-- Table structure for table `awh8v_finder_links_termsf`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsf` (
@@ -1067,7 +1067,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_links_termsf` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_taxonomy`
+-- Table structure for table `awh8v_finder_taxonomy`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_taxonomy` (
@@ -1086,7 +1086,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_taxonomy` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Volcado de datos para la tabla `awh8v_finder_taxonomy`
+-- Dumping data for table `awh8v_finder_taxonomy`
 --
 
 INSERT INTO `awh8v_finder_taxonomy` (`id`, `parent_id`, `title`, `state`, `access`, `ordering`) VALUES
@@ -1095,7 +1095,7 @@ INSERT INTO `awh8v_finder_taxonomy` (`id`, `parent_id`, `title`, `state`, `acces
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_taxonomy_map`
+-- Table structure for table `awh8v_finder_taxonomy_map`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_taxonomy_map` (
@@ -1109,7 +1109,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_taxonomy_map` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_terms`
+-- Table structure for table `awh8v_finder_terms`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_terms` (
@@ -1132,7 +1132,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_terms` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_terms_common`
+-- Table structure for table `awh8v_finder_terms_common`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_terms_common` (
@@ -1143,7 +1143,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_terms_common` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `awh8v_finder_terms_common`
+-- Dumping data for table `awh8v_finder_terms_common`
 --
 
 INSERT INTO `awh8v_finder_terms_common` (`term`, `language`) VALUES
@@ -1266,7 +1266,7 @@ INSERT INTO `awh8v_finder_terms_common` (`term`, `language`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_tokens`
+-- Table structure for table `awh8v_finder_tokens`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_tokens` (
@@ -1284,7 +1284,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_tokens` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_tokens_aggregate`
+-- Table structure for table `awh8v_finder_tokens_aggregate`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_tokens_aggregate` (
@@ -1306,7 +1306,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_tokens_aggregate` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_finder_types`
+-- Table structure for table `awh8v_finder_types`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_finder_types` (
@@ -1320,7 +1320,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_finder_types` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_languages`
+-- Table structure for table `awh8v_languages`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_languages` (
@@ -1346,7 +1346,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_languages` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Volcado de datos para la tabla `awh8v_languages`
+-- Dumping data for table `awh8v_languages`
 --
 
 INSERT INTO `awh8v_languages` (`lang_id`, `lang_code`, `title`, `title_native`, `sef`, `image`, `description`, `metakey`, `metadesc`, `sitename`, `published`, `access`, `ordering`) VALUES
@@ -1355,7 +1355,7 @@ INSERT INTO `awh8v_languages` (`lang_id`, `lang_code`, `title`, `title_native`, 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_menu`
+-- Table structure for table `awh8v_menu`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_menu` (
@@ -1391,10 +1391,10 @@ CREATE TABLE IF NOT EXISTS `awh8v_menu` (
   KEY `idx_alias` (`alias`),
   KEY `idx_path` (`path`(255)),
   KEY `idx_language` (`language`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=190 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=198 ;
 
 --
--- Volcado de datos para la tabla `awh8v_menu`
+-- Dumping data for table `awh8v_menu`
 --
 
 INSERT INTO `awh8v_menu` (`id`, `menutype`, `title`, `alias`, `note`, `path`, `link`, `type`, `published`, `parent_id`, `level`, `component_id`, `checked_out`, `checked_out_time`, `browserNav`, `access`, `img`, `template_style_id`, `params`, `lft`, `rgt`, `home`, `language`, `client_id`) VALUES
@@ -1426,18 +1426,18 @@ INSERT INTO `awh8v_menu` (`id`, `menutype`, `title`, `alias`, `note`, `path`, `l
 (174, 'main', 'com_weblinks', 'com-weblinks', '', 'com-weblinks', 'index.php?option=com_weblinks', 'component', 0, 1, 1, 21, 0, '0000-00-00 00:00:00', 0, 1, 'class:weblinks', 0, '', 49, 54, 0, '', 1),
 (175, 'main', 'com_weblinks_links', 'com-weblinks-links', '', 'com-weblinks/com-weblinks-links', 'index.php?option=com_weblinks', 'component', 0, 174, 2, 21, 0, '0000-00-00 00:00:00', 0, 1, 'class:weblinks', 0, '', 50, 51, 0, '', 1),
 (176, 'main', 'com_weblinks_categories', 'com-weblinks-categories', '', 'com-weblinks/com-weblinks-categories', 'index.php?option=com_categories&extension=com_weblinks', 'component', 0, 174, 2, 21, 0, '0000-00-00 00:00:00', 0, 1, 'class:weblinks-cat', 0, '', 52, 53, 0, '', 1),
-(183, 'main', 'COM_AKEEBA', 'com-akeeba', '', 'com-akeeba', 'index.php?option=com_akeeba', 'component', 1, 1, 1, 10007, 0, '0000-00-00 00:00:00', 0, 1, '../media/com_akeeba/icons/akeeba-16.png', 0, '{}', 55, 56, 0, '', 1),
-(184, 'main', 'JCE', 'jce', '', 'jce', 'index.php?option=com_jce', 'component', 0, 1, 1, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/logo.png', 0, '{}', 57, 66, 0, '', 1),
-(185, 'main', 'WF_MENU_CPANEL', 'wf-menu-cpanel', '', 'jce/wf-menu-cpanel', 'index.php?option=com_jce', 'component', 0, 184, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-cpanel.png', 0, '{}', 58, 59, 0, '', 1),
-(186, 'main', 'WF_MENU_CONFIG', 'wf-menu-config', '', 'jce/wf-menu-config', 'index.php?option=com_jce&view=config', 'component', 0, 184, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-config.png', 0, '{}', 60, 61, 0, '', 1),
-(187, 'main', 'WF_MENU_PROFILES', 'wf-menu-profiles', '', 'jce/wf-menu-profiles', 'index.php?option=com_jce&view=profiles', 'component', 0, 184, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-profiles.png', 0, '{}', 62, 63, 0, '', 1),
-(188, 'main', 'WF_MENU_INSTALL', 'wf-menu-install', '', 'jce/wf-menu-install', 'index.php?option=com_jce&view=installer', 'component', 0, 184, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-install.png', 0, '{}', 64, 65, 0, '', 1),
-(189, 'main', 'COM_OSMAP_TITLE', 'com-osmap-title', '', 'com-osmap-title', 'index.php?option=com_osmap', 'component', 0, 1, 1, 10029, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_osmap/images/osmap-favicon.png', 0, '{}', 67, 68, 0, '', 1);
+(191, 'main', 'COM_AKEEBA', 'com-akeeba', '', 'com-akeeba', 'index.php?option=com_akeeba', 'component', 1, 1, 1, 10007, 0, '0000-00-00 00:00:00', 0, 1, '../media/com_akeeba/icons/akeeba-16.png', 0, '{}', 55, 56, 0, '', 1),
+(192, 'main', 'JCE', 'jce', '', 'jce', 'index.php?option=com_jce', 'component', 0, 1, 1, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/logo.png', 0, '{}', 57, 66, 0, '', 1),
+(193, 'main', 'WF_MENU_CPANEL', 'wf-menu-cpanel', '', 'jce/wf-menu-cpanel', 'index.php?option=com_jce', 'component', 0, 192, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-cpanel.png', 0, '{}', 58, 59, 0, '', 1),
+(194, 'main', 'WF_MENU_CONFIG', 'wf-menu-config', '', 'jce/wf-menu-config', 'index.php?option=com_jce&view=config', 'component', 0, 192, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-config.png', 0, '{}', 60, 61, 0, '', 1),
+(195, 'main', 'WF_MENU_PROFILES', 'wf-menu-profiles', '', 'jce/wf-menu-profiles', 'index.php?option=com_jce&view=profiles', 'component', 0, 192, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-profiles.png', 0, '{}', 62, 63, 0, '', 1),
+(196, 'main', 'WF_MENU_INSTALL', 'wf-menu-install', '', 'jce/wf-menu-install', 'index.php?option=com_jce&view=installer', 'component', 0, 192, 2, 10003, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_jce/media/img/menu/jce-install.png', 0, '{}', 64, 65, 0, '', 1),
+(197, 'main', 'COM_OSMAP_TITLE', 'com-osmap-title', '', 'com-osmap-title', 'index.php?option=com_osmap', 'component', 0, 1, 1, 10029, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_osmap/images/osmap-favicon.png', 0, '{}', 67, 68, 0, '', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_menu_types`
+-- Table structure for table `awh8v_menu_types`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_menu_types` (
@@ -1450,7 +1450,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_menu_types` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
--- Volcado de datos para la tabla `awh8v_menu_types`
+-- Dumping data for table `awh8v_menu_types`
 --
 
 INSERT INTO `awh8v_menu_types` (`id`, `menutype`, `title`, `description`) VALUES
@@ -1460,7 +1460,7 @@ INSERT INTO `awh8v_menu_types` (`id`, `menutype`, `title`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_messages`
+-- Table structure for table `awh8v_messages`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_messages` (
@@ -1480,7 +1480,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_messages` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_messages_cfg`
+-- Table structure for table `awh8v_messages_cfg`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_messages_cfg` (
@@ -1493,7 +1493,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_messages_cfg` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_modules`
+-- Table structure for table `awh8v_modules`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_modules` (
@@ -1522,7 +1522,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_modules` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=88 ;
 
 --
--- Volcado de datos para la tabla `awh8v_modules`
+-- Dumping data for table `awh8v_modules`
 --
 
 INSERT INTO `awh8v_modules` (`id`, `asset_id`, `title`, `note`, `content`, `ordering`, `position`, `checked_out`, `checked_out_time`, `publish_up`, `publish_down`, `published`, `module`, `access`, `showtitle`, `params`, `client_id`, `language`) VALUES
@@ -1546,7 +1546,7 @@ INSERT INTO `awh8v_modules` (`id`, `asset_id`, `title`, `note`, `content`, `orde
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_modules_menu`
+-- Table structure for table `awh8v_modules_menu`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_modules_menu` (
@@ -1556,7 +1556,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_modules_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `awh8v_modules_menu`
+-- Dumping data for table `awh8v_modules_menu`
 --
 
 INSERT INTO `awh8v_modules_menu` (`moduleid`, `menuid`) VALUES
@@ -1582,7 +1582,7 @@ INSERT INTO `awh8v_modules_menu` (`moduleid`, `menuid`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_newsfeeds`
+-- Table structure for table `awh8v_newsfeeds`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_newsfeeds` (
@@ -1629,7 +1629,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_newsfeeds` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_osmap_items`
+-- Table structure for table `awh8v_osmap_items`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_osmap_items` (
@@ -1646,7 +1646,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_osmap_items` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_osmap_sitemap`
+-- Table structure for table `awh8v_osmap_sitemap`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_osmap_sitemap` (
@@ -1673,7 +1673,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_osmap_sitemap` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Volcado de datos para la tabla `awh8v_osmap_sitemap`
+-- Dumping data for table `awh8v_osmap_sitemap`
 --
 
 INSERT INTO `awh8v_osmap_sitemap` (`id`, `title`, `alias`, `introtext`, `metadesc`, `metakey`, `attribs`, `selections`, `excluded_items`, `is_default`, `state`, `access`, `created`, `count_xml`, `count_html`, `views_xml`, `views_html`, `lastvisit_xml`, `lastvisit_html`) VALUES
@@ -1682,7 +1682,7 @@ INSERT INTO `awh8v_osmap_sitemap` (`id`, `title`, `alias`, `introtext`, `metades
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_overrider`
+-- Table structure for table `awh8v_overrider`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_overrider` (
@@ -1696,7 +1696,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_overrider` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_postinstall_messages`
+-- Table structure for table `awh8v_postinstall_messages`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_postinstall_messages` (
@@ -1718,7 +1718,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_postinstall_messages` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
--- Volcado de datos para la tabla `awh8v_postinstall_messages`
+-- Dumping data for table `awh8v_postinstall_messages`
 --
 
 INSERT INTO `awh8v_postinstall_messages` (`postinstall_message_id`, `extension_id`, `title_key`, `description_key`, `action_key`, `language_extension`, `language_client_id`, `type`, `action_file`, `action`, `condition_file`, `condition_method`, `version_introduced`, `enabled`) VALUES
@@ -1733,7 +1733,7 @@ INSERT INTO `awh8v_postinstall_messages` (`postinstall_message_id`, `extension_i
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_redirect_links`
+-- Table structure for table `awh8v_redirect_links`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_redirect_links` (
@@ -1755,7 +1755,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_redirect_links` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_schemas`
+-- Table structure for table `awh8v_schemas`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_schemas` (
@@ -1765,7 +1765,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_schemas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `awh8v_schemas`
+-- Dumping data for table `awh8v_schemas`
 --
 
 INSERT INTO `awh8v_schemas` (`extension_id`, `version_id`) VALUES
@@ -1775,7 +1775,7 @@ INSERT INTO `awh8v_schemas` (`extension_id`, `version_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_session`
+-- Table structure for table `awh8v_session`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_session` (
@@ -1792,17 +1792,17 @@ CREATE TABLE IF NOT EXISTS `awh8v_session` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `awh8v_session`
+-- Dumping data for table `awh8v_session`
 --
 
 INSERT INTO `awh8v_session` (`session_id`, `client_id`, `guest`, `time`, `data`, `userid`, `username`) VALUES
-('bmpib261j3g73jntnj3g0kd715', 0, 1, '1447020732', '__default|a:8:{s:15:"session.counter";i:1;s:19:"session.timer.start";i:1447020732;s:18:"session.timer.last";i:1447020732;s:17:"session.timer.now";i:1447020732;s:22:"session.client.browser";s:76:"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0";s:8:"registry";O:24:"Joomla\\Registry\\Registry":2:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}s:9:"separator";s:1:".";}s:4:"user";O:5:"JUser":26:{s:9:"\\0\\0\\0isRoot";b:0;s:2:"id";i:0;s:4:"name";N;s:8:"username";N;s:5:"email";N;s:8:"password";N;s:14:"password_clear";s:0:"";s:5:"block";N;s:9:"sendEmail";i:0;s:12:"registerDate";N;s:13:"lastvisitDate";N;s:10:"activation";N;s:6:"params";N;s:6:"groups";a:1:{i:0;s:1:"9";}s:5:"guest";i:1;s:13:"lastResetTime";N;s:10:"resetCount";N;s:12:"requireReset";N;s:10:"\\0\\0\\0_params";O:24:"Joomla\\Registry\\Registry":2:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}s:9:"separator";s:1:".";}s:14:"\\0\\0\\0_authGroups";a:2:{i:0;i:1;i:1;i:9;}s:14:"\\0\\0\\0_authLevels";a:3:{i:0;i:1;i:1;i:1;i:2;i:5;}s:15:"\\0\\0\\0_authActions";N;s:12:"\\0\\0\\0_errorMsg";N;s:13:"\\0\\0\\0userHelper";O:18:"JUserWrapperHelper":0:{}s:10:"\\0\\0\\0_errors";a:0:{}s:3:"aid";i:0;}s:13:"session.token";s:32:"4f641359c76601cfde8246a904a0fb4f";}', 0, ''),
-('fg1obv03vvni8snmqjdikmfgl0', 1, 0, '1447021291', '__default|a:8:{s:15:"session.counter";i:36;s:19:"session.timer.start";i:1447020737;s:18:"session.timer.last";i:1447021291;s:17:"session.timer.now";i:1447021291;s:22:"session.client.browser";s:76:"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0";s:8:"registry";O:24:"Joomla\\Registry\\Registry":2:{s:7:"\\0\\0\\0data";O:8:"stdClass":5:{s:11:"application";O:8:"stdClass":1:{s:4:"lang";s:0:"";}s:13:"com_installer";O:8:"stdClass":3:{s:7:"message";s:0:"";s:17:"extension_message";s:0:"";s:6:"update";O:8:"stdClass":4:{s:6:"filter";O:8:"stdClass":4:{s:6:"search";s:0:"";s:9:"client_id";s:0:"";s:4:"type";s:0:"";s:5:"group";s:0:"";}s:8:"ordercol";s:4:"name";s:9:"orderdirn";s:3:"asc";s:10:"limitstart";s:1:"0";}}s:16:"com_joomlaupdate";O:8:"stdClass":3:{s:4:"file";N;s:8:"password";s:32:"iJL94B23koFIc5o5de2OOgN9JioJnBUk";s:8:"filesize";i:40336;}s:6:"global";O:8:"stdClass":1:{s:4:"list";O:8:"stdClass":1:{s:5:"limit";i:20;}}s:11:"com_plugins";O:8:"stdClass":1:{s:7:"plugins";O:8:"stdClass":2:{s:6:"filter";O:8:"stdClass":1:{s:6:"search";s:5:"OSMap";}s:10:"limitstart";i:0;}}}s:9:"separator";s:1:".";}s:4:"user";O:5:"JUser":28:{s:9:"\\0\\0\\0isRoot";b:1;s:2:"id";s:3:"672";s:4:"name";s:10:"Super User";s:8:"username";s:5:"Admin";s:5:"email";s:20:"correo@pabloarias.eu";s:8:"password";s:60:"$2y$10$FvUH2i.LgtV./5e3om36Re1yQ/BNiOJ6DRmtB6qO2A9CH8Wpi8nJi";s:14:"password_clear";s:0:"";s:5:"block";s:1:"0";s:9:"sendEmail";s:1:"1";s:12:"registerDate";s:19:"2014-05-31 11:18:59";s:13:"lastvisitDate";s:19:"2015-09-21 15:43:01";s:10:"activation";s:1:"0";s:6:"params";s:0:"";s:6:"groups";a:1:{i:8;s:1:"8";}s:5:"guest";i:0;s:13:"lastResetTime";s:19:"0000-00-00 00:00:00";s:10:"resetCount";s:1:"0";s:12:"requireReset";s:1:"0";s:10:"\\0\\0\\0_params";O:24:"Joomla\\Registry\\Registry":2:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}s:9:"separator";s:1:".";}s:14:"\\0\\0\\0_authGroups";a:2:{i:0;i:1;i:1;i:8;}s:14:"\\0\\0\\0_authLevels";a:5:{i:0;i:1;i:1;i:1;i:2;i:2;i:3;i:3;i:4;i:6;}s:15:"\\0\\0\\0_authActions";N;s:12:"\\0\\0\\0_errorMsg";N;s:13:"\\0\\0\\0userHelper";O:18:"JUserWrapperHelper":0:{}s:10:"\\0\\0\\0_errors";a:0:{}s:3:"aid";i:0;s:6:"otpKey";s:0:"";s:4:"otep";s:0:"";}s:13:"session.token";s:32:"520bf5f23f9e6d6914d84b3599b38b2f";}__wf|a:1:{s:13:"session.token";s:32:"3d8661d648d49d00938403098c83e777";}', 672, 'Admin');
+('n03i6169rl4kb5su46lsblvoa2', 0, 1, '1452426020', '__default|a:8:{s:15:"session.counter";i:2;s:19:"session.timer.start";i:1452425987;s:18:"session.timer.last";i:1452425987;s:17:"session.timer.now";i:1452426020;s:22:"session.client.browser";s:76:"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:43.0) Gecko/20100101 Firefox/43.0";s:8:"registry";O:24:"Joomla\\Registry\\Registry":2:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}s:9:"separator";s:1:".";}s:4:"user";O:5:"JUser":26:{s:9:"\\0\\0\\0isRoot";b:0;s:2:"id";i:0;s:4:"name";N;s:8:"username";N;s:5:"email";N;s:8:"password";N;s:14:"password_clear";s:0:"";s:5:"block";N;s:9:"sendEmail";i:0;s:12:"registerDate";N;s:13:"lastvisitDate";N;s:10:"activation";N;s:6:"params";N;s:6:"groups";a:1:{i:0;s:1:"9";}s:5:"guest";i:1;s:13:"lastResetTime";N;s:10:"resetCount";N;s:12:"requireReset";N;s:10:"\\0\\0\\0_params";O:24:"Joomla\\Registry\\Registry":2:{s:7:"\\0\\0\\0data";O:8:"stdClass":0:{}s:9:"separator";s:1:".";}s:14:"\\0\\0\\0_authGroups";a:2:{i:0;i:1;i:1;i:9;}s:14:"\\0\\0\\0_authLevels";a:3:{i:0;i:1;i:1;i:1;i:2;i:5;}s:15:"\\0\\0\\0_authActions";N;s:12:"\\0\\0\\0_errorMsg";N;s:13:"\\0\\0\\0userHelper";O:18:"JUserWrapperHelper":0:{}s:10:"\\0\\0\\0_errors";a:0:{}s:3:"aid";i:0;}s:13:"session.token";s:32:"63348dea916cc9eeaa31453c496e397e";}', 0, ''),
+('n0ddsptesthp0pe8od9dtsp821', 1, 0, '1452426766', '__default|a:0:{}joomla|s:1860:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjoyOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjozOntzOjQ6InVzZXIiO086NToiSlVzZXIiOjI4OntzOjk6IgAqAGlzUm9vdCI7YjoxO3M6MjoiaWQiO3M6MzoiNjcyIjtzOjQ6Im5hbWUiO3M6MTA6IlN1cGVyIFVzZXIiO3M6ODoidXNlcm5hbWUiO3M6NToiQWRtaW4iO3M6NToiZW1haWwiO3M6MjA6ImNvcnJlb0BwYWJsb2FyaWFzLmV1IjtzOjg6InBhc3N3b3JkIjtzOjYwOiIkMnkkMTAkRnZVSDJpLkxndFYuLzVlM29tMzZSZTF5US9CTmlPSjZEUm10QjZxTzJBOUNIOFdwaThuSmkiO3M6MTQ6InBhc3N3b3JkX2NsZWFyIjtzOjA6IiI7czo1OiJibG9jayI7czoxOiIwIjtzOjk6InNlbmRFbWFpbCI7czoxOiIxIjtzOjEyOiJyZWdpc3RlckRhdGUiO3M6MTk6IjIwMTQtMDUtMzEgMTE6MTg6NTkiO3M6MTM6Imxhc3R2aXNpdERhdGUiO3M6MTk6IjIwMTYtMDEtMTAgMTE6NDA6MTciO3M6MTA6ImFjdGl2YXRpb24iO3M6MToiMCI7czo2OiJwYXJhbXMiO3M6MDoiIjtzOjY6Imdyb3VwcyI7YToxOntpOjg7czoxOiI4Ijt9czo1OiJndWVzdCI7aTowO3M6MTM6Imxhc3RSZXNldFRpbWUiO3M6MTk6IjAwMDAtMDAtMDAgMDA6MDA6MDAiO3M6MTA6InJlc2V0Q291bnQiO3M6MToiMCI7czoxMjoicmVxdWlyZVJlc2V0IjtzOjE6IjAiO3M6MTA6IgAqAF9wYXJhbXMiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mjp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjowOnt9czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fXM6MTQ6IgAqAF9hdXRoR3JvdXBzIjthOjI6e2k6MDtpOjE7aToxO2k6ODt9czoxNDoiACoAX2F1dGhMZXZlbHMiO2E6NTp7aTowO2k6MTtpOjE7aToxO2k6MjtpOjI7aTozO2k6MztpOjQ7aTo2O31zOjE1OiIAKgBfYXV0aEFjdGlvbnMiO047czoxMjoiACoAX2Vycm9yTXNnIjtOO3M6MTM6IgAqAHVzZXJIZWxwZXIiO086MTg6IkpVc2VyV3JhcHBlckhlbHBlciI6MDp7fXM6MTA6IgAqAF9lcnJvcnMiO2E6MDp7fXM6MzoiYWlkIjtpOjA7czo2OiJvdHBLZXkiO3M6MDoiIjtzOjQ6Im90ZXAiO3M6MDoiIjt9czo3OiJzZXNzaW9uIjtPOjg6InN0ZENsYXNzIjozOntzOjU6InRva2VuIjtzOjMyOiI4YzAwNGRmYjg2NTczY2IyYmQ1YjhmNDczOWUwZjVjNSI7czo3OiJjb3VudGVyIjtpOjE3O3M6NToidGltZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NToic3RhcnQiO2k6MTQ1MjQyNjUwMztzOjQ6Imxhc3QiO2k6MTQ1MjQyNjc2MDtzOjM6Im5vdyI7aToxNDUyNDI2NzY2O319czoxMToiYXBwbGljYXRpb24iO086ODoic3RkQ2xhc3MiOjE6e3M6NToicXVldWUiO047fX19czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fQ==";', 672, 'Admin');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_tags`
+-- Table structure for table `awh8v_tags`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_tags` (
@@ -1847,7 +1847,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_tags` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Volcado de datos para la tabla `awh8v_tags`
+-- Dumping data for table `awh8v_tags`
 --
 
 INSERT INTO `awh8v_tags` (`id`, `parent_id`, `lft`, `rgt`, `level`, `path`, `title`, `alias`, `note`, `description`, `published`, `checked_out`, `checked_out_time`, `access`, `params`, `metadesc`, `metakey`, `metadata`, `created_user_id`, `created_time`, `created_by_alias`, `modified_user_id`, `modified_time`, `images`, `urls`, `hits`, `language`, `version`, `publish_up`, `publish_down`) VALUES
@@ -1856,7 +1856,7 @@ INSERT INTO `awh8v_tags` (`id`, `parent_id`, `lft`, `rgt`, `level`, `path`, `tit
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_template_styles`
+-- Table structure for table `awh8v_template_styles`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_template_styles` (
@@ -1872,7 +1872,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_template_styles` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 --
--- Volcado de datos para la tabla `awh8v_template_styles`
+-- Dumping data for table `awh8v_template_styles`
 --
 
 INSERT INTO `awh8v_template_styles` (`id`, `template`, `client_id`, `home`, `title`, `params`) VALUES
@@ -1884,7 +1884,7 @@ INSERT INTO `awh8v_template_styles` (`id`, `template`, `client_id`, `home`, `tit
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_ucm_base`
+-- Table structure for table `awh8v_ucm_base`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_ucm_base` (
@@ -1901,7 +1901,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_ucm_base` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_ucm_content`
+-- Table structure for table `awh8v_ucm_content`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_ucm_content` (
@@ -1955,7 +1955,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_ucm_content` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_ucm_history`
+-- Table structure for table `awh8v_ucm_history`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_ucm_history` (
@@ -1975,7 +1975,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_ucm_history` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
--- Volcado de datos para la tabla `awh8v_ucm_history`
+-- Dumping data for table `awh8v_ucm_history`
 --
 
 INSERT INTO `awh8v_ucm_history` (`version_id`, `ucm_item_id`, `ucm_type_id`, `version_note`, `save_date`, `editor_user_id`, `character_count`, `sha1_hash`, `version_data`, `keep_forever`) VALUES
@@ -1987,7 +1987,7 @@ INSERT INTO `awh8v_ucm_history` (`version_id`, `ucm_item_id`, `ucm_type_id`, `ve
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_updates`
+-- Table structure for table `awh8v_updates`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_updates` (
@@ -2006,79 +2006,81 @@ CREATE TABLE IF NOT EXISTS `awh8v_updates` (
   `infourl` text NOT NULL,
   `extra_query` varchar(1000) DEFAULT '',
   PRIMARY KEY (`update_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Available Updates' AUTO_INCREMENT=65 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Available Updates' AUTO_INCREMENT=67 ;
 
 --
--- Volcado de datos para la tabla `awh8v_updates`
+-- Dumping data for table `awh8v_updates`
 --
 
 INSERT INTO `awh8v_updates` (`update_id`, `update_site_id`, `extension_id`, `name`, `description`, `element`, `type`, `folder`, `client_id`, `version`, `data`, `detailsurl`, `infourl`, `extra_query`) VALUES
 (1, 3, 0, 'Armenian', '', 'pkg_hy-AM', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/hy-AM_details.xml', '', ''),
 (2, 3, 0, 'Malay', '', 'pkg_ms-MY', 'package', '', 0, '3.4.1.2', '', 'http://update.joomla.org/language/details3/ms-MY_details.xml', '', ''),
 (3, 3, 0, 'Romanian', '', 'pkg_ro-RO', 'package', '', 0, '3.4.3.1', '', 'http://update.joomla.org/language/details3/ro-RO_details.xml', '', ''),
-(4, 3, 0, 'Flemish', '', 'pkg_nl-BE', 'package', '', 0, '3.4.5.2', '', 'http://update.joomla.org/language/details3/nl-BE_details.xml', '', ''),
+(4, 3, 0, 'Flemish', '', 'pkg_nl-BE', 'package', '', 0, '3.4.8.2', '', 'http://update.joomla.org/language/details3/nl-BE_details.xml', '', ''),
 (5, 3, 0, 'Chinese Traditional', '', 'pkg_zh-TW', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/zh-TW_details.xml', '', ''),
-(6, 3, 0, 'French', '', 'pkg_fr-FR', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/fr-FR_details.xml', '', ''),
+(6, 3, 0, 'French', '', 'pkg_fr-FR', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/fr-FR_details.xml', '', ''),
 (7, 3, 0, 'Galician', '', 'pkg_gl-ES', 'package', '', 0, '3.3.1.2', '', 'http://update.joomla.org/language/details3/gl-ES_details.xml', '', ''),
-(8, 3, 0, 'German', '', 'pkg_de-DE', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/de-DE_details.xml', '', ''),
+(8, 3, 0, 'German', '', 'pkg_de-DE', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/de-DE_details.xml', '', ''),
 (9, 3, 0, 'Greek', '', 'pkg_el-GR', 'package', '', 0, '3.4.2.1', '', 'http://update.joomla.org/language/details3/el-GR_details.xml', '', ''),
-(10, 3, 0, 'Japanese', '', 'pkg_ja-JP', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/ja-JP_details.xml', '', ''),
+(10, 3, 0, 'Japanese', '', 'pkg_ja-JP', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/ja-JP_details.xml', '', ''),
 (11, 3, 0, 'Hebrew', '', 'pkg_he-IL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/he-IL_details.xml', '', ''),
-(12, 3, 0, 'EnglishAU', '', 'pkg_en-AU', 'package', '', 0, '3.3.1.1', '', 'http://update.joomla.org/language/details3/en-AU_details.xml', '', ''),
-(13, 3, 0, 'EnglishUS', '', 'pkg_en-US', 'package', '', 0, '3.3.1.1', '', 'http://update.joomla.org/language/details3/en-US_details.xml', '', ''),
-(14, 3, 0, 'Hungarian', '', 'pkg_hu-HU', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/hu-HU_details.xml', '', ''),
-(15, 3, 0, 'Afrikaans', '', 'pkg_af-ZA', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/af-ZA_details.xml', '', ''),
-(16, 3, 0, 'Arabic Unitag', '', 'pkg_ar-AA', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/ar-AA_details.xml', '', ''),
-(17, 3, 0, 'Belarusian', '', 'pkg_be-BY', 'package', '', 0, '3.2.1.1', '', 'http://update.joomla.org/language/details3/be-BY_details.xml', '', ''),
-(18, 3, 0, 'Bulgarian', '', 'pkg_bg-BG', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/bg-BG_details.xml', '', ''),
-(19, 3, 0, 'Catalan', '', 'pkg_ca-ES', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/ca-ES_details.xml', '', ''),
-(20, 3, 0, 'Chinese Simplified', '', 'pkg_zh-CN', 'package', '', 0, '3.4.1.1', '', 'http://update.joomla.org/language/details3/zh-CN_details.xml', '', ''),
+(12, 3, 0, 'Hungarian', '', 'pkg_hu-HU', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/hu-HU_details.xml', '', ''),
+(13, 3, 0, 'Afrikaans', '', 'pkg_af-ZA', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/af-ZA_details.xml', '', ''),
+(14, 3, 0, 'Arabic Unitag', '', 'pkg_ar-AA', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/ar-AA_details.xml', '', ''),
+(15, 3, 0, 'Belarusian', '', 'pkg_be-BY', 'package', '', 0, '3.2.1.1', '', 'http://update.joomla.org/language/details3/be-BY_details.xml', '', ''),
+(16, 3, 0, 'EnglishAU', '', 'pkg_en-AU', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/en-AU_details.xml', '', ''),
+(17, 3, 0, 'Bulgarian', '', 'pkg_bg-BG', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/bg-BG_details.xml', '', ''),
+(18, 3, 0, 'Catalan', '', 'pkg_ca-ES', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/ca-ES_details.xml', '', ''),
+(19, 3, 0, 'Chinese Simplified', '', 'pkg_zh-CN', 'package', '', 0, '3.4.1.1', '', 'http://update.joomla.org/language/details3/zh-CN_details.xml', '', ''),
+(20, 3, 0, 'EnglishUS', '', 'pkg_en-US', 'package', '', 0, '3.4.6.1', '', 'http://update.joomla.org/language/details3/en-US_details.xml', '', ''),
 (21, 3, 0, 'Croatian', '', 'pkg_hr-HR', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/hr-HR_details.xml', '', ''),
 (22, 3, 0, 'Czech', '', 'pkg_cs-CZ', 'package', '', 0, '3.4.1.1', '', 'http://update.joomla.org/language/details3/cs-CZ_details.xml', '', ''),
 (23, 3, 0, 'Danish', '', 'pkg_da-DK', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/da-DK_details.xml', '', ''),
 (24, 3, 0, 'Dutch', '', 'pkg_nl-NL', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/nl-NL_details.xml', '', ''),
 (25, 3, 0, 'Estonian', '', 'pkg_et-EE', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/et-EE_details.xml', '', ''),
-(26, 3, 0, 'Italian', '', 'pkg_it-IT', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/it-IT_details.xml', '', ''),
+(26, 3, 0, 'Italian', '', 'pkg_it-IT', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/it-IT_details.xml', '', ''),
 (27, 3, 0, 'Khmer', '', 'pkg_km-KH', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/km-KH_details.xml', '', ''),
 (28, 3, 0, 'Korean', '', 'pkg_ko-KR', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/ko-KR_details.xml', '', ''),
 (29, 3, 0, 'Latvian', '', 'pkg_lv-LV', 'package', '', 0, '3.4.3.1', '', 'http://update.joomla.org/language/details3/lv-LV_details.xml', '', ''),
 (30, 3, 0, 'Macedonian', '', 'pkg_mk-MK', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/mk-MK_details.xml', '', ''),
 (31, 3, 0, 'Norwegian Bokmal', '', 'pkg_nb-NO', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/nb-NO_details.xml', '', ''),
 (32, 3, 0, 'Norwegian Nynorsk', '', 'pkg_nn-NO', 'package', '', 0, '3.4.2.1', '', 'http://update.joomla.org/language/details3/nn-NO_details.xml', '', ''),
-(33, 3, 0, 'Persian', '', 'pkg_fa-IR', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/fa-IR_details.xml', '', ''),
+(33, 3, 0, 'Persian', '', 'pkg_fa-IR', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/fa-IR_details.xml', '', ''),
 (34, 3, 0, 'Polish', '', 'pkg_pl-PL', 'package', '', 0, '3.4.2.1', '', 'http://update.joomla.org/language/details3/pl-PL_details.xml', '', ''),
 (35, 3, 0, 'Portuguese', '', 'pkg_pt-PT', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/pt-PT_details.xml', '', ''),
 (36, 3, 0, 'Russian', '', 'pkg_ru-RU', 'package', '', 0, '3.4.1.3', '', 'http://update.joomla.org/language/details3/ru-RU_details.xml', '', ''),
-(37, 3, 0, 'Slovak', '', 'pkg_sk-SK', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/sk-SK_details.xml', '', ''),
-(38, 3, 0, 'Swedish', '', 'pkg_sv-SE', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/sv-SE_details.xml', '', ''),
-(39, 3, 0, 'Syriac', '', 'pkg_sy-IQ', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/sy-IQ_details.xml', '', ''),
-(40, 3, 0, 'Tamil', '', 'pkg_ta-IN', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/ta-IN_details.xml', '', ''),
-(41, 3, 0, 'Thai', '', 'pkg_th-TH', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/th-TH_details.xml', '', ''),
-(42, 3, 0, 'Turkish', '', 'pkg_tr-TR', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/tr-TR_details.xml', '', ''),
+(37, 3, 0, 'Slovak', '', 'pkg_sk-SK', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/sk-SK_details.xml', '', ''),
+(38, 3, 0, 'Swedish', '', 'pkg_sv-SE', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/sv-SE_details.xml', '', ''),
+(39, 3, 0, 'Syriac', '', 'pkg_sy-IQ', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/sy-IQ_details.xml', '', ''),
+(40, 3, 0, 'Tamil', '', 'pkg_ta-IN', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/ta-IN_details.xml', '', ''),
+(41, 3, 0, 'Thai', '', 'pkg_th-TH', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/th-TH_details.xml', '', ''),
+(42, 3, 0, 'Turkish', '', 'pkg_tr-TR', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/tr-TR_details.xml', '', ''),
 (43, 3, 0, 'Ukrainian', '', 'pkg_uk-UA', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/uk-UA_details.xml', '', ''),
 (44, 3, 0, 'Uyghur', '', 'pkg_ug-CN', 'package', '', 0, '3.3.0.1', '', 'http://update.joomla.org/language/details3/ug-CN_details.xml', '', ''),
 (45, 3, 0, 'Albanian', '', 'pkg_sq-AL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/sq-AL_details.xml', '', ''),
 (46, 3, 0, 'Hindi', '', 'pkg_hi-IN', 'package', '', 0, '3.3.6.1', '', 'http://update.joomla.org/language/details3/hi-IN_details.xml', '', ''),
 (47, 3, 0, 'Portuguese Brazil', '', 'pkg_pt-BR', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/pt-BR_details.xml', '', ''),
 (48, 3, 0, 'Serbian Latin', '', 'pkg_sr-YU', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/sr-YU_details.xml', '', ''),
-(49, 3, 0, 'Bosnian', '', 'pkg_bs-BA', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/bs-BA_details.xml', '', ''),
+(49, 3, 0, 'Bosnian', '', 'pkg_bs-BA', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/bs-BA_details.xml', '', ''),
 (50, 3, 0, 'Serbian Cyrillic', '', 'pkg_sr-RS', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/sr-RS_details.xml', '', ''),
 (51, 3, 0, 'Vietnamese', '', 'pkg_vi-VN', 'package', '', 0, '3.2.1.1', '', 'http://update.joomla.org/language/details3/vi-VN_details.xml', '', ''),
 (52, 3, 0, 'Bahasa Indonesia', '', 'pkg_id-ID', 'package', '', 0, '3.3.0.2', '', 'http://update.joomla.org/language/details3/id-ID_details.xml', '', ''),
 (53, 3, 0, 'Finnish', '', 'pkg_fi-FI', 'package', '', 0, '3.4.2.1', '', 'http://update.joomla.org/language/details3/fi-FI_details.xml', '', ''),
 (54, 3, 0, 'Swahili', '', 'pkg_sw-KE', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/sw-KE_details.xml', '', ''),
 (55, 3, 0, 'Montenegrin', '', 'pkg_srp-ME', 'package', '', 0, '3.3.1.1', '', 'http://update.joomla.org/language/details3/srp-ME_details.xml', '', ''),
-(56, 3, 0, 'EnglishCA', '', 'pkg_en-CA', 'package', '', 0, '3.3.6.1', '', 'http://update.joomla.org/language/details3/en-CA_details.xml', '', ''),
+(56, 3, 0, 'EnglishCA', '', 'pkg_en-CA', 'package', '', 0, '3.4.6.1', '', 'http://update.joomla.org/language/details3/en-CA_details.xml', '', ''),
 (57, 3, 0, 'FrenchCA', '', 'pkg_fr-CA', 'package', '', 0, '3.4.4.3', '', 'http://update.joomla.org/language/details3/fr-CA_details.xml', '', ''),
 (58, 3, 0, 'Welsh', '', 'pkg_cy-GB', 'package', '', 0, '3.3.0.2', '', 'http://update.joomla.org/language/details3/cy-GB_details.xml', '', ''),
 (59, 3, 0, 'Sinhala', '', 'pkg_si-LK', 'package', '', 0, '3.3.1.1', '', 'http://update.joomla.org/language/details3/si-LK_details.xml', '', ''),
 (60, 3, 0, 'Dari Persian', '', 'pkg_prs-AF', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/prs-AF_details.xml', '', ''),
-(61, 3, 0, 'Turkmen', '', 'pkg_tk-TM', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/tk-TM_details.xml', '', '');
+(61, 3, 0, 'Turkmen', '', 'pkg_tk-TM', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/tk-TM_details.xml', '', ''),
+(62, 3, 0, 'Irish', '', 'pkg_ga-IE', 'package', '', 0, '3.4.5.2', '', 'http://update.joomla.org/language/details3/ga-IE_details.xml', '', ''),
+(63, 3, 0, 'Dzongkha', '', 'pkg_dz-BT', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/dz-BT_details.xml', '', '');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_update_sites`
+-- Table structure for table `awh8v_update_sites`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_update_sites` (
@@ -2090,29 +2092,29 @@ CREATE TABLE IF NOT EXISTS `awh8v_update_sites` (
   `last_check_timestamp` bigint(20) DEFAULT '0',
   `extra_query` varchar(1000) DEFAULT '',
   PRIMARY KEY (`update_site_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Update Sites' AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Update Sites' AUTO_INCREMENT=26 ;
 
 --
--- Volcado de datos para la tabla `awh8v_update_sites`
+-- Dumping data for table `awh8v_update_sites`
 --
 
 INSERT INTO `awh8v_update_sites` (`update_site_id`, `name`, `type`, `location`, `enabled`, `last_check_timestamp`, `extra_query`) VALUES
-(1, 'Joomla Core', 'collection', 'http://update.joomla.org/core/list.xml', 1, 1447021048, ''),
-(2, 'Joomla Extension Directory', 'collection', 'http://update.joomla.org/jed/list.xml', 1, 1447021048, ''),
-(3, 'Accredited Joomla! Translations', 'collection', 'http://update.joomla.org/language/translationlist_3.xml', 1, 1447021048, ''),
-(4, 'WebInstaller Update Site', 'extension', 'http://appscdn.joomla.org/webapps/jedapps/webinstaller.xml', 1, 1447021048, ''),
-(5, 'JCE Editor Updates', 'extension', 'https://www.joomlacontenteditor.net/index.php?option=com_updates&view=update&format=xml&id=1&file=extension.xml', 1, 1447021048, ''),
-(6, 'Akeeba Backup Core', 'extension', 'http://cdn.akeebabackup.com/updates/abcore.xml', 1, 1447021048, ''),
-(8, 'Joomla! Update Component Update Site', 'extension', 'http://update.joomla.org/core/extensions/com_joomlaupdate.xml', 1, 1447021048, ''),
-(9, 'Weblinks Update Site', 'extension', 'https://raw.githubusercontent.com/joomla-extensions/weblinks/master/manifest.xml', 1, 1447021048, ''),
-(20, 'Alledia Framework', 'extension', 'https://deploy.ostraining.com/client/update/free/stable/lib_allediaframework', 1, 0, ''),
-(21, 'OSSystem', 'extension', 'https://deploy.ostraining.com/client/update/free/stable/plg_system_ossystem', 1, 0, ''),
-(22, 'OSMap', 'extension', 'http://deploy.ostraining.com/client/update/free/stable/com_osmap', 1, 0, '');
+(1, 'Joomla Core', 'collection', 'http://update.joomla.org/core/list.xml', 1, 1452426627, ''),
+(2, 'Joomla Extension Directory', 'collection', 'http://update.joomla.org/jed/list.xml', 1, 1452426627, ''),
+(3, 'Accredited Joomla! Translations', 'collection', 'http://update.joomla.org/language/translationlist_3.xml', 1, 1452426627, ''),
+(4, 'WebInstaller Update Site', 'extension', 'http://appscdn.joomla.org/webapps/jedapps/webinstaller.xml', 1, 1452426627, ''),
+(5, 'JCE Editor Updates', 'extension', 'https://www.joomlacontenteditor.net/index.php?option=com_updates&view=update&format=xml&id=1&file=extension.xml', 1, 1452426627, ''),
+(6, 'Akeeba Backup Core', 'extension', 'http://cdn.akeebabackup.com/updates/abcore.xml', 1, 1452426627, ''),
+(8, 'Joomla! Update Component Update Site', 'extension', 'http://update.joomla.org/core/extensions/com_joomlaupdate.xml', 1, 1452426627, ''),
+(9, 'Weblinks Update Site', 'extension', 'https://raw.githubusercontent.com/joomla-extensions/weblinks/master/manifest.xml', 1, 1452426627, ''),
+(23, 'Alledia Framework', 'extension', 'https://deploy.ostraining.com/client/update/free/stable/lib_allediaframework', 1, 0, ''),
+(24, 'OSSystem', 'extension', 'https://deploy.ostraining.com/client/update/free/stable/plg_system_ossystem', 1, 0, ''),
+(25, 'OSMap', 'extension', 'http://deploy.ostraining.com/client/update/free/stable/com_osmap', 1, 0, '');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_update_sites_extensions`
+-- Table structure for table `awh8v_update_sites_extensions`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_update_sites_extensions` (
@@ -2122,7 +2124,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_update_sites_extensions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Links extensions to update sites';
 
 --
--- Volcado de datos para la tabla `awh8v_update_sites_extensions`
+-- Dumping data for table `awh8v_update_sites_extensions`
 --
 
 INSERT INTO `awh8v_update_sites_extensions` (`update_site_id`, `extension_id`) VALUES
@@ -2135,14 +2137,14 @@ INSERT INTO `awh8v_update_sites_extensions` (`update_site_id`, `extension_id`) V
 (6, 10007),
 (8, 28),
 (9, 801),
-(20, 10055),
-(21, 10031),
-(22, 10029);
+(23, 10057),
+(24, 10031),
+(25, 10029);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_usergroups`
+-- Table structure for table `awh8v_usergroups`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_usergroups` (
@@ -2159,7 +2161,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_usergroups` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
--- Volcado de datos para la tabla `awh8v_usergroups`
+-- Dumping data for table `awh8v_usergroups`
 --
 
 INSERT INTO `awh8v_usergroups` (`id`, `parent_id`, `lft`, `rgt`, `title`) VALUES
@@ -2176,7 +2178,7 @@ INSERT INTO `awh8v_usergroups` (`id`, `parent_id`, `lft`, `rgt`, `title`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_users`
+-- Table structure for table `awh8v_users`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_users` (
@@ -2204,16 +2206,16 @@ CREATE TABLE IF NOT EXISTS `awh8v_users` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=673 ;
 
 --
--- Volcado de datos para la tabla `awh8v_users`
+-- Dumping data for table `awh8v_users`
 --
 
 INSERT INTO `awh8v_users` (`id`, `name`, `username`, `email`, `password`, `block`, `sendEmail`, `registerDate`, `lastvisitDate`, `activation`, `params`, `lastResetTime`, `resetCount`, `otpKey`, `otep`, `requireReset`) VALUES
-(672, 'Super User', 'Admin', 'correo@pabloarias.eu', '$2y$10$FvUH2i.LgtV./5e3om36Re1yQ/BNiOJ6DRmtB6qO2A9CH8Wpi8nJi', 0, 1, '2014-05-31 11:18:59', '2015-11-08 22:12:22', '0', '', '0000-00-00 00:00:00', 0, '', '', 0);
+(672, 'Super User', 'Admin', 'correo@pabloarias.eu', '$2y$10$FvUH2i.LgtV./5e3om36Re1yQ/BNiOJ6DRmtB6qO2A9CH8Wpi8nJi', 0, 1, '2014-05-31 11:18:59', '2016-01-10 11:48:27', '0', '', '0000-00-00 00:00:00', 0, '', '', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_user_keys`
+-- Table structure for table `awh8v_user_keys`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_user_keys` (
@@ -2234,7 +2236,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_user_keys` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_user_notes`
+-- Table structure for table `awh8v_user_notes`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_user_notes` (
@@ -2261,7 +2263,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_user_notes` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_user_profiles`
+-- Table structure for table `awh8v_user_profiles`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_user_profiles` (
@@ -2275,7 +2277,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_user_profiles` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_user_usergroup_map`
+-- Table structure for table `awh8v_user_usergroup_map`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_user_usergroup_map` (
@@ -2285,7 +2287,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_user_usergroup_map` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `awh8v_user_usergroup_map`
+-- Dumping data for table `awh8v_user_usergroup_map`
 --
 
 INSERT INTO `awh8v_user_usergroup_map` (`user_id`, `group_id`) VALUES
@@ -2294,7 +2296,7 @@ INSERT INTO `awh8v_user_usergroup_map` (`user_id`, `group_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_viewlevels`
+-- Table structure for table `awh8v_viewlevels`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_viewlevels` (
@@ -2307,7 +2309,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_viewlevels` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
--- Volcado de datos para la tabla `awh8v_viewlevels`
+-- Dumping data for table `awh8v_viewlevels`
 --
 
 INSERT INTO `awh8v_viewlevels` (`id`, `title`, `ordering`, `rules`) VALUES
@@ -2320,7 +2322,7 @@ INSERT INTO `awh8v_viewlevels` (`id`, `title`, `ordering`, `rules`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_weblinks`
+-- Table structure for table `awh8v_weblinks`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_weblinks` (
@@ -2366,7 +2368,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_weblinks` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `awh8v_wf_profiles`
+-- Table structure for table `awh8v_wf_profiles`
 --
 
 CREATE TABLE IF NOT EXISTS `awh8v_wf_profiles` (
@@ -2389,7 +2391,7 @@ CREATE TABLE IF NOT EXISTS `awh8v_wf_profiles` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
--- Volcado de datos para la tabla `awh8v_wf_profiles`
+-- Dumping data for table `awh8v_wf_profiles`
 --
 
 INSERT INTO `awh8v_wf_profiles` (`id`, `name`, `description`, `users`, `types`, `components`, `area`, `device`, `rows`, `plugins`, `published`, `ordering`, `checked_out`, `checked_out_time`, `params`) VALUES
