@@ -533,7 +533,7 @@ ENDBODY;
 
     private function getSuperAdministrators($email = null)
     {
-        $db = JFactory::getDBO();
+        $db = F0FPlatform::getInstance()->getDbo();
         $sql = $db->getQuery(true)
             ->select(array(
                 $db->qn('u').'.'.$db->qn('id'),
@@ -558,15 +558,24 @@ ENDBODY;
 
     private function updateLastCheck($exists)
     {
-        $db = JFactory::getDbo();
+        $db = F0FPlatform::getInstance()->getDbo();
 
         $now = new JDate();
 
-        if($exists)
+		if (method_exists($now, 'toSql'))
+		{
+			$nowToSql = $now->toSql();
+		}
+		else
+		{
+			$nowToSql = $now->toMySQL();
+		}
+
+		if($exists)
         {
             $query = $db->getQuery(true)
                         ->update($db->qn('#__ak_storage'))
-                        ->set($db->qn('lastupdate').' = '.$db->q($now->toSql()))
+                        ->set($db->qn('lastupdate').' = '.$db->q($nowToSql))
                         ->where($db->qn('tag').' = '.$db->q('akeeba_checkfailed'));
         }
         else
@@ -574,7 +583,7 @@ ENDBODY;
             $query = $db->getQuery(true)
                         ->insert($db->qn('#__ak_storage'))
                         ->columns(array($db->qn('tag'), $db->qn('lastupdate')))
-                        ->values($db->q('akeeba_checkfailed').', '.$db->q($now->toSql()));
+                        ->values($db->q('akeeba_checkfailed').', '.$db->q($nowToSql));
         }
 
         try
@@ -589,7 +598,7 @@ ENDBODY;
 
     private function getLastCheck()
     {
-        $db = JFactory::getDBO();
+        $db = F0FPlatform::getInstance()->getDbo();
 
         $query = $db->getQuery(true)
                     ->select($db->qn('lastupdate'))
@@ -627,7 +636,7 @@ ENDBODY;
 		$params->set('show_howtorestoremodal', 0);
 
 		$params->set('jversion', '1.6');
-		$db   = JFactory::getDBO();
+		$db   = F0FPlatform::getInstance()->getDbo();
 		$data = $params->toString();
 		$sql  = $db->getQuery(true)
 				   ->update($db->qn('#__extensions'))

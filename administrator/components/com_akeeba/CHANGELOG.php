@@ -1,4 +1,33 @@
 <?php die();?>
+Akeeba Backup 4.5.1
+================================================================================
+# [HIGH] Joomla! 3.4.7 has a major bug which prevents CLI (CRON) scripts from executing
+# [HIGH] Possible backup failure when the database being backed up is of a different type (e.g. PostgreSQL vs MySQL) than the one containing the backup profile configuration
+# [HIGH] The Configuration Wizard popup is illegible under Joomla! 3.x
+# [HIGH] MySQL error on Joomla! 1.6 when updating statistics
+# [MEDIUM] Automatic update CLI script throws fatal error
+# [MEDIUM] Test FTP Connection results didn't display properly under Joomla! 3.x
+# [MEDIUM] Test SFTP Connection results didn't display properly under Joomla! 1.x / 2.5
+# [LOW] "Copy" label untranslated in Profiles page under Joomla! 1.6
+
+Akeeba Backup 4.5.0
+================================================================================
+! Front-end and remote backup features will be DISABLED if we detect an insecure Secret Word
++ Automatically run ALICE if an error occurs during the last domain of a backup
++ Added textual output to ALICE so it could be included in support tickets
++ Support for Amazon S3's Standard- Infrequent Access storage type
++ Integrated updater (optional for Joomla! 3.2+, mandatory for Joomla! 1.x/2.x/3.0/3.1)
+~ More stable Site Transfer Wizard thanks to improved transfer chunk size calculations
+~ Now compatible with Joomla! 1.7, 2.5, 3.0, 3.1, 3.2, 3.3, 3.4 and 3.5 running on PHP 5.3.03+, 5.4, 5.5 and 5.6.
+# [HIGH] ANGIE for Drupal: Fixed endless loop while trying to read the configuration
+# [LOW] Site Transfer Wizard, bad performance of the test FTP/SFTP servers could lead to an instant error when accessing this feature
+# [LOW] Notice thrown by the auto-update CLI script
+# [LOW] Low encoding of media folder permissions check could show an erroneous message on some sites (thanks Angel!)
+# [LOW] Someone who already knows your Secret Word can store XSS in the database if the remote backup is enabled and you're not using Joomla!'s or Admin Tools' .htaccess file (discovered by Calum Hutton, NCC Group)
+# [LOW] Open redirection in back-end backups (discovered by Calum Hutton, NCC Group)
+# [LOW] ANGIE for Wordpress: Fixed missing version number
+# [LOW] ANGIE for Wordpress: Fixed missing email address in site setup
+
 Akeeba Backup 4.4.3
 ================================================================================
 + One-click backup icons. Select which profiles to display as one-click icons in Akeeba Backup's control panel

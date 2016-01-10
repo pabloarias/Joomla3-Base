@@ -26,8 +26,13 @@ if ( !defined('DS'))
 	define('DS', DIRECTORY_SEPARATOR); // Still required by Joomla! :(
 }
 
+if (!class_exists('JDate'))
+{
+	jimport('joomla.utilities.date');
+}
+
 /**
- * Joomla! 2.5 platform class
+ * Joomla! 1.6/1.7/2.5/3.x platform class
  */
 class Joomla25 extends BasePlatform
 {
@@ -116,20 +121,25 @@ class Joomla25 extends BasePlatform
 		{
 			return false;
 		}
+
 		// We need JVERSION to be defined
 		if ( !defined('JVERSION'))
 		{
 			return false;
 		}
+
 		// Check if JFactory exists
 		if ( !class_exists('JFactory'))
 		{
 			return false;
 		}
+
 		// Check if JApplication exists
 		$appExists = class_exists('JApplication');
 		$appExists = $appExists || class_exists('JCli');
 		$appExists = $appExists || class_exists('JApplicationCli');
+		$appExists = $appExists || class_exists('AkeebaCliBase');
+
 		if ( !$appExists)
 		{
 			return false;
@@ -304,7 +314,13 @@ class Joomla25 extends BasePlatform
 	{
 		\JLoader::import('joomla.utilities.date');
 		$jdate = new \JDate($date);
-		return $jdate->toSql();
+
+		if (method_exists($jdate, 'toSql'))
+		{
+			return $jdate->toSql();
+		}
+
+		return $jdate->toMySQL();
 	}
 
 	/**
@@ -318,6 +334,7 @@ class Joomla25 extends BasePlatform
 	public function get_local_timestamp($format)
 	{
 		\JLoader::import('joomla.utilities.date');
+		\JLoader::import('joomla.environment.request');
 
 		$jregistry = \JFactory::getConfig();
 		$tzDefault = $jregistry->get('offset');
@@ -389,6 +406,7 @@ class Joomla25 extends BasePlatform
 		if ($use_platform)
 		{
 			$hasNookuContent = file_exists(JPATH_ROOT . '/plugins/system/nooku.php');
+
 			switch ($driver)
 			{
 				// MySQL or MySQLi drivers are known to be working; use their
@@ -631,7 +649,8 @@ class Joomla25 extends BasePlatform
 	 */
 	public function get_administrator_emails()
 	{
-		$db = \JFactory::getDbo();
+		$options = $this->get_platform_database_options();
+		$db = Factory::getDatabase($options);
 
 		// Load the root asset node and read the rules
 		$query = $db->getQuery(true)

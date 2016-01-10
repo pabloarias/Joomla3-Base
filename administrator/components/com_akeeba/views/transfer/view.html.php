@@ -123,6 +123,7 @@ class AkeebaViewTransfer extends F0FViewHtml
 
 		$this->transferOptions  = $this->getTransferMethodOptions();
 
+		/*
 		foreach ($this->ftpSupport['firewalled'] as $method => $isFirewalled)
 		{
 			if ($isFirewalled && $this->ftpSupport['supported'][$method])
@@ -132,6 +133,7 @@ class AkeebaViewTransfer extends F0FViewHtml
 				break;
 			}
 		}
+		*/
 
 		return true;
 	}

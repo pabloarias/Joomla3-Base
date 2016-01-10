@@ -75,6 +75,15 @@ class AkeebaModelJsons extends F0FModel
 	{
 		// Check if we're activated
 		$enabled = Platform::getInstance()->get_platform_configuration_option('frontend_enable', 0);
+
+		// Is the Secret Key strong enough?
+		$validKey = $this->serverKey();
+
+		if (!\Akeeba\Engine\Util\Complexify::isStrongEnough($validKey, false))
+		{
+			$enabled = false;
+		}
+
 		if (!$enabled)
 		{
 			$this->data          = 'Access denied';
@@ -404,7 +413,7 @@ class AkeebaModelJsons extends F0FModel
 
 		if (strtoupper($backupid) == '[DEFAULT]')
 		{
-			$db    = JFactory::getDbo();
+			$db    = F0FPlatform::getInstance()->getDbo();
 			$query = $db->getQuery(true)
 			            ->select('MAX(' . $db->qn('id') . ')')
 			            ->from($db->qn('#__ak_stats'));

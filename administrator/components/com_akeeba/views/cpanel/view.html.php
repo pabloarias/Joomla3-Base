@@ -103,6 +103,20 @@ class AkeebaViewCpanel extends F0FViewHtml
 	 */
 	public $statsIframe = '';
 
+	/**
+	 * If front-end backup is enabled and the secret word has an issue (too insecure) we populate this variable
+	 *
+	 * @var  string
+	 */
+	public $frontEndSecretWordIssue = '';
+
+	/**
+	 * In case the existing Secret Word is insecure we generate a new one. This variable contains the new Secret Word.
+	 *
+	 * @var  string
+	 */
+	public $newSecretWord = '';
+
 	protected function onBrowse($tpl = null) {
 		// Used in F0F 2.0, where this actually works as expected
 		$this->onAdd($tpl);
@@ -113,7 +127,7 @@ class AkeebaViewCpanel extends F0FViewHtml
 		/** @var AkeebaModelCpanels $model */
 		$model = $this->getModel();
 
-		$aeconfig = Factory::getConfiguration();
+		$session = JFactory::getSession();
 
 		// Load the helper classes
 		$this->loadHelper('utils');
@@ -137,6 +151,9 @@ class AkeebaViewCpanel extends F0FViewHtml
 		$this->needsdlid = $model->needsDownloadID();
 		$this->needscoredlidwarning = $model->mustWarnAboutDownloadIDInCore();
 		$this->extension_id = $model->getState('extension_id', 0, 'int');
+
+		$this->frontEndSecretWordIssue = $model->getFrontendSecretWordError();
+		$this->newSecretWord = $session->get('newSecretWord', null, 'akeeba.cpanel');
 
 		// Should I ask for permission to display desktop notifications?
 		JLoader::import('joomla.application.component.helper');

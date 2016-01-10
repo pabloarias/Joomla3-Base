@@ -11,11 +11,15 @@ defined('_JEXEC') or die();
 
 JHtml::_('behavior.modal');
 
+$extraClass = version_compare(JVERSION, '3.0.0', 'ge') ? '' : 'akeeba-bootstrap';
+
 ?>
 
-<div id="akeeba-config-confwiz-bubble" class="modal">
+<div id="akeeba-config-confwiz-bubble" class="<?php echo $extraClass ?> modal">
 	<div class="modal-header">
+		<?php if (version_compare(JVERSION, '3.0.0', 'ge')): ?>
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<?php endif; ?>
 		<h3>
 			<?php echo JText::_('COM_AKEEBA_CONFIG_HEADER_CONFWIZ') ?>
 		</h3>
@@ -35,14 +39,18 @@ JHtml::_('behavior.modal');
 			<?php echo JText::_('COM_AKEEBA_CONFIG_LBL_CONFWIZ_AFTER'); ?>
 		</p>
 	</div>
+	<?php if (version_compare(JVERSION, '3.0.0', 'ge')): ?>
 	<div class="modal-footer">
 		<a href="#" class="btn" data-dismiss="modal">
 			<span class="icon icon-cancel"></span>
 			<?php echo JText::_('JCANCEL'); ?>
 		</a>
 	</div>
+	<?php endif;?>
 </div>
+
 <script>
+<?php if (version_compare(JVERSION, '3.0.0', 'ge')): ?>
 	jQuery(document).ready(function(){
 		jQuery("#akeeba-config-confwiz-bubble").modal({
 			backdrop: true,
@@ -50,4 +58,12 @@ JHtml::_('behavior.modal');
 			show: true
 		});
 	});
+<?php else: ?>
+	window.addEvent('domready', function() {
+		SqueezeBox.open($('akeeba-config-confwiz-bubble'), {
+			handler: 'adopt',
+			size: {x: 400, y: 300}
+		});
+	});
+<?php endif;?>
 </script>

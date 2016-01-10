@@ -41,7 +41,7 @@ class F0FTableNested extends F0FTable
 	 *
 	 * @param   string          $table  Name of the database table to model.
 	 * @param   string          $key    Name of the primary key field in the table.
-	 * @param   JDatabaseDriver &$db    Database driver
+	 * @param   F0FDatabaseDriver &$db    Database driver
 	 * @param   array           $config The configuration parameters array
 	 *
 	 * @throws \RuntimeException When lft/rgt columns are not found
@@ -2157,7 +2157,7 @@ class F0FTableNested extends F0FTable
 	/**
 	 * Builds the query for the get() method
 	 *
-	 * @return JDatabaseQuery
+	 * @return F0FDatabaseQuery
 	 */
 	protected function buildQuery()
 	{

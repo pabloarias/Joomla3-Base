@@ -7,7 +7,7 @@
 
 class F0FDatabaseInstaller
 {
-	/** @var  JDatabase  The database connector object */
+	/** @var  F0FDatabase  The database connector object */
 	private $db = null;
 
 	/**
@@ -228,24 +228,24 @@ class F0FDatabaseInstaller
 
 					$this->db->setQuery((string) $node);
 
-					try
+					if (version_compare(JVERSION, '3.1', 'lt'))
 					{
-						if (version_compare(JVERSION, '3.1', 'lt'))
-						{
-							$handlers = array(
+						$handlers = array(
 								E_NOTICE 	=> JError::getErrorHandling(E_NOTICE),
 								E_WARNING	=> JError::getErrorHandling(E_WARNING),
 								E_ERROR		=> JError::getErrorHandling(E_ERROR),
-							);
-							$handlers[E_NOTICE]['options'] = isset($handlers[E_NOTICE]['options']) ? $handlers[E_NOTICE]['options'] : null;
-							$handlers[E_WARNING]['options'] = isset($handlers[E_WARNING]['options']) ? $handlers[E_WARNING]['options'] : null;
-							$handlers[E_ERROR]['options'] = isset($handlers[E_ERROR]['options']) ? $handlers[E_ERROR]['options'] : null;
-							JError::setErrorHandling(E_NOTICE, 'ignore');
-							JError::setErrorHandling(E_WARNING, 'ignore');
-							JError::setErrorHandling(E_ERROR, 'ignore');
-						}
+						);
+						$handlers[E_NOTICE]['options'] = isset($handlers[E_NOTICE]['options']) ? $handlers[E_NOTICE]['options'] : null;
+						$handlers[E_WARNING]['options'] = isset($handlers[E_WARNING]['options']) ? $handlers[E_WARNING]['options'] : null;
+						$handlers[E_ERROR]['options'] = isset($handlers[E_ERROR]['options']) ? $handlers[E_ERROR]['options'] : null;
+						JError::setErrorHandling(E_NOTICE, 'ignore');
+						JError::setErrorHandling(E_WARNING, 'ignore');
+						JError::setErrorHandling(E_ERROR, 'ignore');
+					}
 
-						$this->db->execute();
+					try
+					{
+						$result = $this->db->execute();
 
 						if (version_compare(JVERSION, '3.1', 'lt'))
 						{
@@ -254,7 +254,7 @@ class F0FDatabaseInstaller
 							JError::setErrorHandling(E_ERROR, $handlers[E_ERROR]['mode'], $handlers[E_ERROR]['options']);
 						}
 
-						if (version_compare(JVERSION, '3.1', 'lt') && $this->db->getErrorNum())
+						if (version_compare(JVERSION, '3.1', 'lt') && ($this->db->getErrorNum() || ($result === false)))
 						{
 							if (!$canFail)
 							{
@@ -265,6 +265,13 @@ class F0FDatabaseInstaller
 					}
 					catch (Exception $e)
 					{
+						if (version_compare(JVERSION, '3.1', 'lt'))
+						{
+							JError::setErrorHandling(E_NOTICE, $handlers[E_NOTICE]['mode'], $handlers[E_NOTICE]['options']);
+							JError::setErrorHandling(E_WARNING, $handlers[E_WARNING]['mode'], $handlers[E_WARNING]['options']);
+							JError::setErrorHandling(E_ERROR, $handlers[E_ERROR]['mode'], $handlers[E_ERROR]['options']);
+						}
+
 						// If we are not allowed to fail, throw back the exception we caught
 						if (!$canFail)
 						{

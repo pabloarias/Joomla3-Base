@@ -333,6 +333,18 @@ class AkeebaStrapper
 
         $altCss = array('media://akeeba_strapper/css/strapper.min.css');
 
+		switch ($key)
+		{
+			case 'joomla3':
+			case 'joomla32':
+				$altCss[] = 'media://akeeba_strapper/css/strapper.j3.css';
+				break;
+
+			case 'joomla2':
+				$altCss[] = 'media://akeeba_strapper/css/strapper.j25.css';
+				break;
+		}
+
         if ($loadBootstrap == 'full')
         {
             array_unshift($altCss, 'media://akeeba_strapper/css/bootstrap.min.css');

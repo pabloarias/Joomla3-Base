@@ -8,6 +8,13 @@
 // Protect from unauthorized access
 defined('F0F_INCLUDED') or die;
 
+if (version_compare(JVERSION, '2.5.0', 'lt'))
+{
+	jimport('joomla.form.form');
+	jimport('joomla.form.formfield');
+	jimport('joomla.form.formrule');
+}
+
 /**
  * F0FForm is an extension to JForm which support not only edit views but also
  * browse (record list) and read (single record display) views based on XML

@@ -22,15 +22,15 @@ defined('_JEXEC') or die();
 	<div>
 		<label><?php echo JText::_('DBFILTER_LABEL_ROOTDIR') ?></label>
 		<?php echo $this->root_select; ?>
-		<button class="btn btn-success" onclick="dbfilter_exclude_noncms(); return false;">
+		<button class="btn btn-success" onclick="akeeba.Dbfilters.excludeNonCMS(); return false;">
 			<i class="icon-flag icon-white"></i>
 			<?php echo JText::_('DBFILTER_LABEL_EXCLUDENONCORE'); ?>
 		</button>
-		<button class="btn btn-danger" onclick="dbfilter_nuke(); return false;">
+		<button class="btn btn-danger" onclick="akeeba.Dbfilters.nuke(); return false;">
 			<i class="icon-fire icon-white"></i>
 			<?php echo JText::_('DBFILTER_LABEL_NUKEFILTERS'); ?>
 		</button>
-	</div>	
+	</div>
 </div>
 
 <fieldset>
@@ -47,15 +47,14 @@ function akeeba_active_root_changed()
 	(function($){
 		var data = new Object;
 		data.root = $('#active_root').val();
-		dbfilter_load(data);
+        akeeba.Dbfilters.load(data);
 	})(akeeba.jQuery);
 }
 
 akeeba.jQuery(document).ready(function($){
 	// Set the AJAX proxy URL
-	akeeba_ajax_url = '<?php echo AkeebaHelperEscape::escapeJS('index.php?option=com_akeeba&view=dbef&task=ajax') ?>';
-	// Set the media root
-	akeeba_ui_theme_root = '<?php echo $this->mediadir ?>';
+    akeeba.System.params.AjaxURL = '<?php echo AkeebaHelperEscape::escapeJS('index.php?option=com_akeeba&view=dbef&task=ajax') ?>';
+
 	// Create the dialog
 	$("#dialog").dialog({
 		autoOpen: false,
@@ -68,7 +67,7 @@ akeeba.jQuery(document).ready(function($){
 		show: 'slide'
 	});
 	// Create an AJAX error trap
-	akeeba_error_callback = function( message ) {
+    akeeba.System.params.errorCallback = function( message ) {
 		var dialog_element = $("#dialog");
 		dialog_element.html(''); // Clear the dialog's contents
 		dialog_element.dialog('option', 'title', '<?php echo AkeebaHelperEscape::escapeJS(JText::_('CONFIG_UI_AJAXERRORDLG_TITLE')) ?>');
@@ -77,13 +76,13 @@ akeeba.jQuery(document).ready(function($){
 		dialog_element.dialog('open');
 	};
 	// Push translations
-	akeeba_translations['UI-ROOT'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('FILTERS_LABEL_UIROOT')) ?>';
-	akeeba_translations['UI-ERROR-FILTER'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('FILTERS_LABEL_UIERRORFILTER')) ?>';
+    akeeba.Dbfilters.translations['UI-ROOT'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('FILTERS_LABEL_UIROOT')) ?>';
+    akeeba.Dbfilters.translations['UI-ERROR-FILTER'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('FILTERS_LABEL_UIERRORFILTER')) ?>';
 	<?php
 			$filters = array('tables', 'tabledata');
 			foreach($filters as $type)
 			{
-				echo "\takeeba_translations['UI-FILTERTYPE-".strtoupper($type)."'] = '".
+				echo "\takeeba.Dbfilters.translations['UI-FILTERTYPE-".strtoupper($type)."'] = '".
 					AkeebaHelperEscape::escapeJS(JText::_('DBFILTER_TYPE_'.strtoupper($type))).
 					"';\n";
 			}
@@ -91,7 +90,7 @@ akeeba.jQuery(document).ready(function($){
 			$table_types = array('misc', 'table', 'view', 'procedure', 'function', 'trigger');
 			foreach($table_types as $type)
 			{
-				echo "\takeeba_translations['UI-TABLETYPE-".strtoupper($type)."'] = '".
+				echo "\takeeba.Dbfilters.translations['UI-TABLETYPE-".strtoupper($type)."'] = '".
 					AkeebaHelperEscape::escapeJS(JText::_('DBFILTER_TABLE_'.strtoupper($type))).
 					"';\n";
 			}
@@ -99,6 +98,6 @@ akeeba.jQuery(document).ready(function($){
 
 	// Bootstrap the page display
 	var data = JSON.parse('<?php echo AkeebaHelperEscape::escapeJS($this->json,"'"); ?>');
-	dbfilter_render(data);
+    akeeba.Dbfilters.render(data);
 });
 </script>

@@ -23,7 +23,7 @@ $proKey = (defined('AKEEBA_PRO') && AKEEBA_PRO) ? 'PRO' : 'CORE';
 	</div>
 	<div class="modal-body">
 		<?php echo JText::sprintf('COM_AKEEBA_BUADMIN_LABEL_HOWDOIRESTORE_TEXT_' . $proKey,
-			'https://www.akeebabackup.com/documentation/video-tutorials/item/1024-ab04.html',
+			'https://www.akeebabackup.com/videos/1212-akeeba-backup-core/1618-abtc04-restore-site-new-server.html',
 			'index.php?option=com_akeeba&view=transfer'); ?>
 	</div>
 	<div class="modal-footer">
@@ -37,6 +37,7 @@ $proKey = (defined('AKEEBA_PRO') && AKEEBA_PRO) ? 'PRO' : 'CORE';
 		</a>
 	</div>
 </div>
+
 <script>
 	jQuery(document).ready(function(){
 		jQuery("#akeeba-config-howtorestore-bubble").modal({

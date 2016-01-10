@@ -72,7 +72,7 @@ if (typeof akeeba.Transfer == 'undefined')
         $('#akeeba-transfer-btn-url').attr('disabled', 'disabled');
         $('#akeeba-transfer-loading').show();
 
-        doAjax({
+        akeeba.System.doAjax({
             'task': 'checkUrl',
             'url': url
         },
@@ -223,7 +223,7 @@ if (typeof akeeba.Transfer == 'undefined')
         };
 
         // Do AJAX call & Render results
-        doAjax(
+        akeeba.System.doAjax(
             data,
             function (data)
             {
@@ -403,7 +403,7 @@ if (typeof akeeba.Transfer == 'undefined')
         };
 
         // Do AJAX call & Render results
-        doAjax(
+        akeeba.System.doAjax(
             data,
             function (data)
             {
@@ -511,7 +511,7 @@ if (typeof akeeba.Transfer == 'undefined')
         };
 
         // Construct the query
-        doAjax(
+        akeeba.System.doAjax(
             data,
             function (res)
             {
@@ -570,7 +570,7 @@ if (typeof akeeba.Transfer == 'undefined')
         };
 
         // Construct the query
-        doAjax(
+        akeeba.System.doAjax(
             data,
             function (res)
             {
@@ -612,7 +612,7 @@ if (typeof akeeba.Transfer == 'undefined')
         };
 
         // Construct the query
-        doAjax(
+        akeeba.System.doAjax(
             data,
             function (res)
             {

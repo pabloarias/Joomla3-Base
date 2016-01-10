@@ -120,7 +120,7 @@ class AkeebaModelStats extends F0FModel
 
 		require_once JPATH_ROOT . '/administrator/components/com_akeeba/version.php';
 
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$stats = new AkeebaUsagestats();
 
 		$stats->setSiteId($siteId);
@@ -237,24 +237,27 @@ class AkeebaModelStats extends F0FModel
 			return;
 		}
 
-		if (!$count)
-		{
-			$query = $db->getQuery(true)
-				->insert($db->qn('#__akeeba_common'))
-				->columns(array($db->qn('key'), $db->qn('value')))
-				->values($db->q($key) . ', ' . $db->q($value));
-		}
-		else
-		{
-			$query = $db->getQuery(true)
-				->update($db->qn('#__akeeba_common'))
-				->set($db->qn('value') . ' = ' . $db->q($value))
-				->where($db->qn('key') . ' = ' . $db->q($key));
-		}
-
 		try
 		{
-			$db->setQuery($query)->execute();
+			if (!$count)
+			{
+				$insertObject = (object) array(
+						'key' => $key,
+						'value' => $value,
+				);
+				$db->insertObject('#__akeeba_common', $insertObject);
+			}
+			else
+			{
+				$keyName = version_compare(JVERSION, '1.7.0', 'lt') ? $db->qn('key') : 'key';
+
+				$insertObject = (object) array(
+						$keyName => $key,
+						'value' => $value,
+				);
+
+				$db->updateObject('#__akeeba_common', $insertObject, $keyName);
+			}
 		}
 		catch (Exception $e)
 		{

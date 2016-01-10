@@ -80,7 +80,7 @@ class F0FFormFieldUsergroup extends JFormFieldUsergroup implements F0FFormField
 
 		$params = $this->getOptions();
 
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select('a.id AS value, a.title AS text');
@@ -122,7 +122,7 @@ class F0FFormFieldUsergroup extends JFormFieldUsergroup implements F0FFormField
 	{
 		$class = $this->element['class'] ? (string) $this->element['class'] : '';
 
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select('a.id AS value, a.title AS text');

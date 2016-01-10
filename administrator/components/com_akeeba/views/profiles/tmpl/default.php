@@ -50,6 +50,7 @@ $token = JFactory::getSession()->getFormToken();
 		#<?php echo $this->profileid; ?> <?php echo $this->profilename; ?>
 	</div>
 
+	<?php if (version_compare(JVERSION, '3.0.0', 'ge')): ?>
 	<div id="filter-bar" class="btn-toolbar">
 		<div class="btn-group pull-right hidden-phone">
 			<label for="limit"
@@ -79,6 +80,8 @@ $token = JFactory::getSession()->getFormToken();
 			</select>
 		</div>
 	</div>
+	<?php endif; ?>
+
 	<div class="clearfix"></div>
 
 	<table class="adminlist table table-striped">

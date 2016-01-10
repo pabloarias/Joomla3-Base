@@ -692,6 +692,11 @@ class Factory
 			$options = Platform::getInstance()->get_platform_database_options();
 		}
 
+		if (isset($options['username']) && !isset($options['user']))
+		{
+			$options['user'] = $options['username'];
+		}
+
 		return Database::getDatabase($options);
 	}
 

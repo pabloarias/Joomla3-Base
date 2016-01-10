@@ -80,7 +80,7 @@ foreach ($scripting['scripts'] as $key => $data)
 <?php
 // Restoration information prompt
 $proKey = (defined('AKEEBA_PRO') && AKEEBA_PRO) ? 'PRO' : 'CORE';
-if (\Akeeba\Engine\Platform::getInstance()->get_platform_configuration_option('show_howtorestoremodal', 1)):
+if (\Akeeba\Engine\Platform::getInstance()->get_platform_configuration_option('show_howtorestoremodal', 1) && version_compare(JVERSION, '3.0.0', 'ge')):
 	echo $this->loadAnyTemplate('admin:com_akeeba/buadmin/howtorestore_modal');
 else:
 ?>
@@ -89,7 +89,7 @@ else:
 	<h4 class="alert-heading"><?php echo JText::_('BUADMIN_LABEL_HOWDOIRESTORE_LEGEND') ?></h4>
 
 	<?php echo JText::sprintf('COM_AKEEBA_BUADMIN_LABEL_HOWDOIRESTORE_TEXT_' . $proKey,
-			'https://www.akeebabackup.com/documentation/video-tutorials/item/1024-ab04.html',
+			'https://www.akeebabackup.com/videos/1212-akeeba-backup-core/1618-abtc04-restore-site-new-server.html',
 			'index.php?option=com_akeeba&view=transfer'); ?>
 </div>
 <?php endif; ?>
@@ -144,6 +144,7 @@ else:
 			<?php echo JHTML::_('select.genericlist', $this->profilesList, 'profile', 'onchange="document.forms.adminForm.submit()" class="advancedSelect"', 'value', 'text', $this->lists->fltProfile); ?>
 		</div>
 
+		<?php if (version_compare(JVERSION, '3.0.0', 'ge')): ?>
 		<div class="btn-group pull-right">
 			<label for="limit"
 			       class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
@@ -173,6 +174,7 @@ else:
 				<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $this->lists->order); ?>
 			</select>
 		</div>
+		<?php endif; ?>
 	</div>
 
 <table class="table table-striped" id="itemsList">

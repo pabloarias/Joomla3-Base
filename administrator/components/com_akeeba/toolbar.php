@@ -57,7 +57,7 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
 		JToolBarHelper::spacer();
 		JToolBarHelper::addNew();
-		JToolBarHelper::custom('copy', 'copy.png', 'copy_f2.png', 'JLIB_HTML_BATCH_COPY', false);
+		JToolBarHelper::custom('copy', 'copy.png', 'copy_f2.png', 'COM_AKEEBA_LBL_BATCH_COPY', false);
 		JToolBarHelper::spacer();
 		JToolBarHelper::deleteList();
 		JToolBarHelper::spacer();
@@ -89,8 +89,10 @@ class AkeebaToolbar extends F0FToolbar
 		JToolBarHelper::spacer();
 
 		// Configuration wizard button. We apply styling to it.
+		$icon = version_compare(JVERSION, '3.0.0', 'ge') ? 'lightning' : 'default';
+
 		$bar = JToolbar::getInstance('toolbar');
-		$bar->appendButton('Link', 'lightning', '<strong>' . JText::_('AKEEBA_CONFWIZ') . '</strong>', 'index.php?option=com_akeeba&view=confwiz');
+		$bar->appendButton('Link', $icon, '<strong>' . JText::_('AKEEBA_CONFWIZ') . '</strong>', 'index.php?option=com_akeeba&view=confwiz');
 
 		$js = <<< JS
 ;;
@@ -248,9 +250,17 @@ JS;
 		JToolBarHelper::title(JText::_('AKEEBA').': <small>'.JText::_('COM_AKEEBA_TRANSFER').'</small>','akeeba');
 		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
 
-		$bar = JToolbar::getInstance('toolbar');
-		$bar->appendButton('Link', 'loop', 'COM_AKEEBA_TRANSFER_BTN_RESET', 'index.php?option=com_akeeba&view=transfer&task=reset');
+		$icon = version_compare(JVERSION, '3.0.0', 'ge') ? 'loop' : 'restore';
 
+		$bar = JToolbar::getInstance('toolbar');
+		$bar->appendButton('Link', $icon, 'COM_AKEEBA_TRANSFER_BTN_RESET', 'index.php?option=com_akeeba&view=transfer&task=reset');
+	}
+
+	public function onUpdates()
+	{
+		// Set the toolbar title
+		JToolBarHelper::title(JText::_('AKEEBA').':: <small>'.JText::_('LIVEUPDATE').'</small>','akeeba');
+		JToolBarHelper::back('AKEEBA_CONTROLPANEL', 'index.php?option=com_akeeba');
 	}
 
 	private function _renderDefaultSubmenus($active = '')

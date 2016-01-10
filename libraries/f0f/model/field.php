@@ -50,7 +50,7 @@ abstract class F0FModelField
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabaseDriver  $db           The database object
+	 * @param   F0FDatabaseDriver  $db           The database object
 	 * @param   object           $field        The field informations as taken from the db
 	 * @param   string           $table_alias  The table alias to use when filtering
 	 */

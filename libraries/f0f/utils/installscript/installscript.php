@@ -442,16 +442,23 @@ abstract class F0FUtilsInstallscript
 	{
 		$src = $parent->getParent()->getPath('source');
 
+		$cliPath = JPATH_ROOT . '/cli';
+
+		if (!JFolder::exists($cliPath))
+		{
+			JFolder::create($cliPath);
+		}
+
 		foreach ($this->cliScriptFiles as $script)
 		{
-			if (JFile::exists(JPATH_ROOT . '/cli/' . $script))
+			if (JFile::exists($cliPath . '/' . $script))
 			{
-				JFile::delete(JPATH_ROOT . '/cli/' . $script);
+				JFile::delete($cliPath . '/' . $script);
 			}
 
 			if (JFile::exists($src . '/' . $this->cliSourcePath . '/' . $script))
 			{
-				JFile::copy($src . '/' . $this->cliSourcePath . '/' . $script, JPATH_ROOT . '/cli/' . $script);
+				JFile::copy($src . '/' . $this->cliSourcePath . '/' . $script, $cliPath . '/' . $script);
 			}
 		}
 	}
@@ -611,7 +618,7 @@ abstract class F0FUtilsInstallscript
 	 */
 	protected function bugfixDBFunctionReturnedNoError()
 	{
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 
 		// Fix broken #__assets records
 		$query = $db->getQuery(true);
@@ -713,7 +720,7 @@ abstract class F0FUtilsInstallscript
 	 */
 	protected function bugfixCantBuildAdminMenus()
 	{
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 
 		// If there are multiple #__extensions record, keep one of them
 		$query = $db->getQuery(true);
@@ -868,7 +875,7 @@ abstract class F0FUtilsInstallscript
 	{
 		$src = $parent->getParent()->getPath('source');
 
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();;
 
 		$status = new JObject();
 		$status->modules = array();
@@ -1114,7 +1121,7 @@ abstract class F0FUtilsInstallscript
 	 */
 	protected function uninstallSubextensions($parent)
 	{
-		$db = JFactory::getDBO();
+		$db = F0FPlatform::getInstance()->getDbo();
 
 		$status = new stdClass();
 		$status->modules = array();
@@ -1521,7 +1528,7 @@ abstract class F0FUtilsInstallscript
 	{
 		JLoader::import('joomla.installer.installer');
 
-		$db = JFactory::getDBO();
+		$db = F0FPlatform::getInstance()->getDbo();
 
 		$status = new stdClass();
 		$status->modules = array();
@@ -1607,7 +1614,8 @@ abstract class F0FUtilsInstallscript
 	 */
 	private function _createAdminMenus($parent)
 	{
-		$db = $parent->getParent()->getDbo();
+		$db = $db = F0FPlatform::getInstance()->getDbo();
+
 		/** @var JTableMenu $table */
 		$table = JTable::getInstance('menu');
 		$option = $parent->get('element');
@@ -1744,7 +1752,10 @@ abstract class F0FUtilsInstallscript
 		}
 		catch (InvalidArgumentException $e)
 		{
-			JLog::add($e->getMessage(), JLog::WARNING, 'jerror');
+			if (class_exists('JLog'))
+			{
+				JLog::add($e->getMessage(), JLog::WARNING, 'jerror');
+			}
 
 			return false;
 		}
@@ -1922,7 +1933,8 @@ abstract class F0FUtilsInstallscript
 	 */
 	private function _reallyPublishAdminMenuItems($parent)
 	{
-		$db = $parent->getParent()->getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
+
 		$option = $parent->get('element');
 
 		$query = $db->getQuery(true)
@@ -1953,7 +1965,7 @@ abstract class F0FUtilsInstallscript
 	{
 		/** @var JTableMenu $table */
 		$table = JTable::getInstance('menu');
-		$db = $table->getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 
 		// We need to rebuild the menu based on its root item. By default this is the menu item with ID=1. However, some
 		// crappy upgrade scripts enjoy screwing it up. Hey, ho, the workaround way I go.
@@ -2226,7 +2238,7 @@ abstract class F0FUtilsInstallscript
 		// Check if the definition exists
 		$tableName = '#__postinstall_messages';
 
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$query = $db->getQuery(true)
 			->select('*')
 			->from($db->qn($tableName))
@@ -2294,7 +2306,7 @@ abstract class F0FUtilsInstallscript
 		}
 
 		// Get the extension ID for our component
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$query = $db->getQuery(true);
 		$query->select('extension_id')
 			->from('#__extensions')
@@ -2339,7 +2351,7 @@ abstract class F0FUtilsInstallscript
 		}
 
 		// Get the extension ID for our component
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$query = $db->getQuery(true);
 		$query->select('extension_id')
 			->from('#__extensions')

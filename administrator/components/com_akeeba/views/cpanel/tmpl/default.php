@@ -30,7 +30,7 @@ $script = <<<JS
 (function($){
 	if ({$this->desktop_notifications})
 	{
-		akeebaBackup_notifications_askPermission();
+		akeeba.System.notification.askPermission();
 	}
 
 	$(document).ready(function(){
@@ -66,9 +66,28 @@ if (!\Akeeba\Engine\Factory::getConfiguration()->get('akeeba.flag.confwiz', 0))
 }
 ?>
 
+<?php if (!empty($this->frontEndSecretWordIssue)): ?>
+<div class="alert alert-danger">
+	<h3><?php echo JText::_('COM_AKEEBA_CPANEL_ERR_FESECRETWORD_HEADER'); ?></h3>
+	<p><?php echo JText::_('COM_AKEEBA_CPANEL_ERR_FESECRETWORD_INTRO'); ?></p>
+	<p><?php echo $this->frontEndSecretWordIssue ?></p>
+	<p>
+		<?php echo JText::_('COM_AKEEBA_CPANEL_ERR_FESECRETWORD_WHATTODO_JOOMLA'); ?>
+		<?php echo JText::sprintf('COM_AKEEBA_CPANEL_ERR_FESECRETWORD_WHATTODO_COMMON', $this->newSecretWord); ?>
+	</p>
+	<p>
+		<a class="btn btn-success btn-large"
+			href="index.php?option=com_akeeba&view=cpanel&task=resetSecretWord&<?php echo JFactory::getSession()->getToken() ?>=1">
+			<span class="icon icon-white icon-refresh"></span>
+			<?php echo JText::_('COM_AKEEBA_CPANEL_BTN_FESECRETWORD_RESET'); ?>
+		</a>
+	</p>
+</div>
+<?php endif; ?>
+
 <?php
 // Obsolete PHP version check
-if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
+if (version_compare(PHP_VERSION, '5.3.3', 'lt')):
 	JLoader::import('joomla.utilities.date');
 	$akeebaCommonDatePHP = new JDate('2014-08-14 00:00:00', 'GMT');
 	$akeebaCommonDateObsolescence = new JDate('2015-05-14 00:00:00', 'GMT');
@@ -122,7 +141,7 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 <div class="alert">
 	<a class="close" data-dismiss="alert" href="#">×</a>
 	<p><strong><?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_HEADER') ?></strong><br/>
-	<?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_BODY') ?>
+	<?php echo JText::sprintf('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_BODY', PHP_VERSION) ?>
 	</p>
 
 	<p>
@@ -151,14 +170,14 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 		</span>
 		<input type="text" name="dlid" placeholder="<?php echo JText::_('CONFIG_DOWNLOADID_LABEL')?>" class="input-xlarge">
 		<button type="submit" class="btn btn-success">
-			<span class="icon icon-checkbox"></span>
+			<span class="icon icon-<?php echo version_compare(JVERSION, '3.0.0', 'ge') ? 'checkbox' : 'ok icon-white' ?>"></span>
 			<?php echo JText::_('COM_AKEEBA_CPANEL_MSG_APPLYDLID') ?>
 		</button>
 	</form>
 </div>
 <?php elseif ($this->needscoredlidwarning): ?>
 <div class="alert alert-danger">
-	<?php echo JText::sprintf('COM_AKEEBA_LBL_CPANEL_NEEDSUPGRADE','https://www.akeebabackup.com/videos/63-video-tutorials/1505-abt03-upgrade-core-to-pro.html'); ?>
+	<?php echo JText::sprintf('COM_AKEEBA_LBL_CPANEL_NEEDSUPGRADE','https://www.akeebabackup.com/videos/1212-akeeba-backup-core/1617-abtc03-upgrade-core-professional.html'); ?>
 </div>
 <?php endif; ?>
 
@@ -182,7 +201,7 @@ if (version_compare(PHP_VERSION, '5.4.0', 'lt')):
 		</form>
 
 		<?php if(!empty($this->quickIconProfiles)):
-		$token = JFactory::getApplication()->getSession()->getToken();
+		$token = JFactory::getSession()->getToken();
 		?>
 		<h3><?php echo JText::_('COM_AKEEBA_CPANEL_HEADER_QUICKBACKUP'); ?></h3>
 

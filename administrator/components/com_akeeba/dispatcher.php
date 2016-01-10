@@ -26,6 +26,7 @@ class AkeebaDispatcher extends F0FDispatcher
 			AkeebaStrapper::bootstrap();
 			AkeebaStrapper::jQueryUI();
 			AkeebaStrapper::addJSfile('media://com_akeeba/js/gui-helpers.js');
+			AkeebaStrapper::addJSfile('media://com_akeeba/js/system.js');
 			AkeebaStrapper::addJSfile('media://com_akeeba/js/akeebaui.js');
 			AkeebaStrapper::addJSfile('media://com_akeeba/js/piecon.min.js');
 			jimport('joomla.filesystem.file');
@@ -34,17 +35,6 @@ class AkeebaDispatcher extends F0FDispatcher
 				AkeebaStrapper::addJSfile('media://com_akeeba/js/akeebauipro.js');
 			}
 			AkeebaStrapper::addCSSfile('media://com_akeeba/theme/akeebaui.css');
-
-			// Control Check
-			$view = F0FInflector::singularize($this->input->getCmd('view', $this->defaultView));
-
-			if ($view == 'liveupdate')
-			{
-				$url = JUri::base() . 'index.php?option=com_akeeba';
-				JFactory::getApplication()->redirect($url);
-
-				return;
-			}
 		}
 
 		return $result;
@@ -151,6 +141,37 @@ class AkeebaDispatcher extends F0FDispatcher
 
 		$this->input->set('view', $this->view);
 
+		// Load JHtml behaviours as needed
+		$this->loadJHtmlBehaviors();
+
 		parent::dispatch();
+	}
+
+	protected function loadJHtmlBehaviors()
+	{
+		$format = $this->input->getCmd('format', 'html');
+
+		if ($format != 'html')
+		{
+			return;
+		}
+
+		if (version_compare(JVERSION, '3.0.0', 'lt'))
+		{
+			JHtml::_('behavior.framework');
+		}
+		else
+		{
+			if (version_compare(JVERSION, '3.3.0', 'ge'))
+			{
+				JHtml::_('behavior.core');
+			}
+			else
+			{
+				JHtml::_('behavior.framework', true);
+			}
+
+			JHtml::_('jquery.framework');
+		}
 	}
 }

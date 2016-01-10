@@ -2054,7 +2054,7 @@ class F0FModel extends F0FUtilsObject
 	 *
 	 * @param   boolean  $overrideLimits  Are we requested to override the set limits?
 	 *
-	 * @return  JDatabaseQuery
+	 * @return  F0FDatabaseQuery
 	 */
 	public function buildQuery($overrideLimits = false)
 	{
@@ -3115,7 +3115,7 @@ class F0FModel extends F0FUtilsObject
 	/**
 	 * Method to get the database driver object
 	 *
-	 * @return  JDatabaseDriver
+	 * @return  F0FDatabaseDriver
 	 */
 	public function getDbo()
 	{
@@ -3152,7 +3152,7 @@ class F0FModel extends F0FUtilsObject
 	/**
 	 * Method to set the database driver object
 	 *
-	 * @param   JDatabaseDriver  $db  A JDatabaseDriver based object
+	 * @param   F0FDatabaseDriver  $db  A F0FDatabaseDriver based object
 	 *
 	 * @return  void
 	 */

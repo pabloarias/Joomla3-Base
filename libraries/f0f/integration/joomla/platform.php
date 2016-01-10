@@ -444,7 +444,7 @@ class F0FIntegrationJoomlaPlatform extends F0FPlatform implements F0FPlatformInt
 
     public function getDbo()
     {
-        return JFactory::getDbo();
+		return F0FDatabaseFactory::getInstance()->getDriver('joomla');
     }
 
 	/**
@@ -791,7 +791,7 @@ class F0FIntegrationJoomlaPlatform extends F0FPlatform implements F0FPlatformInt
         // if we're in Joomla 2.5.18+ or 3.2.1+
         if($response->status != JAuthentication::STATUS_SUCCESS && method_exists('JUserHelper', 'verifyPassword'))
         {
-            $db    = JFactory::getDbo();
+            $db    = $this->getDbo();
             $query = $db->getQuery(true)
                         ->select('id, password')
                         ->from('#__users')
@@ -860,6 +860,11 @@ class F0FIntegrationJoomlaPlatform extends F0FPlatform implements F0FPlatformInt
 
     public function logAddLogger($file)
     {
+		if (!class_exists('JLog'))
+		{
+			return;
+		}
+
         JLog::addLogger(array('text_file' => $file), JLog::ALL, array('fof'));
     }
 
@@ -873,11 +878,21 @@ class F0FIntegrationJoomlaPlatform extends F0FPlatform implements F0FPlatformInt
 	 */
 	public function logDeprecated($message)
 	{
+		if (!class_exists('JLog'))
+		{
+			return;
+		}
+
 		JLog::add($message, JLog::WARNING, 'deprecated');
 	}
 
     public function logDebug($message)
     {
+		if (!class_exists('JLog'))
+		{
+			return;
+		}
+
         JLog::add($message, JLog::DEBUG, 'fof');
     }
 

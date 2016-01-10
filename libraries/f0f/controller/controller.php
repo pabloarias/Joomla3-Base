@@ -480,6 +480,13 @@ class F0FController extends F0FUtilsObject
 		{
 			$mName = $rMethod->getName();
 
+			// If the developer screwed up and declared one of the helper method public do NOT make them available as
+			// tasks.
+			if ((substr($mName, 0, 8) == 'onBefore') || (substr($mName, 0, 7) == 'onAfter') || substr($mName, 0, 1) == '_')
+			{
+				continue;
+			}
+
 			// Add default display method if not explicitly declared.
 			if (!in_array($mName, $xMethods) || in_array($mName, $iMethods))
 			{

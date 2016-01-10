@@ -360,6 +360,9 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			'administrator/components/com_akeeba/engine/Postproc/Connector/Amazons3.php',
 			'administrator/components/com_akeeba/engine/Postproc/S3.php',
 			'administrator/components/com_akeeba/engine/Postproc/s3.ini',
+
+			// Obsolete remains of the legacy Live Update system
+			'administrator/components/com_akeeba/assets/xmlslurp/xmlslurp.php',
 		),
 		'folders' => array(
 			// Directories used in version 4.1 and earlier
@@ -397,6 +400,9 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 			// Obsolete Amazon S3 integration
 			'administrator/components/com_akeeba/engine/Postproc/Connector/Amazon',
 			'administrator/components/com_akeeba/engine/Postproc/Connector/Amazons3',
+
+			// Obsolete remains of the legacy Live Update system
+			'administrator/components/com_akeeba/assets/xmlslurp',
 		)
 	);
 
@@ -418,14 +424,14 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.4.0';
+	protected $minimumPHPVersion = '5.3.3';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.3.1';
+	protected $minimumJoomlaVersion = '1.6.0';
 
 	/**
 	 * Runs on installation
@@ -555,7 +561,7 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 		// If this is a new installation tell it to NOT mark the backup profiles as configured.
 		if (defined('AKEEBA_THIS_IS_INSTALLATION_FROM_SCRATCH'))
 		{
-			$db = JFactory::getDbo();
+			$db = F0FPlatform::getInstance()->getDbo();
 			$query = $db->getQuery(true)
 				->select($db->qn('params'))
 				->from($db->qn('#__extensions'))
@@ -588,6 +594,18 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	{
 		$this->warnAboutJSNPowerAdmin();
 
+		if (!defined('AKEEBA_PRO'))
+		{
+			define('AKEEBA_PRO', '0');
+		}
+
+		$videoTutorialURL = 'https://www.akeebabackup.com/videos/1212-akeeba-backup-core.html';
+
+		if (AKEEBA_PRO)
+		{
+			$videoTutorialURL = 'https://www.akeebabackup.com/videos/1213-akeeba-backup-for-joomla-pro.html';
+		}
+
 		?>
 		<img src="../media/com_akeeba/icons/logo-48.png" width="48" height="48" alt="Akeeba Backup" align="right"/>
 
@@ -605,7 +623,7 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 		<fieldset>
 			<p>
 				We strongly recommend watching our
-				<a href="https://www.akeebabackup.com/videos/63-video-tutorials/1529-akeeba-backup-video-course-with-brian-teeman.html">video
+				<a href="<?php echo $videoTutorialURL ?>">video
 				tutorials</a> before using this component.
 			</p>
 
@@ -647,7 +665,7 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 
 	private function uninstallObsoletePostinstallMessages()
 	{
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 
 		$obsoleteTitleKeys = array(
 			// Remove "Upgrade profiles to ANGIE"
@@ -685,7 +703,7 @@ class Com_AkeebaInstallerScript extends F0FUtilsInstallscript
 	 */
 	private function warnAboutJSNPowerAdmin()
 	{
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$query = $db->getQuery(true)
 			->select('COUNT(*)')
 			->from($db->qn('#__extensions'))
@@ -788,7 +806,7 @@ HTML;
 		$this->loadAkeebaEngine();
 
 		// Get a list of backup profiles
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 		$query = $db->getQuery(true)
 					->select($db->qn('id'))
 					->from($db->qn('#__ak_profiles'));

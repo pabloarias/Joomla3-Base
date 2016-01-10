@@ -342,7 +342,7 @@ class Mysqli extends Mysql
 				return $result;
 			}
 			// The server was not disconnected.
-			else
+			elseif ($this->errorNum != 0)
 			{
 				throw new \RuntimeException($this->errorMsg, $this->errorNum);
 			}

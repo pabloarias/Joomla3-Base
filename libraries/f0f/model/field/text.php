@@ -19,7 +19,7 @@ class F0FModelFieldText extends F0FModelField
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabaseDriver  $db     The database object
+	 * @param   F0FDatabaseDriver  $db     The database object
 	 * @param   object           $field  The field informations as taken from the db
 	 */
 	public function __construct($db, $field, $table_alias = false)

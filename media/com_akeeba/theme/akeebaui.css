@@ -8,6 +8,7 @@
  * Akeeba Backup title icon
  */
 .icon-akeeba { background-image: url(../icons/akeeba-16-white.png); width: 16px; height: 16px; }
+.icon-48-akeeba { background-image: url(../icons/logo-48.png); }
 
 /*
  * UI Icons - 32x32
@@ -352,4 +353,12 @@ div.akeeba-buadmin-startdate {border-top: 1px solid #eee; color: #999; padding-t
 .folderBrowserWrapper {
 	height: 300px;
 	overflow: scroll;
+}
+
+/**
+ * Joomla! 2.5 quirks
+ */
+
+div.akeeba-bootstrap #cpanel span.icon-retweet {
+	display: inline-block;
 }

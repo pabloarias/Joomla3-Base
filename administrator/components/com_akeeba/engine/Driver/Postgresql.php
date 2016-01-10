@@ -181,16 +181,24 @@ class Postgresql extends Base
 		}
 
 		// Build the DSN for the connection.
-		$dsn = "host={$this->options['host']} dbname={$this->options['database']} user={$this->options['user']} password={$this->options['password']}";
+		$dsn = '';
+
+		if (!empty($this->options['host']))
+		{
+			$dsn .= "host={$this->options['host']} ";
+		}
+
+		$dsn .= "dbname={$this->options['database']} user={$this->options['user']} password={$this->options['password']}";
 
 		// Attempt to connect to the server.
 		if (!($this->connection = @pg_connect($dsn)))
 		{
-			throw new \RuntimeException('Error connecting to PGSQL database.');
+			throw new \RuntimeException('Error connecting to PostgreSQL database.');
 		}
 
 		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_DEFAULT);
 		pg_query('SET standard_conforming_strings=off');
+		pg_query('SET escape_string_warning=off');
 	}
 
 	/**
@@ -648,8 +656,9 @@ class Postgresql extends Base
 
 		$this->open();
 
-		if (!is_resource($this->connection))
+		if (empty($this->connection))
 		{
+			// TODO
 			throw new \RuntimeException($this->errorMsg, $this->errorNum);
 		}
 

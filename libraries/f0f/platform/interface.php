@@ -325,6 +325,9 @@ interface F0FPlatformInterface
 
     public function getLanguage();
 
+	/**
+	 * @return F0FDatabaseDriver
+	 */
     public function getDbo();
 
 	/**

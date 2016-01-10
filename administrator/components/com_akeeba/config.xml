@@ -34,10 +34,11 @@
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="frontend_secret_word" type="password" default="" size="30"
+		<field name="frontend_secret_word" type="text" default="" size="30"
 			   label="CONFIG_SECRETWORD_LABEL"
 			   description="CONFIG_SECRETWORD_DESC"
 			   class="input-large"/>
+
 		<field name="frontend_email_on_finish" type="radio" default="0"
 			   label="CONFIG_FRONTENDEMAIL_LABEL"
 			   description="CONFIG_FRONTENDEMAIL_DESC"
@@ -45,14 +46,17 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
 		<field name="frontend_email_address" type="text" default="" size="50"
 			   label="CONFIG_ARBITRARYFEEMAIL_LABEL"
 			   description="CONFIG_ARBITRARYFEEMAIL_DESC"
 			   class="input-xxlarge"/>
+
 		<field name="frontend_email_subject" type="text" default="" size="50"
 			   label="CONFIG_FEEMAILSUBJECT_LABEL"
 			   description="CONFIG_FEEMAILSUBJECT_DESC"
 			   class="input-xxlarge"/>
+
 		<field name="frontend_email_body" type="textarea" default="" rows="10" cols="55"
 			   label="CONFIG_FEEMAILBODY_LABEL"
 			   description="CONFIG_FEEMAILBODY_DESC"/>
@@ -86,9 +90,18 @@
 	</fieldset>
 
 	<fieldset name="liveupdate" label="CONFIG_LIVEUPDATE_HEADER_LABEL" description="CONFIG_LIVEUPDATE_HEADER_DESC">
+		<field name="update_method" type="radio" default="joomla"
+			   label="COM_AKEEBA_CONFIG_LIVEUPDATE_METHOD_LABEL"
+			   description="COM_AKEEBA_CONFIG_LIVEUPDATE_METHOD_DESC"
+			   class="btn-group">
+			<option value="joomla">COM_AKEEBA_CONFIG_LIVEUPDATE_METHOD_JOOMLA</option>
+			<option value="classic">COM_AKEEBA_CONFIG_LIVEUPDATE_METHOD_CLASSIC</option>
+		</field>
+
 		<field name="update_dlid" type="text" default="" size="30"
 			   label="CONFIG_DOWNLOADID_LABEL"
 			   description="CONFIG_DOWNLOADID_DESC"/>
+
 		<field name="displayphpwarning" type="radio" default="1"
 			   label="COM_AKEEBA_CONFIG_LIVEUPDATE_DISPLAYPHPWARNING_LABEL"
 			   description="COM_AKEEBA_CONFIG_LIVEUPDATE_DISPLAYPHPWARNING_DESC"

@@ -21,7 +21,7 @@ akeeba.jQuery(document).ready(function(){
 });
 JS;
 
-JFactory::getApplication()->getDocument()->addScriptDeclaration($js);
+JFactory::getDocument()->addScriptDeclaration($js);
 
 ?>
 

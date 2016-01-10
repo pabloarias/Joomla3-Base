@@ -177,7 +177,7 @@ class AkeebaModelCpanels extends F0FModel
 		}
 
 		// Fix the parent's permissions if required
-		if (($parentPerms != 0755) && ($parentPerms != 40755))
+		if (($parentPerms != 0755) && ($parentPerms != 040755))
 		{
 			$this->chmod($parent, 0755);
 		}
@@ -204,7 +204,7 @@ class AkeebaModelCpanels extends F0FModel
 		foreach ($folders as $folder)
 		{
 			$perms = fileperms($folder);
-			if (($perms != 0755) && ($perms != 40755))
+			if (($perms != 0755) && ($perms != 040755))
 			{
 				$result &= $this->chmod($folder, 0755);
 			}
@@ -428,7 +428,7 @@ class AkeebaModelCpanels extends F0FModel
 		}
 
 		$params->set('jversion', '1.6');
-		$db   = JFactory::getDBO();
+		$db   = F0FPlatform::getInstance()->getDbo();
 		$data = $params->toString();
 		$sql  = $db->getQuery(true)
 				   ->update($db->qn('#__extensions'))
@@ -526,7 +526,7 @@ class AkeebaModelCpanels extends F0FModel
 	public function markOldProfilesConfigured()
 	{
 		// Get all profiles
-		$db = JFactory::getDbo();
+		$db = F0FPlatform::getInstance()->getDbo();
 
 		$query = $db->getQuery(true)
 					->select(array(
@@ -553,5 +553,46 @@ class AkeebaModelCpanels extends F0FModel
 		// Restore the old profile
 		\Akeeba\Engine\Factory::nuke();
 		\Akeeba\Engine\Platform::getInstance()->load_configuration($oldProfile);
+	}
+
+	/**
+	 * Check the strength of the Secret Word for front-end and remote backups. If it is insecure return the reason it
+	 * is insecure as a string. If the Secret Word is secure return an empty string.
+	 *
+	 * @return  string
+	 */
+	public function getFrontendSecretWordError()
+	{
+		// Is frontend backup enabled?
+		$febEnabled = Platform::getInstance()->get_platform_configuration_option('frontend_enable', 0) != 0;
+
+		if (!$febEnabled)
+		{
+			return '';
+		}
+
+		$secretWord = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
+
+		try
+		{
+			\Akeeba\Engine\Util\Complexify::isStrongEnough($secretWord);
+		}
+		catch (RuntimeException $e)
+		{
+			// Ah, the current Secret Word is bad. Create a new one if necessary.
+			$session = JFactory::getSession();
+			$newSecret = $session->get('newSecretWord', null, 'akeeba.cpanel');
+
+			if (empty($newSecret))
+			{
+				$random = new \Akeeba\Engine\Util\RandomValue();
+				$newSecret = $random->generateString(32);
+				$session->set('newSecretWord', $newSecret, 'akeeba.cpanel');
+			}
+
+			return $e->getMessage();
+		}
+
+		return '';
 	}
 }

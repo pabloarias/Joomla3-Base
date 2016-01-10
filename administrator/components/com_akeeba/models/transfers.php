@@ -284,12 +284,14 @@ class AkeebaModelTransfers extends F0FModel
 
 		$result['supported'] = $supported;
 
-		// Check firewall settings
+		// Check firewall settings -- Disabled because the 3PD test server got clogged :(
+		/*
 		$result['firewalled'] = array(
 			'ftp'	=> !$result['supported']['ftp'] ? false : Transfer\Ftp::isFirewalled(),
 			'ftps'	=> !$result['supported']['ftps'] ? false : Transfer\Ftp::isFirewalled(['ssl' => true]),
 			'sftp'	=> !$result['supported']['sftp'] ? false : Transfer\Sftp::isFirewalled(),
 		);
+		*/
 
 		return $result;
 	}
@@ -412,7 +414,7 @@ class AkeebaModelTransfers extends F0FModel
 		}
 
 		// Get the maximimum transfer size, rounded down to 512K
-		$maxTransferSize = $transferTime * $timeout;
+		$maxTransferSize = $transferSpeed * $timeout;
 		$maxTransferSize = floor($maxTransferSize / 524288) * 524288;
 
 		if ($maxTransferSize == 0)
@@ -420,8 +422,9 @@ class AkeebaModelTransfers extends F0FModel
 			$maxTransferSize = 524288;
 		}
 
-		// We will never go over 1.5 Mb because of hosts with limits on max post size and memory issues
-		$maxTransferSize = min($maxTransferSize, 1572864);
+		// We never go above a maximum transfer size that depends on the server memory settings
+		$chunkSizeLimit = $this->getMaxChunkSize();
+		$maxTransferSize = min($maxTransferSize, $chunkSizeLimit);
 
 		// Save the optimal transfer size in the session
 		$this->session->set('transfer.fragSize', $maxTransferSize, 'akeeba');
@@ -953,5 +956,71 @@ class AkeebaModelTransfers extends F0FModel
 		$newExtension = substr($baseFile, 0, 1) . sprintf('%02u', $part);
 
 		return $dirname . '/' . basename($basename, '.' . $extension) . '.'  .$newExtension;
+	}
+
+	/**
+	 * Returns the PHP memory limit. If ini_get is not available it will assume 8Mb.
+	 *
+	 * @return  int
+	 */
+	private function getServerMemoryLimit()
+	{
+		// Default reported memory limit: 8Mb
+		$memLimit = 8388608;
+
+		// If we can't find out how much PHP memory we have available use 8Mb by default
+		if (!function_exists('ini_get'))
+		{
+			return $memLimit;
+		}
+
+		$iniMemLimit = ini_get("memory_limit");
+		$iniMemLimit = $this->convertMemoryLimitToBytes($iniMemLimit);
+
+		$memLimit = ($iniMemLimit > 0) ? $iniMemLimit : $memLimit;
+
+		return (int) $memLimit;
+	}
+
+	/**
+	 * Gets the maximum chunk size the server can handle safely. It does so by finding the PHP memory limit, removing
+	 * the current memory usage (or at least 2Mb) and rounding down to the closest 512Kb. It can never be lower than
+	 * 512Kb.
+	 */
+	private function getMaxChunkSize()
+	{
+		$memoryLimit = $this->getServerMemoryLimit();
+		$usedMemory = max(memory_get_usage(), memory_get_peak_usage(), 2048);
+
+		$maxChunkSize = max(($memoryLimit - $usedMemory) / 2, 524288);
+
+		return floor($maxChunkSize / 524288) * 524288;
+	}
+
+	/**
+	 * Convert the textual representation of PHP memory limit to an integer, e.g. convert 8M to 8388608
+	 *
+	 * @param   string  $val  The PHP memory limit
+	 *
+	 * @return  int  PHP memory limit as an integer
+	 */
+	private function convertMemoryLimitToBytes($val)
+	{
+		$val = trim($val);
+		$last = strtolower($val{strlen($val) - 1});
+
+		switch ($last)
+		{
+			case 't':
+				$val *= 1024;
+			case 'g':
+				$val *= 1024;
+			case 'm':
+				$val *= 1024;
+			case 'k':
+				$val *= 1024;
+		}
+
+		return (int) $val;
 	}
 }

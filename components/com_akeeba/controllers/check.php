@@ -61,23 +61,31 @@ class AkeebaControllerCheck extends F0FController
 		// Is frontend backup enabled?
 		$febEnabled = Platform::getInstance()->get_platform_configuration_option('failure_frontend_enable', 0) != 0;
 
-		if(!$febEnabled)
+		// Is the Secret Key strong enough?
+		$validKey = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
+
+		if (!\Akeeba\Engine\Util\Complexify::isStrongEnough($validKey, false))
+		{
+			$febEnabled = false;
+		}
+
+		if (!$febEnabled)
 		{
 			@ob_end_clean();
-			echo '403 '.JText::_('ERROR_NOT_ENABLED');
+			echo '403 ' . JText::_('ERROR_NOT_ENABLED');
 			flush();
 			JFactory::getApplication()->close();
 		}
 
 		// Is the key good?
-		$key      = $this->input->get('key', '', 'none', 2);
-		$validKey = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word','');
+		$key = $this->input->get('key', '', 'none', 2);
+
 		$validKeyTrim = trim($validKey);
 
-		if( ($key != $validKey) || (empty($validKeyTrim)) )
+		if (($key != $validKey) || (empty($validKeyTrim)))
 		{
 			@ob_end_clean();
-			echo '403 '.JText::_('ERROR_INVALID_KEY');
+			echo '403 ' . JText::_('ERROR_INVALID_KEY');
 			flush();
 			JFactory::getApplication()->close();
 		}

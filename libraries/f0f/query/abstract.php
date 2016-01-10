@@ -20,13 +20,13 @@ abstract class F0FQueryAbstract
 	/**
 	 * Returns a new database query class
 	 *
-	 * @param   JDatabaseDriver  $db  The DB driver which will provide us with a query object
+	 * @param   F0FDatabaseDriver  $db  The DB driver which will provide us with a query object
 	 *
 	 * @return F0FQueryAbstract
 	 */
 	public static function &getNew($db = null)
 	{
-		F0FPlatform::getInstance()->logDeprecated('F0FQueryAbstract is deprecated. Use JDatabaseQuery instead.');
+		F0FPlatform::getInstance()->logDeprecated('F0FQueryAbstract is deprecated. Use F0FDatabaseQuery instead.');
 
 		if (is_null($db))
 		{

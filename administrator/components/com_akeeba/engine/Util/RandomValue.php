@@ -105,10 +105,10 @@ class RandomValue
 
 		for ($i = 0; $i < $bytes; $i += 3)
 		{
-			$subBytes = substr($bytes, $i, 3);
-			$subBytes = str_split($bytes, 1);
-			$subBytes = ord($bytes[0]) * 65536 + ord($bytes[1]) * 256 + ord($bytes[2]);
-			$subBytes = $bytes & bindec('00000000111111111111111111111111');
+			$subBytes = substr($randBytes, $i, 3);
+			$subBytes = str_split($subBytes, 1);
+			$subBytes = ord($subBytes[0]) * 65536 + ord($subBytes[1]) * 256 + ord($subBytes[2]);
+			$subBytes = $subBytes & bindec('00000000111111111111111111111111');
 
 			$b = array();
 			$b[0] = $subBytes >> 18;

@@ -30,7 +30,7 @@ if ($showUploadRemote)
 
 ?>
 <div class="hide fade">
-	<div id="akeeba-buadmin-<?php echo $record['id'] ?>" tabindex="-1" role="dialog">
+	<div id="akeeba-buadmin-<?php echo $record['id'] ?>" tabindex="-1" role="dialog" class="akeeba-bootstrap">
 		<h3><?php echo JText::_('COM_AKEEBA_BUADMIN_LBL_BACKUPINFO') ?></h3>
 		<p>
 			<strong><?php echo JText::_('COM_AKEEBA_BUADMIN_LBL_ARCHIVEEXISTS') ?></strong><br/>
@@ -58,7 +58,7 @@ if ($showUploadRemote)
 		</p>
 	</div>
 
-	<div id="akeeba-buadmin-download-<?php echo $record['id'] ?>" tabindex="-2" role="dialog">
+	<div id="akeeba-buadmin-download-<?php echo $record['id'] ?>" tabindex="-2" role="dialog" class="akeeba-bootstrap">
 		<div class="alert">
 			<h4>
 				<span class="fa fa-warning"></span>
@@ -127,9 +127,9 @@ if ($showUploadRemote)
 
 	<?php if ($showViewLog): ?>
 	<a class="btn btn-small akeebaCommentPopover" <?php echo ($record['meta'] == 'ok') ? '' : 'disabled="disabled" onclick="return false;"'?>
-	   href="index.php?option=com_akeeba&view=log&tag=<?php echo $record['tag'] . '.' . $record['backupid'] ?>&profileid=<?php echo $record['profile_id'] ?>"
+	   href="index.php?option=com_akeeba&view=log&tag=<?php echo $this->escape($record['tag']) . '.' . $this->escape($record['backupid']) ?>&profileid=<?php echo $record['profile_id'] ?>"
 	   title="<?php echo JText::_('COM_AKEEBA_BUADMIN_LBL_LOGFILEID') ?>"
-	   data-content="<?php echo $record['backupid'] ?>"
+	   data-content="<?php echo $this->escape($record['backupid']); ?>"
 		>
 		<span class="fa fa-fw fa-list"></span>
 		<?php echo JText::_('VIEWLOG'); ?>

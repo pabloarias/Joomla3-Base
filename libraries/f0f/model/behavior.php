@@ -101,7 +101,7 @@ abstract class F0FModelBehavior extends F0FUtilsObservableEvent
 	 * list in a model
 	 *
 	 * @param   F0FModel        &$model  The model which calls this event
-	 * @param   JDatabaseQuery  &$query  The query being built
+	 * @param   F0FDatabaseQuery  &$query  The query being built
 	 *
 	 * @return  void
 	 */
@@ -191,7 +191,7 @@ abstract class F0FModelBehavior extends F0FUtilsObservableEvent
 	 * list in a model
 	 *
 	 * @param   F0FModel        &$model  The model which calls this event
-	 * @param   JDatabaseQuery  &$query  The query being built
+	 * @param   F0FDatabaseQuery  &$query  The query being built
 	 *
 	 * @return  void
 	 */

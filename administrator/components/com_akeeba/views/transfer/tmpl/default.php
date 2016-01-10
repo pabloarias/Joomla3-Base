@@ -52,7 +52,7 @@ akeeba.jQuery(document).ready(function(){
 });
 JS;
 
-JFactory::getApplication()->getDocument()->addScriptDeclaration($js);
+JFactory::getDocument()->addScriptDeclaration($js);
 
 echo $this->loadAnyTemplate('admin:com_akeeba/transfer/default_dialogs');
 echo $this->loadAnyTemplate('admin:com_akeeba/transfer/default_prerequisites');

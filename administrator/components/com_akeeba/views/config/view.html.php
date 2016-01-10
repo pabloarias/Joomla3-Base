@@ -20,6 +20,8 @@ class AkeebaViewConfig extends F0FViewHtml
 {
 	public function onAdd($tpl = null)
 	{
+        AkeebaStrapper::addJSfile('media://com_akeeba/js/configuration.js');
+
 		$media_folder = JUri::base().'../media/com_akeeba/';
 
 		// Get a JSON representation of GUI data

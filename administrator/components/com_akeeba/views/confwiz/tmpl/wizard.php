@@ -18,7 +18,7 @@ defined('_JEXEC') or die();
 	<div class="alert alert-info">
 			<?php echo JText::_('AKEEBA_WIZARD_INTROTEXT'); ?>
 	</div>
-	
+
 	<fieldset id="backup-progress-header">
 		<legend><?php echo JText::_('AKEEEBA_WIZARD_PROGRESS') ?></legend>
 		<div id="backup-progress-content">
@@ -36,7 +36,7 @@ defined('_JEXEC') or die();
 		</div>
 		<span id="ajax-worker"></span>
 	</fieldset>
-	
+
 </div>
 
 <div id="error-panel" class="alert alert-error alert-block" style="display:none">
@@ -71,13 +71,14 @@ defined('_JEXEC') or die();
 </div>
 
 <script type="text/javascript" language="javascript">
-akeeba_ajax_url = 'index.php?option=com_akeeba&view=confwiz&task=ajax';
+    akeeba.System.params.AjaxURL = 'index.php?option=com_akeeba&view=confwiz&task=ajax';
+    akeeba.Backup.translations['UI-LASTRESPONSE'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('BACKUP_TEXT_LASTRESPONSE')) ?>';
 <?php
 	$keys = array('tryajax','tryiframe','cantuseajax','minexectry','cantsaveminexec','saveminexec','cantdetermineminexec',
 		'cantfixdirectories','cantdbopt','exectoolow','savingmaxexec','cantsavemaxexec','cantdeterminepartsize','partsize');
 	foreach($keys as $key):
 ?>
-akeeba_translations['UI-<?php echo strtoupper($key)?>']="<?php echo JText::_('AKEEBA_WIZARD_UI_'.strtoupper($key)) ?>";
+akeeba.Wizard.translation['UI-<?php echo strtoupper($key)?>']="<?php echo JText::_('AKEEBA_WIZARD_UI_'.strtoupper($key)) ?>";
 <?php endforeach; ?>
-akeeba_confwiz_boot();
+akeeba.Wizard.boot();
 </script>

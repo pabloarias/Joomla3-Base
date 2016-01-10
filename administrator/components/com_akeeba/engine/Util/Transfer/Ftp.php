@@ -69,6 +69,13 @@ class Ftp implements TransferInterface
 	private $passive = true;
 
 	/**
+	 * Timeout for connecting to the FTP server, default: 10
+	 *
+	 * @var  integer
+	 */
+	private $timeout = 10;
+
+	/**
 	 * The FTP connection handle
 	 *
 	 * @var  resource|null
@@ -121,6 +128,11 @@ class Ftp implements TransferInterface
 			$this->passive = $options['passive'];
 		}
 
+		if (isset($options['timeout']))
+		{
+			$this->timeout = max(1, (int) $options['timeout']);
+		}
+
 		$this->connect();
 	}
 
@@ -146,7 +158,7 @@ class Ftp implements TransferInterface
 		}
 		else
 		{
-			$this->connection = @ftp_connect($this->host, $this->port);
+			$this->connection = @ftp_connect($this->host, $this->port, $this->timeout);
 		}
 
 		if ($this->connection === false)
@@ -195,6 +207,7 @@ class Ftp implements TransferInterface
 				'directory'		=> '',
 				'ssl'			=> isset($params['ssl']) ? $params['ssl'] : false,
 				'passive'		=> true,
+				'timeout'		=> 5,
 			));
 
 			$data = $connector->read('readme.txt');

@@ -86,7 +86,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 			$model->setState('jpskey', $this->input->get('jpskey', '', 'raw', 2));
 			$model->setState('angiekey', $this->input->get('angiekey', '', 'raw', 2));
 			$model->setState('returnurl', $this->input->get('returnurl', '', 'raw', 2));
-			$model->setState('backupid', $this->input->get('backupid', null, 'string', 2));
+			$model->setState('backupid', $this->input->get('backupid', null, 'cmd'));
 		}
 
 		return $result;
@@ -103,7 +103,7 @@ class AkeebaControllerBackup extends AkeebaControllerDefault
 		$model->setState('comment', $this->input->get('comment', '', 'html', 2));
 		$model->setState('jpskey', $this->input->get('jpskey', '', 'raw', 2));
 		$model->setState('angiekey', $this->input->get('angiekey', '', 'raw', 2));
-		$model->setState('backupid', $this->input->get('backupid', null, 'string', 2));
+		$model->setState('backupid', $this->input->get('backupid', null, 'cmd'));
 		$model->setState('tag', $this->input->get('tag', 'backend', 'cmd'));
 		$model->setState('errorMessage', $this->input->getString('errorMessage', ''));
 

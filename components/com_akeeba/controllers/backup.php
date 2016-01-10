@@ -42,11 +42,11 @@ class AkeebaControllerBackup extends F0FController
 		$this->_setProfile();
 
 		// Get the backup ID
-		$backupId = $this->input->get('backupid', null, 'raw', 2);
+		$backupId = $this->input->get('backupid', null, 'cmd');
 
 		if (strtoupper($backupId) == '[DEFAULT]')
 		{
-			$db = JFactory::getDbo();
+			$db = F0FPlatform::getInstance()->getDbo();
 			$query = $db->getQuery(true)
 						->select('MAX(' . $db->qn('id') . ')')
 						->from($db->qn('#__ak_stats'));
@@ -162,7 +162,8 @@ class AkeebaControllerBackup extends F0FController
 		$this->_setProfile();
 
 		// Get the backup ID
-		$backupId = $this->input->get('backupid', null, 'raw', 2);
+		$backupId = $this->input->get('backupid', null, 'cmd');
+
 		if (empty($backupId))
 		{
 			$backupId = null;
@@ -257,6 +258,14 @@ class AkeebaControllerBackup extends F0FController
 		// Is frontend backup enabled?
 		$febEnabled = Platform::getInstance()->get_platform_configuration_option('frontend_enable', 0) != 0;
 
+		// Is the Secret Key strong enough?
+		$validKey = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
+
+		if (!\Akeeba\Engine\Util\Complexify::isStrongEnough($validKey, false))
+		{
+			$febEnabled = false;
+		}
+
 		if (!$febEnabled)
 		{
 			@ob_end_clean();
@@ -266,8 +275,7 @@ class AkeebaControllerBackup extends F0FController
 		}
 
 		// Is the key good?
-		$key = $this->input->get('key', '', 'none', 2);
-		$validKey = Platform::getInstance()->get_platform_configuration_option('frontend_secret_word', '');
+		$key          = $this->input->get('key', '', 'none', 2);
 		$validKeyTrim = trim($validKey);
 
 		if (($key != $validKey) || (empty($validKeyTrim)))

@@ -493,7 +493,10 @@ class Mysql extends Base
 				$this->errorMsg = (string)mysql_error($this->connection) . ' SQL=' . $query;
 
 				// Throw the normal query exception.
-				throw new \RuntimeException($this->errorMsg, $this->errorNum);
+				if ($this->errorNum != 0)
+				{
+					throw new \RuntimeException($this->errorMsg, $this->errorNum);
+				}
 			}
 		}
 

@@ -31,69 +31,69 @@ if (!\Akeeba\Engine\Factory::getConfiguration()->get('akeeba.flag.confwiz', 0))
 
 <script type="text/javascript" language="javascript">
 // Initialization
-var default_short_descr = "<?php echo $this->default_descr ?>";
-var config_angie_key    = "<?php echo $this->angiekey ?>";
-var jsp_key   = "<?php echo $this->showjpskey ? $this->jpskey : '' ?>";
+akeeba.Backup.default_descr = "<?php echo $this->default_descr ?>";
+akeeba.Backup.config_angiekey = "<?php echo $this->angiekey ?>";
+akeeba.Backup.jpsKey = "<?php echo $this->showjpskey ? $this->jpskey : '' ?>";
 
 // Auto-resume setup
-var akeeba_autoresume_enabled = <?php echo (int)$configuration->get('akeeba.advanced.autoresume', 1); ?>;
-var akeeba_autoresume_timeout = <?php echo (int)$configuration->get('akeeba.advanced.autoresume_timeout', 10); ?>;
-var akeeba_autoresume_maxretries = <?php echo (int)$configuration->get('akeeba.advanced.autoresume_maxretries', 3); ?>;
+akeeba.Backup.resume.enabled = <?php echo (int)$configuration->get('akeeba.advanced.autoresume', 1); ?>;
+akeeba.Backup.resume.timeout = <?php echo (int)$configuration->get('akeeba.advanced.autoresume_timeout', 10); ?>;
+akeeba.Backup.resume.maxRetries = <?php echo (int)$configuration->get('akeeba.advanced.autoresume_maxretries', 3); ?>;
 
 akeeba.jQuery(document).ready(function($){
 	// The return URL
-	akeeba_return_url = '<?php echo AkeebaHelperEscape::escapeJS($this->returnurl) ?>';
+    akeeba.Backup.returnUrl = '<?php echo AkeebaHelperEscape::escapeJS($this->returnurl) ?>';
 
 	// Used as parameters to start_timeout_bar()
-	akeeba_max_execution_time = <?php echo $this->maxexec; ?>;
-	akeeba_time_bias = <?php echo $this->bias; ?>;
+    akeeba.Backup.maxExecutionTime = <?php echo $this->maxexec; ?>;
+    akeeba.Backup.runtimeBias = <?php echo $this->bias; ?>;
 
 	// Create a function for saving the editor's contents
-	akeeba_comment_editor_save = function() {
-	}
+    akeeba.Backup.commentEditorSave = function() {
+	};
 
-	// Push the icon URL
-	akeeba_notification_icon_url = '<?php echo JUri::base() . '../media/com_akeeba/icons/logo-48.png' ?>'
+    akeeba.System.notification.iconURL = '<?php echo JUri::base() . '../media/com_akeeba/icons/logo-48.png' ?>';
 
 	// Push some translations
-	akeeba_translations['UI-LASTRESPONSE'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('BACKUP_TEXT_LASTRESPONSE')) ?>';
-	akeeba_translations['UI-BACKUPSTARTED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPSTARTED')) ?>';
-	akeeba_translations['UI-BACKUPFINISHED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPFINISHED')) ?>';
-	akeeba_translations['UI-BACKUPHALT'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPHALT')) ?>';
-	akeeba_translations['UI-BACKUPRESUME'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPRESUME')) ?>';
-	akeeba_translations['UI-BACKUPHALT_DESC'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPHALT_DESC')) ?>';
-	akeeba_translations['UI-BACKUPFAILED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPFAILED')) ?>';
-	akeeba_translations['UI-BACKUPWARNING'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPWARNING')) ?>';
+	akeeba.Backup.translations['UI-LASTRESPONSE'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('BACKUP_TEXT_LASTRESPONSE')) ?>';
+    akeeba.Backup.translations['UI-BACKUPSTARTED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPSTARTED')) ?>';
+    akeeba.Backup.translations['UI-BACKUPFINISHED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPFINISHED')) ?>';
+    akeeba.Backup.translations['UI-BACKUPHALT'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPHALT')) ?>';
+    akeeba.Backup.translations['UI-BACKUPRESUME'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPRESUME')) ?>';
+    akeeba.Backup.translations['UI-BACKUPHALT_DESC'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPHALT_DESC')) ?>';
+    akeeba.Backup.translations['UI-BACKUPFAILED'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPFAILED')) ?>';
+    akeeba.Backup.translations['UI-BACKUPWARNING'] = '<?php echo AkeebaHelperEscape::escapeJS(JText::_('COM_AKEEBA_BACKUP_TEXT_BACKUPWARNING')) ?>';
 
 	//Parse the domain keys
-	akeeba_domains = JSON.parse("<?php echo $this->domains ?>");
+    akeeba.Backup.domains = JSON.parse("<?php echo $this->domains ?>");
 
 	// Setup AJAX proxy URL
-	akeeba_ajax_url = 'index.php?option=com_akeeba&view=backup&task=ajax';
+    akeeba.System.params.AjaxURL = 'index.php?option=com_akeeba&view=backup&task=ajax';
 
 	// Setup base View Log URL
-	akeeba_logview_url = '<?php echo JUri::base() ?>index.php?option=com_akeeba&view=log';
+    akeeba.Backup.URLs.LogURL = '<?php echo JUri::base() ?>index.php?option=com_akeeba&view=log';
+    akeeba.Backup.URLs.AliceURL = '<?php echo JUri::base() ?>index.php?option=com_akeeba&view=alices';
 
 	// Setup the IFRAME mode
-	akeeba_use_iframe = <?php echo $this->useiframe ?>;
+    akeeba.System.params.useIFrame = <?php echo $this->useiframe ?>;
 
 	if (<?php echo $this->desktop_notifications; ?>)
 	{
-		akeebaBackup_notifications_askPermission();
+        akeeba.System.notification.askPermission();
 	}
 
 	<?php if( !$this->unwritableoutput && $this->autostart ):?>
-	backup_start();
+    akeeba.Backup.start();
 	<?php else: ?>
 	// Bind start button's click event
 	$('#backup-start').bind("click", function(e){
-		backup_start();
+        akeeba.Backup.start();
 	});
 
-    $('#backup-default').click(akeeba_restore_backup_defaults);
+    $('#backup-default').click(akeeba.Backup.restoreDefaultOptions);
 
 	// Work around Safari which ignores autocomplete=off (FOR CRYING OUT LOUD!)
-	setTimeout('akeeba_restore_backup_defaults();', 500);
+	setTimeout('akeeba.Backup.restoreDefaultOptions();', 500);
 	<?php endif; ?>
 });
 </script>
@@ -102,7 +102,7 @@ akeeba.jQuery(document).ready(function($){
 <div class="alert">
 	<a class="close" data-dismiss="alert" href="#">×</a>
 	<p><strong><?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_HEADER') ?></strong><br/>
-	<?php echo JText::_('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_BODY') ?>
+	<?php echo JText::sprintf('COM_AKEEBA_CONFIG_LBL_OUTDATEDPHP_BODY', PHP_VERSION) ?>
 	</p>
 
 	<?php
@@ -329,11 +329,11 @@ akeeba.jQuery(document).ready(function($){
 					<?php echo JText::_('BACKUP_TEXT_WILLRETRYSECONDS') ?>
 				</strong>
 				<br/>
-				<button class="btn btn-danger btn-small" onclick="akeeba_cancel_resume_backup(); return false;">
+				<button class="btn btn-danger btn-small" onclick="akeeba.Backup.cancelResume(); return false;">
 					<span class="icon-cancel"></span>
 					<?php echo JText::_('UI-MULTIDB-CANCEL'); ?>
 				</button>
-				<button class="btn btn-success btn-small" onclick="akeeba_resume_backup(); return false;">
+				<button class="btn btn-success btn-small" onclick="akeeba.Backup.resumeBackup(); return false;">
 					<span class="icon-ok-circle"></span>
 					<?php echo JText::_('BACKUP_TEXT_BTNRESUME'); ?>
 				</button>
@@ -383,7 +383,7 @@ akeeba.jQuery(document).ready(function($){
 			</div>
 
 			<?php if(AKEEBA_PRO):?>
-			<a class="btn btn-large btn-success" href="index.php?option=com_akeeba&view=alices">
+			<a class="btn btn-large btn-success" id="ab-alice-error" href="index.php?option=com_akeeba&view=alices">
 				<i class="icon-list-alt icon-white"></i>
 				<?php echo JText::_('BACKUP_ANALYSELOG') ?>
 			</a>
