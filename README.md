@@ -18,7 +18,7 @@ Paquetes incluidos:
 - Idioma español 3.6.0.1
 - Editor JCE 2.4.6 + traducción al español
 - OSmap 3.0.2.
-- Akeeba Backup 4.2 + traducción al español
+- Akeeba Backup 5.1.2 + traducción al español
 - Title Manager 3.0
 
 Contenidos incluidos:
