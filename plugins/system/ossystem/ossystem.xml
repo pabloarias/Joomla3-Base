@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.5" type="plugin" group="system" method="upgrade">
+    <name>plg_system_ossystem</name>
+    <author>Alledia</author>
+    <creationDate>May 13 2016</creationDate>
+    <copyright>Copyright (C) 2016 Open Source Training, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <authorEmail>support@alledia.com</authorEmail>
+    <authorUrl>http://www.alledia.com</authorUrl>
+    <version>1.1.0</version>
+    <description>PLG_SYSTEM_OSSYSTEM_DESCRIPTION</description>
+
+    <scriptfile>script.installer.php</scriptfile>
+
+    <files>
+        <folder>language</folder>
+        <folder>library</folder>
+        <folder>views</folder>
+        <folder>form</folder>
+        <filename plugin="ossystem">ossystem.php</filename>
+        <filename>helper.php</filename>
+        <filename>include.php</filename>
+    </files>
+
+    <media destination="plg_system_ossystem" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+        <folder>images</folder>
+    </media>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/plugins/system/ossystem/form/fields">
+                <field
+                    type="customfooter"
+                    name="customfooter"
+                    media="plg_system_ossystem" />
+            </fieldset>
+        </fields>
+    </config>
+
+    <updateservers>
+        <server type="extension" priority="1" name="OSSystem"><![CDATA[https://deploy.ostraining.com/client/update/free/stable/plg_system_ossystem]]></server>
+    </updateservers>
+
+    <variant>FREE</variant>
+
+    <alledia>
+        <element publish="true">ossystem</element>
+        <namespace>OSSystem</namespace>
+        <license>free</license>
+        <targetplatform>3.*</targetplatform>
+
+        <relatedExtensions>
+            <extension
+                type="library"
+                element="allediaframework">AllediaFramework</extension>
+        </relatedExtensions>
+
+        <include>AllediaFreeDefaultFiles</include>
+    </alledia>
+</extension>
