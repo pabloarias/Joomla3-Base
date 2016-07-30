@@ -15,7 +15,7 @@ Archivos a eliminar antes del despliegue en producción:
 
 Paquetes incluidos:
 - Joomla 3.6
-- Idioma español 3.4.1.1
+- Idioma español 3.6.0.1
 - Editor JCE 2.4.6 + traducción al español
 - OSmap 3.0.2.
 - Akeeba Backup 4.2 + traducción al español
