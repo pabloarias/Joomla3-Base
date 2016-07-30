@@ -17,9 +17,8 @@ Paquetes incluidos:
 - Joomla 3.6
 - Idioma español 3.6.0.1
 - Editor JCE 2.5.19 + traducción al español
-- OSmap 3.0.2.
+- OSmap 4.1.3.
 - Akeeba Backup 5.1.2 + traducción al español
-- Title Manager 3.0
 
 Contenidos incluidos:
 - Nota legal
