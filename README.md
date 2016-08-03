@@ -5,8 +5,8 @@ Este es un pack que incluye Joomla 3 y diversas extensiones para hacer más brev
 
 Notas:
 - Se puede descargar un archivo jpa, copia del sitio completo, desde la carpeta administrator/components/com_akeeba/backup.
-- El archivo con la base de datos es joomla3base.sql. Es necesario borrar este archivo antes de poner el proyecto en producción.
-- El usuario y la contraseña son "admin". Recomendable cambiarlos.
+- El archivo de la base de datos es joomla3base.sql.
+- El usuario y la contraseña son "admin". Cámbialos.
 - Joomla configurado inicialmente para URLs amigables con Apache.
 
 Archivos a eliminar antes del despliegue en producción:
@@ -25,3 +25,16 @@ Contenidos incluidos:
 - Política de privacidad
 - Mapa web (OSmap). Recuerda indicar en el archivo robots.txt la URL y, preferiblemente que sea algo como "sitemap.xml" a través de una redirección en el archivo .htaccess.
 - Menú en el pie de página con estos 3 elementos anteriores.
+
+Configuraciones iniciales realizadas:
+- Establecido el idioma español por defecto en la parte pública y privada.
+- Creado idioma español para los contenidos.
+
+Cambios en la configuración global:
+- URLs amigables y reescritura de URLs activados. Incluido fichero .htaccess para servidor Apache.
+- Activada compresión Gzip.
+- Desactivado el informe de errores.
+- Establecida la zona horaria de Madrid.
+- Establecido JCE como editor predeterminado.
+- Mostrar la metaetiqueta del autor desactivado.
+- Duración de la sesión establecida a 120 minutos.

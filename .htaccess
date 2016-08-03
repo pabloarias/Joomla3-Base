@@ -1,6 +1,6 @@
 ##
 # @package    Joomla
-# @copyright  Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.
+# @copyright  Copyright (C) 2005 - 2016 Open Source Matters. All rights reserved.
 # @license    GNU General Public License version 2 or later; see LICENSE.txt
 ##
 
@@ -49,18 +49,6 @@ RewriteRule .* index.php [F]
 # www redirect (or vice versa), place that code here. Ensure those
 # redirects use the correct RewriteRule syntax and the [R=301,L] flags.
 #
-# Redirect www to no-www
-# RewriteCond %{HTTP_HOST} ^www\.(.+) [NC]
-# RewriteRule ^(.*) http://%1/$1 [R=301,NE,L]
-#
-# Redirect no-www to www
-# RewriteCond %{HTTP_HOST} ^(?!www\.)(.+) [NC]
-# RewriteRule ^(.*) http://www.%1/$1 [R=301,NE,L]
-#
-# Redirect to Xmap sitemap
-# RewriteCond %{REQUEST_URI} ^/sitemap.xml
-# RewriteRule .* /index.php?option=com_xmap&view=xml&id=1
-#
 ## End - Custom redirects
 
 ##
@@ -86,29 +74,3 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php [L]
 #
 ## End - Joomla! core SEF Section.
-
-# Expires headers
-<IfModule mod_expires.c>
-# ETag: Inform browser that image has already downloaded and should not be reloaded
-FileETag MTime Size
-# AddOutputFilterByType DEFLATE: minifies HTML by removing blanks
-AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript
-# Enable expirations
-ExpiresActive On 
-# Default directive
-ExpiresDefault "access plus 1 month"
-# Favicon
-ExpiresByType image/x-icon "access plus 1 year"
-# Images
-ExpiresByType image/gif "access plus 1 month"
-ExpiresByType image/png "access plus 1 month"
-ExpiresByType image/jpg "access plus 1 month"
-ExpiresByType image/jpeg "access plus 1 month"
-# CSS
-ExpiresByType text/css "access 1 month"
-# Javascript
-ExpiresByType application/javascript "access plus 1 year"
-#HTML
-ExpiresByType text/html "access plus 600 seconds"
-ExpiresByType application/xhtml+xml "access plus 600 seconds"
-</IfModule>
