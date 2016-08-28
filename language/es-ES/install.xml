@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="3.6" client="site" type="language" method="upgrade">
-	<name>joomla_3.6.0</name>
+	<name>joomla_3.6.2</name>
 	<tag>es-ES</tag>
-	<version>3.6.0.1</version>
-	<creationDate>18/07/2016</creationDate>
+	<version>3.6.2.1</version>
+	<creationDate>20/08/2016</creationDate>
 	<author>ComunidadJoomla</author>
 	<authorEmail>jcomunidad@gmail.com</authorEmail>
 	<authorUrl>http://comunidadjoomla.org</authorUrl>

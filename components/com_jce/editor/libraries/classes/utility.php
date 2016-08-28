@@ -92,9 +92,8 @@ abstract class WFUtility
         return self::cleanPath($a . $ds . $b, $ds);
     }
 
-    private static function utf8_latin_to_ascii($subject)
+    public static function utf8_latin_to_ascii($subject)
     {
-
         static $CHARS = NULL;
 
         if (is_null($CHARS)) {
@@ -121,19 +120,38 @@ abstract class WFUtility
             );
         }
 
+        if (function_exists('transliterator_transliterate')) {
+
+          if (is_array($subject)) {
+              array_walk($subject, function(&$string) {
+                $string = WFUtility::utf8_latin_to_ascii($string);
+              });
+
+              return $subject;
+          }
+
+          $transformed = transliterator_transliterate('Any-Latin; Latin-ASCII;', $subject);
+
+          if ($transformed !== false) {
+              return $transformed;
+          }
+
+          return str_replace(array_keys($CHARS), array_values($CHARS), $subject);
+        }
+
         return str_replace(array_keys($CHARS), array_values($CHARS), $subject);
     }
 
-    protected static function changeCase($string, $case)
+    public static function changeCase($string, $case)
     {
         if (!function_exists('mb_strtolower') || !function_exists('mb_strtoupper')) {
             return $string;
         }
 
         if (is_array($string)) {
-            foreach ($string as $value) {
-                $value = self::changeCase($value, $case);
-            }
+            array_walk($string, function(&$value, $key, $case) {
+              $value = WFUtility::changeCase($value, $case);
+            }, $case);
         } else {
             switch ($case) {
                 case 'lowercase':
@@ -276,16 +294,16 @@ abstract class WFUtility
     public static function isUtf8($string)
     {
         if (!function_exists('mb_detect_encoding')) {
-            // From http://w3.org/International/questions/qa-forms-utf-8.html 
-            return preg_match('%^(?: 
-	              [\x09\x0A\x0D\x20-\x7E]          	 # ASCII 
-	            | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte 
-	            |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs 
-	            | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte 
-	            |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates 
-	            |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3 
-	            | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15 
-	            |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16 
+            // From http://w3.org/International/questions/qa-forms-utf-8.html
+            return preg_match('%^(?:
+	              [\x09\x0A\x0D\x20-\x7E]          	 # ASCII
+	            | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+	            |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
+	            | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+	            |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
+	            |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
+	            | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+	            |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
 	        )*$%xs', $string);
         }
 
