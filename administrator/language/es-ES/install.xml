@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="3.6" client="administrator" type="language" method="upgrade">
-	<name>joomla_3.6.2</name>
+	<name>Spanish (español)</name>
 	<tag>es-ES</tag>
-	<version>3.6.2.1</version>
-	<creationDate>20/08/2016</creationDate>
+	<version>3.6.3.1</version>
+	<creationDate>23/10/2016</creationDate>
 	<author>ComunidadJoomla</author>
 	<authorEmail>jcomunidad@gmail.com</authorEmail>
-	<authorUrl>http://comunidadjoomla.org</authorUrl>
-	<copyright>Copyright (C) 2005 - 2016 comunididadjomla.org. All rights reserved.r; see LICENSE.txt</copyright>
+	<authorUrl></authorUrl>
+	<copyright>Copyright (C) 2005 - 2016 Comunidadjoomla.org. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>es-ES - Administration language</description>
 	<files>
@@ -166,8 +166,6 @@
 		<filename>es-ES.plg_installer_folderinstaller.sys.ini</filename>
 		<filename>es-ES.plg_installer_packageinstaller.ini</filename>
 		<filename>es-ES.plg_installer_packageinstaller.sys.ini</filename>
-		<filename>es-ES.plg_installer_urlfolderinstaller.ini</filename>
-		<filename>es-ES.plg_installer_urlfolderinstaller.sys.ini</filename>
 		<filename>es-ES.plg_installer_urlinstaller.ini</filename>
 		<filename>es-ES.plg_installer_urlinstaller.sys.ini</filename>
 		<filename>es-ES.plg_installer_webinstaller.ini</filename>
