@@ -3,7 +3,7 @@
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
  * @copyright 2016 Open Source Training, LLC. All rights reserved.
- * @contact   www.alledia.com, support@alledia.com
+ * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -25,15 +25,6 @@ header('Content-Disposition: inline');
     body {
         font-family: tahoma;
         position: relative;
-    }
-
-    div.instructions {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: #bbD9ee;
-        padding: 15px;
-        width: auto;
     }
 
     table {
@@ -82,10 +73,6 @@ header('Content-Disposition: inline');
             <div class="count">
                 <?php echo JText::_('COM_OSMAP_NUMBER_OF_URLS'); ?>: <xsl:value-of select="count(xna:urlset/xna:url)"></xsl:value-of>
             </div>
-        </div>
-
-        <div class="instructions">
-            <?php echo JText::_('COM_OSMAP_INSTRUCTIONS'); ?> <a href="https://www.alledia.com/docs/osmap/"><?php echo JText::_('COM_OSMAP_DOCUMENTATION'); ?></a>.
         </div>
     </div>
 

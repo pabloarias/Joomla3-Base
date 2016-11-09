@@ -1,10 +1,9 @@
 <?php
 /**
- * @package    AllediaFramework
- * @subpackage
- * @contact    www.alledia.com, support@alledia.com
- * @copyright  2016 Alledia.com, All rights reserved
- * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
+ * @package   AllediaInstaller
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright Copyright (C) 2016 Open Sources Training, LLC, All rights reserved
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  *
  * Local copy of the Alledia autoloader
  */

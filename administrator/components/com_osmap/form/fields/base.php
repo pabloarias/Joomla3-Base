@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   AllediaFreeDefaultFiles
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright Copyright (C) Open Sources Training, LLC, All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -71,17 +71,14 @@ class JFormFieldBase extends JFormField
      */
     public function getAttribute($name, $default = null)
     {
-        if ($this->element instanceof SimpleXMLElement)
-        {
+        if ($this->element instanceof SimpleXMLElement) {
             $attributes = $this->element->attributes();
 
             // Ensure that the attribute exists
-            if (property_exists($attributes, $name))
-            {
+            if (property_exists($attributes, $name)) {
                 $value = $attributes->$name;
 
-                if ($value !== null)
-                {
+                if ($value !== null) {
                     return (string) $value;
                 }
             }

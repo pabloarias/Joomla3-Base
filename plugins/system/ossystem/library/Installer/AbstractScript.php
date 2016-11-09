@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   AllediaInstaller
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright Copyright (C) 2016 Open Sources Training, LLC, All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -66,6 +66,12 @@ abstract class AbstractScript
      * @var array
      */
     protected $columns;
+
+    /**
+     * List of tables and respective indexes
+     * @var array
+     */
+    protected $indexes;
 
     /**
      * List of tables
@@ -1030,7 +1036,7 @@ abstract class AbstractScript
 
         // Update the extension
         $customData = json_decode($extension->custom_data) ?: new \stdClass();
-        $customData->author = 'Alledia';
+        $customData->author = 'Joomlashack';
 
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__extensions'))
@@ -1042,7 +1048,7 @@ abstract class AbstractScript
         // @TODO: remove this after libraries be able to have a custom install script
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__extensions'))
-            ->set($db->quoteName('custom_data') . '=' . $db->quote('{"author":"Alledia"}'))
+            ->set($db->quoteName('custom_data') . '=' . $db->quote('{"author":"Joomlashack"}'))
             ->where(
                 array(
                     $db->quoteName('type') . '=' . $db->quote('library'),
@@ -1138,6 +1144,30 @@ abstract class AbstractScript
     }
 
     /**
+     * Get and store a cache of indexes of a table
+     *
+     * @param  string $table The table name
+     * @return array         A list of indexes from a table
+     */
+    protected function getIndexesFromTable($table)
+    {
+        if (!isset($this->indexes[$table])) {
+            $db = JFactory::getDbo();
+            $db->setQuery("SHOW INDEX FROM " . $db->quoteName($table));
+            $rows = $db->loadObjectList();
+
+            $indexes = array();
+            foreach ($rows as $row) {
+                $indexes[] = $row->Key_name;
+            }
+
+            $this->indexes[$table] = $indexes;
+        }
+
+        return $this->indexes[$table];
+    }
+
+    /**
      * Add columns to a table if they doesn't exists
      *
      * @param string $table   The table name
@@ -1153,6 +1183,26 @@ abstract class AbstractScript
             if (! in_array($column, $existentColumns)) {
                 $db->setQuery('ALTER TABLE ' . $db->quoteName($table)
                     . ' ADD COLUMN ' . $column . ' ' . $specification);
+                $db->execute();
+            }
+        }
+    }
+
+    /**
+     * Add indexes to a table if they doesn't exists
+     *
+     * @param string $table   The table name
+     * @param array  $indexes The names of the indexes that needed to be checked and added
+     */
+    protected function addIndexesIfNotExists($table, $indexes)
+    {
+        $db = JFactory::getDbo();
+
+        $existentIndexes = $this->getIndexesFromTable($table);
+
+        foreach ($indexes as $index => $specification) {
+            if (! in_array($index, $existentIndexes)) {
+                $db->setQuery('CREATE INDEX ' . $index . ' ON ' . $db->quoteName($table) . $specification);
                 $db->execute();
             }
         }
