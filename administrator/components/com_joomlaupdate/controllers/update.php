@@ -45,7 +45,7 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 		if ($file)
 		{
 			JFactory::getApplication()->setUserState('com_joomlaupdate.file', $file);
-			$url = 'index.php?option=com_joomlaupdate&task=update.install&'.JFactory::getSession()->getFormToken().'=1';
+			$url = 'index.php?option=com_joomlaupdate&task=update.install&' . JFactory::getSession()->getFormToken() . '=1';
 			JLog::add(JText::sprintf('COM_JOOMLAUPDATE_UPDATE_LOG_FILE', $file), JLog::INFO, 'Update');
 		}
 		else
@@ -53,6 +53,7 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 			JFactory::getApplication()->setUserState('com_joomlaupdate.file', null);
 			$url = 'index.php?option=com_joomlaupdate';
 			$message = JText::_('COM_JOOMLAUPDATE_VIEW_UPDATE_DOWNLOADFAILED');
+			$messageType = 'error';
 		}
 
 		$this->setRedirect($url, $message, $messageType);
@@ -94,7 +95,16 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 	 */
 	public function finalise()
 	{
-		JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
+		/*
+		 * Finalize with login page. Used for pre-token check versions
+		 * to allow updates without problems but with a maximum of security.
+		 */
+		if (!JSession::checkToken('get'))
+		{
+			$this->setRedirect('index.php?option=com_joomlaupdate&view=update&layout=finaliseconfirm');
+
+			return false;
+		}
 
 		$options['format'] = '{DATE}\t{TIME}\t{LEVEL}\t{CODE}\t{MESSAGE}';
 		$options['text_file'] = 'joomla_update.php';
@@ -107,7 +117,7 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 
 		$model->finaliseUpgrade();
 
-		$url = 'index.php?option=com_joomlaupdate&task=update.cleanup&'.JFactory::getSession()->getFormToken().'=1';
+		$url = 'index.php?option=com_joomlaupdate&task=update.cleanup&' . JFactory::getSession()->getFormToken() . '=1';
 		$this->setRedirect($url);
 	}
 
@@ -120,7 +130,16 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 	 */
 	public function cleanup()
 	{
-		JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
+		/*
+		 * Cleanup with login page. Used for pre-token check versions to be able to update
+		 * from =< 3.2.7 to allow updates without problems but with a maximum of security.
+		 */
+		if (!JSession::checkToken('get'))
+		{
+			$this->setRedirect('index.php?option=com_joomlaupdate&view=update&layout=finaliseconfirm');
+
+			return false;
+		}
 
 		$options['format'] = '{DATE}\t{TIME}\t{LEVEL}\t{CODE}\t{MESSAGE}';
 		$options['text_file'] = 'joomla_update.php';
@@ -281,7 +300,7 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 		JLog::add(JText::sprintf('COM_JOOMLAUPDATE_UPDATE_LOG_FILE', $tempFile), JLog::INFO, 'Update');
 
 		// Redirect to the actual update page
-		$url = 'index.php?option=com_joomlaupdate&task=update.install&'.JFactory::getSession()->getFormToken().'=1';
+		$url = 'index.php?option=com_joomlaupdate&task=update.install&' . JFactory::getSession()->getFormToken() . '=1';
 		$this->setRedirect($url);
 	}
 
@@ -349,5 +368,53 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 				}
 			}
 		}
+	}
+
+	/**
+	 * Checks the admin has super administrator privileges and then proceeds with the final & cleanup steps.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.6.3
+	 */
+	public function finaliseconfirm()
+	{
+		// Check for request forgeries
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Did a non Super User try do this?
+		if (!JFactory::getUser()->authorise('core.admin'))
+		{
+			throw new RuntimeException(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
+
+		// Get the model
+		/** @var JoomlaupdateModelDefault $model */
+		$model = $this->getModel('default');
+
+		// Try to log in
+		$credentials = array(
+			'username'  => $this->input->post->get('username', '', 'username'),
+			'password'  => $this->input->post->get('passwd', '', 'raw'),
+			'secretkey' => $this->input->post->get('secretkey', '', 'raw'),
+		);
+
+		$result = $model->captiveLogin($credentials);
+
+		// The login fails?
+		if (!$result)
+		{
+			JLog::add(JText::sprintf('COM_JOOMLAUPDATE_UPDATE_LOG_CONFIRM_FINALISE_FAIL'), JLog::INFO, 'Update');
+
+			JFactory::getApplication()->enqueueMessage(JText::_('JGLOBAL_AUTH_INVALID_PASS'), 'warning');
+			$this->setRedirect('index.php?option=com_joomlaupdate&view=update&layout=finaliseconfirm');
+
+			return false;
+		}
+
+		JLog::add(JText::sprintf('COM_JOOMLAUPDATE_UPDATE_LOG_CONFIRM_FINALISE'), JLog::INFO, 'Update');
+
+		// Redirect back to the actual finalise page
+		$this->setRedirect('index.php?option=com_joomlaupdate&task=update.finalise&' . JFactory::getSession()->getFormToken() . '=1');
 	}
 }

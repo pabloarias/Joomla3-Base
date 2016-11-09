@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Platform
- * @subpackage  Database
+ * @subpackage  Cache
  *
  * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
@@ -10,10 +10,10 @@
 defined('JPATH_PLATFORM') or die;
 
 /**
- * SQL azure database iterator.
+ * Exception class defining an unsupported cache storage object
  *
- * @since  12.1
+ * @since  3.6.3
  */
-class JDatabaseIteratorAzure extends JDatabaseIteratorSqlsrv
+class JCacheExceptionUnsupported extends RuntimeException
 {
 }
