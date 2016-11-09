@@ -10,6 +10,8 @@ namespace Akeeba\Backup\Admin\Model;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Backup\Admin\Model\Exceptions\TransferFatalError;
+use Akeeba\Backup\Admin\Model\Exceptions\TransferIgnorableError;
 use Akeeba\Engine\Util\Transfer as EngineTransfer;
 use Exception;
 use FOF30\Download\Download;
@@ -301,11 +303,15 @@ class Transfer extends Model
 		// the one I read from our server.
 		$this->checkIfSameSite($connector);
 
-		// Check if there's a special file in this directory, e.g. .htaccess, php.ini, .user.ini or web.config.
-		$this->checkIfHasSpecialFile($connector);
+		// Only perform those checks if I'm not forcing the transfer
+		if (!$config['force'])
+		{
+			// Check if there's a special file in this directory, e.g. .htaccess, php.ini, .user.ini or web.config.
+			$this->checkIfHasSpecialFile($connector);
 
-		// Check if there's another site present in this directory
-		$this->checkIfExistingSite($connector);
+			// Check if there's another site present in this directory
+			$this->checkIfExistingSite($connector);
+		}
 
 		// Does it match the URL to the site?
 		$this->checkIfMatchesUrl($connector);
@@ -412,9 +418,13 @@ class Transfer extends Model
 			$maxTransferSize = 524288;
 		}
 
-		// We never go above a maximum transfer size that depends on the server memory settings
+		/**
+		 * We never go above a maximum transfer size that depends on the server memory setting and the maximum remote
+		 * upload size (minus 10Kb for overhead data)
+		 */
 		$chunkSizeLimit = $this->getMaxChunkSize();
-		$maxTransferSize = min($maxTransferSize, $chunkSizeLimit);
+		$maxUploadLimit = $this->container->session->get('transfer.uploadLimit', 1048576, 'akeeba') - 10240;
+		$maxTransferSize = min($maxUploadLimit, $maxTransferSize, $chunkSizeLimit);
 
 		// Save the optimal transfer size in the session
 		$this->container->session->set('transfer.fragSize', $maxTransferSize, 'akeeba');
@@ -698,7 +708,7 @@ class Transfer extends Model
 				continue;
 			}
 
-			throw new RuntimeException(JText::sprintf('COM_AKEEBA_TRANSFER_ERR_HTACCESS', $file));
+			throw new TransferIgnorableError(JText::sprintf('COM_AKEEBA_TRANSFER_ERR_HTACCESS', $file));
 		}
 	}
 
@@ -728,7 +738,7 @@ class Transfer extends Model
 				continue;
 			}
 
-			throw new RuntimeException(JText::_('COM_AKEEBA_TRANSFER_ERR_EXISTINGSITE'));
+			throw new TransferIgnorableError(JText::_('COM_AKEEBA_TRANSFER_ERR_EXISTINGSITE'));
 		}
 	}
 
@@ -768,7 +778,7 @@ class Transfer extends Model
 
 		if ($originalData != $data)
 		{
-			throw new RuntimeException(JText::_('COM_AKEEBA_TRANSFER_ERR_CANNOTACCESSTESTFILE'));
+			throw new TransferFatalError(JText::_('COM_AKEEBA_TRANSFER_ERR_CANNOTACCESSTESTFILE'));
 		}
 	}
 
@@ -784,6 +794,7 @@ class Transfer extends Model
 
 		return array(
 			'method'     => $transferOption,
+			'force'      => $session->get('transfer.force', 0, 'akeeba'),
 			'host'       => $session->get('transfer.ftpHost', '', 'akeeba'),
 			'port'       => $session->get('transfer.ftpPort', '', 'akeeba'),
 			'username'   => $session->get('transfer.ftpUsername', '', 'akeeba'),
@@ -918,6 +929,25 @@ class Transfer extends Model
 		}
 
 		$session->set('transfer.remoteTimeLimit', $data['maxExecTime'], 'akeeba');
+
+		// What is my upload limit?
+		$uploadLimit = min($data['maxPost'], $data['maxUpload']);
+
+		if (empty($data['maxPost']))
+		{
+			$uploadLimit = $data['maxUpload'];
+		}
+		elseif (empty($data['maxUpload']))
+		{
+			$uploadLimit = $data['maxPost'];
+		}
+
+		if (empty($uploadLimit))
+		{
+			$uploadLimit = 1048576;
+		}
+
+		$session->set('transfer.uploadLimit', $uploadLimit, 'akeeba');
 	}
 
 	/**

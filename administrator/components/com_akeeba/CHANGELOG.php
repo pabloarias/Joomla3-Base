@@ -1,4 +1,53 @@
 <?php die();?>
+Akeeba Backup 5.2.4
+================================================================================
++ ALICE: Added check about old backups being included in the backup after changing your backup output directory
++ JSON API: export and import a profile's configuration
+# [HIGH] Changes in Joomla 3.6.3 and 3.6.4 regarding Two Factor Authentication setup handling could lead to disabling TFA when restoring a site
+# [HIGH] Javascript error when using on sites with the sequence "src" in their domain name
+# [HIGH] Site Transfer Wizard fails on sites with too much memory or very fast connection speeds to the target site
+# [MEDIUM] In several instances there was a typo declaring 1Mb = 1048756 bytes instead of the correct 1048576 bytes (1024 tiems 1024). This threw off some size calculations which, in extreme cases, could lead to backup failure.
+# [MEDIUM] Obsolete records quota was applied to all backup records, not just the ones from the currently active backup profile
+# [MEDIUM] Obsolete records quota did not delete the associated log file when removing an obsolete backup record
+# [MEDIUM] The backup quickicon plugin would always deactivate itself upon first use
+# [MEDIUM] Infinite loop creating part size in rare cases where the space left in the part is one byte or less
+# [LOW] Fixed ordering in Manage Backups page
+# [LOW] Fixed removing One Click backup flag
+
+Akeeba Backup 5.2.3
+================================================================================
++ ANGIE: Prevent direct web access to the installation/sql directory
+~ PHP 5.6.3 (and possibly other old 5.6 versions) are buggy. We rearranged the order of some code to work around these PHP bugs.
+
+Akeeba Backup 5.2.2
+================================================================================
+! The ZIP archiver was not working properly
+
+Akeeba Backup 5.2.1
+================================================================================
+! PHP 5.4 compatibility (now working around a PHP bug which has been fixed years ago in PHP 5.5 and later)
+
+Akeeba Backup 5.2.0
+================================================================================
+! mcrypt is deprecated in PHP 7.1. Replacing it with OpenSSL.
+! Missing files from the backup on some servers, especially in CLI mode
++ Added warning if CloudFlare Rocket Loader is enabled on the site
++ Added warning if database updates are stuck due to table corruption
++ ALICE raw output now is always in English
++ Support the newer Microsoft Azure API version 2015-04-05
++ Support uploading files larger than 64Mb to Microsoft Azure
++ You can now choose whether to display GMT or local time in the Manage Backups page
++ Sort the log files from newest to oldest in the View Log page (based on the backup ID)
++ View Log after successful backup now takes you to this backup's log file, not the generic View Log page
+# [MEDIUM] Cannot download archives from S3 to browser when using the Amazon S3 v4 API
+# [MEDIUM] gh-601 CloudFlare Rocket Loader is broken and kills the Javascript on your site, causing Akeeba Backup to fail
+# [LOW] Front-end URL without a view and secrety key should return a plain text 403 error, not a Joomla 404 error page.
+# [LOW] Reverse Engineering database dump engine must be available in Core version, required for backing up PostgreSQL and MS SQL Server
+# [LOW] Editing a profile's Configuration would always reset the One-click backup icon checkbox
+# [LOW] Archive integrity check refused to run when you are using the "No post-processing" option but the "Process each part immediately" option was previously selected in a different post-processing engine
+# [LOW] Total archive size would be doubled when you are using the "Process each part immediately" option but not the "Delete archive after processing" option (or when the post-processing engine is "No post-processing")
+# [LOW] Warnings from the database dump engine were not propagated to the interface
+
 Akeeba Backup 5.1.4
 ================================================================================
 # [MEDIUM] Updated "Backup on Update" plugin to be compatible with Joomla 3.6.1 and later

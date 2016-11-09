@@ -101,8 +101,6 @@ abstract class Base implements PlatformInterface
 		}
 
 		return ($result == true);
-
-		return true;
 	}
 
 	/**
@@ -331,7 +329,7 @@ abstract class Base implements PlatformInterface
 				}
 
 				$sql_fields[] = $db->qn($key);
-				$sql_values .= (!empty($sql_values) ? ',' : '') . $db->Quote($value);
+				$sql_values .= (!empty($sql_values) ? ',' : '') . $db->quote($value);
 			}
 
 			$sql = $db->getQuery(true)
