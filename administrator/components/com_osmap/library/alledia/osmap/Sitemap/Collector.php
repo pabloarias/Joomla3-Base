@@ -11,6 +11,7 @@ namespace Alledia\OSMap\Sitemap;
 
 use Alledia\OSMap;
 use Alledia\Framework;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die();
 
@@ -28,6 +29,11 @@ class Collector
      * @var array
      */
     protected $uidList = array();
+
+    /**
+     * @var array
+     */
+    protected $urlHashList = array();
 
     /**
      * Callback used to trigger the desired action while fetching items.
@@ -65,11 +71,18 @@ class Collector
     protected $counter = 0;
 
     /**
-     * The items with custom settings
+     * The custom settings for items
      *
      * @var array
      */
     protected $itemsSettings;
+
+    /**
+     * The legacy custom settings for items. Which will be upgraded
+     *
+     * @var array
+     */
+    protected $legacyItemsSettings;
 
     /**
      * If false, say that any next sub-level should be unpublished
@@ -102,11 +115,18 @@ class Collector
     protected $currentMenu;
 
     /**
+     * The ID of the current menu item for nodes
+     *
+     * @var int
+     */
+    protected $currentMenuItemId;
+
+    /**
      * The component's params
      *
-     * @var \JRegistry
+     * @var Registry
      */
-    protected $params;
+    public $params;
 
     /**
      * The constructor
@@ -114,7 +134,7 @@ class Collector
     public function __construct($sitemap)
     {
         $this->sitemap = $sitemap;
-        $this->params = \JComponentHelper::getParams('com_osmap');
+        $this->params  = \JComponentHelper::getParams('com_osmap');
 
         /*
          * Try to detect the current view. This is just for backward compatibility
@@ -141,9 +161,12 @@ class Collector
     public function fetch($callback)
     {
         $menus = $this->getSitemapMenus();
-        $this->counter = 0;
 
+        $this->counter = 0;
         if (!empty($menus)) {
+            // Get the legacy settings to upgrade them
+            $this->getLegacyItemsSettings();
+
             // Get the custom settings from db for the items
             $this->getItemsSettings();
 
@@ -155,8 +178,14 @@ class Collector
                 $items = $this->getMenuItems($menu);
                 foreach ($items as $item) {
                     if ($this->itemIsBlackListed($item)) {
+                        $item = null;
+
                         continue;
                     }
+
+                    // Store the current menu item id. Added to use it while defining the node's settings hash, so same
+                    // items, but from different menus can have individual settings
+                    $this->currentMenuItemId = $item['id'];
 
                     // Set the menu item UID. The UID can be changed by 3rd party plugins, according to the content
                     $item['uid'] = 'menuitem.' . $item['id'];
@@ -174,18 +203,26 @@ class Collector
                     // Submit the item and prepare it calling the plugins
                     $this->submitItemToCallback($item, $callback, true);
 
-                    // Internal items can trigger plugins to grab more items
+                    // Internal links can trigger plugins to grab more items
                     // The child items are not displayed if the parent item is ignored
                     if ($item->isInternal && !$item->ignore) {
-                        // Call the plugin to get additional items related to
+                        // Call the plugin to get additional items related to it
                         $this->callPluginsGetItemTree($item, $callback);
                     }
 
-                    // Make sure the memory is cleaned
+                    // Make sure the memory is cleaned up
                     $item = null;
                 }
+                $items = array();
+                unset($items);
             }
+
+            $menu = null;
         }
+
+        $this->currentMenu            = null;
+        $this->tmpItemDefaultSettings = array();
+        $callback = null;
 
         return $this->counter;
     }
@@ -203,8 +240,21 @@ class Collector
      */
     public function submitItemToCallback(&$item, $callback, $prepareItem = false)
     {
+        $currentMenuItemId = $this->getCurrentMenuItemId();
+
+        // Add the menu information, specially used when caching
+        if (is_array($item)) {
+            $item['menuItemId']    = $this->currentMenu->id;
+            $item['menuItemTitle'] = $this->currentMenu->name;
+            $item['menuItemType']  = $this->currentMenu->menutype;
+        } else {
+            $item->menuItemId    = $this->currentMenu->id;
+            $item->menuItemTitle = $this->currentMenu->name;
+            $item->menuItemType  = $this->currentMenu->menutype;
+        }
+
         // Converts to an Item instance, setting internal attributes
-        $item = new Item($item, $this->sitemap, $this->currentMenu);
+        $item = new Item($item, $currentMenuItemId);
 
         if ($prepareItem) {
             // Call the plugins to prepare the item
@@ -215,14 +265,13 @@ class Collector
         $item->setModificationDate();
 
         $item->setAdapter();
-        $item->adapter->checkVisibilityForRobots();
+        $item->visibleForRobots = $item->adapter->checkVisibilityForRobots();
 
         // Set the current level to the item
-        $item->set('level', $this->currentLevel);
+        $item->level = $this->currentLevel;
 
         $this->setItemCustomSettings($item);
         $this->checkParentIsUnpublished($item);
-
         $this->checkDuplicatedUIDToIgnore($item);
 
         // Verify if the item can be displayed to count as unique for the XML sitemap
@@ -230,12 +279,19 @@ class Collector
             && $item->published
             && $item->visibleForRobots
             && (!$item->duplicate || ($item->duplicate && !$this->params->get('ignore_duplicated_uids', 1)))
-            ) {
-            ++$this->counter;
+        ) {
+            // Check if the URL is not duplicated (specially for the XML sitemap)
+            $this->checkDuplicatedURLToIgnore($item);
+
+            if (!$item->duplicate || ($item->duplicate && !$this->params->get('ignore_duplicated_uids', 1))) {
+                ++$this->counter;
+            }
         }
 
         // Call the given callback function
-        return (bool)call_user_func_array($callback, array(&$item));
+        $result = (bool)call_user_func_array($callback, array(&$item));
+
+        return $result;
     }
 
     /**
@@ -248,10 +304,11 @@ class Collector
      *  - ordering
      *
      * @return array;
+     * @throws \Exception
      */
     protected function getSitemapMenus()
     {
-        $db = OSMap\Factory::getContainer()->db;
+        $db = OSMap\Factory::getDbo();
 
         $query = $db->getQuery(true)
             ->select(
@@ -352,7 +409,7 @@ class Collector
     {
         // If is already set, interrupt the flux and ignore the item
         if (isset($this->uidList[$item->uid])) {
-            $item->set('duplicate', true);
+            $item->duplicate = true;
 
             if ($this->params->get('ignore_duplicated_uids', 1)) {
                 $item->addAdminNote('COM_OSMAP_ADMIN_NOTE_DUPLICATED_IGNORED');
@@ -366,6 +423,39 @@ class Collector
         // Not set and published, so let's register
         if ($item->published && $item->visibleForRobots && !$item->ignore) {
             $this->uidList[$item->uid] = 1;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the item's full link was already registered. If positive,
+     * set the item to be ignored and return true. If negative, register the item and return false
+     *
+     * @param object $item
+     *
+     * @return bool
+     */
+    protected function checkDuplicatedURLToIgnore($item)
+    {
+        if (!empty($item->fullLink)) {
+            $container = OSMap\Factory::getContainer();
+
+            // We need to make sure to have an URL free of hash chars
+            $url  = $container->router->removeHashFromURL($item->fullLink);
+            $hash = md5($url);
+
+            if (isset($this->urlHashList[$hash])) {
+                $item->duplicate = true;
+                $item->addAdminNote('COM_OSMAP_ADMIN_NOTE_DUPLICATED_URL_IGNORED');
+
+                return true;
+            }
+
+            // Not set and published, so let's register
+            if ($item->published && $item->visibleForRobots && !$item->ignore) {
+                $this->urlHashList[$hash] = 1;
+            }
         }
 
         return false;
@@ -417,6 +507,8 @@ class Collector
                         break;
                     }
                 }
+
+                $plugin = null;
             }
         }
     }
@@ -524,17 +616,18 @@ class Collector
     protected function getItemsSettings()
     {
         if (empty($this->itemsSettings)) {
-            $db = OSMap\Factory::getContainer()->db;
+            $db = OSMap\Factory::getDbo();
 
             $query = $db->getQuery(true)
                 ->select(
                     array(
                         '*',
-                        'IF (url_hash IS NULL OR url_hash = "", uid, CONCAT(uid, ":", url_hash)) AS ' . $db->quoteName('key')
+                        'IF (settings_hash IS NULL OR settings_hash = "", uid, CONCAT(uid, ":", settings_hash)) AS ' . $db->quoteName('key')
                     )
                 )
                 ->from('#__osmap_items_settings')
-                ->where('sitemap_id = ' . $db->quote($this->sitemap->id));
+                ->where('sitemap_id = ' . $db->quote($this->sitemap->id))
+                ->where($db->quoteName('format') . ' = 2');
 
             $this->itemsSettings = $db->setQuery($query)->loadAssocList('key');
         }
@@ -547,12 +640,52 @@ class Collector
      *
      * @param string $key
      *
-     * @return mix
+     * @return array[]|false
      */
     public function getItemCustomSettings($key)
     {
         if (isset($this->itemsSettings[$key])) {
             return $this->itemsSettings[$key];
+        }
+
+        return false;
+    }
+
+    /**
+     * This method gets the legacy settings for all items to be loaded avoiding
+     * lost the custom settings for items after the migration to v4.2.1.
+     *
+     * @return array
+     */
+    protected function getLegacyItemsSettings()
+    {
+        if (!isset($this->legacyItemsSettings)) {
+            $db = OSMap\Factory::getDbo();
+
+            $query = $db->getQuery(true)
+                ->select('*')
+                ->from('#__osmap_items_settings')
+                ->where('sitemap_id = ' . $db->quote($this->sitemap->id))
+                ->where($db->quoteName('format') . ' IS NULL');
+
+            $this->legacyItemsSettings = $db->setQuery($query)->loadAssocList('uid');
+        }
+
+        return $this->legacyItemsSettings;
+    }
+
+    /**
+     * Returns the settings based on the UID only. Used when we have legacy
+     * settings on the database.
+     *
+     * @param string $uid
+     *
+     * @return array[]|false
+     */
+    protected function getLegacyItemCustomSettings($uid)
+    {
+        if (isset($this->legacyItemsSettings[$uid])) {
+            return $this->legacyItemsSettings[$uid];
         }
 
         return false;
@@ -570,13 +703,22 @@ class Collector
         // Check if the menu item has custom settings. If not, use the values from the menu
         // Check if there is a custom settings specific for this URL. Sometimes the same page has different URLs.
         // We can have different settings for items with the same UID, but different URLs
-        $key = $item->uid . ':' . $item->fullLinkHash;
+        $key      = $item->uid . ':' . $item->settingsHash;
         $settings = $this->getItemCustomSettings($key);
 
         // Check if there is a custom settings for all links with that UID (happens right after a migration from
-        // versions before 4.0.0)
+        // versions before 4.0.0 or before 4.2.1)
         if ($settings === false) {
-            $settings = $this->getItemCustomSettings($item->uid);
+            $settings = $this->getLegacyItemCustomSettings($item->uid);
+
+            // The Joomla plugin changed the UID
+            // from joomla.archive => joomla.archive.[id] and joomla.featured => joomla.featured[id]
+            // So we need to try getting the settings from the old UID
+            if ($settings === false) {
+                if (preg_match('/^joomla.(archive|featured)/', $item->uid, $matches)) {
+                    $settings = $this->getLegacyItemCustomSettings('joomla.' . $matches[1]);
+                }
+            }
         }
 
         if ($settings === false) {
@@ -620,8 +762,29 @@ class Collector
         if ($item->published
             && !$item->ignore
             && (!$item->duplicate || ($item->duplicate && !$this->params->get('ignore_duplicated_uids', 1)))
-            ) {
+        ) {
             $this->unpublishLevel = false;
         }
+    }
+
+    /**
+     * Returns the current menu item id
+     *
+     * @return int
+     */
+    public function getCurrentMenuItemId()
+    {
+        return $this->currentMenuItemId;
+    }
+
+    /**
+     * Removes circular reference
+     */
+    public function cleanup()
+    {
+        $this->sitemap           = null;
+        $this->printNodeCallback = null;
+        $this->params            = null;
+        $this->currentMenu       = null;
     }
 }

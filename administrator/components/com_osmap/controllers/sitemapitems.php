@@ -31,12 +31,12 @@ class OSMapControllerSitemapItems extends OSMap\Controller\Form
         return JFactory::getUser()->authorise('core.edit', 'com_osmap.sitemap.' . $recordId);
     }
 
-    public function cancel($key = NULL)
+    public function cancel($key = null)
     {
         $this->setRedirect('index.php?option=com_osmap&view=sitemaps');
     }
 
-    public function save($key = NULL, $urlVar = NULL)
+    public function save($key = null, $urlVar = null)
     {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -57,13 +57,14 @@ class OSMapControllerSitemapItems extends OSMap\Controller\Form
                     $row = $model->getTable();
                     $row->load(
                         array(
-                            'sitemap_id' => $sitemapId,
-                            'uid'        => $data['uid'],
-                            'url_hash'   => $data['url_hash'],
+                            'sitemap_id'    => $sitemapId,
+                            'uid'           => $data['uid'],
+                            'settings_hash' => $data['settings_hash']
                         )
                     );
 
                     $data['sitemap_id'] = $sitemapId;
+                    $data['format']     = '2';
 
                     $row->save($data);
                 }

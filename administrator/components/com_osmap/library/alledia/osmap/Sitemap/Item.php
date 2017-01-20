@@ -10,6 +10,7 @@
 namespace Alledia\OSMap\Sitemap;
 
 use Alledia\OSMap;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die();
 
@@ -21,23 +22,30 @@ class Item extends BaseItem
     /**
      * The constructor
      *
-     * @param object  $item
-     * @param Sitemap $sitemap
-     * @param Object  $menu
+     * @param array $itemData
+     * @param int   $currentMenuItemId
      *
      * @return void
      */
-    public function __construct($item, $sitemap, $menu)
+    public function __construct(&$itemData, $currentMenuItemId)
     {
-        parent::__construct($item, $sitemap, $menu);
+        parent::__construct($itemData);
+
+        $this->published  = (bool)$this->published;
+        $this->isMenuItem = (bool)$this->isMenuItem;
+        $this->params     = new Registry($this->params);
+
+        $itemData = null;
 
         // Check if the link is an internal link
         $this->isInternal = $this->checkLinkIsInternal();
 
-        $this->isMenuItem = (bool)$this->isMenuItem;
+        $this->prepareDate('created');
+        $this->prepareDate('modified');
 
-        $this->prepareParams();
-        $this->setModificationDate();
+        $defaultDate = is_null($this->created) ? $this->modified : $this->created;
+        $this->prepareDate('publishUp', $defaultDate);
+
         $this->setLink();
         $this->extractComponentFromLink();
         $this->setFullLink();
@@ -47,11 +55,14 @@ class Item extends BaseItem
             $this->sanitizeFullLink();
         }
 
-        // Make sure to have a hash of the full link
-        $this->fullLinkHash = md5($this->fullLink);
+        $this->rawLink = $this->fullLink;
 
-        // Prepare the boolean attributes
-        $this->published = (bool)$this->published;
+        // Removes the hash segment from the Full link, if exists
+        $container = OSMap\Factory::getContainer();
+        $this->fullLink = $container->router->removeHashFromURL($this->fullLink);
+
+        // Make sure to have a unique hash for the settings
+        $this->settingsHash = md5($this->fullLink . $currentMenuItemId);
 
         /*
          * Do not use a "prepare" method because we need to make sure it will
@@ -61,16 +72,126 @@ class Item extends BaseItem
     }
 
     /**
-     * Prepares the param attribute to make sure it is always an instance of
-     * \JRegistry.
+     * Extract the option from the link, to identify the component called by
+     * the link.
      *
-     * @return \JRegistry
+     * @return void
      */
-    protected function prepareParams()
+    protected function extractComponentFromLink()
     {
-        if (is_string($this->params)) {
-            $this->params = new \JRegistry($this->params);
+        $this->component = null;
+
+        if (preg_match('#^/?index.php.*option=(com_[^&]+)#', $this->link, $matches)) {
+            $this->component = $matches[1];
         }
+    }
+
+    /**
+     * Adds the note to the admin note attribute and initialize the variable
+     * if needed
+     *
+     * @param string $note
+     *
+     * @return void
+     */
+    public function addAdminNote($note)
+    {
+        if (!is_array($this->adminNotes)) {
+            $this->adminNotes = array();
+        }
+
+        $this->adminNotes[] = \JText::_($note);
+    }
+
+    /**
+     * Returns the admin notes as a string.
+     *
+     * @return string
+     */
+    public function getAdminNotesString()
+    {
+        if (!empty($this->adminNotes)) {
+            return implode("\n", $this->adminNotes);
+        }
+
+        return '';
+    }
+
+    /**
+     * Check if the current link is an internal link.
+     *
+     * @return bool
+     */
+    protected function checkLinkIsInternal()
+    {
+        $container = OSMap\Factory::getContainer();
+
+        return $container->router->isInternalURL($this->link)
+            || in_array(
+                $this->type,
+                array(
+                    'separator',
+                    'heading'
+                )
+            );
+    }
+
+    /**
+     * Set the correct date for the attribute
+     *
+     * @param string $attributeName
+     * @param string $default
+     *
+     * @return void
+     */
+    public function prepareDate($attributeName, $default = null)
+    {
+        if (!is_null($default)) {
+            if (empty($this->$attributeName)) {
+                $this->$attributeName = $default;
+            }
+        }
+
+        if (OSMap\Helper\General::isEmptyDate($this->$attributeName)) {
+            $this->$attributeName = null;
+        }
+
+        if (!OSMap\Helper\General::isEmptyDate($this->$attributeName)) {
+            if (!is_numeric($this->$attributeName)) {
+                $date           = new \JDate($this->$attributeName);
+                $this->$attributeName = $date->toUnix();
+            }
+
+            // Convert dates from UTC
+            if (intval($this->$attributeName)) {
+                if ($this->$attributeName < 0) {
+                    $this->$attributeName = null;
+                } else {
+                    $date           = new \JDate($this->$attributeName);
+                    $this->$attributeName = $date->toISO8601();
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if the item's language has compatible language with
+     * the current language.
+     *
+     * @return bool
+     */
+    public function hasCompatibleLanguage()
+    {
+        // Check the language
+        if (\JLanguageMultilang::isEnabled() && isset($this->language)) {
+            if ($this->language === '*' || $this->language === \JFactory::getLanguage()->getTag()) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -85,7 +206,7 @@ class Item extends BaseItem
     public function calculateUID($force = false, $prefix = '')
     {
         if (empty($this->uid) || $force) {
-            $this->set('uid', $prefix . md5($this->fullLink));
+            $this->uid = $prefix . md5($this->fullLink);
         }
     }
 
@@ -118,7 +239,9 @@ class Item extends BaseItem
      */
     protected function sanitizeFullLink()
     {
-        $this->fullLink = OSMap\Router::sanitizeURL($this->fullLink);
+        $container = OSMap\Factory::getContainer();
+
+        $this->fullLink = $container->router->sanitizeURL($this->fullLink);
     }
 
     /**
@@ -131,14 +254,17 @@ class Item extends BaseItem
      */
     protected function setFullLink()
     {
+        $container = OSMap\Factory::getContainer();
+
         if ((bool)$this->home) {
             // Correct the URL for the home page.
-            $this->fullLink = OSMap\Router::getFrontendBase();
+            $this->fullLink = $container->router->getFrontendBase();
 
             // Check if multi-language is enabled to use the proper route
             if (\JLanguageMultilang::isEnabled()) {
-                $lang  = OSMap\Factory::getLanguage();
-                $tag   = $lang->getTag();
+                $lang = OSMap\Factory::getLanguage();
+                $tag  = $lang->getTag();
+                $lang = null;
 
                 if (version_compare(JVERSION, '3.5', '<')) {
                     $homes = OSMap\Helper\Legacy::getSiteHomePages();
@@ -151,13 +277,15 @@ class Item extends BaseItem
                 } else {
                     $home = $homes['*'];
                 }
+                $homes = array();
 
-                $this->fullLink .= OSMap\Router::routeURL('index.php?Itemid=' . $home->id);
+                $this->fullLink .= $container->router->routeURL('index.php?Itemid=' . $home->id);
+                $home = null;
             }
 
             // Removes the /administrator from the URI if in the administrator
-            $this->fullLink = OSMap\Router::sanitizeURL(
-                OSMap\Router::forceFrontendURL($this->fullLink)
+            $this->fullLink = $container->router->sanitizeURL(
+                $container->router->forceFrontendURL($this->fullLink)
             );
 
             return;
@@ -167,7 +295,7 @@ class Item extends BaseItem
         if ($this->type === 'separator' || $this->type === 'heading') {
             $this->browserNav = 3;
             // Always a unique UID, since this only appears in the HTML sitemap
-            $this->set('uid', $this->type . '.' . md5($this->name . $this->id));
+            $this->uid = $this->type . '.' . md5($this->name . $this->id);
 
             return;
         }
@@ -175,10 +303,19 @@ class Item extends BaseItem
         // If is an URL, but external, return the external URL. If internal,
         // follow with the routing
         if ($this->type === 'url') {
+            $this->link = trim($this->link);
+            // Check if it is a single Hash char, the user doesn't want to point to any URL
+            if ($this->link === '#' || empty($this->link)) {
+                $this->fullLink      = '';
+                $this->visibleForXML = false;
+
+                return;
+            }
+
             // Check if it is a relative URI
-            if (OSMap\Router::isRelativeUri($this->link)) {
-                $this->fullLink = OSMap\Router::sanitizeURL(
-                    OSMap\Router::convertRelativeUriToFullUri($this->link)
+            if ($container->router->isRelativeUri($this->link)) {
+                $this->fullLink = $container->router->sanitizeURL(
+                    $container->router->convertRelativeUriToFullUri($this->link)
                 );
 
                 return;
@@ -212,13 +349,13 @@ class Item extends BaseItem
 
         if ($this->isInternal) {
             // Route the full link
-            $this->fullLink = OSMap\Router::routeURL($this->fullLink);
+            $this->fullLink = $container->router->routeURL($this->fullLink);
 
             // Make sure the link has the base uri
-            $this->fullLink = OSMap\Router::forceFrontendURL($this->fullLink);
+            $this->fullLink = $container->router->forceFrontendURL($this->fullLink);
         }
 
-        $this->fullLink = OSMap\Router::sanitizeURL($this->fullLink);
+        $this->fullLink = $container->router->sanitizeURL($this->fullLink);
     }
 
     /**
@@ -236,5 +373,14 @@ class Item extends BaseItem
         } else {
             $this->adapter = new ItemAdapter\Generic($this);
         }
+    }
+
+    public function cleanup()
+    {
+        $this->adapter->cleanup();
+
+        $this->menu    = null;
+        $this->adapter = null;
+        $this->params  = null;
     }
 }

@@ -11,19 +11,21 @@ defined('_JEXEC') or die();
 
 use Alledia\OSMap;
 
-global $showExternalLinks, $ignoreDuplicatedUIDs;
+global $showExternalLinks, $ignoreDuplicatedUIDs, $debug;
 
 $showExternalLinks    = (int)$this->osmapParams->get('show_external_links', 0);
 $ignoreDuplicatedUIDs = (int)$this->osmapParams->get('ignore_duplicated_uids', 1);
+$debug                = (bool)$this->params->get('debug', 0);
 
 
 $printNodeCallback = function ($node) {
-    global $showExternalLinks, $ignoreDuplicatedUIDs;
+    global $showExternalLinks, $ignoreDuplicatedUIDs, $debug;
 
     $display = !$node->ignore
         && $node->published
         && (!$node->duplicate || ($node->duplicate && !$ignoreDuplicatedUIDs))
         && $node->visibleForRobots
+        && $node->parentIsVisibleForRobots
         && $node->visibleForXML
         && trim($node->fullLink) != '';
 
@@ -40,6 +42,10 @@ $printNodeCallback = function ($node) {
         return false;
     }
 
+    if ($debug) {
+        echo "\n";
+    }
+
     // Print the item
     echo '<url>';
     echo '<loc><![CDATA[' . $node->fullLink . ']]></loc>';
@@ -51,6 +57,10 @@ $printNodeCallback = function ($node) {
     echo '<changefreq>' . $node->changefreq . '</changefreq>';
     echo '<priority>' . $node->priority . '</priority>';
     echo '</url>';
+
+    if ($debug) {
+        echo "\n";
+    }
 
     return true;
 };
@@ -70,4 +80,7 @@ echo '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLo
 
 $this->sitemap->traverse($printNodeCallback);
 
+$printNodeCallback = null;
+$this->sitemap->cleanup();
+$this->sitemap = null;
 echo '</urlset>';

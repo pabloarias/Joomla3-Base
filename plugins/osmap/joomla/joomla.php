@@ -24,6 +24,10 @@ require_once JPATH_SITE . '/components/com_content/helpers/query.php';
  */
 
 use Alledia\OSMap;
+use Alledia\OSMap\Sitemap\Collector;
+use Alledia\OSMap\Sitemap\Item;
+use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentInterface
 {
@@ -38,7 +42,7 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
     {
         if (empty(static::$instance)) {
             $dispatcher = \JEventDispatcher::getInstance();
-            $instance = new self($dispatcher);
+            $instance   = new self($dispatcher);
 
             static::$instance = $instance;
         }
@@ -60,10 +64,10 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
      * This function is called before a menu item is used. We use it to set the
      * proper uniqueid for the item
      *
-     * @param object  Menu item to be "prepared"
-     * @param array   The extension params
+     * @param Item     $node   Menu item to be "prepared"
+     * @param Registry $params The extension params
      *
-     * @return void
+     * @return bool
      * @since  1.2
      */
     public static function prepareMenuItem($node, &$params)
@@ -74,27 +78,27 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
         $linkQuery = parse_url($node->link);
 
         if (!isset($linkQuery['query'])) {
-            return;
+            return false;
         }
 
-        $node->pluginParams = &$params;
+        $node->pluginParams = $params;
 
         parse_str(html_entity_decode($linkQuery['query']), $linkVars);
 
-        $view   = JArrayHelper::getValue($linkVars, 'view', '');
-        $id     = JArrayHelper::getValue($linkVars, 'id', 0);
+        $view = ArrayHelper::getValue($linkVars, 'view', '');
+        $id   = ArrayHelper::getValue($linkVars, 'id', 0);
 
         switch ($view) {
             case 'archive':
                 $node->adapterName = 'JoomlaCategory';
-                $node->uid         = 'joomla.archive';
+                $node->uid         = 'joomla.archive.' . $node->id;
                 $node->expandible  = true;
 
                 break;
 
             case 'featured':
                 $node->adapterName = 'JoomlaCategory';
-                $node->uid         = 'joomla.featured';
+                $node->uid         = 'joomla.featured.' . $node->id;
                 $node->expandible  = true;
 
                 break;
@@ -117,14 +121,16 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                 $query = $db->getQuery(true)
                     ->select($db->quoteName('created'))
                     ->select($db->quoteName('modified'))
+                    ->select($db->quoteName('publish_up'))
                     ->select($db->quoteName('metadata'))
                     ->select($db->quoteName('attribs'))
                     ->from($db->quoteName('#__content'))
-                    ->where($db->quoteName('id') . '=' . (int) $id);
+                    ->where($db->quoteName('id') . '=' . (int)$id);
 
                 if ($paramAddPageBreaks || $paramAddImages) {
                     $query->select($db->quoteName('introtext'));
                     $query->select($db->quoteName('fulltext'));
+                    $query->select($db->quoteName('images'));
                 }
 
                 $db->setQuery($query);
@@ -133,19 +139,10 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                     // Set the node UID
                     $node->uid = 'joomla.article.' . $id;
 
-                    // Check if we have a modification date
-                    if (!OSMap\Helper\General::isEmptyDate($item->modified)) {
-                        $node->modified = $item->modified;
-                    }
-
-                    // Make sure we have a modification date. If null, use the creation date
-                    if (OSMap\Helper\General::isEmptyDate($node->modified)) {
-                        if (isset($item->createdOn)) {
-                            $node->modified = $item->createdOn;
-                        } else {
-                            $node->modified = $item->created;
-                        }
-                    }
+                    // Set dates
+                    $node->modified  = $item->modified;
+                    $node->created   = $item->created;
+                    $node->publishUp = $item->publish_up;
 
                     $item->params = $item->attribs;
 
@@ -157,9 +154,22 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                     if ($paramAddImages) {
                         $maxImages = $params->get('max_images', 1000);
 
-                        $node->images = $container->imagesHelper->getImagesFromText($text, $maxImages);
-                    }
+                        $node->images = array();
 
+                        // Images from text
+                        $node->images = array_merge(
+                            $node->images,
+                            (array)$container->imagesHelper->getImagesFromText($text, $maxImages)
+                        );
+
+                        // Images from params
+                        if (!empty($item->images)) {
+                            $node->images = array_merge(
+                                $node->images,
+                                (array)$container->imagesHelper->getImagesFromParams($item)
+                            );
+                        }
+                    }
 
                     if ($paramAddPageBreaks) {
                         $node->subnodes   = OSMap\Helper\General::getPagebreaks($text, $node->link, $node->uid);
@@ -178,24 +188,28 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
     /**
      * Expands a com_content menu item
      *
-     * @return void
+     * @param Collector $collector
+     * @param Item      $menuItem
+     * @param Registry  $params
+     *
+     * @return bool
      * @since  1.0
      */
-    public static function getTree($osmap, $parent, &$params)
+    public static function getTree($collector, $menuItem, &$params)
     {
-        $db = OSMap\Factory::getDBO();
+        $db = OSMap\Factory::getDbo();
 
         $result = null;
 
-        $linkQuery = parse_url($parent->link);
+        $linkQuery = parse_url($menuItem->link);
 
         if (!isset($linkQuery['query'])) {
             return false;
         }
 
         parse_str(html_entity_decode($linkQuery['query']), $linkVars);
-        $view = JArrayHelper::getValue($linkVars, 'view', '');
-        $id   = intval(JArrayHelper::getValue($linkVars, 'id', ''));
+        $view = ArrayHelper::getValue($linkVars, 'view', '');
+        $id   = intval(ArrayHelper::getValue($linkVars, 'id', ''));
 
         /*
          * Parameters Initialisation
@@ -204,29 +218,29 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
         $paramExpandFeatured   = $params->get('expand_featured', 1);
         $paramIncludeArchived  = $params->get('include_archived', 2);
 
-        $paramAddPageBreaks    = $params->get('add_pagebreaks', 1);
+        $paramAddPageBreaks = $params->get('add_pagebreaks', 1);
 
-        $paramCatPriority      = $params->get('cat_priority', $parent->priority);
-        $paramCatChangefreq    = $params->get('cat_changefreq', $parent->changefreq);
+        $paramCatPriority   = $params->get('cat_priority', $menuItem->priority);
+        $paramCatChangefreq = $params->get('cat_changefreq', $menuItem->changefreq);
 
         if ($paramCatPriority == '-1') {
-            $paramCatPriority = $parent->priority;
+            $paramCatPriority = $menuItem->priority;
         }
         if ($paramCatChangefreq == '-1') {
-            $paramCatChangefreq = $parent->changefreq;
+            $paramCatChangefreq = $menuItem->changefreq;
         }
         $params->set('cat_priority', $paramCatPriority);
         $params->set('cat_changefreq', $paramCatChangefreq);
 
-        $paramArtPriority = $params->get('art_priority', $parent->priority);
-        $paramArtChangefreq = $params->get('art_changefreq', $parent->changefreq);
+        $paramArtPriority   = $params->get('art_priority', $menuItem->priority);
+        $paramArtChangefreq = $params->get('art_changefreq', $menuItem->changefreq);
 
         if ($paramArtPriority == '-1') {
-            $paramArtPriority = $parent->priority;
+            $paramArtPriority = $menuItem->priority;
         }
 
         if ($paramArtChangefreq == '-1') {
-            $paramArtChangefreq = $parent->changefreq;
+            $paramArtChangefreq = $menuItem->changefreq;
         }
 
         $params->set('art_priority', $paramArtPriority);
@@ -247,14 +261,14 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                 }
 
                 if ($paramExpandCategories && $id) {
-                    $result = self::expandCategory($osmap, $parent, $id, $params, $parent->id);
+                    $result = self::expandCategory($collector, $menuItem, $id, $params, $menuItem->id);
                 }
 
                 break;
 
             case 'featured':
                 if ($paramExpandFeatured) {
-                    $result = self::includeCategoryContent($osmap, $parent, 'featured', $params, $parent->id);
+                    $result = self::includeCategoryContent($collector, $menuItem, 'featured', $params, $menuItem->id);
                 }
 
                 break;
@@ -265,14 +279,14 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                         $id = 1;
                     }
 
-                    $result = self::expandCategory($osmap, $parent, $id, $params, $parent->id);
+                    $result = self::expandCategory($collector, $menuItem, $id, $params, $menuItem->id);
                 }
 
                 break;
 
             case 'archive':
                 if ($paramIncludeArchived) {
-                    $result = self::includeCategoryContent($osmap, $parent, 'archived', $params, $parent->id);
+                    $result = self::includeCategoryContent($collector, $menuItem, 'archived', $params, $menuItem->id);
                 }
 
                 break;
@@ -288,27 +302,27 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                         ->select($db->quoteName('catid'))
                         ->select($db->quoteName('attribs') . ' AS params')
                         ->select($db->quoteName('metadata'))
-                        ->select($db->quoteName('modified'))
                         ->select($db->quoteName('created'))
+                        ->select($db->quoteName('modified'))
+                        ->select($db->quoteName('publish_up'))
                         ->from($db->quoteName('#__content'))
-                        ->where($db->quoteName('id') . '=' . (int) $id);
+                        ->where($db->quoteName('id') . '=' . (int)$id);
                     $db->setQuery($query);
 
                     $item = $db->loadObject();
 
-                    // Make sure we have a modification date. If null, use the creation date
-                    if (OSMap\Helper\General::isEmptyDate($item->modified)) {
-                        $item->modified = $item->created;
-                    }
-
                     // // Set the node UID
                     $item->uid = 'joomla.article.' . $id;
 
-                    $parent->slug = $item->alias ? ($id . ':' . $item->alias) : $id;
-                    $parent->link = ContentHelperRoute::getArticleRoute($parent->slug, $item->catid);
+                    $menuItem->slug = $item->alias ? ($id . ':' . $item->alias) : $id;
+                    $menuItem->link = ContentHelperRoute::getArticleRoute($menuItem->slug, $item->catid);
 
-                    $parent->subnodes = OSMap\Helper\General::getPagebreaks($item->introtext . $item->fulltext, $parent->link, $item->uid);
-                    self::printNodes($osmap, $parent, $params, $parent->subnodes, $item);
+                    $menuItem->subnodes = OSMap\Helper\General::getPagebreaks(
+                        $item->introtext . $item->fulltext,
+                        $menuItem->link,
+                        $item->uid
+                    );
+                    self::printSubNodes($collector, $menuItem, $params, $menuItem->subnodes, $item);
                 }
         }
 
@@ -319,14 +333,25 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
      * Get all content items within a content category.
      * Returns an array of all contained content items.
      *
-     * @param object  $osmap
-     * @param object  $parent   the menu item
-     * @param int     $catid    the id of the category to be expanded
-     * @param array   $params   an assoc array with the params for this plugin on Xmap
-     * @param int     $itemid   the itemid to use for this category's children
+     * @param Collector $collector
+     * @param Item      $parent the menu item
+     * @param int       $catid  the id of the category to be expanded
+     * @param Registry  $params parameters for this plugin on Xmap
+     * @param int       $itemid the itemid to use for this category's children
+     * @param Item      $prevnode
+     * @param int       $curlevel
+     *
+     * @return bool
      */
-    public static function expandCategory($osmap, $parent, $catid, &$params, $itemid, $prevnode = null, $curlevel = 0)
-    {
+    public static function expandCategory(
+        $collector,
+        $parent,
+        $catid,
+        &$params,
+        $itemid,
+        $prevnode = null,
+        $curlevel = 0
+    ) {
         $paramExpandCategories = $params->get('expand_categories', 1);
 
         $db = OSMap\Factory::getDBO();
@@ -349,8 +374,8 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                     'a.alias',
                     'a.access',
                     'a.path AS route',
-                    'a.created_time created',
-                    'a.modified_time modified',
+                    'a.created_time AS created',
+                    'a.modified_time AS modified',
                     'a.params',
                     'a.metadata',
                     'a.metakey'
@@ -372,21 +397,25 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
 
         if ($curlevel <= $maxLevel) {
             if (count($items) > 0) {
-                $osmap->changeLevel(1);
+                $collector->changeLevel(1);
 
                 foreach ($items as $item) {
-                    $node               = new stdClass();
-                    $node->id           = $item->id;
-                    $node->uid          = 'joomla.category.' . $item->id;
-                    $node->browserNav   = $parent->browserNav;
-                    $node->priority     = $params->get('cat_priority');
-                    $node->changefreq   = $params->get('cat_changefreq');
-                    $node->name         = $item->title;
-                    $node->expandible   = true;
-                    $node->secure       = $parent->secure;
-                    $node->newsItem     = 0;
-                    $node->adapterName  = 'JoomlaCategory';
-                    $node->pluginParams = &$params;
+                    $node                           = new stdClass;
+                    $node->id                       = $item->id;
+                    $node->uid                      = 'joomla.category.' . $item->id;
+                    $node->browserNav               = $parent->browserNav;
+                    $node->priority                 = $params->get('cat_priority');
+                    $node->changefreq               = $params->get('cat_changefreq');
+                    $node->name                     = $item->title;
+                    $node->expandible               = true;
+                    $node->secure                   = $parent->secure;
+                    $node->newsItem                 = 0;
+                    $node->adapterName              = 'JoomlaCategory';
+                    $node->pluginParams             = &$params;
+                    $node->parentIsVisibleForRobots = $parent->visibleForRobots;
+                    $node->created                  = $item->created;
+                    $node->modified                 = $item->modified;
+                    $node->publishUp                = $item->created;
 
                     // Keywords
                     $paramKeywords = $params->get('keywords', 'metakey');
@@ -396,32 +425,27 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                     }
                     $node->keywords = $keywords;
 
-                    // For the google news we should use te publication date instead
-                    // the last modification date
-                    $node->modified     = OSMap\Helper\General::isEmptyDate($item->modified)
-                        ? $item->created : $item->modified;
-
                     $node->slug = $item->route ? ($item->id . ':' . $item->route) : $item->id;
                     $node->link = ContentHelperRoute::getCategoryRoute($node->slug);
 
                     $node->itemid = $itemid;
-                    if (strpos($node->link, 'Itemid=')===false) {
+                    if (strpos($node->link, 'Itemid=') === false) {
                         $node->link .= '&Itemid=' . $itemid;
                     } else {
-                        $node->link = preg_replace('/Itemid=([0-9]+)/', 'Itemid='.$itemid, $node->link);
+                        $node->link = preg_replace('/Itemid=([0-9]+)/', 'Itemid=' . $itemid, $node->link);
                     }
 
-                    if ($osmap->printNode($node)) {
-                        self::expandCategory($osmap, $parent, $item->id, $params, $node->itemid, $node, $curlevel);
+                    if ($collector->printNode($node)) {
+                        self::expandCategory($collector, $parent, $item->id, $params, $node->itemid, $node, $curlevel);
                     }
                 }
 
-                $osmap->changeLevel(-1);
+                $collector->changeLevel(-1);
             }
         }
 
         // Include Category's content
-        self::includeCategoryContent($osmap, $parent, $catid, $params, $itemid, $node);
+        self::includeCategoryContent($collector, $parent, $catid, $params, $itemid, $node);
 
         return true;
     }
@@ -432,9 +456,9 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
      *
      * @since 2.0
      */
-    public static function includeCategoryContent($osmap, $parent, $catid, &$params, $itemid, $prevnode = null)
+    public static function includeCategoryContent($collector, $parent, $catid, &$params, $itemid, $prevnode = null)
     {
-        $db        = OSMap\Factory::getDBO();
+        $db        = OSMap\Factory::getDbo();
         $container = OSMap\Factory::getContainer();
 
         if ($params->get('include_archived', 2)) {
@@ -449,13 +473,6 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
             $where = array('a.state=2');
         } elseif (is_numeric($catid)) {
             $where[] = 'a.catid=' . (int)$catid;
-        }
-
-        $maxArtAge = $params->get('max_art_age');
-        if (!empty($maxArtAge) || $osmap->isNews) {
-            $days = empty($maxArtAge) ? 2 : $maxArtAge;
-            $where[] = "(a.created >= '"
-                . date('Y-m-d H:i:s', time() - $days * 86400) . "' ) ";
         }
 
         if (!$params->get('show_unauth', 0)) {
@@ -474,10 +491,12 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                     'a.catid',
                     'a.created',
                     'a.modified',
+                    'a.publish_up',
                     'a.attribs AS params',
                     'a.metadata',
                     'a.language',
                     'a.metakey',
+                    'a.images',
                     'c.title AS categMetakey'
                 )
             );
@@ -502,7 +521,7 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
 
 
         // Ordering
-        $orderOptions = array(
+        $orderOptions    = array(
             'a.created',
             'a.modified',
             'a.publish_up',
@@ -513,8 +532,8 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
             'ASC',
             'DESC'
         );
-        $order    = JArrayHelper::getValue($orderOptions, $params->get('article_order', 0), 0);
-        $orderDir = JArrayHelper::getValue($orderDirOptions, $params->get('article_orderdir', 0), 0);
+        $order    = ArrayHelper::getValue($orderOptions, $params->get('article_order', 0), 0);
+        $orderDir = ArrayHelper::getValue($orderDirOptions, $params->get('article_orderdir', 0), 0);
 
         $orderBy = ' ' . $order . ' ' . $orderDir;
         $query->order($orderBy);
@@ -529,27 +548,30 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
         $items = $db->loadObjectList();
 
         if (count($items) > 0) {
-            $osmap->changeLevel(1);
+            $collector->changeLevel(1);
 
             $paramExpandCategories = $params->get('expand_categories', 1);
             $paramExpandFeatured   = $params->get('expand_featured', 1);
             $paramIncludeArchived  = $params->get('include_archived', 2);
 
             foreach ($items as $item) {
-                $node = new stdClass();
-                $node->id           = $item->id;
-                $node->uid          = 'joomla.article.' . $item->id;
-                $node->browserNav   = $parent->browserNav;
-                $node->priority     = $params->get('art_priority');
-                $node->changefreq   = $params->get('art_changefreq');
-                $node->name         = $item->title;
-                $node->modified     = OSMap\Helper\General::isEmptyDate($item->modified) ? $item->created : $item->modified;
-                $node->expandible   = false;
-                $node->secure       = $parent->secure;
-                $node->newsItem     = 1;
-                $node->language     = $item->language;
-                $node->adapterName  = 'JoomlaArticle';
-                $node->pluginParams = &$params;
+                $node                           = new stdClass();
+                $node->id                       = $item->id;
+                $node->uid                      = 'joomla.article.' . $item->id;
+                $node->browserNav               = $parent->browserNav;
+                $node->priority                 = $params->get('art_priority');
+                $node->changefreq               = $params->get('art_changefreq');
+                $node->name                     = $item->title;
+                $node->created                  = $item->created;
+                $node->modified                 = $item->modified;
+                $node->publishUp                = $item->publish_up;
+                $node->expandible               = false;
+                $node->secure                   = $parent->secure;
+                $node->newsItem                 = 1;
+                $node->language                 = $item->language;
+                $node->adapterName              = 'JoomlaArticle';
+                $node->pluginParams             = &$params;
+                $node->parentIsVisibleForRobots = $parent->visibleForRobots;
 
                 // Keywords
                 $paramKeywords = $params->get('keywords', 'metakey');
@@ -575,18 +597,18 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                 $node->link    = ContentHelperRoute::getArticleRoute($node->slug, $node->catslug);
 
                 // Set the visibility for XML or HTML sitempas
-                if ($catid=='featured') {
+                if ($catid == 'featured') {
                     // Check if the item is visible in the XML or HTML sitemaps
-                    $node->visibleForXML  = in_array($paramExpandFeatured, array(1,2));
-                    $node->visibleForHTML = in_array($paramExpandFeatured, array(1,3));
-                } elseif ($catid=='archived') {
+                    $node->visibleForXML  = in_array($paramExpandFeatured, array(1, 2));
+                    $node->visibleForHTML = in_array($paramExpandFeatured, array(1, 3));
+                } elseif ($catid == 'archived') {
                     // Check if the item is visible in the XML or HTML sitemaps
-                    $node->visibleForXML  = in_array($paramIncludeArchived, array(1,2));
-                    $node->visibleForHTML = in_array($paramIncludeArchived, array(1,3));
+                    $node->visibleForXML  = in_array($paramIncludeArchived, array(1, 2));
+                    $node->visibleForHTML = in_array($paramIncludeArchived, array(1, 3));
                 } elseif (is_numeric($catid)) {
                     // Check if the item is visible in the XML or HTML sitemaps
-                    $node->visibleForXML  = in_array($paramExpandCategories, array(1,2));
-                    $node->visibleForHTML = in_array($paramExpandCategories, array(1,3));
+                    $node->visibleForXML  = in_array($paramExpandCategories, array(1, 2));
+                    $node->visibleForHTML = in_array($paramExpandCategories, array(1, 3));
                 }
 
                 // Add images to the article
@@ -598,7 +620,21 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                 if ($params->get('add_images', 1)) {
                     $maxImages = $params->get('max_images', 1000);
 
-                    $node->images = $container->imagesHelper->getImagesFromText($text, $maxImages);
+                    $node->images = array();
+
+                    // Images from text
+                    $node->images = array_merge(
+                        $node->images,
+                        (array)$container->imagesHelper->getImagesFromText($text, $maxImages)
+                    );
+
+                    // Images from params
+                    if (!empty($item->images)) {
+                        $node->images = array_merge(
+                            $node->images,
+                            (array)$container->imagesHelper->getImagesFromParams($item)
+                        );
+                    }
                 }
 
                 if ($params->get('add_pagebreaks', 1)) {
@@ -607,20 +643,20 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                     $node->expandible = (count($node->subnodes) > 0);
                 }
 
-                if ($osmap->printNode($node) && $node->expandible) {
-                    self::printNodes($osmap, $parent, $params, $node->subnodes, $node);
+                if ($collector->printNode($node) && $node->expandible) {
+                    self::printSubNodes($collector, $parent, $params, $node->subnodes, $node);
                 }
             }
 
-            $osmap->changeLevel(-1);
+            $collector->changeLevel(-1);
         }
 
         return true;
     }
 
-    private static function printNodes($osmap, $parent, &$params, &$subnodes, $item)
+    private static function printSubNodes($collector, $parent, &$params, &$subnodes, $item)
     {
-        $osmap->changeLevel(1);
+        $collector->changeLevel(1);
 
         $i = 0;
         foreach ($subnodes as $subnode) {
@@ -630,17 +666,16 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
             $subnode->priority   = $params->get('art_priority');
             $subnode->changefreq = $params->get('art_changefreq');
             $subnode->secure     = $parent->secure;
+            $subnode->created    = $item->created;
+            $subnode->modified   = $item->modified;
+            $subnode->publishUp  = isset($item->publish_up) ? $item->publish_up : $item->created;
 
-            // Check if the child item has modified date
-            if (isset($item->modified)) {
-                $subnode->modified = $item->modified;
-            } else {
-                $subnode->modified = $item->created;
-            }
+            $collector->printNode($subnode);
 
-            $osmap->printNode($subnode);
+            $subnode = null;
+            unset($subnode);
         }
 
-        $osmap->changeLevel(-1);
+        $collector->changeLevel(-1);
     }
 }

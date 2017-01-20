@@ -10,6 +10,7 @@
 namespace Alledia\OSMap\Sitemap;
 
 use Alledia\OSMap;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die();
 
@@ -26,7 +27,7 @@ class Standard implements SitemapInterface
     public $name;
 
     /**
-     * @var \JRegistry
+     * @var Registry
      */
     public $params;
 
@@ -61,18 +62,26 @@ class Standard implements SitemapInterface
     protected $collector;
 
     /**
+     * Limit in days for news sitemap items
+     *
+     * @var int
+     */
+    public $newsDateLimit = 2;
+
+    /**
      * The constructor
      *
      * @param int $id
      *
      * @return void
+     * @throws \Exception
      */
     public function __construct($id)
     {
         $row = OSMap\Factory::getTable('Sitemap');
         $row->load($id);
 
-        if (empty($row)) {
+        if (empty($row) || !$row->id) {
             throw new \Exception(\JText::_('COM_OSMAP_SITEMAP_NOT_FOUND'));
         }
 
@@ -83,8 +92,10 @@ class Standard implements SitemapInterface
         $this->createdOn   = $row->created_on;
         $this->linksCount  = (int)$row->links_count;
 
-        $this->params = new \JRegistry;
+        $this->params = new Registry();
         $this->params->loadString($row->params);
+
+        $row = null;
 
         // Initiate the collector
         $this->initCollector();
@@ -126,6 +137,8 @@ class Standard implements SitemapInterface
             if (in_array(true, $results)) {
                 return;
             }
+
+            $results     = null;
         }
 
         // Fetch the sitemap items
@@ -133,6 +146,10 @@ class Standard implements SitemapInterface
 
         // Update the links count in the sitemap
         $this->updateLinksCount($count);
+
+        // Cleanup
+        $this->collector->cleanup();
+        $this->collector = null;
     }
 
     /**
@@ -149,5 +166,11 @@ class Standard implements SitemapInterface
 
         $data = array('links_count' => (int)$count);
         $row->save($data);
+    }
+
+    public function cleanup()
+    {
+        $this->collector = null;
+        $this->params = null;
     }
 }

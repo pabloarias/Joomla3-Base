@@ -8,6 +8,8 @@
  */
 
 use Alledia\OSMap;
+use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 defined('_JEXEC') or die();
 
@@ -92,13 +94,13 @@ class OSMapTableSitemap extends JTable
     public function bind($array, $ignore = '')
     {
         if (isset($array['params']) && is_array($array['params'])) {
-            $registry = new JRegistry();
+            $registry = new Registry();
             $registry->loadArray($array['params']);
             $array['params'] = $registry->toString();
         }
 
         if (isset($array['metadata']) && is_array($array['metadata'])) {
-            $registry = new JRegistry();
+            $registry = new Registry();
             $registry->loadArray($array['metadata']);
             $array['metadata'] = $registry->toString();
         }
@@ -225,7 +227,7 @@ class OSMapTableSitemap extends JTable
         $k = $this->_tbl_key;
 
         // Sanitize input.
-        JArrayHelper::toInteger($pks);
+        ArrayHelper::toInteger($pks);
         $userId = (int) $userId;
         $state  = (int) $state;
 
@@ -247,7 +249,7 @@ class OSMapTableSitemap extends JTable
         // Update the publishing state for rows with the given primary keys.
         $query =  $this->_db->getQuery(true)
             ->update($this->_db->quoteName('#__osmap_sitemaps'))
-            ->set($this->_db->quoteName('state').' = '. (int) $state)
+            ->set($this->_db->quoteName('state') . ' = ' . (int) $state)
             ->where($where);
 
         $this->_db->setQuery($query);
@@ -279,7 +281,7 @@ class OSMapTableSitemap extends JTable
     public function removeMenus()
     {
         if (!empty($this->id)) {
-            $db = OSMap\Factory::getDbo();
+            $db    = OSMap\Factory::getDbo();
             $query = $db->getQuery(true)
                 ->delete('#__osmap_sitemap_menus')
                 ->where('sitemap_id = ' . $db->quote($this->id));
