@@ -26,9 +26,7 @@ class Profiles extends DataController
 	{
 		$this->csrfProtection();
 
-		$user = $this->container->platform->getUser();
-
-		if (!$user->authorise('akeeba.configure', 'com_akeeba'))
+		if (!$this->container->platform->authorise('akeeba.configure', 'com_akeeba'))
 		{
 			throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 		}

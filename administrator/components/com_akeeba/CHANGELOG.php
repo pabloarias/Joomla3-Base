@@ -1,4 +1,20 @@
 <?php die();?>
+Akeeba Backup 5.2.5
+================================================================================
++ Alternative FTP post-processing engine and DirectFTP engine using cURL providing better compatibility with misconfigured and broken FTP servers
++ Alternative SFTP post-processing engine and DirectSFTP engine using cURL providing compatibility with a wide range of servers
+~ Anticipate and report database errors in more places while backing up MySQL databases
+~ Do not show the JPS password field in the Restoration page when not restoring JPS archives
+# [HIGH] Site Transfer Wizard does not work with single part backup archives
+# [HIGH] Outdated, end-of-life PHP 5.4.4 in old Debian distributions has a MAJOR bug resulting in file data not being backed up (zero length files). We've rewritten our code to work around the bug in this OLD, OUTDATED, END-OF-LIFE AND INSECURE version of PHP. PLEASE UPGRADE YOUR SERVERS. OLD PHP VERSIONS ARE **DANGEROUS**!!!
+# [MEDIUM] Dumping VIEW definers in newer MySQL versions can cause restoration issues when restoring to a new host
+# [MEDIUM] Dropbox: error while fetching the archive back from the server
+# [MEDIUM] Error restoring procedures, functions or triggers originally defined with inline MySQL comments
+# [LOW] Folders not added to archive when both their subdirectories and all their files are filtered.
+# [LOW] ALICE would display many false positives in the old backups detection step
+# [LOW] The quickicon plugin was sometimes not sure which Akeeba Backup version is installed on your site
+# [LOW] The "No Installer" option was accidentally removed
+
 Akeeba Backup 5.2.4
 ================================================================================
 + ALICE: Added check about old backups being included in the backup after changing your backup output directory

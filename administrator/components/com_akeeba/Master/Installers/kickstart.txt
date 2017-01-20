@@ -29,7 +29,7 @@
  */
 
 define('KICKSTART', 1);
-define('VERSION', '5.1.0');
+define('VERSION', 'rev58D7C90');
 define('KICKSTARTPRO', '0');
 // Uncomment the following line to enable Kickstart's debug mode
 //define('KSDEBUG', 1);
@@ -10550,7 +10550,7 @@ function echoHeadJavascript()
 		 */
 
 		var akeeba_update  = {version: '0'};
-		var akeeba_version = '5.1.0';
+		var akeeba_version = 'rev58D7C90';
 
 		function version_compare(v1, v2, operator)
 		{
@@ -10815,7 +10815,7 @@ function echoPage()
 		</div>
 
 		<div id="header">
-			<div class="title">Akeeba Kickstart <?php echo $edition ?> 5.1.0</div>
+			<div class="title">Akeeba Kickstart <?php echo $edition ?> rev58D7C90</div>
 		</div>
 
 		<div id="update-notification" style="display: none">
@@ -10909,7 +10909,7 @@ function echoPage()
 							<label for="kickstart.ftp.dir">FTP_DIR</label>
 				<span class="field">
                     <input type="text" id="kickstart.ftp.dir" value=""/>
-                    <span class="button" id="browseFTP" style="margin-top:0;margin-bottom:0">FTP_BROWSE</span>
+                    <?php //<span class="button" id="browseFTP" style="margin-top:0;margin-bottom:0">FTP_BROWSE</span> ?>
                 </span><br/>
 
 							<label for="kickstart.ftp.tempdir">FTP_TEMPDIR</label>
@@ -11366,7 +11366,7 @@ function kickstart_application_cli()
 	if (!$silent)
 	{
 		echo <<< BANNER
-Akeeba Kickstart CLI 5.1.0
+Akeeba Kickstart CLI rev58D7C90
 Copyright (c) 2010-$year Akeeba Ltd / Nicholas K. Dionysopoulos
 -------------------------------------------------------------------------------
 Akeeba Kickstart is Free Software, distributed under the terms of the GNU General
@@ -11913,7 +11913,6 @@ else
  */
 class AKFeatureURLImport
 {
-	private static $downloadPageURL = 'http://www.joomla.org/download.html';
 	private $params = array();
 
 	/**
@@ -12252,6 +12251,11 @@ class AKFeatureURLImport
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 					@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 
+					if (defined('AKEEBA_CACERT_PEM'))
+					{
+						curl_setopt($ch, CURLOPT_CAINFO, AKEEBA_CACERT_PEM);
+					}
+
 					$result = curl_exec($ch);
 
 					$errno       = curl_errno($ch);
@@ -12441,9 +12445,14 @@ class AKFeatureURLImport
 	private function getLatestJoomlaURL()
 	{
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, self::$downloadPageURL);
+		curl_setopt($ch, CURLOPT_URL, 'https://downloads.joomla.org/latest');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+		if (defined('AKEEBA_CACERT_PEM'))
+		{
+			curl_setopt($ch, CURLOPT_CAINFO, AKEEBA_CACERT_PEM);
+		}
 
 		$pageHTML    = curl_exec($ch);
 		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -12453,25 +12462,60 @@ class AKFeatureURLImport
 			return '';
 		}
 
-		$pos_start = stripos($pageHTML, 'class="download"');
+		// Convert HTML to XML
+		$dom = new DOMDocument();
+		$dom->loadHTML($pageHTML);
+		$xml = $dom->saveXML();
 
-		if ($pos_start === false)
+		// Load XML in a SimpleXMLElement
+		$doc = new SimpleXMLElement($xml);
+
+		// Find the download links for the ZIP format
+		$links = $doc->xpath("//a[contains(@href,'format=zip')]");
+		$dlLinkAttributes = $links[0]->attributes();
+
+		// Make it into an absolute URL and return it
+		return $this->resolveRedirect('https://downloads.joomla.org' . $dlLinkAttributes['href']);
+	}
+
+	private function resolveRedirect($url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_NOBODY, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HEADER, 1);
+		@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
+
+		if (defined('AKEEBA_CACERT_PEM'))
 		{
-			return '';
+			curl_setopt($ch, CURLOPT_CAINFO, AKEEBA_CACERT_PEM);
 		}
 
-		$pos_end = stripos($pageHTML, '>', $pos_start);
+		$headers     = curl_exec($ch);
+		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-		if ($pos_end === false)
+		if (($http_status < 300) || ($http_status > 399))
 		{
-			return '';
+			return $url;
 		}
 
-		$innerContent = substr($pageHTML, $pos_start, $pos_end - $pos_end - 1);
-		$pos_start    = stripos($innerContent, 'href="');
-		$pos_end      = stripos($innerContent, '"', $pos_start + 6);
+		$headers = explode("\r", $headers);
+		$headers = array_map('trim', $headers);
+		$newURL = '';
 
-		return substr($innerContent, $pos_start + 6, $pos_end - $pos_start - 6);
+		foreach ($headers as $line)
+		{
+			if (strpos($line, 'Location') === false)
+			{
+				continue;
+			}
+
+			list($junk, $newURL) = explode(':', $line, 2);
+			$newURL = trim($newURL);
+		}
+
+		return $this->resolveRedirect($newURL);
 	}
 
 	public function onLoadTranslations()

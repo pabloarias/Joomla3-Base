@@ -449,7 +449,7 @@ abstract class BaseArchiver extends BaseFileManagement
 			// The compression succeeded
 			unset($udata);
 			$compressionMethod = 1;
-			$zdata             = aksubstr(aksubstr($zdata, 0, -4), 2);
+			$zdata             = aksubstr($zdata, 2, -4);
 			$c_len             = akstrlen($zdata);
 		}
 	}
