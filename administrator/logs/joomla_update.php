@@ -21,3 +21,11 @@
 2016-11-09T23:07:58+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
 2016-11-09T23:07:58+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
 2016-11-09T23:07:58+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.6.4 se ha completado.
+2017-01-20T21:59:36+00:00	INFO 127.0.0.1	update	Actualización inciciadoa por el usuario Super User (999). La versión antigua es la 3.6.4.
+2017-01-20T21:59:36+00:00	INFO 127.0.0.1	update	Descargando el archivo desde https://downloads.joomla.org/cms/joomla3/3-6-5/Joomla_3.6.5-Stable-Update_Package.zip.
+2017-01-20T22:01:26+00:00	INFO 127.0.0.1	update	El archivoe Joomla_3.6.5-Stable-Update_Package.zip se ha descargado correctamente.
+2017-01-20T22:01:26+00:00	INFO 127.0.0.1	update	Iniciando la instalación de la versión nueva.
+2017-01-20T22:01:28+00:00	INFO 127.0.0.1	update	Finalizando la instalación.
+2017-01-20T22:01:28+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
+2017-01-20T22:01:28+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
+2017-01-20T22:01:29+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.6.5 se ha completado.
