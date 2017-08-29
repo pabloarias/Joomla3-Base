@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -17,6 +17,7 @@ use FOF30\Template\Template;
 use FOF30\TransparentAuthentication\TransparentAuthentication as TransparentAuth;
 use FOF30\View\Compiler\Blade;
 use JDatabaseDriver;
+use Joomla\Registry\Registry;
 use JSession;
 
 defined('_JEXEC') or die;
@@ -79,6 +80,24 @@ class Container extends ContainerBase
 	 * @var   array
 	 */
 	protected static $instances = array();
+
+	/**
+	 * The container SHOULD NEVER been serialised. If this happens, it means that any of the installed version is doing
+	 * something REALLY BAD, so let's die and inform the user of what it's going on.
+	 */
+	public function __sleep()
+	{
+		$msg = <<< END
+Something on your site, most likely a highly insecure JoomlaShine template, is broken and tries to save the plugin state 
+in the cache. This is a major security issue and will cause your site to not work properly. Go to your site's backend,
+Global Configuration and set Caching to OFF as a temporary solution. If you are using a JoomlaShine template contact
+them and ask for a full refund. They are aware of this major security issue since May 2017 and refuse to fix it. The
+only solution in this case is using a template from a different provider, preferably one who knows how to write secure 
+code - unlike JoomlaShine.
+END;
+
+		die($msg);
+	}
 
 	/**
 	 * Returns a container instance for a specific component. This method goes through fof.xml to read the default
@@ -752,7 +771,16 @@ class Container extends ContainerBase
 			$db->setQuery($query);
 
 			$json = $db->loadResult();
-			$params = new \JRegistry($json);
+
+			if (class_exists('JRegistry'))
+			{
+				$params = new \JRegistry($json);
+			}
+			else
+			{
+				$params = new Registry($json);
+			}
+
 			$version = $params->get('version', $version);
 			$date = $params->get('creationDate', $date);
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -9,8 +9,6 @@
 defined('_JEXEC') or die();
 
 /** @var  $this  \Akeeba\Backup\Admin\View\Backup\Html */
-
-use Akeeba\Engine\Platform;
 
 ?>
 <?php /* Configuration Wizard pop-up */ ?>
@@ -64,7 +62,7 @@ use Akeeba\Engine\Platform;
 		<input type="hidden" name="returnurl" value="<?php echo $this->returnURL; ?>"/>
 		<input type="hidden" name="description" id="flipDescription" value=""/>
 		<input type="hidden" name="comment" id="flipComment" value=""/>
-		<input type="hidden" name="<?php echo \JFactory::getSession()->getFormToken(); ?>" value="1"/>
+		<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
 		<label>
 			<?php echo \JText::_('COM_AKEEBA_CPANEL_PROFILE_TITLE'); ?>: #<?php echo $this->profileid; ?>
@@ -191,11 +189,11 @@ use Akeeba\Engine\Platform;
 			</p>
 
 			<?php if(empty($this->returnURL)): ?>
-			<a class="btn btn-primary btn-large" href="<?php echo JUri::base() ?>index.php?option=com_akeeba&view=Manage">
+			<a class="btn btn-primary btn-large" href="index.php?option=com_akeeba&view=Manage">
 				<span class="icon-stack icon-white"></span>
 				<?php echo \JText::_('COM_AKEEBA_BUADMIN'); ?>
 			</a>
-			<a class="btn" id="ab-viewlog-success" href="<?php echo JUri::base() ?>index.php?option=com_akeeba&view=Log&latest=1">
+			<a class="btn" id="ab-viewlog-success" href="index.php?option=com_akeeba&view=Log&latest=1">
 				<span class="icon-list"></span>
 				<?php echo \JText::_('COM_AKEEBA_LOG'); ?>
 			</a>

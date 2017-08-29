@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -213,38 +213,6 @@ abstract class Base extends BaseObject
 		}
 
 		return true;
-	}
-
-	/**
-	 * Overrides setWarning() in order to also write the warning  message to the log file
-	 *
-	 * @param   string $warning The warning message
-	 *
-	 * @codeCoverageIgnore
-	 *
-	 * @return  void
-	 */
-	public function setWarning($warning)
-	{
-		parent::setWarning($warning);
-
-		Factory::getLog()->log(LogLevel::WARNING, $warning);
-	}
-
-	/**
-	 * Overrides setError() in order to also write the error message to the log file
-	 *
-	 * @param   string $error The error message
-	 *
-	 * @codeCoverageIgnore
-	 *
-	 * @return  void
-	 */
-	public function setError($error)
-	{
-		parent::setError($error);
-
-		Factory::getLog()->log(LogLevel::ERROR, $error);
 	}
 
 	/**

@@ -2,7 +2,7 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -32,6 +32,26 @@ use Psr\Log\LogLevel;
  */
 class Postgresql extends NativeMysql
 {
+	/**
+	 * Return the current database name by querying the database connection object (e.g. SELECT DATABASE() in MySQL)
+	 *
+	 * @return  string
+	 */
+	protected function getDatabaseNameFromConnection()
+	{
+		$db = $this->getDB();
+
+		try
+		{
+			$ret = $db->setQuery('SELECT current_database()')->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			return '';
+		}
+
+		return empty($ret) ? '' : $ret;
+	}
 
 	/**
 	 * Implements the constructor of the class
@@ -60,6 +80,7 @@ class Postgresql extends NativeMysql
 
 		// First, get a map of table names <--> abstract names
 		$this->reverse_engineer_db();
+
 		if ($this->getError())
 		{
 			return;
@@ -80,7 +101,7 @@ class Postgresql extends NativeMysql
 		}
 	}
 
-	protected function  reverse_engineer_db()
+	protected function reverse_engineer_db()
 	{
 		// Get a database connection
 		Factory::getLog()->log(LogLevel::DEBUG, __CLASS__ . " :: Reverse engineering database");
@@ -101,7 +122,9 @@ class Postgresql extends NativeMysql
 
 		if (!$dbi->select('information_schema'))
 		{
-			Factory::getLog()->log(LogLevel::ERROR, __CLASS__ . " :: Could not connect to the INFORMATION_SCHEMA database");
+			$this->setError(__CLASS__ . " :: Could not connect to the INFORMATION_SCHEMA database");
+
+			return;
 		}
 
 		// Get the list of all database tables and views
@@ -159,10 +182,7 @@ class Postgresql extends NativeMysql
 				// Filter and convert
 				if (substr($table_name, 0, 3) == '#__')
 				{
-					$warningMessage =
-						__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.";
-					$this->setWarning($warningMessage);
-					Factory::getLog()->log(LogLevel::WARNING, $warningMessage);
+					$this->setWarning(__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.");
 
 					continue;
 				}
@@ -525,10 +545,8 @@ class Postgresql extends NativeMysql
 				// Filter and convert
 				if (substr($table_name, 0, 3) == '#__')
 				{
-					$warningMessage =
-						__CLASS__ . " :: View $table_name has a prefix of #__. This would cause restoration errors; table skipped.";
-					$this->setWarning($warningMessage);
-					Factory::getLog()->log(LogLevel::WARNING, $warningMessage);
+					$this->setWarning(__CLASS__ . " :: View $table_name has a prefix of #__. This would cause restoration errors; table skipped.");
+
 					continue;
 				}
 				$table_abstract = $this->getAbstract($table_name);
@@ -644,7 +662,15 @@ class Postgresql extends NativeMysql
 				$pos = strpos($restOfQuery, ' ', 1);
 				$tableName = substr($restOfQuery, 1, $pos - 1);
 			}
+
 			unset($restOfQuery);
+
+			/**
+			 * Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones.
+			 * Possibly not affecting PostgreSQL but we'd better be safe than sorry.
+			 */
+			$tableName = str_replace(array("\r", "\n"), array('', ''), $tableName);
+
 			// Try to drop the table anyway
 			$dropQuery = 'DROP TABLE IF EXISTS ' . $db->qn($tableName) . ';';
 		}
@@ -667,7 +693,15 @@ class Postgresql extends NativeMysql
 				$pos = strpos($restOfQuery, ' ', 1);
 				$tableName = substr($restOfQuery, 1, $pos - 1);
 			}
+
 			unset($restOfQuery);
+
+			/**
+			 * Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones.
+			 * Possibly not affecting PostgreSQL but we'd better be safe than sorry.
+			 */
+			$tableName = str_replace(array("\r", "\n"), array('', ''), $tableName);
+
 			$dropQuery = 'DROP TABLE IF EXISTS ' . $db->qn($tableName) . ';';
 		}
 

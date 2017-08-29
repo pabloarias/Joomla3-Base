@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -188,7 +188,7 @@ class Zip extends BaseArchiver
 			 *
 			 * This would require parsing the CD temp file to prevent any CD record from spanning across two parts.
 			 * But how many bytes is each CD record? It's about 100 bytes per file which gives us about 10,400 files
-			 * per Mb. Even a 2Mb part size holds more than 20,000 file records. A typical 10Mb part size holds more
+			 * per MB. Even a 2MB part size holds more than 20,000 file records. A typical 10Mb part size holds more
 			 * files than the largest backup I've ever seen. Therefore there is no need to waste computational power
 			 * to see if we need to span the Central Directory between parts.
 			 */

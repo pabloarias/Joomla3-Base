@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -31,6 +31,26 @@ use Psr\Log\LogLevel;
  */
 class Mysql extends Base
 {
+	/**
+	 * Return the current database name by querying the database connection object (e.g. SELECT DATABASE() in MySQL)
+	 *
+	 * @return  string
+	 */
+	protected function getDatabaseNameFromConnection()
+	{
+		$db = $this->getDB();
+
+		try
+		{
+			$ret = $db->setQuery('SELECT DATABASE()')->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			return '';
+		}
+
+		return empty($ret) ? '' : $ret;
+	}
 
 	/**
 	 * The primary key structure of the currently backed up table. The keys contained are:
@@ -58,7 +78,7 @@ class Mysql extends Base
 
 	/**
 	 * Applies the SQL compatibility setting
-	 * 
+	 *
 	 * @return  void
 	 */
 	protected function enforceSQLCompatibility()
@@ -125,6 +145,9 @@ class Mysql extends Base
 		$this->setSubstep('');
 		$tableAbstract = trim($this->table_name_map[ $tableName ]);
 		$dump_records  = $this->tables_data[ $tableName ]['dump_records'];
+
+		// Restore any previously information about the largest query we had to run
+		$this->largest_query = Factory::getConfiguration()->get('volatile.database.largest_query', 0);
 
 		// If it is the first run, find number of rows and get the CREATE TABLE command
 		if ($this->nextRange == 0)
@@ -236,18 +259,15 @@ class Mysql extends Base
 			}
 		}
 
+		// Load the active database root
+		$configuration    = Factory::getConfiguration();
+		$dbRoot           = $configuration->get('volatile.database.root', '[SITEDB]');
+
+		// Get the default and the current (optimal) batch size
+		$defaultBatchSize = $this->getDefaultBatchSize();
+		$batchSize        = $configuration->get('volatile.database.batchsize', $defaultBatchSize);
+
 		// Check if we have more work to do on this table
-		$configuration = Factory::getConfiguration();
-		$batchsize     = intval($configuration->get('engine.dump.common.batchsize', 1000));
-
-		if ($batchsize <= 0)
-		{
-			$batchsize = 1000;
-		}
-
-		$dbRoot                    = $configuration->get('volatile.database.root', '[SITEDB]');
-		$lastTableWithLargeColumns = $configuration->get('volatile.database.last_large_col_table', '');
-
 		if (($this->nextRange < $this->maxRange))
 		{
 			$timer = Factory::getTimer();
@@ -264,9 +284,14 @@ class Mysql extends Base
 
 			if ($this->nextRange == 0)
 			{
+				// Get the optimal batch size for this table and save it to the volatile data
+				$batchSize = $this->getOptimalBatchSize($tableAbstract, $defaultBatchSize);
+				$configuration->set('volatile.database.batchsize', $batchSize);
+
 				// First run, get a cursor to all records
-				$db->setQuery($sql, 0, $batchsize);
+				$db->setQuery($sql, 0, $batchSize);
 				Factory::getLog()->log(LogLevel::INFO, "Beginning dump of " . $tableAbstract);
+				Factory::getLog()->log(LogLevel::DEBUG, "Up to $batchSize records will be read at once.");
 			}
 			else
 			{
@@ -279,13 +304,13 @@ class Mysql extends Base
 					Factory::getLog()
 					       ->log(LogLevel::INFO, "Continuing dump of " . $tableAbstract . " from record #{$this->nextRange} using auto_increment column {$this->table_autoincrement['field']} and value {$this->table_autoincrement['value']}");
 					$sql->where($db->qn($this->table_autoincrement['field']) . ' > ' . $db->q($this->table_autoincrement['value']));
-					$db->setQuery($sql, 0, $batchsize);
+					$db->setQuery($sql, 0, $batchSize);
 				}
 				else
 				{
 					Factory::getLog()
 					       ->log(LogLevel::INFO, "Continuing dump of " . $tableAbstract . " from record #{$this->nextRange}");
-					$db->setQuery($sql, $this->nextRange, $batchsize);
+					$db->setQuery($sql, $this->nextRange, $batchSize);
 				}
 			}
 
@@ -317,7 +342,21 @@ class Mysql extends Base
 
 			while (is_array($myRow = $db->fetchAssoc()) && ($numRows < ($this->maxRange - $this->nextRange)))
 			{
-				$this->createNewPartIfRequired();
+				if ($this->createNewPartIfRequired() == false)
+				{
+					/**
+					 * When createNewPartIfRequired returns false it means that we have began adding a SQL part to the
+					 * backup archive but it hasn't finished. If we don't return here, the code below will keep adding
+					 * data to that dump file. Yes, despite being closed. When you call writeDump the file is reopened.
+					 * As a result of writing data of length Y, the file that had a size X now has a size of X + Y. This
+					 * means that the loop in BaseArchiver which tries to add it to the archive will never see its End
+					 * Of File since we are trying to resume the backup from *beyond* the file position that was
+					 * recorded as the file size. The archive can detect a file shrinking but not a file growing!
+					 * Therefore we hit an infinite loop a.k.a. runaway backup.
+					 */
+					return;
+				}
+
 				$numRows ++;
 				$numOfFields = count($myRow);
 
@@ -416,22 +455,6 @@ class Mysql extends Base
 						}
 						else
 						{
-							// Check whether any column contains large amounts of data which could create restoration issues
-							if ($lastTableWithLargeColumns != $tableName)
-							{
-								$columnSize = strlen($value);
-
-								if ($columnSize >= 1024 * 1024)
-								{
-									$warningMessage = "Column $fieldName of table $tableAbstract contains $columnSize bytes of data. This may cause restoration issues.";
-									Factory::getLog()->log(LogLevel::WARNING, $warningMessage);
-									$this->setWarning($warningMessage);
-
-									$configuration->set('volatile.database.last_large_col_table', $tableName);
-									$lastTableWithLargeColumns = $tableName;
-								}
-							}
-
 							// Accommodate for runtime magic quotes
 							if (function_exists('get_magic_quotes_runtime'))
 							{
@@ -604,7 +627,13 @@ class Mysql extends Base
 				$this->setSubstep('');
 				$this->nextTable = '';
 				$this->nextRange = 0;
-				$configuration->set('volatile.database.last_large_col_table', '');
+
+				// At the end of the database dump, if any query was longer than 1Mb, let's put a warning file in the installation folder
+				if ($this->largest_query >= 1024 * 1024)
+				{
+					$archive = Factory::getArchiverEngine();
+					$archive->addVirtualFile('large_tables_detected', $this->installerSettings->installerroot, $this->largest_query);
+				}
 			}
 			elseif (count($this->tables) != 0)
 			{
@@ -762,10 +791,8 @@ class Mysql extends Base
 		{
 			if (substr($table_name, 0, 3) == '#__')
 			{
-				$warningMessage =
-					__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.";
-				$this->setWarning($warningMessage);
-				Factory::getLog()->log(LogLevel::WARNING, $warningMessage);
+				$this->setWarning(__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.");
+
 				continue;
 			}
 
@@ -1312,10 +1339,8 @@ class Mysql extends Base
 			// If the query failed we don't have the necessary SHOW privilege. Log the error and fake an empty reply.
 			$entityType = ($type == 'merge') ? 'table' : $type;
 			$msg = $e->getMessage();
-			$warningMessage =
-				"Cannot get the structure of $entityType $table_abstract. Database returned error $msg running $sql  Please check your database privileges. Your database backup may be incomplete.";
-			$this->setWarning($warningMessage);
-			Factory::getLog()->log(LogLevel::WARNING, $warningMessage);
+			$this->setWarning("Cannot get the structure of $entityType $table_abstract. Database returned error $msg running $sql  Please check your database privileges. Your database backup may be incomplete.");
+
 			$db->resetErrors();
 
 			$temp = array(
@@ -1415,6 +1440,13 @@ class Mysql extends Base
 			$old_table_sql = $table_sql;
 		}
 
+		// Replace the table name with the abstract version.
+		// We have to quote the table name. If we don't we'll get wrong results. Imagine that you have a column whose name starts
+		// with the string literal of the table name itself.
+		// Example: table `poll`, column `poll_id` would become #__poll, #__poll_id
+		// By quoting before we make sure this won't happen.
+		$table_sql = str_replace($db->quoteName($table_name), $db->quoteName($table_abstract), $table_sql);
+
 		// Return dependency information only if dependency tracking is enabled
 		if (!$notracking)
 		{
@@ -1423,12 +1455,6 @@ class Mysql extends Base
 			// as well. On views and merge arrays, we have referenced tables
 			// by definition.
 			$dependencies = array();
-
-			// First, the table/view/merge table name itself:
-			// We have to quote the table name, otherwise if we have a column name that starts with the same name of the
-			// table we will have wrong results
-			// Example: table `poll`, columns `poll_id` will become #__poll, #__poll_id
-			$table_sql = str_replace($db->quoteName($table_name), $db->quoteName($table_abstract), $table_sql);
 
 			// Now, loop for all table entries
 			foreach ($this->table_name_map as $ref_normal => $ref_abstract)
@@ -1461,6 +1487,20 @@ class Mysql extends Base
 		$table_sql = str_replace("\n", " ", $table_sql) . ";\n";
 		$table_sql = str_replace("\r", " ", $table_sql);
 		$table_sql = str_replace("\t", " ", $table_sql);
+
+		/**
+		 * Views, procedures, functions and triggers may contain the database name followed by the table name, always
+		 * quoted e.g. `db`.`table_name`  We need to replace all these instances with just the table name. The only
+		 * reliable way to do that is to look for "`db`.`" and replace it with "`"
+		 */
+		if (in_array($type, array('view', 'procedure', 'function', 'trigger')))
+		{
+			$dbName      = $db->qn($this->getDatabaseName());
+			$dummyQuote  = $db->qn('foo');
+			$findWhat    = $dbName . '.' . substr($dummyQuote, 0, 1);
+			$replaceWith = substr($dummyQuote, 0, 1);
+			$table_sql   = str_replace($findWhat, $replaceWith, $table_sql);
+		}
 
 		// Post-process CREATE VIEW
 		if ($type == 'view')
@@ -1518,16 +1558,25 @@ class Mysql extends Base
 		{
 			if (($type == 'table') || ($type == 'merge'))
 			{
+				// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+				$table_name = str_replace(array("\r", "\n"), array('', ''), $table_name);
+
 				// Table or merge tables, get a DROP TABLE statement
 				$drop = "DROP TABLE IF EXISTS " . $db->quoteName($table_name) . ";\n";
 			}
 			elseif ($type == 'view')
 			{
+				// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+				$table_name = str_replace(array("\r", "\n"), array('', ''), $table_name);
+
 				// Views get a DROP VIEW statement
 				$drop = "DROP VIEW IF EXISTS " . $db->quoteName($table_name) . ";\n";
 			}
 			elseif ($type == 'procedure')
 			{
+				// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+				$table_name = str_replace(array("\r", "\n"), array('', ''), $table_name);
+
 				// Procedures get a DROP PROCEDURE statement and proper delimiter strings
 				$drop = "DROP PROCEDURE IF EXISTS " . $db->quoteName($table_name) . ";\n";
 				$drop .= "DELIMITER // ";
@@ -1537,6 +1586,9 @@ class Mysql extends Base
 			}
 			elseif ($type == 'function')
 			{
+				// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+				$table_name = str_replace(array("\r", "\n"), array('', ''), $table_name);
+
 				// Procedures get a DROP FUNCTION statement and proper delimiter strings
 				$drop = "DROP FUNCTION IF EXISTS " . $db->quoteName($table_name) . ";\n";
 				$drop .= "DELIMITER // ";
@@ -1545,6 +1597,9 @@ class Mysql extends Base
 			}
 			elseif ($type == 'trigger')
 			{
+				// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+				$table_name = str_replace(array("\r", "\n"), array('', ''), $table_name);
+
 				// Procedures get a DROP TRIGGER statement and proper delimiter strings
 				$drop = "DROP TRIGGER IF EXISTS " . $db->quoteName($table_name) . ";\n";
 				$drop .= "DELIMITER // ";
@@ -1723,6 +1778,9 @@ class Mysql extends Base
 
 			unset($restOfQuery);
 
+			// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+			$tableName = str_replace(array("\r", "\n"), array('', ''), $tableName);
+
 			// Try to drop the table anyway
 			$dropQuery = 'DROP TABLE IF EXISTS ' . $db->nameQuote($tableName) . ';';
 		}
@@ -1748,6 +1806,9 @@ class Mysql extends Base
 			}
 
 			unset($restOfQuery);
+
+			// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+			$tableName = str_replace(array("\r", "\n"), array('', ''), $tableName);
 
 			$dropQuery = 'DROP VIEW IF EXISTS ' . $db->nameQuote($tableName) . ';';
 		}
@@ -1775,6 +1836,9 @@ class Mysql extends Base
 
 			unset($restOfQuery);
 
+			// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+			$entity_name = str_replace(array("\r", "\n"), array('', ''), $entity_name);
+
 			$dropQuery = 'DROP' . $entity_keyword . 'IF EXISTS `' . $entity_name . '`;';
 		}
 		// CREATE FUNCTION pre-processing
@@ -1800,6 +1864,9 @@ class Mysql extends Base
 			}
 
 			unset($restOfQuery);
+
+			// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+			$entity_name = str_replace(array("\r", "\n"), array('', ''), $entity_name);
 
 			// Try to drop the entity anyway
 			$dropQuery = 'DROP' . $entity_keyword . 'IF EXISTS `' . $entity_name . '`;';
@@ -1827,6 +1894,9 @@ class Mysql extends Base
 			}
 
 			unset($restOfQuery);
+
+			// Defense against CVE-2016-5483 ("Bad Dump") affecting MySQL, Percona, MariaDB and other MySQL clones
+			$entity_name = str_replace(array("\r", "\n"), array('', ''), $entity_name);
 
 			// Try to drop the entity anyway
 			$dropQuery = 'DROP' . $entity_keyword . 'IF EXISTS `' . $entity_name . '`;';
@@ -1876,5 +1946,124 @@ class Mysql extends Base
 		$sqlComments = '@(([\'"]).*?[^\\\]\2)|((?:\#|--).*?$|/\*(?:[^/*]|/(?!\*)|\*(?!/)|(?R))*\*\/)\s*|(?<=;)\s+@ms';
 
 		return preg_replace($sqlComments, '$1', $sql);
+	}
+
+	/**
+	 * Get the default database dump batch size from the configuration
+	 *
+	 * @return  int
+	 */
+	protected function getDefaultBatchSize()
+	{
+		static $batchSize = null;
+
+		if (is_null($batchSize))
+		{
+			$configuration = Factory::getConfiguration();
+			$batchSize = intval($configuration->get('engine.dump.common.batchsize', 1000));
+
+			if ($batchSize <= 0)
+			{
+				$batchSize = 1000;
+			}
+		}
+
+		return $batchSize;
+	}
+
+	/**
+	 * Get the optimal row batch size for a given table based on the available memory
+	 *
+	 * @param   string  $tableAbstract     The abstract table name, e.g. #__foobar
+	 * @param   int     $defaultBatchSize  The default row batch size in the application configuration
+	 *
+	 * @return  int
+	 */
+	protected function getOptimalBatchSize($tableAbstract, $defaultBatchSize)
+	{
+		$db = $this->getDB();
+
+		try
+		{
+			$info = $db->setQuery('SHOW TABLE STATUS LIKE ' . $db->q($tableAbstract))->loadAssoc();
+		}
+		catch (\Exception $e)
+		{
+			return $defaultBatchSize;
+		}
+
+		if (!isset($info['Avg_row_length']) || empty($info['Avg_row_length']))
+		{
+			return $defaultBatchSize;
+		}
+
+		// That's the average row size as reported by MySQL.
+		$avgRow      = str_replace(array(',', '.'), array('', ''), $info['Avg_row_length']);
+		// The memory available for manipulating data is less than the free memory
+		$memoryLimit = $this->getMemoryLimit();
+		$memoryLimit = empty($memoryLimit) ? 33554432 : $memoryLimit;
+		$usedMemory  = memory_get_usage();
+		$memoryLeft  = 0.75 * ($memoryLimit - $usedMemory);
+		// The 3.25 factor is empirical and leans on the safe side.
+		$maxRows     = (int) ($memoryLeft / (3.25 * $avgRow));
+
+		return max(1, min($maxRows, $defaultBatchSize));
+	}
+
+	/**
+	 * Converts a human formatted size to integer representation of bytes,
+	 * e.g. 1M to 1024768
+	 *
+	 * @param   string  $setting  The value in human readable format, e.g. "1M"
+	 *
+	 * @return  integer  The value in bytes
+	 */
+	protected function humanToIntegerBytes($setting)
+	{
+		$val = trim($setting);
+		$last = strtolower($val{strlen($val) - 1});
+
+		if (is_numeric($last))
+		{
+			return $setting;
+		}
+
+		switch ($last)
+		{
+			case 't':
+				$val *= 1024;
+			case 'g':
+				$val *= 1024;
+			case 'm':
+				$val *= 1024;
+			case 'k':
+				$val *= 1024;
+		}
+
+		return (int) $val;
+	}
+
+	/**
+	 * Get the PHP memory limit in bytes
+	 *
+	 * @return int|null  Memory limit in bytes or null if we can't figure it out.
+	 */
+	protected function getMemoryLimit()
+	{
+		if (!function_exists('ini_get'))
+		{
+			return null;
+		}
+
+		$memLimit = ini_get("memory_limit");
+
+		if ((is_numeric($memLimit) && ($memLimit < 0)) || !is_numeric($memLimit))
+		{
+			$memLimit = 0; // 1.2a3 -- Rare case with memory_limit < 0, e.g. -1Mb!
+		}
+
+		$memLimit = $this->humanToIntegerBytes($memLimit);
+
+		return $memLimit;
 	}
 }

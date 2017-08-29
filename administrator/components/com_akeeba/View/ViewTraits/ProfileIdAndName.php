@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -53,7 +53,7 @@ trait ProfileIdAndName
 		}
 		catch (\Exception $e)
 		{
-			$this->container->session->set('profile', 1, 'akeeba');
+			$this->container->platform->setSessionVar('profile', 1, 'akeeba');
 
 			$this->profileid   = 1;
 			$this->profilename = $profilesModel->findOrFail(1)->description;

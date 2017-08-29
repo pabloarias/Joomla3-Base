@@ -1,13 +1,15 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 defined('_JEXEC') or die();
 
 use Akeeba\Engine\Factory;
+
+/** @var Akeeba\Backup\Admin\View\Profiles\Json $this */
 
 $data = $this->item->getData();
 

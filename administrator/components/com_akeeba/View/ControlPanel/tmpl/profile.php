@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -25,7 +25,7 @@ defined('_JEXEC') or die();
 	<?php if(isset($returnURL)): ?>
 	<input type="hidden" name="returnurl" value="<?php echo $returnURL; ?>" />
 	<?php endif; ?>
-	<input type="hidden" name="<?php echo \JFactory::getSession()->getFormToken(); ?>" value="1" />
+	<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1" />
 	<label>
 		<?php echo \JText::_('COM_AKEEBA_CPANEL_PROFILE_TITLE'); ?>: #<?php echo $this->profileid; ?>
 

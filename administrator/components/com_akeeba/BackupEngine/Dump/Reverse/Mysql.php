@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -153,10 +153,8 @@ class Mysql extends NativeMysql
 				// Filter and convert
 				if (substr($table_name, 0, 3) == '#__')
 				{
-					$warningMessage =
-						__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.";
-					$this->setWarning($warningMessage);
-					Factory::getLog()->log(LogLevel::WARNING, $warningMessage);
+					$this->setWarning(__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.");
+
 					continue;
 				}
 				$table_abstract = $this->getAbstract($table_name);
@@ -512,10 +510,8 @@ class Mysql extends NativeMysql
 				// Filter and convert
 				if (substr($table_name, 0, 3) == '#__')
 				{
-					$warningMessage =
-						__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.";
-					$this->setWarning($warningMessage);
-					Factory::getLog()->log(LogLevel::WARNING, $warningMessage);
+					$this->setWarning(__CLASS__ . " :: Table $table_name has a prefix of #__. This would cause restoration errors; table skipped.");
+
 					continue;
 				}
 				$table_abstract = $this->getAbstract($table_name);

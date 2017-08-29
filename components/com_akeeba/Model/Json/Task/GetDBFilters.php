@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -54,8 +54,7 @@ class GetDBFilters extends AbstractTask
 			throw new \RuntimeException('Unknown database root', 500);
 		}
 
-		$session = $this->container->session;
-		$session->set('profile', $profile);
+		$this->container->platform->setSessionVar('profile', $profile);
 
 		// Load the configuration
 		Platform::getInstance()->load_configuration($profile);

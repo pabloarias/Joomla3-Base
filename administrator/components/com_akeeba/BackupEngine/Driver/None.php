@@ -2,7 +2,7 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -15,9 +15,6 @@ namespace Akeeba\Engine\Driver;
 defined('AKEEBAENGINE') or die();
 
 use Akeeba\Engine\Driver\Query\Base as QueryBase;
-use Akeeba\Engine\Driver\Query\Limitable;
-use Akeeba\Engine\Driver\Query\Preparable;
-use SQLite3;
 
 /**
  * Dummy driver class for flat-file CMS

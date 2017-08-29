@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -26,9 +26,11 @@ class Transfer extends Model
 	/**
 	 * Get the information for the latest backup
 	 *
-	 * @return   array|null  An array of backup record information or null if there is no usable backup for site transfer
+	 * @param   $profileID  int|null  The profile ID for which to get the latest backup. Set to null to search all profiles.
+	 *
+	 * @return  array|null  An array of backup record information or null if there is no usable backup for site transfer
 	 */
-	public function getLatestBackupInformation()
+	public function getLatestBackupInformation($profileID = null)
 	{
 		// Initialise
 		$ret = null;
@@ -39,6 +41,12 @@ class Transfer extends Model
 		$model = $this->container->factory->model('Statistics')->tmpInstance();
 		$model->setState('limitstart', 0);
 		$model->setState('limit', 1);
+
+		if ($profileID > 0)
+		{
+			$model->setState('profile_id', $profileID);
+		}
+
 		$backups = $model->getStatisticsListWithMeta(false, null, $db->qn('id') . ' DESC');
 
 		// No valid backups? No joy.
@@ -86,7 +94,7 @@ class Transfer extends Model
 
 		$approximateSize = 2.5 * (float) $backup['size'];
 
-		$unit	 = array('b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb');
+		$unit	 = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
 
 		return [
 			'size'   => $approximateSize,
@@ -397,7 +405,7 @@ class Transfer extends Model
 		}
 
 		// Get the lowest maximum execution time between our local and remote server
-		$remoteTimeout = $this->container->session->get('transfer.remoteTimeLimit', 5, 'akeeba');
+		$remoteTimeout = $this->container->platform->getSessionVar('transfer.remoteTimeLimit', 5, 'akeeba');
 		$localTimeout = 5;
 
 		if (function_exists('ini_get'))
@@ -435,11 +443,11 @@ class Transfer extends Model
 		 * upload size (minus 10Kb for overhead data)
 		 */
 		$chunkSizeLimit = $this->getMaxChunkSize();
-		$maxUploadLimit = $this->container->session->get('transfer.uploadLimit', 1048576, 'akeeba') - 10240;
+		$maxUploadLimit = $this->container->platform->getSessionVar('transfer.uploadLimit', 1048576, 'akeeba') - 10240;
 		$maxTransferSize = min($maxUploadLimit, $maxTransferSize, $chunkSizeLimit);
 
 		// Save the optimal transfer size in the session
-		$this->container->session->set('transfer.fragSize', $maxTransferSize, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.fragSize', $maxTransferSize, 'akeeba');
 	}
 
 	/**
@@ -462,19 +470,18 @@ class Transfer extends Model
 		];
 
 		// Get information from the session
-		$session    = $this->container->session;
-		$fragSize   = $session->get('transfer.fragSize', 5242880, 'akeeba');
-		$backup     = $session->get('transfer.lastBackup', [], 'akeeba');
-		$totalSize  = $session->get('transfer.totalSize', 0, 'akeeba');
-		$doneSize   = $session->get('transfer.doneSize', 0, 'akeeba');
-		$part       = $session->get('transfer.part', -1, 'akeeba');
-		$frag       = $session->get('transfer.frag', -1, 'akeeba');
+		$fragSize   = $this->container->platform->getSessionVar('transfer.fragSize', 5242880, 'akeeba');
+		$backup     = $this->container->platform->getSessionVar('transfer.lastBackup', [], 'akeeba');
+		$totalSize  = $this->container->platform->getSessionVar('transfer.totalSize', 0, 'akeeba');
+		$doneSize   = $this->container->platform->getSessionVar('transfer.doneSize', 0, 'akeeba');
+		$part       = $this->container->platform->getSessionVar('transfer.part', -1, 'akeeba');
+		$frag       = $this->container->platform->getSessionVar('transfer.frag', -1, 'akeeba');
 
 		// Do I need to update the total size?
 		if (!$totalSize)
 		{
 			$totalSize = $backup['total_size'];
-			$session->set('transfer.totalSize', $totalSize, 'akeeba');
+			$this->container->platform->setSessionVar('transfer.totalSize', $totalSize, 'akeeba');
 		}
 
 		$ret['totalSize'] = $totalSize;
@@ -514,7 +521,7 @@ class Transfer extends Model
 		// I am trying to seek past EOF. Oops. Upload the next part.
 		if ($intendedSeekPosition >= $fileSize)
 		{
-			$session->set('transfer.frag', -1, 'akeeba');
+			$this->container->platform->setSessionVar('transfer.frag', -1, 'akeeba');
 			return $this->uploadChunk($config);
 		}
 
@@ -544,12 +551,11 @@ class Transfer extends Model
 		$data = fread($fp, $fragSize);
 		$doneSize += strlen($data);
 		$ret['doneSize'] = $doneSize;
-		$session->set('transfer.doneSize', $doneSize, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.doneSize', $doneSize, 'akeeba');
 
 		// Upload the data
-		$session = $this->container->session;
-		$url = $session->get('transfer.url', '', 'akeeba');
-		$directory = $session->get('transfer.targetPath', '', 'akeeba');
+		$url = $this->container->platform->getSessionVar('transfer.url', '', 'akeeba');
+		$directory = $this->container->platform->getSessionVar('transfer.targetPath', '', 'akeeba');
 
 		$url = rtrim($url, '/') . '/kickstart.php';
 		$uri = JUri::getInstance($url);
@@ -611,19 +617,19 @@ class Transfer extends Model
 		}
 
 		// Update the session data
-		$session->set('transfer.fragSize', $fragSize, 'akeeba');
-		$session->set('transfer.totalSize', $totalSize, 'akeeba');
-		$session->set('transfer.doneSize', $doneSize, 'akeeba');
-		$session->set('transfer.part', $part, 'akeeba');
-		$session->set('transfer.frag', ++$frag, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.fragSize', $fragSize, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.totalSize', $totalSize, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.doneSize', $doneSize, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.part', $part, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.frag', ++$frag, 'akeeba');
 
 		// Did I go past EOF? Then on to the next part
 		$intendedSeekPosition += $dataLength;
 
 		if ($intendedSeekPosition >= $fileSize)
 		{
-			$session->set('transfer.frag', -1, 'akeeba');
-			$session->set('transfer.part', ++$part, 'akeeba');
+			$this->container->platform->setSessionVar('transfer.frag', -1, 'akeeba');
+			$this->container->platform->setSessionVar('transfer.part', ++$part, 'akeeba');
 		}
 
 		// Did I reach the last part? Then I'm done
@@ -643,12 +649,10 @@ class Transfer extends Model
 	 */
 	public function resetUpload()
 	{
-		$session = $this->container->session;
-
-		$session->set('transfer.totalSize', 0, 'akeeba');
-		$session->set('transfer.doneSize', 0, 'akeeba');
-		$session->set('transfer.part', -1, 'akeeba');
-		$session->set('transfer.frag', -1, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.totalSize', 0, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.doneSize', 0, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.part', -1, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.frag', -1, 'akeeba');
 	}
 
 	/**
@@ -796,8 +800,7 @@ class Transfer extends Model
 		}
 
 		// Try to fetch the file over HTTP
-		$session = $this->container->session;
-		$url = $session->get('transfer.url', '', 'akeeba');
+		$url = $this->container->platform->getSessionVar('transfer.url', '', 'akeeba');
 
 		$url = rtrim($url, '/');
 
@@ -823,22 +826,21 @@ class Transfer extends Model
 	 */
 	public function getFtpConfig()
 	{
-		$session = $this->container->session;
-		$transferOption = $session->get('transfer.transferOption', '', 'akeeba');
+		$transferOption = $this->container->platform->getSessionVar('transfer.transferOption', '', 'akeeba');
 
 		return array(
 			'method'      => $transferOption,
-			'force'       => $session->get('transfer.force', 0, 'akeeba'),
-			'host'        => $session->get('transfer.ftpHost', '', 'akeeba'),
-			'port'        => $session->get('transfer.ftpPort', '', 'akeeba'),
-			'username'    => $session->get('transfer.ftpUsername', '', 'akeeba'),
-			'password'    => $session->get('transfer.ftpPassword', '', 'akeeba'),
-			'directory'   => $session->get('transfer.ftpDirectory', '', 'akeeba'),
+			'force'       => $this->container->platform->getSessionVar('transfer.force', 0, 'akeeba'),
+			'host'        => $this->container->platform->getSessionVar('transfer.ftpHost', '', 'akeeba'),
+			'port'        => $this->container->platform->getSessionVar('transfer.ftpPort', '', 'akeeba'),
+			'username'    => $this->container->platform->getSessionVar('transfer.ftpUsername', '', 'akeeba'),
+			'password'    => $this->container->platform->getSessionVar('transfer.ftpPassword', '', 'akeeba'),
+			'directory'   => $this->container->platform->getSessionVar('transfer.ftpDirectory', '', 'akeeba'),
 			'ssl'         => $transferOption == 'ftps',
-			'passive'     => $session->get('transfer.ftpPassive', 1, 'akeeba'),
-			'passive_fix' => $session->get('transfer.ftpPassiveFix', 1, 'akeeba'),
-			'privateKey'  => $session->get('transfer.ftpPrivateKey', '', 'akeeba'),
-			'publicKey'   => $session->get('transfer.ftpPubKey', '', 'akeeba'),
+			'passive'     => $this->container->platform->getSessionVar('transfer.ftpPassive', 1, 'akeeba'),
+			'passive_fix' => $this->container->platform->getSessionVar('transfer.ftpPassiveFix', 1, 'akeeba'),
+			'privateKey'  => $this->container->platform->getSessionVar('transfer.ftpPrivateKey', '', 'akeeba'),
+			'publicKey'   => $this->container->platform->getSessionVar('transfer.ftpPubKey', '', 'akeeba'),
 		);
 	}
 
@@ -886,8 +888,7 @@ class Transfer extends Model
 	 */
 	private function checkRemoteServerEnvironment()
 	{
-		$session = $this->container->session;
-		$baseUrl = $session->get('transfer.url', '', 'akeeba');
+		$baseUrl = $this->container->platform->getSessionVar('transfer.url', '', 'akeeba');
 
 		$baseUrl = rtrim($baseUrl, '/');
 
@@ -939,7 +940,7 @@ class Transfer extends Model
 
 		if ($requiredSize['size'] > $freeSpace)
 		{
-			$unit	 = array('b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb');
+			$unit	 = array('b', 'KB', 'MB', 'GB', 'TB', 'PB');
 			$freeSpaceString = @round($freeSpace / pow(1024, ($i = floor(log($freeSpace, 1024)))), 2) . ' ' . $unit[$i];
 
 			throw new RuntimeException(JText::sprintf('COM_AKEEBA_TRANSFER_ERR_NOTENOUGHSPACE', $freeSpaceString, $requiredSize['string']));
@@ -956,14 +957,14 @@ class Transfer extends Model
 
 		if ($canWrite)
 		{
-			$session->set('transfer.targetPath', '', 'akeeba');
+			$this->container->platform->setSessionVar('transfer.targetPath', '', 'akeeba');
 		}
 		else
 		{
-			$session->set('transfer.targetPath', 'kicktemp', 'akeeba');
+			$this->container->platform->setSessionVar('transfer.targetPath', 'kicktemp', 'akeeba');
 		}
 
-		$session->set('transfer.remoteTimeLimit', $data['maxExecTime'], 'akeeba');
+		$this->container->platform->setSessionVar('transfer.remoteTimeLimit', $data['maxExecTime'], 'akeeba');
 
 		// What is my upload limit?
 		$uploadLimit = min($data['maxPost'], $data['maxUpload']);
@@ -982,7 +983,7 @@ class Transfer extends Model
 			$uploadLimit = 1048576;
 		}
 
-		$session->set('transfer.uploadLimit', $uploadLimit, 'akeeba');
+		$this->container->platform->setSessionVar('transfer.uploadLimit', $uploadLimit, 'akeeba');
 	}
 
 	/**
@@ -1053,14 +1054,19 @@ class Transfer extends Model
 	/**
 	 * Convert the textual representation of PHP memory limit to an integer, e.g. convert 8M to 8388608
 	 *
-	 * @param   string  $val  The PHP memory limit
+	 * @param   string  $setting  The PHP memory limit
 	 *
 	 * @return  int  PHP memory limit as an integer
 	 */
-	private function convertMemoryLimitToBytes($val)
+	private function convertMemoryLimitToBytes($setting)
 	{
-		$val = trim($val);
+		$val = trim($setting);
 		$last = strtolower($val{strlen($val) - 1});
+
+		if (is_numeric($last))
+		{
+			return $setting;
+		}
 
 		switch ($last)
 		{

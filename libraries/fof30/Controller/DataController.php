@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -512,8 +512,8 @@ class DataController extends Controller
 
 		// Get temporary data from the session, set if the save failed and we're redirected back here
 		$sessionKey = $this->viewName . '.savedata';
-		$itemData = $this->container->session->get($sessionKey, null, $this->container->componentName);
-		$this->container->session->set($sessionKey, null, $this->container->componentName);
+		$itemData = $this->container->platform->getSessionVar($sessionKey, null, $this->container->componentName);
+		$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 
 		if (!empty($itemData))
 		{
@@ -596,8 +596,8 @@ class DataController extends Controller
 
 		// Get temporary data from the session, set if the save failed and we're redirected back here
 		$sessionKey = $this->viewName . '.savedata';
-		$itemData = $this->container->session->get($sessionKey, null, $this->container->componentName);
-		$this->container->session->set($sessionKey, null, $this->container->componentName);
+		$itemData = $this->container->platform->getSessionVar($sessionKey, null, $this->container->componentName);
+		$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 
 		if (!empty($itemData))
 		{
@@ -751,6 +751,59 @@ class DataController extends Controller
 		$this->setRedirect($url, \JText::_($textKey));
 	}
 
+    /**
+     * Save the incoming data as a copy of the given model and then redirect to the copied object edit view
+     *
+     * @return  bool
+     */
+    public function save2copy()
+    {
+        // CSRF prevention
+        $this->csrfProtection();
+
+        $model = $this->getModel()->savestate(false);
+        $ids = $this->getIDsFromRequest($model, true);
+        $data   = $this->input->getData();
+
+        unset($data[$model->getIdFieldName()]);
+
+        $error = null;
+
+        try
+        {
+            $status = true;
+
+            foreach ($ids as $id)
+            {
+                $model->find($id);
+                $model = $model->copy($data);
+            }
+        }
+        catch (\Exception $e)
+        {
+            $status = false;
+            $error = $e->getMessage();
+        }
+
+        // Redirect
+        if ($customURL = $this->input->getBase64('returnurl', ''))
+        {
+            $customURL = base64_decode($customURL);
+        }
+
+        $url = !empty($customURL) ? $customURL : $url = 'index.php?option=' . $this->container->componentName . '&view=' . $this->view . '&task=edit&id=' . $model->getId() . $this->getItemidURLSuffix();
+
+        if (!$status)
+        {
+            $this->setRedirect($url, $error, 'error');
+        }
+        else
+        {
+            $textKey = strtoupper($this->container->componentName . '_LBL_' . $this->container->inflector->singularize($this->view) . '_COPIED');
+            $this->setRedirect($url, \JText::_($textKey));
+        }
+    }
+
 	/**
 	 * Cancel the edit, check in the record and return to the Browse task
 	 *
@@ -793,7 +846,7 @@ class DataController extends Controller
 
 		// Remove any saved data
 		$sessionKey = $this->viewName . '.savedata';
-		$this->container->session->set($sessionKey, null, $this->container->componentName);
+		$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 
 		// Redirect to the display task
 		if ($customURL = $this->input->getBase64('returnurl', ''))
@@ -1436,7 +1489,7 @@ class DataController extends Controller
 			$itemData = $model->getData();
 
 			$sessionKey = $this->viewName . '.savedata';
-			$this->container->session->set($sessionKey, $itemData, $this->container->componentName);
+			$this->container->platform->setSessionVar($sessionKey, $itemData, $this->container->componentName);
 
 			// Redirect on error
 			$id = $model->getId();
@@ -1464,7 +1517,7 @@ class DataController extends Controller
 		else
 		{
 			$sessionKey = $this->viewName . '.savedata';
-			$this->container->session->set($sessionKey, null, $this->container->componentName);
+			$this->container->platform->setSessionVar($sessionKey, null, $this->container->componentName);
 		}
 
 		return $status;

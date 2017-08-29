@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -422,4 +422,15 @@ class Filters extends Object
 		return false;
 	}
 
+	/**
+	 * Resets all filters, reverting them to a blank state
+	 *
+	 * @return  void
+	 *
+	 * @since   5.4.0
+	 */
+	public function reset()
+	{
+		$this->filter_registry = array();
+	}
 }

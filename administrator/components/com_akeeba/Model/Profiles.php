@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  * @since     1.3
  */
@@ -84,8 +84,7 @@ class Profiles extends DataModel
 	public function getPostProcessingEnginePerProfile()
 	{
 		// Cache the current profile's ID
-		$session          = $this->container->session;
-		$currentProfileID = $session->get('profile', null, 'akeeba');
+		$currentProfileID = $this->container->platform->getSessionVar('profile', null, 'akeeba');
 
 		// Get the IDs of all profiles
 		$db    = $this->getDbo();

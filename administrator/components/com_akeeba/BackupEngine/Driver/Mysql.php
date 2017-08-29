@@ -2,7 +2,7 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  */
@@ -22,6 +22,7 @@ use Akeeba\Engine\Factory;
  */
 class Mysql extends Base
 {
+
 	/**
 	 * The name of the database driver.
 	 *
@@ -29,6 +30,34 @@ class Mysql extends Base
 	 * @since  11.1
 	 */
 	public $name = 'mysql';
+
+	/**
+	 * Hostname
+	 *
+	 * @var   string
+	 */
+	protected $host;
+
+	/**
+	 * Username
+	 *
+	 * @var   string
+	 */
+	protected $user;
+
+	/**
+	 * Password
+	 *
+	 * @var   string
+	 */
+	protected $password;
+
+	/**
+	 * Should I select a database?
+	 *
+	 * @var   bool
+	 */
+	protected $selectDatabase;
 
 	/**
 	 * The character(s) used to quote SQL statement names such as table names or field names,
@@ -78,13 +107,33 @@ class Mysql extends Base
 		// finalize initialization
 		parent::__construct($options);
 
-		// Open the connection
-		$this->host = $host;
-		$this->user = $user;
-		$this->password = $password;
-		$this->_database = $database;
-		$this->selectDatabase = $select;
+		// Avoid overwriting connection info if they're already set
+		if (is_null($this->host))
+		{
+			$this->host = $host;
+		}
 
+		if (is_null($this->user))
+		{
+			$this->user = $user;
+		}
+
+		if (is_null($this->password))
+		{
+			$this->password = $password;
+		}
+
+		if (is_null($this->_database))
+		{
+			$this->_database = $database;
+		}
+
+		if (is_null($this->selectDatabase))
+		{
+			$this->selectDatabase = $select;
+		}
+
+		// Open the connection
 		if (!is_resource($this->connection) || is_null($this->connection))
 		{
 			$this->open();

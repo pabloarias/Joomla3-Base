@@ -1,6 +1,102 @@
 <?php die();?>
+Akeeba Backup 5.5.1
+================================================================================
+! The System - Backup on Update plugin may cause an error accessing the backend on some sites
+
+Akeeba Backup 5.5.0
+================================================================================
++ Prevent simultaneous use of ANGIE (restoration script) from two or more people / browsers
++ Workaround for Joomla! bug "Sometimes files are not copied on update"
++ Alphabetical sorting of engines and installation scripts in the Configuration page
++ Backup on Update: Show the status in the backend status bar (footer), with the ability to quickly toggle it off
++ Support for Google Storage native JSON API
+~ ANGIE for Joomla (restoration): Use alternate method to read the site's configuration, preventing PHP errors from getting in the way
+# [HIGH] Cannot change database prefix on restoration if the backup was taken with No Dependency Tracking enabled
+# [MEDIUM] Double slashes in the WebDAV path cause 0 byte uploads on some servers
+# [MEDIUM] Version information not loaded correctly (thanks Joe F.!)
+# [LOW] Notice thrown converting memory_limit to bytes under PHP 7.1
+# [LOW] Workaround for Joomla! bug 16147 (https://github.com/joomla/joomla-cms/issues/16147) - Cannot access component after installation when cache is enabled
+
+Akeeba Backup 5.4.0
+================================================================================
+# [HIGH] Resuming after error was broken when using the file storage for temporary files (default)
+# [MEDIUM] Errors when reading the backup engine's state were not reported, causing the backup to seem like it runs forever
+# [MEDIUM] Database storage wouldn't report the lack of stored engine state, potentially causing forever stuck backups
+# [MEDIUM] Blank page if you delete all backup profiles from the database (a default backup profile could not be created in this case)
+# [MEDIUM] Errors always result in the resume pane being shown, no matter what your settings are
+# [LOW] The Warnings pane was always displayed following resuming from a backup error
+# [LOW] The How to Restore modal would get in the way unless you chose to not be reminded again
+
+Akeeba Backup 5.4.0.b1
+================================================================================
+! Yet another BIG Joomla! 3.7.0 bug throws an exception when using the CLI backup under some circumstances.
+! Yet another BIG Joomla! 3.7.0 bug kills the front-end and remote backup when you are using the System - Page Cache plugin.
+- Removing the automatic update CLI script. Joomla! 3.7.0 can no longer execute extension installation under a CLI application.
+# [HIGH] PHP Fatal Error if the row batch size leads to an amount of data that exceeds free PHP memory
+# [HIGH] Large database records can cause an infinitely growing runaway backup or, if you're lucky, a backup crash due to exceeding PHP time limits.
+# [MEDIUM] Database hostname localhost:3306 leads to connection error under some circumstances. Note that this hostname is wrong: you should use localhost without a port instead!
+# [MEDIUM] Logic error leads to leftover temporary database dump files in the backup output directory under some circumstances
+# [LOW] The wrong message is shown by ANGIE when performing an integrated restoration through Akeeba Backup for Joomla!
+# [LOW] Wouldn't show up in the Joomla! 3.7 new backend menu type selection dialog
+# [LOW] FTP/SFTP over cURL uploads would fail if the remote directory couldn't be created
+
+Akeeba Backup 5.3.4
+================================================================================
+# [MEDIUM] Integrated restoration leads to an error message about the file extension being wrong
+
+Akeeba Backup 5.3.3
+================================================================================
+! The workaround to Joomla! 3.7's date bugs could cause a blank / error page (with an error about double timezone) under some circumstances.
+! Joomla! 3.7.0 broke backwards compatibility again, making CLI scripts fail.
+! Joomla! 3.7.0 broke the JDate package, effectively ignoring timezones, causing grave errors in date / time calculations and display
+~ Workaround for badly configured servers which print out notices before we have the chance to set the error reporting
+~ Control Panel: Display the backup date/time in the user's timezone
+~ Default backup description in the component backend includes the date / time in the user's local timezone instead of GMT
+~ Date and time shown in Site Transfer Wizard is in the user's local timezone instead of GMT
+# [LOW] Joomla! 3.7 added a fixed width to specific button classes in the toolbar, breaking the page layout
+
+Akeeba Backup 5.3.2
+================================================================================
+! Joomla! 3.7.0 broke backwards compatibility again, making CLI scripts fail.
+! Joomla! 3.7.0 broke the JDate package, effectively ignoring timezones, causing grave errors in date / time calculations and display
+~ Workaround for badly configured servers which print out notices before we have the chance to set the error reporting
+~ Control Panel: Display the backup date/time in the user's timezone
+~ Default backup description in the component backend includes the date / time in the user's local timezone instead of GMT
+~ Date and time shown in Site Transfer Wizard is in the user's local timezone instead of GMT
+# [LOW] Joomla! 3.7 added a fixed width to specific button classes in the toolbar, breaking the page layout
+
+Akeeba Backup 5.3.1
+================================================================================
+# [HIGH] Integrated restoration: clicking Run the Installer does nothing; you can still run the installer manually
+# [HIGH] Archive integrity and restoration of JPS archives fails (the archive is valid, it's the extraction script that's the problem).
+# [HIGH] The "Replace main .htaccess with default" feature, enabled by default, causes the restoration to fail.
+# [LOW] Restoration was not removing password protection from the administrator folder even if requested to
+
+Akeeba Backup 5.3.0
+================================================================================
+! SECURITY: Workaround for MySQL security issue CVE-2016-5483 (https://blog.tarq.io/cve-2016-5483-backdooring-mysqldump-backups/) affecting SQL-only backups. This is a security issue in MySQL itself, not our backup engine. Full site backups / restoration were NOT affected.
++ You can use multiple PushBullet tokens to notify multiple accounts
+# [MEDIUM] gh-619 "Invalid upload ID specified" when trying to re-upload backup to remote storage from the Manage Backups page
+# [HIGH] PHP's memory_limit given in bytes (e.g. 134217728 instead of 128M) prevent the backup from running
+# [LOW] How To Restore modal in Manage Backups appearing halfway outside the page if your computer is a bit too fast
+
+Akeeba Backup 5.3.0.b1
+================================================================================
++ Add support for Canada (Montreal) Amazon S3 region
++ Add support for EU (London) Amazon S3 region
++ Add support for Joomla! 3.7's new administrator menu manager
++ Support for JPS format v2.0 with improved password security
++ Hide action icons based on the user's permissions
+~ Permissions are now more reasonably assigned to different views
+~ Now using the Reverse Engineering database dump engine when a Native database dump engine is not available (PostgreSQL, Microsoft SQL Server, SQLite)
+# [MEDIUM] The web.config file introduced in Akeeba Backup 3.3 was removed from the backup output directory
+# [MEDIUM] Infinite recursion if the current profile doesn't exist
+# [MEDIUM] Views defined against fully qualified tables (i.e. including the database name) could not be restored on a database with a different name
+# [LOW] The unit of measurement was not displayed in the Configuration page
+
 Akeeba Backup 5.2.5
 ================================================================================
+# [HIGH] Trailing slashes in the Directory name would cause donwloading a backup back from Dropbox to fail
 + Alternative FTP post-processing engine and DirectFTP engine using cURL providing better compatibility with misconfigured and broken FTP servers
 + Alternative SFTP post-processing engine and DirectSFTP engine using cURL providing compatibility with a wide range of servers
 ~ Anticipate and report database errors in more places while backing up MySQL databases
@@ -73,7 +169,7 @@ Akeeba Backup 5.1.3
 + Automatically handle unsupported database storage engines when restoring MySQL databases
 + Help buttons everywhere. No more excuses for not reading the fine manual.
 # [HIGH] Failure to upload to newly created Amazon S3 buckets
-# [MEDIUM] Import from S3 didn't work with API v4-only regions (Frankfurt, São Paulo)
+# [MEDIUM] Import from S3 didn't work with API v4-only regions (Frankfurt, S??o Paulo)
 # [LOW] The [WEEKDAY] variable in archive name templates returned the weekday number (e.g 1) instead of text (e.g. Sunday)
 # [LOW] Deleting the currently active profile would cause a white page / internal server error
 # [LOW] Chrome and other misbehaving browsers autofill the database username/password, leading to restoration failure if you're not paying very close attention. We are now working around these browsers.

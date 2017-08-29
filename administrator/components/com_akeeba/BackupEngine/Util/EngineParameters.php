@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -669,6 +669,9 @@ class EngineParameters
 		{
 			$engines = $this->getEnginesList($type);
 
+			$tempArray = array();
+			$engineTitles = array();
+
 			foreach ($engines as $engine_name => $engine_data)
 			{
 				// Translate information
@@ -682,7 +685,12 @@ class EngineParameters
 							break;
 					}
 
-					$json_array['engines'][$type][$engine_name]['information'][$key] = $value;
+					$tempArray[$engine_name]['information'][$key] = $value;
+
+					if ($key == 'title')
+					{
+						$engineTitles[$engine_name] = $value;
+					}
 				}
 
 				// Process parameters
@@ -722,7 +730,14 @@ class EngineParameters
 				}
 
 				// Add processed parameters
-				$json_array['engines'][$type][$engine_name]['parameters'] = $parameters;
+				$tempArray[$engine_name]['parameters'] = $parameters;
+			}
+
+			asort($engineTitles);
+
+			foreach ($engineTitles as $engineName => $title)
+			{
+				$json_array['engines'][$type][$engineName] = $tempArray[$engineName];
 			}
 		}
 
@@ -781,6 +796,15 @@ class EngineParameters
 
 		// Get data for the installers
 		$json_array['installers'] = $this->getInstallerList(true);
+
+		uasort($json_array['installers'], function($a, $b){
+			if ($a['name'] == $b['name'])
+			{
+				return 0;
+			}
+
+			return ($a['name'] < $b['name']) ? -1 : 1;
+		});
 
 		$json = json_encode($json_array);
 

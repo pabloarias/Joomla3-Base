@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -10,7 +10,6 @@ namespace FOF30\View\DataView;
 use FOF30\Form\Form as FormObject;
 use FOF30\Model\DataModel;
 use FOF30\Render\RenderInterface;
-use FOF30\View\Exception\AccessForbidden;
 
 defined('_JEXEC') or die;
 

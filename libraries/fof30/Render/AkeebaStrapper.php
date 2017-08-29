@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -570,9 +570,6 @@ HTML;
 		$show_pagination	 = $form->getAttribute('show_pagination', 1);
 		$norows_placeholder	 = $form->getAttribute('norows_placeholder', '');
 
-		// Joomla! 3.x sidebar support
-		$form_class = '';
-
 		if ($show_filters)
 		{
 			JHtmlSidebar::setAction("index.php?option=" .
@@ -714,7 +711,7 @@ JS;
 			$actionUrl = \JRoute::_($uri->toString());
 		}
 
-		$html .= '<form action="'.$actionUrl.'" method="post" name="adminForm" id="adminForm" ' . $form_class . '>' . "\n";
+		$html .= '<form action="' . $actionUrl . '" method="post" name="adminForm" id="adminForm">' . "\n";
 
 		// Get and output the sidebar, if present
 		$sidebar = JHtmlSidebar::render();
@@ -906,7 +903,7 @@ JS;
 		$html .= "\t" . '<input type="hidden" name="filter_order" value="' . $filter_order . '" />' . "\n";
 		$html .= "\t" . '<input type="hidden" name="filter_order_Dir" value="' . $filter_order_Dir . '" />' . "\n";
 
-		$html .= "\t" . '<input type="hidden" name="' . $this->container->session->getFormToken() . '" value="1" />' . "\n";
+		$html .= "\t" . '<input type="hidden" name="' . $this->container->platform->getToken(true) . '" value="1" />' . "\n";
 
 		// End the form
 		$html .= '</form>' . "\n";
@@ -1025,7 +1022,7 @@ JS;
 			$html .= "\t" . '<input type="hidden" name="tmpl" value="' . $tmpl . '" />' . "\n";
 		}
 
-		$html .= "\t" . '<input type="hidden" name="' . $this->container->session->getFormToken() . '" value="1" />' . "\n";
+		$html .= "\t" . '<input type="hidden" name="' . $this->container->platform->getToken(true) . '" value="1" />' . "\n";
 
 		$html .= $this->renderFormRaw($form, $model, 'edit');
 		$html .= '</form>';

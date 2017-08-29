@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  */
@@ -32,7 +32,7 @@ class Googledrive extends Base
 	/** @var bool Are we using chunk uploads? */
 	private $chunked = false;
 
-	/** @var int Chunk size (Mb) */
+	/** @var int Chunk size (MB) */
 	private $chunk_size = 10;
 
 	public function __construct()

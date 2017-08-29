@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  *
  * @since     3.0
@@ -32,7 +32,14 @@ class OpenSSL extends AbstractAdapter implements AdapterInterface
 
 	public function __construct()
 	{
-		$this->openSSLOptions = OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING;
+		// PHP 5.3 - Neither constant is defined and the field is boolean. But 1 is also acceptable in lieu of true ;)
+		$this->openSSLOptions = 1;
+
+		// PHP 5.4 - Do it THE RIGHT WAY(tm)
+		if (version_compare(PHP_VERSION, '5.4.0', 'ge'))
+		{
+			$this->openSSLOptions = OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING;
+		}
 	}
 
 	public function setEncryptionMode($mode = 'cbc', $strength = 128)

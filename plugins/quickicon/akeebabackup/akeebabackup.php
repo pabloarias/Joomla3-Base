@@ -1,7 +1,7 @@
 <?php
 /**
- * @package   AdminTools
- * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
+ * @package   AkeebaBackup
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -29,16 +29,15 @@ if (function_exists('eaccelerator_info'))
 		 * I know that this define seems pointless since I am returning. This means that we are exiting the file and
 		 * the plugin class isn't defined, so Joomla cannot possibly use it.
 		 *
-		 * LOL. That is how PHP works. Not how that GINORMOUS, STINKY PILE OF BULL CRAP called eAccelerator screws up
+		 * LOL. That is how PHP works. Not how that OBSOLETE, BROKEN PILE OF ROTTING BYTES called eAccelerator mangles
 		 * your code.
 		 *
 		 * That disgusting piece of bit rot will exit right after the return statement below BUT it will STILL define
 		 * the class. That's right. It ignores ALL THE CODE between here and the class declaration and parses the
-		 * class declaration o_O  Therefore the only way to actually NOT load the damn plugin when you are using it on
-		 * a server where a masturbating, lobotomized bonobo on meth has installed and enabled the tragic waste of
-		 * disk space called eAccelerator is to define a constant and use it to return from the constructor method,
-		 * therefore forcing PHP to return null instead of an object. This prompts Joomla to not do anything with the
-		 * plugin. Because screw you eAccelerator, that's why.
+		 * class declaration o_O  Therefore the only way to actually NOT load the  plugin when you are using it on
+		 * a server where an indescribable character posing as a sysadmin has installed and enabled eAccelerator is to
+		 * define a constant and use it to return from the constructor method, therefore forcing PHP to return null
+		 * instead of an object. This prompts Joomla to not do anything with the plugin.
 		 */
 		if (!defined('AKEEBA_EACCELERATOR_IS_SO_BORKED_IT_DOES_NOT_EVEN_RETURN'))
 		{
@@ -65,6 +64,7 @@ if (version_compare(JVERSION, '2.5', 'lt'))
 
 use Akeeba\Engine\Factory;
 use Akeeba\Engine\Platform;
+use FOF30\Date\Date;
 
 // Deactivate self
 $db    = JFactory::getDbo();
@@ -213,46 +213,44 @@ class plgQuickiconAkeebabackup extends JPlugin
 	 * of icons. You can return an array which defines a single icon and it will
 	 * be rendered right after the stock Quick Icons.
 	 *
-	 * @param  $context  The calling context
+	 * @param   string  $context  The calling context
 	 *
-	 * @return array A list of icon definition associative arrays, consisting of the
+	 * @return  array A list of icon definition associative arrays, consisting of the
 	 *                 keys link, image, text and access.
 	 *
-	 * @since       2.5
+	 * @throws  Exception
 	 */
 	public function onGetIcons($context)
 	{
-		$user                = JFactory::getUser();
-		if ( !$user->authorise('akeeba.backup', 'com_akeeba'))
+		$container = \FOF30\Container\Container::getInstance('com_akeeba');
+		$user      = $container->platform->getUser();
+
+		if (!$user->authorise('akeeba.backup', 'com_akeeba'))
 		{
 			return;
 		}
 
-
 		if (
-				$context != $this->params->get('context', 'mod_quickicon')
-				|| !JFactory::getUser()->authorise('core.manage', 'com_installer')
+			$context != $this->params->get('context', 'mod_quickicon')
+			|| !JFactory::getUser()->authorise('core.manage', 'com_installer')
 		)
 		{
 			return;
 		}
 
-		$container = \FOF30\Container\Container::getInstance('com_akeeba');
-
 		// Necessary defines for Akeeba Engine
-		if ( !defined('AKEEBAENGINE'))
+		if (!defined('AKEEBAENGINE'))
 		{
 			define('AKEEBAENGINE', 1);
-			define('AKEEBAROOT',  $container->backEndPath . '/BackupEngine');
+			define('AKEEBAROOT', $container->backEndPath . '/BackupEngine');
 			define('ALICEROOT', $container->backEndPath . '/AliceEngine');
 
 			// Make sure we have a profile set throughout the component's lifetime
-			$session    = $container->session;
-			$profile_id = $session->get('profile', null, 'akeeba');
+			$profile_id = $container->platform->getSessionVar('profile', null, 'akeeba');
 
 			if (is_null($profile_id))
 			{
-				$session->set('profile', 1, 'akeeba');
+				$container->platform->setSessionVar('profile', 1, 'akeeba');
 			}
 
 			// Load Akeeba Engine
@@ -264,21 +262,21 @@ class plgQuickiconAkeebabackup extends JPlugin
 		$url = JUri::base();
 		$url = rtrim($url, '/');
 
-		$profileId = (int)$this->params->get('profileid', 1);
-		$token     = JFactory::getSession()->getToken();
+		$profileId = (int) $this->params->get('profileid', 1);
+		$token     = $container->platform->getToken(true);
 
 		if ($profileId <= 0)
 		{
 			$profileId = 1;
 		}
 
-		$ret = array(
+		$ret = [
 			'link'  => 'index.php?option=com_akeeba&view=Backup&autostart=1&returnurl=' . urlencode($url) . '&profileid=' . $profileId . "&$token=1",
 			'image' => 'akeeba-black',
 			'text'  => JText::_('PLG_QUICKICON_AKEEBABACKUP_OK'),
 			'id'    => 'plg_quickicon_akeebabackup',
 			'group' => 'MOD_QUICKICON_MAINTENANCE',
-		);
+		];
 
 		if (version_compare(JVERSION, '3.0', 'lt'))
 		{
@@ -294,25 +292,25 @@ class plgQuickiconAkeebabackup extends JPlugin
 			Platform::getInstance()->load_configuration(1);
 
 			// Get latest non-SRP backup ID
-			$filters  = array(
-				array(
+			$filters  = [
+				[
 					'field'   => 'tag',
 					'operand' => '<>',
-					'value'   => 'restorepoint'
-				)
-			);
-			$ordering = array(
+					'value'   => 'restorepoint',
+				],
+			];
+			$ordering = [
 				'by'    => 'backupstart',
-				'order' => 'DESC'
-			);
+				'order' => 'DESC',
+			];
 
 			/** @var \Akeeba\Backup\Admin\Model\Statistics $model */
 			$model = $container->factory->model('Statistics')->tmpInstance();
 			$list  = $model->getStatisticsListWithMeta(false, $filters, $ordering);
 
-			if ( !empty($list))
+			if (!empty($list))
 			{
-				$record = (object)array_shift($list);
+				$record = (object) array_shift($list);
 			}
 			else
 			{
@@ -322,7 +320,7 @@ class plgQuickiconAkeebabackup extends JPlugin
 			// Process "failed backup" warnings, if specified
 			if ($this->params->get('warnfailed', 0) == 0)
 			{
-				if ( !is_null($record))
+				if (!is_null($record))
 				{
 					$warning = (($record->status == 'fail') || ($record->status == 'run'));
 				}
@@ -338,10 +336,10 @@ class plgQuickiconAkeebabackup extends JPlugin
 				$maxperiod = $this->params->get('maxbackupperiod', 24);
 				JLoader::import('joomla.utilities.date');
 				$lastBackupRaw    = $record->backupstart;
-				$lastBackupObject = new JDate($lastBackupRaw);
-				$lastBackup       = $lastBackupObject->toUnix(false);
+				$lastBackupObject = new Date($lastBackupRaw);
+				$lastBackup       = $lastBackupObject->toUnix();
 				$maxBackup        = time() - $maxperiod * 3600;
-				if ( !$warning)
+				if (!$warning)
 				{
 					$warning = ($lastBackup < $maxBackup);
 				}
@@ -393,15 +391,15 @@ CSS;
 		// Re-enable self
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true)
-					->update($db->qn('#__extensions'))
-					->set($db->qn('enabled') . ' = ' . $db->q('1'))
-					->where($db->qn('element') . ' = ' . $db->q('akeebabackup'))
-					->where($db->qn('folder') . ' = ' . $db->q('quickicon'));
+			->update($db->qn('#__extensions'))
+			->set($db->qn('enabled') . ' = ' . $db->q('1'))
+			->where($db->qn('element') . ' = ' . $db->q('akeebabackup'))
+			->where($db->qn('folder') . ' = ' . $db->q('quickicon'));
 		$db->setQuery($query);
 		$db->execute();
 
 		\FOF30\Utils\CacheCleaner::clearPluginsCache();
 
-		return array($ret);
+		return [$ret];
 	}
 }

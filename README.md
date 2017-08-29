@@ -17,7 +17,7 @@ Archivos a eliminar antes del despliegue en producción:
 - Idioma español 3.6.2.1
 - Editor JCE 2.5.25 con traducción al español
 - OSmap 4.1.4.
-- Akeeba Backup 5.1.4 con traducción al español
+- Akeeba Backup 5.5.1 con traducción al español
 
 ## Contenidos incluidos
 - Nota legal.

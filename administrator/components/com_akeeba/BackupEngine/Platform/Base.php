@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -85,10 +85,45 @@ abstract class Base implements PlatformInterface
 		$secureSettings = Factory::getSecureSettings();
 		$dump_profile   = $secureSettings->encryptSettings($dump_profile);
 
-		$sql = $db->getQuery(true)
-		          ->update($db->qn($this->tableNameProfiles))
-		          ->set($db->qn('configuration') . ' = ' . $db->q($dump_profile))
-		          ->where($db->qn('id') . ' = ' . $db->q($profile_id));
+		// Does the record already exist?
+		$exists = true;
+		$sql    = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->qn($this->tableNameProfiles))
+			->where($db->qn('id') . ' = ' . $db->q($profile_id));
+
+		try
+		{
+			$count  = $db->setQuery($sql)->loadResult();
+			$exists = ($count > 0);
+		}
+		catch (\Exception $e)
+		{
+			$exists = true;
+		}
+
+		if ($exists)
+		{
+			$sql = $db->getQuery(true)
+				->update($db->qn($this->tableNameProfiles))
+				->set($db->qn('configuration') . ' = ' . $db->q($dump_profile))
+				->where($db->qn('id') . ' = ' . $db->q($profile_id));
+		}
+		else
+		{
+			$sql = $db->getQuery(true)
+				->insert($db->qn($this->tableNameProfiles))
+				->columns(array($db->qn('id'), $db->qn('description'), $db->qn('configuration'),
+					$db->qn('filters'), $db->qn('quickicon')))
+				->values(
+					$db->q(1) . ', ' .
+					$db->q("Default backup profile") . ', ' .
+					$db->q($dump_profile)  . ', ' .
+					$db->q('')  . ', ' .
+					$db->q(1)
+				);
+		}
+
 		$db->setQuery($sql);
 
 		try
@@ -141,6 +176,21 @@ abstract class Base implements PlatformInterface
 
 		$db->setQuery($sql);
 		$databaseData = $db->loadResult();
+
+		/**
+		 * If the profile is not the default and we can't load anything let's switch back to the default profile.
+		 *
+		 * You will end up here when you have opened the application in two different browsers and Browser A is used to
+		 * delete the active profile you were using with Browser B. If we were not to load the default profile Browser B
+		 * would try to save the default configuration data to the deleted profile. However, since the profile does not
+		 * exist in the database any more the load_configuration at the end of the following if-block would trigger the
+		 * same code path, recursively, infinitely until you reached the maximum nesting level in PHP, run out of memory
+		 * or hit the execution time limit.
+		 */
+		if ((empty($databaseData) || is_null($databaseData)) && ($profile_id != 1))
+		{
+			return $this->load_configuration(1);
+		}
 
 		if (empty($databaseData) || is_null($databaseData))
 		{

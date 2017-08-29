@@ -4,7 +4,7 @@
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2009-2016 Nicholas K. Dionysopoulos</copyright>
+	<copyright>Copyright (c)2006-2017 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU General Public License version 3, or later</license>
 	<creationDate>2012-09-26</creationDate>
 	<version>1.0</version>
@@ -12,13 +12,12 @@
 	<files>
 		<filename plugin="akeebabackup">akeebabackup.php</filename>
 		<filename>index.html</filename>
-		<folder>fields</folder>
 	</files>
 	<languages folder="language">
 		<language tag="en-GB">en-GB/en-GB.plg_quickicon_akeebabackup.ini</language>
 		<language tag="en-GB">en-GB/en-GB.plg_quickicon_akeebabackup.sys.ini</language>
 	</languages>
-	<config addfieldpath="/plugins/quickicon/akeebabackup/fields">
+	<config addfieldpath="/administrator/components/com_akeeba/fields">
 		<fields name="params">
 			<fieldset name="basic">
 				<field name="context"
@@ -33,13 +32,16 @@
 					<option value="0">JYES</option>
 					<option value="1">JNO</option>
 				</field>
+
 				<field name="warnfailed" type="radio" label="PLG_QUICKICON_AKEEBABACKUP_LBL_WARNFAILED"
 					description="PLG_QUICKICON_AKEEBABACKUP_DESC_WARNFAILED" default="1">
 					<option value="0">JYES</option>
 					<option value="1">JNO</option>
 				</field>
+
 				<field name="maxbackupperiod" type="text" label="PLG_QUICKICON_AKEEBABACKUP_LBL_PERIOD"
 					description="PLG_QUICKICON_AKEEBABACKUP_DESC_PERIOD" size="5" default="24" />
+
 				<field name="profileid" type="backupprofiles" default="1"
 					   label="PLG_QUICKICON_AKEEBABACKUP_PROFILE_LABEL"
 					   description="PLG_QUICKICON_AKEEBABACKUP_PROFILE_DESC"
@@ -47,4 +49,6 @@
 			</fieldset>
 		</fields>
 	</config>
+
+	<scriptfile>script.php</scriptfile>
 </extension>

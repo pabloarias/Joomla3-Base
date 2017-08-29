@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -9,27 +9,39 @@
 defined('_JEXEC') or die();
 
 /** @var  \Akeeba\Backup\Admin\View\Manage\Html  $this */
-?>
 
-<script type="text/javascript">
-	Joomla.orderTable = function () {
-		table = document.getElementById("sortTable");
-		direction = document.getElementById("directionTable");
-		order = table.options[table.selectedIndex].value;
-		if (order != '<?php echo addslashes($this->order); ?>') {
-			dirn = 'asc';
-		} else {
-			dirn = direction.options[direction.selectedIndex].value;
-		}
-		Joomla.tableOrdering(order, dirn, '');
+$urlIncludeFolders = addslashes(JUri::base() . 'index.php?option=com_akeeba&view=IncludeFolders&task=ajax');
+$urlBrowser = addslashes(JUri::base() . 'index.php?option=com_akeeba&view=Browser&processfolder=1&tmpl=component&folder=');
+$escapedOrder = addslashes($this->order);
+$js = <<< JS
+
+;// This comment is intentionally put here to prevent badly written plugins from causing a Javascript error
+// due to missing trailing semicolon and/or newline in their code.
+Joomla.orderTable = function () {
+	table = document.getElementById("sortTable");
+	direction = document.getElementById("directionTable");
+	order = table.options[table.selectedIndex].value;
+	if (order != '$escapedOrder')
+	{
+		dirn = 'asc';
 	}
-</script>
+	else
+	{
+		dirn = direction.options[direction.selectedIndex].value;
+	}
+	Joomla.tableOrdering(order, dirn, '');
+}
+
+JS;
+
+$this->getContainer()->template->addJSInline($js);
+
+?>
 
 <?php if($this->promptForBackupRestoration): ?>
 <?php echo $this->loadAnyTemplate('admin:com_akeeba/Manage/howtorestore_modal'); ?>
 <?php endif; ?>
 
-<?php if ( ! ($this->promptForBackupRestoration)): ?>
 <div class="alert alert-info">
 	<button class="close" data-dismiss="alert">×</button>
 	<h4 class="alert-heading"><?php echo \JText::_('COM_AKEEBA_BUADMIN_LABEL_HOWDOIRESTORE_LEGEND'); ?></h4>
@@ -40,7 +52,6 @@ defined('_JEXEC') or die();
 			'https://www.akeebabackup.com/latest-kickstart-core.zip'
 			); ?>
 </div>
-<?php endif; ?>
 
 <div id="j-main-container">
 	<form action="index.php" method="post" name="adminForm" id="adminForm">
@@ -50,7 +61,7 @@ defined('_JEXEC') or die();
 		<input type="hidden" name="task" id="task" value="default"/>
 		<input type="hidden" name="filter_order" id="filter_order" value="<?php echo $this->escape($this->order); ?>"/>
 		<input type="hidden" name="filter_order_Dir" id="filter_order_Dir" value="<?php echo $this->escape($this->order_Dir); ?>"/>
-		<input type="hidden" name="<?php echo \JFactory::getSession()->getFormToken(); ?>" value="1"/>
+		<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
 		<div id="filter-bar" class="btn-toolbar">
 			<div class="filter-search btn-group pull-left">
@@ -64,7 +75,7 @@ defined('_JEXEC') or die();
 					<span  class="icon-search"></span>
 				</button>
 				<button class="btn" type="button"
-						onclick="document.id('filter_description').value='';this.form.submit();"
+						onclick="document.getElementById('filter_description').value='';this.form.submit();"
 						title="<?php echo \JText::_('JSEARCH_FILTER_CLEAR'); ?>">
 					<span class="icon-remove"></span>
 				</button>

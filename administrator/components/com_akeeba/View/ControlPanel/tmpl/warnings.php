@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 ?>
 <?php /* Configuration Wizard pop-up */ ?>
-<?php if($this->promptForConfigurationWizard): ?>
+<?php if ($this->promptForConfigurationWizard): ?>
 	<?php echo $this->loadAnyTemplate('admin:com_akeeba/Configuration/confwiz_modal'); ?>
 <?php endif; ?>
 
@@ -22,7 +22,7 @@ defined('_JEXEC') or die();
 		<p>
 		<?php
 			echo \JText::sprintf('COM_AKEEBA_CPANEL_ERR_UPDATE_STUCK',
-					JFactory::getDbo()->getPrefix(),
+					$this->getContainer()->db->getPrefix(),
 					'index.php?option=com_akeeba&view=ControlPanel&task=forceUpdateDb'
 			)?>
 		</p>
@@ -48,7 +48,7 @@ defined('_JEXEC') or die();
 		</p>
 		<p>
 			<a class="btn btn-success btn-large"
-			   href="index.php?option=com_akeeba&view=ControlPanel&task=resetSecretWord&<?php echo JFactory::getSession()->getToken(); ?>=1">
+			   href="index.php?option=com_akeeba&view=ControlPanel&task=resetSecretWord&<?php echo $this->container->platform->getToken(true) ?>=1">
 				<span class="icon icon-white icon-refresh"></span>
 				<?php echo JText::_('COM_AKEEBA_CPANEL_BTN_FESECRETWORD_RESET'); ?>
 			</a>
@@ -86,7 +86,7 @@ defined('_JEXEC') or die();
 			<input type="hidden" name="option" value="com_akeeba" />
 			<input type="hidden" name="view" value="ControlPanel" />
 			<input type="hidden" name="task" value="applydlid" />
-			<input type="hidden" name="<?php echo \JFactory::getSession()->getFormToken(); ?>" value="1" />
+			<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1" />
 		<span>
 			<?php echo JText::_('COM_AKEEBA_CPANEL_MSG_PASTEDLID') ?>
 		</span>
@@ -115,6 +115,14 @@ defined('_JEXEC') or die();
 		<h3><?php echo JText::_('COM_AKEEBA_CPANEL_MSG_CLOUDFLARE_WARN')?></h3>
 		<p><?php echo JText::sprintf('COM_AKEEBA_CPANEL_MSG_CLOUDFLARE_WARN1', 'https://support.cloudflare.com/hc/en-us/articles/200169456-Why-is-JavaScript-or-jQuery-not-working-on-my-site-')?></p>
 	</div>
+<?php
+/**
+ * DO NOT USE INLINE JAVASCRIPT FOR THIS SCRIPT. DO NOT REMOVE THE ATTRIBUTES.
+ *
+ * This is a specialised test which looks for CloudFlare's completely broken RocketLoader feature and warns the user
+ * about it.
+ */
+?>
 	<script type="text/javascript" data-cfasync="true">
 		var test = localStorage.getItem('<?php echo $testfile?>');
 		if (test)

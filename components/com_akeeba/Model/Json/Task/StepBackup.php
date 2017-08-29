@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -44,14 +44,11 @@ class StepBackup extends AbstractTask
 		$tag      = $filter->clean($defConfig['tag'], 'cmd');
 		$backupid = $filter->clean($defConfig['backupid'], 'cmd');
 
-		// Set the active profile
-		$session = $this->container->session;
-
 		// Try to set the profile from the setup parameters
 		if (!empty($profile))
 		{
 			$profile  = max(1, $profile); // Make sure $profile is a positive integer >= 1
-			$session->set('profile', $profile);
+			$this->container->platform->setSessionVar('profile', $profile);
 			define('AKEEBA_PROFILE', $profile);
 		}
 

@@ -1,9 +1,11 @@
 <?php
 /**
  * @package    AkeebaBackup
- * @copyright  Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright  Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license    GNU General Public License version 3, or later
  */
+
+use FOF30\Date\Date;
 
 defined('_JEXEC') or die();
 
@@ -29,16 +31,15 @@ if (function_exists('eaccelerator_info'))
 		 * I know that this define seems pointless since I am returning. This means that we are exiting the file and
 		 * the plugin class isn't defined, so Joomla cannot possibly use it.
 		 *
-		 * LOL. That is how PHP works. Not how that GINORMOUS, STINKY PILE OF BULL CRAP called eAccelerator screws up
+		 * LOL. That is how PHP works. Not how that OBSOLETE, BROKEN PILE OF ROTTING BYTES called eAccelerator mangles
 		 * your code.
 		 *
 		 * That disgusting piece of bit rot will exit right after the return statement below BUT it will STILL define
 		 * the class. That's right. It ignores ALL THE CODE between here and the class declaration and parses the
-		 * class declaration o_O  Therefore the only way to actually NOT load the damn plugin when you are using it on
-		 * a server where a masturbating, lobotomized bonobo on meth has installed and enabled the tragic waste of
-		 * disk space called eAccelerator is to define a constant and use it to return from the constructor method,
-		 * therefore forcing PHP to return null instead of an object. This prompts Joomla to not do anything with the
-		 * plugin. Because screw you eAccelerator, that's why.
+		 * class declaration o_O  Therefore the only way to actually NOT load the  plugin when you are using it on
+		 * a server where an indescribable character posing as a sysadmin has installed and enabled eAccelerator is to
+		 * define a constant and use it to return from the constructor method, therefore forcing PHP to return null
+		 * instead of an object. This prompts Joomla to not do anything with the plugin.
 		 */
 		if (!defined('AKEEBA_EACCELERATOR_IS_SO_BORKED_IT_DOES_NOT_EVEN_RETURN'))
 		{
@@ -95,6 +96,12 @@ class plgSystemAkeebaupdatecheck extends JPlugin
 			return;
 		}
 
+		// Load FOF. Required for the Date class.
+		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+		{
+			throw new RuntimeException('FOF 3.0 is not installed', 500);
+		}
+
 		// Do we have to run (at most once per 3 hours)?
 		JLoader::import('joomla.html.parameter');
 		JLoader::import('joomla.application.component.helper');
@@ -110,7 +117,7 @@ class plgSystemAkeebaupdatecheck extends JPlugin
 
 		if (intval($last))
 		{
-			$last = new JDate($last);
+			$last = new Date($last);
 			$last = $last->toUnix();
 		}
 		else
@@ -134,7 +141,7 @@ class plgSystemAkeebaupdatecheck extends JPlugin
 			return;
 		}
 
-		$now = new JDate($now);
+		$now = new Date($now);
 
 		// Update last run status
 		// If I have the time of the last run, I can update, otherwise insert
@@ -165,12 +172,6 @@ class plgSystemAkeebaupdatecheck extends JPlugin
 		if (!$result)
 		{
 			return;
-		}
-
-		// Load FOF
-		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
-		{
-			throw new RuntimeException('FOF 3.0 is not installed', 500);
 		}
 
 		// Load the container

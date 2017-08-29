@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -145,6 +145,27 @@ class SftpCurl extends Sftp implements TransferInterface
 	}
 
 	/**
+	 * Save all parameters on serialization except the connection resource
+	 *
+	 * @return  array
+	 */
+	public function __sleep()
+	{
+		return array(
+			'host',
+			'port',
+			'username',
+			'password',
+			'directory',
+			'privateKey',
+			'publicKey',
+			'timeout',
+			'skipPassiveIP',
+			'verbose',
+		);
+	}
+
+	/**
 	 * Returns a cURL resource handler for the remote SFTP server
 	 *
 	 * @param   string $remoteFile Optional. The remote file / folder on the SFTP server you'll be manipulating with cURL.
@@ -243,6 +264,9 @@ class SftpCurl extends Sftp implements TransferInterface
 		{
 			curl_setopt($ch, CURLOPT_VERBOSE, 1);
 		}
+
+		// Automatically create missing directories
+		curl_setopt($ch, CURLOPT_FTP_CREATE_MISSING_DIRS, 1);
 
 		return $ch;
 	}

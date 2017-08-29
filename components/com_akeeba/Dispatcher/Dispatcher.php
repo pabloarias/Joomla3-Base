@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -66,12 +66,11 @@ class Dispatcher extends AdminDispatcher
 		}
 
 		// Make sure we have a profile set throughout the component's lifetime
-		$session    = $this->container->session;
-		$profile_id = $session->get('profile', null, 'akeeba');
+		$profile_id = $this->container->platform->getSessionVar('profile', null, 'akeeba');
 
 		if (is_null($profile_id))
 		{
-			$session->set('profile', 1, 'akeeba');
+			$this->container->platform->setSessionVar('profile', 1, 'akeeba');
 		}
 
 		// Load Akeeba Engine
@@ -99,7 +98,7 @@ class Dispatcher extends AdminDispatcher
 		Platform::getInstance()->load_version_defines();
 
 		// Make sure we have a version loaded
-		@include_once($this->container->backEndPath . '/components/com_akeeba/version.php');
+		@include_once($this->container->backEndPath . '/version.php');
 
 		if (!defined('AKEEBA_VERSION'))
 		{

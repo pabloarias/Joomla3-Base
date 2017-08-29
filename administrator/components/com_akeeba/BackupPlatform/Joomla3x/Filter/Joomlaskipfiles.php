@@ -3,7 +3,7 @@
  * Akeeba Engine
  * The modular PHP5 site backup engine
  *
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -16,6 +16,7 @@ defined('AKEEBAENGINE') or die();
 
 use Akeeba\Engine\Factory;
 use Akeeba\Engine\Platform;
+use FOF30\Container\Container;
 
 /**
  * Subdirectories exclusion filter. Excludes temporary, cache and backup output
@@ -32,10 +33,10 @@ class Joomlaskipfiles extends Base
 
 		// We take advantage of the filter class magic to inject our custom filters
 		$configuration = Factory::getConfiguration();
+		$container     = Container::getInstance('com_akeeba');
+		$jreg          = $container->platform->getConfig();
 
-		$jreg = \JFactory::getConfig();
-
-		$tmpdir = $jreg->get('tmp_path');
+		$tmpdir  = $jreg->get('tmp_path');
 		$logsdir = $jreg->get('log_path');
 
 		// Get the site's root
@@ -48,7 +49,7 @@ class Joomlaskipfiles extends Base
 			$root = '[SITEROOT]';
 		}
 
-		$this->filter_data[$root] = array(
+		$this->filter_data[$root] = [
 			// Output & temp directory of the component
 			$this->treatDirectory($configuration->get('akeeba.basic.output_directory')),
 
@@ -110,7 +111,7 @@ class Joomlaskipfiles extends Base
 			$this->treatDirectory(JPATH_ADMINISTRATOR . '/log'),
 			'administrator/log',
 			$this->treatDirectory(Platform::getInstance()->get_site_root() . '/administrator/log'),
-		);
+		];
 
 		parent::__construct();
 	}

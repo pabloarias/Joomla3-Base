@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -102,39 +102,41 @@ class Html extends BaseView
 
 		/** @var Transfer $model */
 		$model   = $this->getModel();
-		$session = $this->container->session;
 
 		$this->latestBackup     = $model->getLatestBackupInformation();
 		$this->spaceRequired    = $model->getApproximateSpaceRequired();
-		$this->newSiteUrl       = $session->get('transfer.url', '', 'akeeba');
-		$this->newSiteUrlResult = $session->get('transfer.url_status', '', 'akeeba');
-		$this->ftpSupport       = $session->get('transfer.ftpsupport', null, 'akeeba');
-		$this->transferOption   = $session->get('transfer.transferOption', null, 'akeeba');
-		$this->ftpHost          = $session->get('transfer.ftpHost', null, 'akeeba');
-		$this->ftpPort          = $session->get('transfer.ftpPort', null, 'akeeba');
-		$this->ftpUsername      = $session->get('transfer.ftpUsername', null, 'akeeba');
-		$this->ftpPassword      = $session->get('transfer.ftpPassword', null, 'akeeba');
-		$this->ftpPubKey        = $session->get('transfer.ftpPubKey', null, 'akeeba');
-		$this->ftpPrivateKey    = $session->get('transfer.ftpPrivateKey', null, 'akeeba');
-		$this->ftpDirectory     = $session->get('transfer.ftpDirectory', null, 'akeeba');
-		$this->ftpPassive       = $session->get('transfer.ftpPassive', 1, 'akeeba');
-		$this->ftpPassiveFix    = $session->get('transfer.ftpPassiveFix', 1, 'akeeba');
+		$this->newSiteUrl       = $this->container->platform->getSessionVar('transfer.url', '', 'akeeba');
+		$this->newSiteUrlResult = $this->container->platform->getSessionVar('transfer.url_status', '', 'akeeba');
+		$this->ftpSupport       = $this->container->platform->getSessionVar('transfer.ftpsupport', null, 'akeeba');
+		$this->transferOption   = $this->container->platform->getSessionVar('transfer.transferOption', null, 'akeeba');
+		$this->ftpHost          = $this->container->platform->getSessionVar('transfer.ftpHost', null, 'akeeba');
+		$this->ftpPort          = $this->container->platform->getSessionVar('transfer.ftpPort', null, 'akeeba');
+		$this->ftpUsername      = $this->container->platform->getSessionVar('transfer.ftpUsername', null, 'akeeba');
+		$this->ftpPassword      = $this->container->platform->getSessionVar('transfer.ftpPassword', null, 'akeeba');
+		$this->ftpPubKey        = $this->container->platform->getSessionVar('transfer.ftpPubKey', null, 'akeeba');
+		$this->ftpPrivateKey    = $this->container->platform->getSessionVar('transfer.ftpPrivateKey', null, 'akeeba');
+		$this->ftpDirectory     = $this->container->platform->getSessionVar('transfer.ftpDirectory', null, 'akeeba');
+		$this->ftpPassive       = $this->container->platform->getSessionVar('transfer.ftpPassive', 1, 'akeeba');
+		$this->ftpPassiveFix    = $this->container->platform->getSessionVar('transfer.ftpPassiveFix', 1, 'akeeba');
 
 		// We get this option from the request
 		$this->force = $this->input->getInt('force', 0);
 
 		if (!empty($this->latestBackup))
 		{
-			$lastBackupDate       = JFactory::getDate($this->latestBackup['backupstart'], 'UTC');
-			$this->lastBackupDate = $lastBackupDate->format(JText::_('DATE_FORMAT_LC'), true);
+			$lastBackupDate       = $this->getContainer()->platform->getDate($this->latestBackup['backupstart'], 'UTC');
+			$tz                  = new \DateTimeZone($this->container->platform->getUser()->getParam('timezone', $this->container->platform->getConfig()->get('offset')));
+			$lastBackupDate->setTimezone($tz);
 
-			$session->set('transfer.lastBackup', $this->latestBackup, 'akeeba');
+			$this->lastBackupDate = $lastBackupDate->format(JText::_('DATE_FORMAT_LC2'), true);
+
+			$this->container->platform->setSessionVar('transfer.lastBackup', $this->latestBackup, 'akeeba');
 		}
 
 		if (empty($this->ftpSupport))
 		{
 			$this->ftpSupport = $model->getFTPSupport();
-			$session->set('transfer.ftpsupport', $this->ftpSupport, 'akeeba');
+			$this->container->platform->setSessionVar('transfer.ftpsupport', $this->ftpSupport, 'akeeba');
 		}
 
 		$this->transferOptions = $this->getTransferMethodOptions();
@@ -155,7 +157,7 @@ class Html extends BaseView
 		JText::script('COM_AKEEBA_CONFIG_DIRECTFTP_TEST_FAIL');
 
 		$js = <<< JS
-akeeba.jQuery(document).ready(function(){
+akeeba.System.documentReady(function(){
 	// AJAX URL endpoint
 	akeeba.System.params.AjaxURL = 'index.php?option=com_akeeba&view=Transfer&format=raw&force={$this->force}';
 
@@ -164,18 +166,18 @@ akeeba.jQuery(document).ready(function(){
 	akeeba.Transfer.lastResult = '{$this->newSiteUrlResult}';
 
 	// Auto-process URL change event
-	if (akeeba.jQuery('#akeeba-transfer-url').val())
+	if (document.getElementById('akeeba-transfer-url').value)
 	{
 		akeeba.Transfer.onUrlChange();
 	}
 	
 	// Remote connection hooks
-	if (akeeba.jQuery('#akeeba-transfer-ftp-method').length)
+	if (document.getElementById('akeeba-transfer-ftp-method'))
 	{
-		akeeba.jQuery('#akeeba-transfer-ftp-method').change(akeeba.Transfer.onTransferMethodChange);
-		akeeba.jQuery('#akeeba-transfer-ftp-directory-browse').click(akeeba.Transfer.initFtpSftpBrowser);
-		akeeba.jQuery('#akeeba-transfer-btn-apply').click(akeeba.Transfer.applyConnection);
-		akeeba.jQuery('#akeeba-transfer-err-url-notexists-btn-ignore').click(akeeba.Transfer.showConnectionDetails);
+		akeeba.System.addEventListener(document.getElementById('akeeba-transfer-ftp-method'), 'change', akeeba.Transfer.onTransferMethodChange);
+		//akeeba.System.addEventListener(document.getElementById('akeeba-transfer-ftp-directory-browse'), 'click', akeeba.Transfer.initFtpSftpBrowser);
+		akeeba.System.addEventListener(document.getElementById('akeeba-transfer-btn-apply'), 'click', akeeba.Transfer.applyConnection);
+		akeeba.System.addEventListener(document.getElementById('akeeba-transfer-err-url-notexists-btn-ignore'), 'click', akeeba.Transfer.showConnectionDetails);
 	}
 });
 JS;

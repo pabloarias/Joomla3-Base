@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     FOF
- * @copyright   2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright   2010-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license     GNU GPL version 2 or later
  */
 
@@ -83,6 +83,14 @@ class Blade implements CompilerInterface
 		return $this->isCacheable;
 	}
 
+	/**
+	 * Compile a view template into PHP and HTML
+	 *
+	 * @param   string  $path         The absolute filesystem path of the view template
+	 * @param   array   $forceParams  Any parameters to force (only for engines returning raw HTML)
+	 *
+	 * @return mixed
+	 */
 	public function compile($path, array $forceParams = array())
 	{
 		$this->footer = array();
@@ -489,6 +497,21 @@ class Blade implements CompilerInterface
 	}
 
 	/**
+	 * Compile the plural statements into valid PHP.
+	 *
+	 * e.g. @plural('COM_FOOBAR_N_ITEMS_SAVED', $countItemsSaved)
+	 *
+	 * @see JText::plural()
+	 *
+	 * @param  string  $expression
+	 * @return string
+	 */
+	protected function compilePlural($expression)
+	{
+		return "<?php echo \\JText::plural$expression; ?>";
+	}
+
+	/**
 	 * Compile the token statements into valid PHP.
 	 *
 	 * @param  string  $expression
@@ -496,7 +519,7 @@ class Blade implements CompilerInterface
 	 */
 	protected function compileToken($expression)
 	{
-		return "<?php echo \\JFactory::getSession()->getFormToken(); ?>";
+		return "<?php echo \$this->container->platform->getToken(true); ?>";
 	}
 
 	/**
@@ -683,6 +706,22 @@ class Blade implements CompilerInterface
 	}
 
 	/**
+	 * Compile the jlayout statements into valid PHP.
+	 *
+	 * @param  string  $expression
+	 * @return string
+	 */
+	protected function compileJlayout($expression)
+	{
+		if (starts_with($expression, '('))
+		{
+			$expression = substr($expression, 1, -1);
+		}
+
+		return "<?php echo \\FOF30\\Layout\\LayoutHelper::render(\$this->container, $expression); ?>";
+	}
+
+	/**
 	 * Compile the stack statements into the content
 	 *
 	 * @param  string  $expression
@@ -723,7 +762,7 @@ class Blade implements CompilerInterface
 	 */
 	protected function compileRoute($expression)
 	{
-		return "<?php echo \JRoute::_{$expression}; ?>";
+		return "<?php echo \$this->container->template->route{$expression}; ?>";
 	}
 
 	/**
