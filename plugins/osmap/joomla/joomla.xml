@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="plugin" group="osmap" version="3.4" method="upgrade">
     <name>PLG_OSMAP_JOOMLA</name>
-    <creationDate>December 29 2016</creationDate>
+    <creationDate>May 09 2017</creationDate>
     <copyright>Copyright (C) 2016 Open Source Training, LLC. All rights reserved. / Forked from XMap - Guillermo Vargas - guille@vargas.co.cr</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <author>Joomlashack</author>
     <authorEmail>help@joomlashack.com</authorEmail>
     <authorUrl>https://www.joomlashack.com</authorUrl>
-    <version>4.2.9</version>
+    <version>4.2.12</version>
     <variant>FREE</variant>
     <description>PLG_OSMAP_JOOMLA_PLUGIN_DESCRIPTION</description>
 
@@ -53,8 +53,7 @@
                     name="max_category_level"
                     type="list"
                     default="all"
-                    label="PLG_OSMAP_JOOMLA_SETTING_MAX_CATEG_LEVEL_LABEL"
-                    description="PLG_OSMAP_JOOMLA_SETTING_MAX_CATEG_LEVEL_DESC">
+                    label="PLG_OSMAP_JOOMLA_SETTING_MAX_CATEG_LEVEL_LABEL">
 
                     <option value="100">PLG_OSMAP_JOOMLA_OPTION_ALL</option>
                     <option value="1">1</option>
@@ -127,6 +126,7 @@
                     <option value="2">PLG_OSMAP_JOOMLA_OPTION_PUBLISH</option>
                     <option value="3">PLG_OSMAP_JOOMLA_OPTION_HITS</option>
                     <option value="4">PLG_OSMAP_JOOMLA_OPTION_TITLE</option>
+                    <option value="5">PLG_OSMAP_JOOMLA_OPTION_ORDERING</option>
                 </field>
 
                 <field

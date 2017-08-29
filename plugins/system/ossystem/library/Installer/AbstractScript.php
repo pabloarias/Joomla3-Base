@@ -13,13 +13,12 @@ defined('_JEXEC') or die();
 use JFactory;
 use Joomla\Registry\Registry;
 use JTable;
-use JTableExtension;
 use JInstaller;
 use JText;
 use JUri;
 use JFolder;
 use JFormFieldCustomFooter;
-use JInstallerAdapterComponent;
+use JInstallerAdapter;
 use JModelLegacy;
 use JFile;
 use SimpleXMLElement;
@@ -39,14 +38,9 @@ abstract class AbstractScript
     protected $manifest = null;
 
     /**
-     * @var string
+     * @var SimpleXMLElement
      */
-    protected $previousVersion = '0.0.0';
-
-    /**
-     * @var string
-     */
-    protected $phpDefaultMinimum = '5.3.0';
+    protected $previousManifest = null;
 
     /**
      * @var string
@@ -104,7 +98,17 @@ abstract class AbstractScript
     protected $relatedExtensionFeedback = array();
 
     /**
-     * @param JInstallerAdapterComponent $parent
+     * AbstractScript constructor.
+     *
+     * @param JInstallerAdapter $parent
+     */
+    public function __construct($parent)
+    {
+        $this->initProperties($parent);
+    }
+
+    /**
+     * @param JInstallerAdapter $parent
      *
      * @return void
      */
@@ -126,17 +130,44 @@ abstract class AbstractScript
             $this->group = $attributes['group'];
         }
 
-        // Get the previous version number for upgrades
-        $path = $this->installer->getPath('extension_administrator');
-        $path .= '/' . basename($this->installer->getPath('manifest'));
-        if (is_file($path)) {
-            $previousManifest      = JInstaller::parseXMLInstallFile($path);
-            $this->previousVersion = (string)$previousManifest['version'] ?: '0.0.0';
+        // Get the previous manifest for use in upgrades
+        $adminPath    = $this->installer->getPath('extension_administrator');
+        $manifestPath = $adminPath . '/' . basename($this->installer->getPath('manifest'));
+        if (is_file($manifestPath)) {
+            $this->previousManifest = simplexml_load_file($manifestPath);
+        }
+
+        // Determine basepath for localized files
+        $language = JFactory::getLanguage();
+        $basePath = $this->installer->getPath('source');
+        if (is_dir($basePath)) {
+            if ($this->type == 'component' && $basePath != $adminPath) {
+                // For components sourced by manifest, need to find the admin folder
+                if ($files = $this->manifest->administration->files) {
+                    if ($files = (string)$files['folder']) {
+                        $basePath .= '/' . $files;
+                    }
+                }
+            }
+
+        } else {
+            $basePath = $this->getExtensionPath($this->type, (string)$this->manifest->alledia->element, $this->group);
+        }
+
+        // All the files we want to load
+        $languageFiles = array(
+            'lib_allediainstaller.sys',
+            $this->getFullElement()
+        );
+
+        // Load from localized or core language folder
+        foreach ($languageFiles as $languageFile) {
+            $language->load($languageFile, $basePath) || $language->load($languageFile, JPATH_ADMINISTRATOR);
         }
     }
 
     /**
-     * @param JInstallerAdapterComponent $parent
+     * @param JInstallerAdapter $parent
      *
      * @return bool
      */
@@ -146,7 +177,7 @@ abstract class AbstractScript
     }
 
     /**
-     * @param JInstallerAdapterComponent $parent
+     * @param JInstallerAdapter $parent
      *
      * @return bool
      */
@@ -156,24 +187,18 @@ abstract class AbstractScript
     }
 
     /**
-     * @param JInstallerAdapterComponent $parent
+     * @param JInstallerAdapter $parent
      *
      * @return void
      */
     public function uninstall($parent)
     {
-        $this->initProperties($parent);
-
-        // Load the installer default language
-        $language = JFactory::getLanguage();
-        $language->load('lib_allediainstaller.sys', JPATH_ADMINISTRATOR);
-
         $this->uninstallRelated();
         $this->showMessages();
     }
 
     /**
-     * @param JInstallerAdapterComponent $parent
+     * @param JInstallerAdapter $parent
      *
      * @return bool
      */
@@ -183,18 +208,14 @@ abstract class AbstractScript
     }
 
     /**
-     * @param string                     $type
-     * @param JInstallerAdapterComponent $parent
+     * @param string            $type
+     * @param JInstallerAdapter $parent
      *
      * @return bool
      */
     public function preFlight($type, $parent)
     {
-        $this->initProperties($parent);
-
-        // Load the installer default language
-        $language = JFactory::getLanguage();
-        $language->load('lib_allediainstaller.sys', __DIR__ . '/../../');
+        $success = true;
 
         if ($type === 'update') {
             $this->clearUpdateServers();
@@ -208,12 +229,10 @@ abstract class AbstractScript
                 if (!$this->validateTargetVersion(JVERSION, $targetPlatform)) {
                     // Platform version is invalid. Displays a warning and cancel the install
                     $targetPlatform = str_replace('*', 'x', $targetPlatform);
-                    $msg            = JText::sprintf('LIB_ALLEDIAINSTALLER_WRONG_PLATFORM', $targetPlatform);
+
+                    $msg = JText::sprintf('LIB_ALLEDIAINSTALLER_WRONG_PLATFORM', $this->getName(), $targetPlatform);
                     JFactory::getApplication()->enqueueMessage($msg, 'warning');
-
-                    $this->cancelInstallation = true;
-
-                    return false;
+                    $success = false;
                 }
             }
 
@@ -224,22 +243,36 @@ abstract class AbstractScript
                 if (!$this->validateTargetVersion(phpversion(), $targetPhpVersion)) {
                     // php version is too low
                     $minimumPhp = str_replace('*', 'x', $targetPhpVersion);
-                    $msg        = JText::sprintf('LIB_ALLEDIAINSTALLER_WRONG_PHP', $minimumPhp);
+
+                    $msg = JText::sprintf('LIB_ALLEDIAINSTALLER_WRONG_PHP', $this->getName(), $minimumPhp);
                     JFactory::getApplication()->enqueueMessage($msg, 'warning');
+                    $success = false;
+                }
+            }
 
-                    $this->cancelInstallation = true;
+            // Check for minimum previous version
+            if ($type == 'update' && $this->previousManifest && isset($this->manifest->alledia->previousminimum)) {
+                $targetVersion = (string)$this->manifest->alledia->previousminimum;
+                $lastVersion   = (string)$this->previousManifest->version;
 
-                    return false;
+                if (!$this->validateTargetVersion($lastVersion, $targetVersion)) {
+                    // Previous minimum is not installed
+                    $minimumVersion = str_replace('*', 'x', $targetVersion);
+
+                    $msg = JText::sprintf('LIB_ALLEDIAINSTALLER_WRONG_PREVIOUS', $this->getName(), $minimumVersion);
+                    JFactory::getApplication()->enqueueMessage($msg, 'warning');
+                    $success = false;
                 }
             }
         }
 
-        return true;
+        $this->cancelInstallation = !$success;
+        return $success;
     }
 
     /**
-     * @param string                     $type
-     * @param JInstallerAdapterComponent $parent
+     * @param string            $type
+     * @param JInstallerAdapter $parent
      *
      * @return void
      */
@@ -321,9 +354,6 @@ abstract class AbstractScript
         // Show additional installation messages
         $extensionPath = $this->getExtensionPath($this->type, (string)$this->manifest->alledia->element, $this->group);
 
-        // Load the extension language
-        JFactory::getLanguage()->load($this->getFullElement(), $extensionPath);
-
         // If Pro extension, includes the license form view
         if ($extension->isPro()) {
             // Get the OSMyLicensesManager extension to handle the license key
@@ -341,13 +371,7 @@ abstract class AbstractScript
             }
         }
 
-        // Get the extension name. If no custom name is set, uses the namespace
-        if (isset($this->manifest->alledia->name)) {
-            $name = $this->manifest->alledia->name;
-        } else {
-            $name = $this->manifest->alledia->namespace;
-        }
-        $name .= ($extension->isPro() ? ' Pro' : '');
+        $name = $this->getName() . ($extension->isPro() ? ' Pro' : '');
 
         // Welcome message
         if ($type === 'install') {
@@ -363,7 +387,19 @@ abstract class AbstractScript
         $this->addStyle($this->mediaFolder . '/css/installer.css');
 
         // Include the template
-        include $extensionPath . '/views/installer/tmpl/default.php';
+        // Try to find the template in an alternative folder, since some extensions
+        // which uses FOF will display the "Installers" view on admin, errouniously.
+        // FOF look for views automatically reading the views folder. So on that
+        // case we move the installer view to another folder.
+        $path = $extensionPath . '/views/installer/tmpl/default.php';
+        if (JFile::exists($path)) {
+            include $path;
+        } else {
+            $path = $extensionPath . '/alledia_views/installer/tmpl/default.php';
+            if (JFile::exists($path)) {
+                include $path;
+            }
+        }
 
         $this->showMessages();
     }
@@ -422,17 +458,6 @@ abstract class AbstractScript
                         $currentVersion = $currentManifest->get('version');
 
                         if (version_compare($currentVersion, $newVersion, '>')) {
-                            $this->setMessage(
-                                JText::sprintf(
-                                    'LIB_ALLEDIAINSTALLER_RELATED_UPDATE_SKIPED',
-                                    strtolower($typeName),
-                                    $element,
-                                    $newVersion,
-                                    $currentVersion
-                                ),
-                                'warning'
-                            );
-
                             // Store the state of the install/update
                             $this->storeFeedbackForRelatedExtension(
                                 $element,
@@ -859,7 +884,8 @@ abstract class AbstractScript
             'template'  => 'tpl',
             'library'   => 'lib',
             'cli'       => 'cli',
-            'module'    => 'mod'
+            'module'    => 'mod',
+            'file'      => 'file'
         );
 
         $type    = empty($type) ? $this->type : $type;
@@ -884,7 +910,8 @@ abstract class AbstractScript
      */
     protected function getInfoFromManifest($manifestPath)
     {
-        $info = new Registry();
+        $info = new Registry;
+
         if (file_exists($manifestPath)) {
             $xml = simplexml_load_file($manifestPath);
 
@@ -925,7 +952,8 @@ abstract class AbstractScript
             'template'  => 'templates/',
             'library'   => 'libraries/',
             'cli'       => 'cli/',
-            'module'    => 'modules/'
+            'module'    => 'modules/',
+            'file'      => 'administrator/manifests/files/'
         );
 
         $basePath = JPATH_SITE . '/' . $folders[$type];
@@ -948,8 +976,9 @@ abstract class AbstractScript
                 break;
         }
 
-        $basePath .= $element;
-
+        if ($type !== 'file') {
+            $basePath .= $element;
+        }
 
         return $basePath;
     }
@@ -986,19 +1015,29 @@ abstract class AbstractScript
     {
         $installer = new JInstaller;
 
-        if ($type !== 'library') {
-            $basePath = $this->getExtensionPath($type, $element, $group);
+        switch ($type) {
+            case 'library':
+            case 'file':
+                $folders = array(
+                    'library' => 'libraries',
+                    'file'    => 'files'
+                );
 
-            $installer->setPath('source', $basePath);
-            $installer->getManifest();
+                $manifestPath = JPATH_SITE . '/administrator/manifests/' . $folders[$type] . '/' . $element . '.xml';
 
-            $manifestPath = $installer->getPath('manifest');
-        } else {
-            $manifestPath = JPATH_SITE . '/administrator/manifests/libraries/' . $element . '.xml';
+                if (!file_exists($manifestPath) || !$installer->isManifest($manifestPath)) {
+                    $manifestPath = false;
+                }
+                break;
 
-            if (!file_exists($manifestPath) || !$installer->isManifest($manifestPath)) {
-                $manifestPath = false;
-            }
+            default:
+                $basePath = $this->getExtensionPath($type, $element, $group);
+
+                $installer->setPath('source', $basePath);
+                $installer->getManifest();
+
+                $manifestPath = $installer->getPath('manifest');
+                break;
         }
 
         return $manifestPath;
@@ -1411,5 +1450,21 @@ abstract class AbstractScript
 
         // Compare with the actual version
         return version_compare($actualVersion, $targetVersion, 'ge');
+    }
+
+    /**
+     * Get the extension name. If no custom name is set, uses the namespace
+     *
+     * @return string
+     */
+    protected function getName()
+    {
+        // Get the extension name. If no custom name is set, uses the namespace
+        if (isset($this->manifest->alledia->name)) {
+            $name = $this->manifest->alledia->name;
+        } else {
+            $name = $this->manifest->alledia->namespace;
+        }
+        return (string)$name;
     }
 }

@@ -19,6 +19,7 @@ if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
     if (!class_exists('\\Alledia\\Framework\\AutoLoader')) {
         require_once ALLEDIA_FRAMEWORK_PATH . '/Framework/AutoLoader.php';
     }
+
     AutoLoader::register('\\Alledia\\Framework', ALLEDIA_FRAMEWORK_PATH . '/Framework');
 }
 

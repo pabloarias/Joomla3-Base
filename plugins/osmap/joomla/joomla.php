@@ -338,22 +338,18 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
      * @param int       $catid  the id of the category to be expanded
      * @param Registry  $params parameters for this plugin on Xmap
      * @param int       $itemid the itemid to use for this category's children
-     * @param Item      $prevnode
      * @param int       $curlevel
      *
      * @return bool
      */
-    public static function expandCategory(
+    protected static function expandCategory(
         $collector,
         $parent,
         $catid,
-        &$params,
+        $params,
         $itemid,
-        $prevnode = null,
         $curlevel = 0
     ) {
-        $paramExpandCategories = $params->get('expand_categories', 1);
-
         $db = OSMap\Factory::getDBO();
 
         $where = array(
@@ -400,22 +396,23 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                 $collector->changeLevel(1);
 
                 foreach ($items as $item) {
-                    $node                           = new stdClass;
-                    $node->id                       = $item->id;
-                    $node->uid                      = 'joomla.category.' . $item->id;
-                    $node->browserNav               = $parent->browserNav;
-                    $node->priority                 = $params->get('cat_priority');
-                    $node->changefreq               = $params->get('cat_changefreq');
-                    $node->name                     = $item->title;
-                    $node->expandible               = true;
-                    $node->secure                   = $parent->secure;
-                    $node->newsItem                 = 0;
-                    $node->adapterName              = 'JoomlaCategory';
-                    $node->pluginParams             = &$params;
-                    $node->parentIsVisibleForRobots = $parent->visibleForRobots;
-                    $node->created                  = $item->created;
-                    $node->modified                 = $item->modified;
-                    $node->publishUp                = $item->created;
+                    $node = (object)array(
+                        'id'                       => $item->id,
+                        'uid'                      => 'joomla.category.' . $item->id,
+                        'browserNav'               => $parent->browserNav,
+                        'priority'                 => $params->get('cat_priority'),
+                        'changefreq'               => $params->get('cat_changefreq'),
+                        'name'                     => $item->title,
+                        'expandible'               => true,
+                        'secure'                   => $parent->secure,
+                        'newsItem'                 => 0,
+                        'adapterName'              => 'JoomlaCategory',
+                        'pluginParams'             => &$params,
+                        'parentIsVisibleForRobots' => $parent->visibleForRobots,
+                        'created'                  => $item->created,
+                        'modified'                 => $item->modified,
+                        'publishUp'                => $item->created
+                    );
 
                     // Keywords
                     $paramKeywords = $params->get('keywords', 'metakey');
@@ -427,16 +424,10 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
 
                     $node->slug = $item->route ? ($item->id . ':' . $item->route) : $item->id;
                     $node->link = ContentHelperRoute::getCategoryRoute($node->slug);
-
                     $node->itemid = $itemid;
-                    if (strpos($node->link, 'Itemid=') === false) {
-                        $node->link .= '&Itemid=' . $itemid;
-                    } else {
-                        $node->link = preg_replace('/Itemid=([0-9]+)/', 'Itemid=' . $itemid, $node->link);
-                    }
 
                     if ($collector->printNode($node)) {
-                        self::expandCategory($collector, $parent, $item->id, $params, $node->itemid, $node, $curlevel);
+                        self::expandCategory($collector, $parent, $item->id, $params, $node->itemid, $curlevel);
                     }
                 }
 
@@ -455,6 +446,15 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
      * Returns an array of all contained content items.
      *
      * @since 2.0
+     *
+     * @param Collector  $collector
+     * @param object     $parent
+     * @param int|string $catid
+     * @param Registry   $params
+     * @param int        $itemid
+     * @param object     $prevnode
+     *
+     * @return bool
      */
     public static function includeCategoryContent($collector, $parent, $catid, &$params, $itemid, $prevnode = null)
     {
@@ -526,12 +526,14 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
             'a.modified',
             'a.publish_up',
             'a.hits',
-            'a.title'
+            'a.title',
+            'a.ordering'
         );
         $orderDirOptions = array(
             'ASC',
             'DESC'
         );
+
         $order    = ArrayHelper::getValue($orderOptions, $params->get('article_order', 0), 0);
         $orderDir = ArrayHelper::getValue($orderDirOptions, $params->get('article_orderdir', 0), 0);
 
@@ -591,8 +593,7 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
                 }
                 $node->keywords = trim($keywords);
 
-                $node->slug = $item->alias ? ($item->id . ':' . $item->alias) : $item->id;
-                //$node->catslug = $item->category_route ? ($catid . ':' . $item->category_route) : $catid;
+                $node->slug    = $item->alias ? ($item->id . ':' . $item->alias) : $item->id;
                 $node->catslug = $item->catid;
                 $node->link    = ContentHelperRoute::getArticleRoute($node->slug, $node->catslug);
 
@@ -654,7 +655,14 @@ class PlgOSMapJoomla extends OSMap\Plugin\Base implements OSMap\Plugin\ContentIn
         return true;
     }
 
-    private static function printSubNodes($collector, $parent, &$params, &$subnodes, $item)
+    /**
+     * @param Collector $collector
+     * @param Item      $parent
+     * @param Registry  $params
+     * @param array     $subnodes
+     * @param Item      $item
+     */
+    protected static function printSubNodes($collector, $parent, &$params, &$subnodes, $item)
     {
         $collector->changeLevel(1);
 
