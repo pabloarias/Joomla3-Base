@@ -1,61 +1,63 @@
 <?php
 
 /**
- * @package   	JCE
- * @copyright 	Copyright (c) 2009-2016 Ryan Demmer. All rights reserved.
- * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @copyright     Copyright (c) 2009-2017 Ryan Demmer. All rights reserved
+ * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
+ * other free or open source software licenses
  */
 defined('_WF_EXT') or die('RESTRICTED');
 
-class JoomlalinksMenu extends JObject {
-
-    var $_option = 'com_menu';
+class JoomlalinksMenu extends JObject
+{
+    public $_option = 'com_menu';
 
     /**
-     * Constructor activating the default information of the class
-     *
-     * @access	protected
+     * Constructor activating the default information of the class.
      */
-    public function __construct($options = array()) {
-        
+    public function __construct($options = array())
+    {
     }
 
     /**
-     * Returns a reference to a editor object
+     * Returns a reference to a editor object.
      *
      * This method must be invoked as:
-     * 		<pre>  $browser =JContentEditor::getInstance();</pre>
+     *         <pre>  $browser =JContentEditor::getInstance();</pre>
      *
-     * @access	public
-     * @return	JCE  The editor object.
-     * @since	1.5
+     * @return JCE The editor object
+     *
+     * @since    1.5
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         static $instance;
 
         if (!is_object($instance)) {
-            $instance = new JoomlalinksMenu();
+            $instance = new self();
         }
+
         return $instance;
     }
 
-    public function getOption() {
+    public function getOption()
+    {
         return $this->_option;
     }
 
-    public function getList() {
+    public function getList()
+    {
         $wf = WFEditorPlugin::getInstance();
 
         if ($wf->checkAccess('links.joomlalinks.menu', 1)) {
-            return '<li id="index.php?option=com_menu"><div class="tree-row"><div class="tree-image"></div><span class="folder menu nolink"><a href="javascript:;">' . WFText::_('WF_LINKS_JOOMLALINKS_MENU') . '</a></span></div></li>';
+            return '<li id="index.php?option=com_menu" class="folder menu nolink"><div class="uk-tree-row"><a href="#"><span class="uk-tree-icon"></span><span class="uk-tree-text">' . WFText::_('WF_LINKS_JOOMLALINKS_MENU') . '</span></a></div></li>';
         }
     }
 
-    public function getLinks($args) {
+    public function getLinks($args)
+    {
         $items = array();
         $view = isset($args->view) ? $args->view : '';
         switch ($view) {
@@ -66,7 +68,7 @@ class JoomlalinksMenu extends JObject {
                     $items[] = array(
                         'id' => 'index.php?option=com_menu&view=menu&type=' . $type->id,
                         'name' => $type->title,
-                        'class' => 'folder menu nolink'
+                        'class' => 'folder menu nolink',
                     );
                 }
                 break;
@@ -78,11 +80,15 @@ class JoomlalinksMenu extends JObject {
                 $menus = self::_menu($id, $type);
 
                 foreach ($menus as $menu) {
-
                     $class = array();
-                    
+
                     if (defined('JPATH_PLATFORM')) {
-                        $params = new JRegistry($menu->params);
+                        // bypass errors in menu parameters syntax
+                        try {
+                            $params = new JRegistry($menu->params);
+                        } catch (Exception $e) {
+                            $params = new JRegistry();
+                        }
                     } else {
                         $params = new JParameter($menu->params);
                     }
@@ -119,7 +125,7 @@ class JoomlalinksMenu extends JObject {
                     if ($params->get('secure')) {
                         $link = self::toSSL($link);
                     }
-                    
+
                     // language
                     if (isset($menu->language)) {
                         $link .= $this->getLangauge($menu->language);
@@ -129,7 +135,7 @@ class JoomlalinksMenu extends JObject {
                         'id' => $children ? 'index.php?option=com_menu&view=menu&id=' . $menu->id : $link,
                         'url' => self::route($link),
                         'name' => $title . ' / ' . $menu->alias,
-                        'class' => implode(' ', $class)
+                        'class' => implode(' ', $class),
                     );
                 }
                 break;
@@ -154,7 +160,7 @@ class JoomlalinksMenu extends JObject {
 
                     // resolve link
                     $link = self::_resolveLink($menu);
-                    
+
                     // language
                     if (isset($menu->language)) {
                         $link .= $this->getLangauge($menu->language);
@@ -167,20 +173,24 @@ class JoomlalinksMenu extends JObject {
                     $items[] = array(
                         'id' => self::route($link),
                         'name' => $title . ' / ' . $menu->alias,
-                        'class' => $children ? 'folder menu' : 'file'
+                        'class' => $children ? 'folder menu' : 'file',
                     );
                 }
                 break;
         }
+
         return $items;
     }
 
     /**
-     * Convert link to SSL
+     * Convert link to SSL.
+     *
      * @param type $link
+     *
      * @return string
      */
-    private static function toSSL($link) {
+    private static function toSSL($link)
+    {
         if (strcasecmp(substr($link, 0, 4), 'http') && (strpos($link, 'index.php?') !== false)) {
             $uri = JURI::getInstance();
 
@@ -197,13 +207,14 @@ class JoomlalinksMenu extends JObject {
         return $link;
     }
 
-    private static function _resolveLink($menu, $secure) {
+    private static function _resolveLink($menu)
+    {
         $wf = WFEditorPlugin::getInstance();
 
         // get link from menu object
         $link = $menu->link;
 
-        // internal link 
+        // internal link
         if ($link && strpos($link, 'index.php') === 0) {
             if ($wf->getParam('links.joomlalinks.menu_resolve_alias', 1) == 1) {
                 // no Itemid
@@ -219,7 +230,8 @@ class JoomlalinksMenu extends JObject {
         return $link;
     }
 
-    private function _types() {
+    private function _types()
+    {
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
@@ -231,10 +243,12 @@ class JoomlalinksMenu extends JObject {
         }
 
         $db->setQuery($query, 0);
+
         return $db->loadObjectList();
     }
 
-    private function _alias($id) {
+    private function _alias($id)
+    {
         $db = JFactory::getDBO();
         $user = JFactory::getUser();
 
@@ -252,21 +266,23 @@ class JoomlalinksMenu extends JObject {
         $query->clear();
 
         if (is_object($query)) {
-            $query->select('id, name, link, alias')->from('#__menu')->where(array('published = 1', 'id = ' . (int) $params->get('menu_item'), 'access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')'))->order('name');
+            $query->select('id, name, link, alias')->from('#__menu')->where(array('published = 1', 'id = ' . (int) $params->get('menu_item'), 'access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')'))->order('id, name');
         } else {
             $query = 'SELECT id, name, link, alias'
-                    . ' FROM #__menu'
-                    . ' WHERE published = 1'
-                    . ' AND id = ' . (int) $params->get('menu_item')
-                    . ' AND access <= ' . (int) $user->get('aid')
-                    . ' ORDER BY name';
+            . ' FROM #__menu'
+            . ' WHERE published = 1'
+            . ' AND id = ' . (int) $params->get('menu_item')
+            . ' AND access <= ' . (int) $user->get('aid')
+            . ' ORDER BY id, name';
         }
 
         $db->setQuery($query, 0);
+
         return $db->loadObject();
     }
 
-    private function _children($id) {
+    private function _children($id)
+    {
         $db = JFactory::getDBO();
         $user = JFactory::getUser();
 
@@ -284,17 +300,19 @@ class JoomlalinksMenu extends JObject {
             }
 
             $query = 'SELECT COUNT(id)'
-                    . ' FROM #__menu'
-                    . ' WHERE published = 1'
-                    . ' AND access <= ' . (int) $user->get('aid')
-                    . $where;
+            . ' FROM #__menu'
+            . ' WHERE published = 1'
+            . ' AND access <= ' . (int) $user->get('aid')
+            . $where;
         }
 
         $db->setQuery($query, 0);
+
         return $db->loadResult();
     }
 
-    private function _menu($parent = 0, $type = 0) {
+    private function _menu($parent = 0, $type = 0)
+    {
         $db = JFactory::getDBO();
         $user = JFactory::getUser();
 
@@ -312,31 +330,44 @@ class JoomlalinksMenu extends JObject {
                 $parent = 1;
             }
 
-            $query->where(array('m.published = 1', 'm.access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')', 'm.parent_id = ' . (int) $parent));
-            $query->order('m.lft ASC');
+            $query->where('m.published = 1');
+
+            if ($user->authorise('core.admin') === false) {
+                $query->where('m.access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')');
+            }
+
+            $query->where('m.parent_id = ' . (int) $parent);
+
+            $query->order('m.lft ASC, m.id, m.title');
         } else {
             $where = '';
             $join = '';
 
             if ($type) {
-                $join = ' INNER JOIN #__menu_types AS s ON s.id = ' . intval($type);
-                $where = ' AND m.menutype = s.menutype';
+                $join  .= ' INNER JOIN #__menu_types AS s ON s.id = ' . intval($type);
+                $where .= ' AND m.menutype = s.menutype';
             }
+
+            if ($user->get('gid') != 25) {
+                $where .= ' AND m.access <= ' . (int) $user->get('aid');
+            }
+
             $query = 'SELECT m.* FROM #__menu AS m'
-                    . $join
-                    . ' WHERE m.published = 1'
-                    . ' AND m.access <= ' . (int) $user->get('aid')
-                    . ' AND m.parent = ' . (int) $parent
-                    . $where
-                    . ' ORDER BY m.lft ASC'
+            . $join
+            . ' WHERE m.published = 1'
+            . ' AND m.parent = ' . (int) $parent
+            . $where
+            . ' ORDER BY m.lft ASC, m.id, m.title'
             ;
         }
 
         $db->setQuery($query, 0);
+
         return $db->loadObjectList();
     }
 
-    private function getLangauge($language) {
+    private function getLangauge($language)
+    {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
@@ -360,7 +391,8 @@ class JoomlalinksMenu extends JObject {
         return $link;
     }
 
-    private static function route($url) {
+    private static function route($url)
+    {
         $wf = WFEditorPlugin::getInstance();
 
         if ($wf->getParam('links.joomlalinks.sef_url', 0)) {
@@ -369,7 +401,4 @@ class JoomlalinksMenu extends JObject {
 
         return $url;
     }
-
 }
-
-?>
