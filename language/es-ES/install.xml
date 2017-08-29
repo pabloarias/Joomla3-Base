@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension version="3.6" client="site" type="language" method="upgrade">
+<extension version="3.7" client="site" type="language" method="upgrade">
 	<name>Spanish (español)</name>
 	<tag>es-ES</tag>
-	<version>3.6.3.1</version>
-	<creationDate>23/10/2016</creationDate>
+	<version>3.7.2.1</version>
+	<creationDate>25/05/2017</creationDate>
 	<author>ComunidadJoomla</author>
 	<authorEmail>jcomunidad@gmail.com</authorEmail>
 	<authorUrl></authorUrl>
-	<copyright>Copyright (C) 2005 - 2016 Comunidadjoomla.org. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2005 - 2017 Comunidadjoomla.org. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>es-ES - Site language</description>
 	<files>
