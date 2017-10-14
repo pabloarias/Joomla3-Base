@@ -1,7 +1,7 @@
 <?php
 class JConfig {
 	public $offline = '0';
-	public $offline_message = 'This site is down for maintenance.<br />Please check back again soon.';
+	public $offline_message = 'Este sitio está en mantenimiento.<br />Por favor, vuelve de nuevo más tarde.';
 	public $display_offline_message = '1';
 	public $offline_image = '';
 	public $sitename = 'Joomla 3 Base';
