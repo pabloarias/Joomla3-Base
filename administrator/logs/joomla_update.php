@@ -110,3 +110,13 @@
 2017-08-29T04:32:11+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
 2017-08-29T04:32:11+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
 2017-08-29T04:32:11+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.7.5 se ha completado.
+2017-10-14T19:49:13+00:00	INFO 127.0.0.1	update	Actualización inciciadoa por el usuario Super User (999). La versión antigua es la 3.7.5.
+2017-10-14T19:49:17+00:00	INFO 127.0.0.1	update	Descargando el archivo desde https://s3-us-west-2.amazonaws.com/joomla-official-downloads/joomladownloads/joomla3/Joomla_3.8.1-Stable-Update_Package.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZ6S3Q3YQHG57ZRA%2F20171014%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20171014T194948Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&X-Amz-Signature=ab63ceca286ac4ed0e558bf23cbf95d1b8d84db4e37ee7147e6d33e2618aba5e.
+2017-10-14T19:49:29+00:00	INFO 127.0.0.1	update	El archivoe Joomla_3.8.1-Stable-Update_Package.zip se ha descargado.
+2017-10-14T19:49:29+00:00	INFO 127.0.0.1	update	Iniciando la instalación de la versión nueva.
+2017-10-14T19:49:30+00:00	INFO 127.0.0.1	update	Finalizando la instalación.
+2017-10-14T19:49:30+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.0-2017-07-28. Texto de la consulta: ALTER TABLE `#__fields_groups` ADD COLUMN `params` TEXT  NOT NULL  AFTER `orderi.
+2017-10-14T19:49:30+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.0-2017-07-31. Texto de la consulta: INSERT INTO `#__extensions` (`extension_id`, `package_id`, `name`, `type`, `elem.
+2017-10-14T19:49:30+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
+2017-10-14T19:49:31+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
+2017-10-14T19:49:31+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.8.1 se ha completado.
