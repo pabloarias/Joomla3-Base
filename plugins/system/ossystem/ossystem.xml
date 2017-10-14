@@ -2,12 +2,12 @@
 <extension version="3.5" type="plugin" group="system" method="upgrade">
     <name>plg_system_ossystem</name>
     <author>Joomlashack</author>
-    <creationDate>January 06 2017</creationDate>
+    <creationDate>October 02 2017</creationDate>
     <copyright>Copyright (C) 2016 Open Source Training, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>help@joomlashack.com</authorEmail>
     <authorUrl>http://www.joomlashack.com</authorUrl>
-    <version>1.2.6</version>
+    <version>1.3.0</version>
     <description>PLG_SYSTEM_OSSYSTEM_DESCRIPTION</description>
 
     <scriptfile>script.installer.php</scriptfile>
@@ -40,7 +40,7 @@
     </config>
 
     <updateservers>
-        <server type="extension" priority="1" name="OSSystem"><![CDATA[https://deploy.ostraining.com/client/update/free/stable/plg_system_ossystem]]></server>
+        <server type="extension" priority="1" name="Joomlashack System Plugin"><![CDATA[https://deploy.ostraining.com/client/update/free/stable/plg_system_ossystem]]></server>
     </updateservers>
 
     <variant>FREE</variant>
@@ -48,6 +48,7 @@
     <alledia>
         <element publish="true">ossystem</element>
         <namespace>OSSystem</namespace>
+        <name>Joomlashack System Plugin</name>
         <license>free</license>
         <targetplatform>3.*</targetplatform>
 

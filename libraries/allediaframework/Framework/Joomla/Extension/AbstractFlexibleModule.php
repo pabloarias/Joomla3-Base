@@ -10,33 +10,60 @@ namespace Alledia\Framework\Joomla\Extension;
 
 defined('_JEXEC') or die();
 
-use Alledia\Framework\Factory;
-use JRegistry;
+use Joomla\Registry\Registry;
 use JModuleHelper;
-use JError;
 
 abstract class AbstractFlexibleModule extends Licensed
 {
-    public $id;
+    /**
+     * @var int
+     */
+    public $id = null;
 
-    public $title;
+    /**
+     * @var string
+     */
+    public $title = null;
 
-    public $module;
+    /**
+     * @var
+     */
+    public $module = null;
 
-    public $position;
+    /**
+     * @var
+     */
+    public $position = null;
 
-    public $content;
+    /**
+     * @var string
+     */
+    public $content = null;
 
-    public $showtitle;
+    /**
+     * @var bool
+     */
+    public $showtitle = null;
 
-    public $params;
+    /**
+     * @var int
+     */
+    public $menuid = null;
 
-    public $menuid;
+    /**
+     * @var string
+     */
+    public $name = null;
 
-    public $name;
+    /**
+     * @var string
+     */
+    public $style = null;
 
-    public $style;
-
+    /**
+     * @var Registry
+     */
+    public $params = null;
 
     /**
      * Class constructor that instantiate the free and pro library, if installed
@@ -60,7 +87,7 @@ abstract class AbstractFlexibleModule extends Licensed
             $this->menuid    = $module->menuid;
             $this->name      = $module->name;
             $this->style     = $module->style;
-            $this->params    = new JRegistry($module->params);
+            $this->params    = new Registry($module->params);
         }
     }
 

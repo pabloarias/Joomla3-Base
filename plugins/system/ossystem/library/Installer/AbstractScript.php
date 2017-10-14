@@ -392,6 +392,7 @@ abstract class AbstractScript
         // FOF look for views automatically reading the views folder. So on that
         // case we move the installer view to another folder.
         $path = $extensionPath . '/views/installer/tmpl/default.php';
+        
         if (JFile::exists($path)) {
             include $path;
         } else {
@@ -559,7 +560,7 @@ abstract class AbstractScript
                         $msg     = 'LIB_ALLEDIAINSTALLER_RELATED_UNINSTALL';
                         $msgtype = 'message';
                         if (!$installer->uninstall($current->type, $current->extension_id)) {
-                            $msg .= '_FAIL';
+                            $msg     .= '_FAIL';
                             $msgtype = 'error';
                         }
                         $this->setMessage(
@@ -567,7 +568,7 @@ abstract class AbstractScript
                             $msgtype
                         );
                     }
-                } else {
+                } elseif (JFactory::getApplication()->get('debug', 0)) {
                     $this->setMessage(
                         JText::sprintf(
                             'LIB_ALLEDIAINSTALLER_RELATED_NOT_UNINSTALLED',
@@ -730,9 +731,17 @@ abstract class AbstractScript
      *
      * @return void
      */
-    protected function setMessage($msg, $type = 'message')
+    protected function setMessage($msg, $type = 'message', $prepend = null)
     {
-        $this->messages[] = array($msg, $type);
+        if ($prepend === null) {
+            $prepend = in_array($type, array('notice', 'error'));
+        }
+
+        if ($prepend) {
+            array_unshift($this->messages, array($msg, $type));
+        } else {
+            $this->messages[] = array($msg, $type);
+        }
     }
 
     /**
@@ -795,7 +804,7 @@ abstract class AbstractScript
                 jimport('joomla.filesystem.file');
 
                 foreach ($obsolete->file as $file) {
-                    $path = JPATH_SITE . '/' . (string)$file;
+                    $path = JPATH_ROOT . '/' . trim((string)$file, '/');
                     if (file_exists($path)) {
                         JFile::delete($path);
                     }
@@ -807,7 +816,7 @@ abstract class AbstractScript
                 jimport('joomla.filesystem.folder');
 
                 foreach ($obsolete->folder as $folder) {
-                    $path = JPATH_SITE . '/' . (string)$folder;
+                    $path = JPATH_ROOT . '/' . trim((string)$folder, '/');
                     if (file_exists($path)) {
                         JFolder::delete($path);
                     }
@@ -888,9 +897,9 @@ abstract class AbstractScript
             'file'      => 'file'
         );
 
-        $type    = empty($type) ? $this->type : $type;
-        $element = empty($element) ? (string)$this->manifest->alledia->element : $element;
-        $group   = empty($group) ? $this->group : $group;
+        $type    = $type ?: $this->type;
+        $element = $element ?: (string)$this->manifest->alledia->element;
+        $group   = $group ?: $this->group;
 
         $fullElement = $prefixes[$type] . '_';
 
@@ -972,6 +981,12 @@ abstract class AbstractScript
             case 'component':
                 if (!preg_match('/^com_/', $element)) {
                     $basePath .= 'com_';
+                }
+                break;
+
+            case 'template':
+                if (preg_match('/^tpl_/', $element)) {
+                    $element = str_replace('tpl_', '', $element);
                 }
                 break;
         }

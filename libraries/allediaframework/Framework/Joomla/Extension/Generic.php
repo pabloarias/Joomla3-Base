@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.filesystem.file');
 
 use JFactory;
-use JRegistry;
+use Joomla\Registry\Registry;
 use JFile;
 use JFormFieldCustomFooter;
 use SimpleXMLElement;
@@ -55,7 +55,7 @@ class Generic
     /**
      * The extension params
      *
-     * @var JRegistry
+     * @var Registry
      */
     public $params;
 
@@ -83,7 +83,7 @@ class Generic
     /**
      * The manifest information
      *
-     * @var \JRegistry
+     * @var Registry
      */
     public $manifest;
 
@@ -152,12 +152,12 @@ class Generic
             $this->id = $row->extension_id;
             $this->name = $row->name;
             $this->enabled = (bool) $row->enabled;
-            $this->params = new JRegistry($row->params);
+            $this->params = new Registry($row->params);
         } else {
             $this->id = null;
             $this->name = null;
             $this->enabled = false;
-            $this->params = new JRegistry;
+            $this->params = new Registry();
         }
     }
 
@@ -258,10 +258,15 @@ class Generic
     {
         $extensionPath = $this->getExtensionPath();
 
-        $fileName = $this->element . '.xml';
-
+        // Templates or extension?
         if ($this->type === 'template') {
             $fileName = 'templateDetails.xml';
+        } else {
+            $fileName = $this->element . '.xml';
+
+            if ($this->type === 'template') {
+                $fileName = 'templateDetails.xml';
+            }
         }
 
         $path = $extensionPath . "/{$fileName}";
@@ -269,6 +274,7 @@ class Generic
         if (!file_exists($path)) {
             $path = $extensionPath . "/{$this->getElementToDb()}.xml";
         }
+
 
         return $path;
     }
@@ -278,7 +284,7 @@ class Generic
      *
      * @param bool $force If true, force to load the manifest, ignoring the cached one
      *
-     * @return JRegistry
+     * @return Registry
      */
     public function getManifestAsSimpleXML($force = false)
     {
@@ -300,7 +306,7 @@ class Generic
      *
      * @param bool $force If true, force to load the manifest, ignoring the cached one
      *
-     * @return JRegistry
+     * @return Registry
      */
     public function getManifest($force = false)
     {

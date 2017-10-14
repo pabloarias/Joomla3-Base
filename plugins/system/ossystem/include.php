@@ -20,7 +20,7 @@ if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
         $app = JFactory::getApplication();
 
         if ($app->isAdmin()) {
-            $app->enqueueMessage('[OSSystem] Alledia framework not found', 'error');
+            $app->enqueueMessage('[Joomlashack System Plugin] Alledia framework not found', 'error');
         }
     }
 }

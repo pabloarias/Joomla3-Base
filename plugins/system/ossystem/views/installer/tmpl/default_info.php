@@ -54,7 +54,7 @@ defined('_JEXEC') or die();
         <?php endif; ?>
 
         <div class="joomlashack-license">
-            <?php echo JText::sprintf('LIB_ALLEDIAINSTALLER_LICENSED_AS', (string) $this->manifest->alledia->namespace, '<a href="http://www.gnu.org/licenses/gpl-3.0.html">GNU/GPL v3.0</a>'); ?>.
+            <?php echo JText::sprintf('LIB_ALLEDIAINSTALLER_LICENSED_AS', $this->getName(), '<a href="http://www.gnu.org/licenses/gpl-3.0.html">GNU/GPL v3.0</a>'); ?>.
         </div>
     </div>
 
