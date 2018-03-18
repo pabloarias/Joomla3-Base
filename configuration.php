@@ -14,7 +14,7 @@ class JConfig {
 	public $dbtype = 'mysql';
 	public $host = 'localhost';
 	public $user = 'root';
-	public $password = 'bleras';
+	public $password = '';
 	public $db = 'joomla3baseold';
 	public $dbprefix = 'iqm0l_';
 	public $live_site = '';
