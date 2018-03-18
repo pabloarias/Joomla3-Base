@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -10,6 +10,7 @@
 namespace Alledia\OSMap;
 
 use Alledia\Framework;
+use Alledia\OSMap\Sitemap\SitemapInterface;
 
 defined('_JEXEC') or die();
 
@@ -59,23 +60,24 @@ class Factory extends Framework\Factory
      * @param int    $id
      * @param string $type
      *
-     * @return mixed
+     * @return SitemapInterface
+     * @throws \Exception
      */
     public static function getSitemap($id, $type = 'standard')
     {
-        if ($type === 'standard') {
-            return new Sitemap\Standard($id);
-        }
+        switch ($type) {
+            case 'standard':
+                return new Sitemap\Standard($id);
 
-        if ($type === 'images') {
-            return new Sitemap\Images($id);
-        }
+            case 'images':
+                return new Sitemap\Images($id);
 
-        if ($type === 'news') {
-            return new Sitemap\News($id);
-        }
+            case 'news':
+                return new Sitemap\News($id);
 
-        return false;
+            default:
+                return null;
+        }
     }
 
     /**

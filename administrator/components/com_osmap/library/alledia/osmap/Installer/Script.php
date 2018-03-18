@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -41,7 +41,8 @@ class Script extends AbstractScript
     /**
      * Post installation actions
      *
-     * @return bool
+     * @return void
+     * @throws \Exception
      */
     public function postFlight($type, $parent)
     {
@@ -64,11 +65,19 @@ class Script extends AbstractScript
 
         if ($type === 'update') {
             $this->migrateLegacySitemaps();
-        }
 
-        if ($type === 'install') {
-            // Check if we have any sitemap. If not, create a default one
+        } elseif (strpos($type, 'install') !== false) {
+            // New installation [discover_install|install]
             $this->createDefaultSitemap();
+
+            $app = \JFactory::getApplication();
+
+            $link = \JHtml::_(
+                'link',
+                'index.php?option=com_plugins&view=plugins&filter.search=OSMap',
+                \JText::_('COM_OSMAP_INSTALLER_PLUGINS_PAGE')
+            );
+            $app->enqueueMessage(\JText::sprintf('COM_OSMAP_INSTALLER_GOTOPLUGINS', $link), 'warning');
         }
 
         // Check if we have params from Xmap plugins to apply to OSMap plugins
@@ -77,23 +86,24 @@ class Script extends AbstractScript
         // Check if we have the correct database scheme
         $this->checkDbScheme();
 
-        return true;
+        // Show any additional messages we might have created.
+        $this->showMessages();
     }
 
     /**
      * Creates a default sitemap if no one is found.
      *
-     @return void
+     * @return void
      */
     protected function createDefaultSitemap()
     {
         $db = OSMap\Factory::getDbo();
 
         // Check if we have any sitemap, otherwise lets create a default one
-        $query = $db->getQuery(true)
+        $query      = $db->getQuery(true)
             ->select('COUNT(*)')
             ->from('#__osmap_sitemaps');
-        $noSitemaps = ((int) $db->setQuery($query)->loadResult()) === 0;
+        $noSitemaps = ((int)$db->setQuery($query)->loadResult()) === 0;
 
         if ($noSitemaps) {
             // Get all menus
@@ -147,6 +157,7 @@ class Script extends AbstractScript
      * the table.
      *
      * @return void
+     * @throws \Exception
      */
     protected function migrateLegacySitemaps()
     {
@@ -160,16 +171,16 @@ class Script extends AbstractScript
                 $this->cleanupDatabase();
 
                 // Get legacy sitemaps
-                $query = $db->getQuery(true)
+                $query    = $db->getQuery(true)
                     ->select(
                         array(
                             'id',
                             'title',
-                             'is_default',
-                             'state',
-                             'created',
-                             'selections',
-                             'excluded_items'
+                            'is_default',
+                            'state',
+                            'created',
+                            'selections',
+                            'excluded_items'
                         )
                     )
                     ->from('#__osmap_sitemap');
@@ -300,7 +311,7 @@ class Script extends AbstractScript
 
                         // Convert custom settings for items
                         if ($this->tableExists('#__osmap_items')) {
-                            $query = $db->getQuery(true)
+                            $query         = $db->getQuery(true)
                                 ->select(
                                     array(
                                         'uid',
@@ -320,7 +331,7 @@ class Script extends AbstractScript
                                     $item->uid = $this->convertItemUID($item->uid);
 
                                     // Check if the item already exists to update, or insert
-                                    $query = $db->getQuery(true)
+                                    $query  = $db->getQuery(true)
                                         ->select('COUNT(*)')
                                         ->from('#__osmap_items_settings')
                                         ->where(
@@ -374,13 +385,13 @@ class Script extends AbstractScript
                                         // Check if the changefreq is set and set to update
                                         if (isset($properties['changefreq'])) {
                                             $columns[] = 'changefreq';
-                                            $values[] = 'changefreq = ' . $db->quote($properties['changefreq']);
+                                            $values[]  = 'changefreq = ' . $db->quote($properties['changefreq']);
                                         }
 
                                         // Check if the priority is set and set to update
                                         if (isset($properties['priority'])) {
                                             $columns[] = 'priority';
-                                            $values[] = 'priority = ' . $db->quote($properties['priority']);
+                                            $values[]  = 'priority = ' . $db->quote($properties['priority']);
                                         }
 
                                         // Insert a new item

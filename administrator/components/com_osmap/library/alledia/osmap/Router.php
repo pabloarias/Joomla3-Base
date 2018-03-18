@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -26,14 +26,18 @@ class Router
      * needs to be the same as the frontend. Replicates partially the native
      * JRoute::_ method, but forcing to use the frontend routes. Required to
      * allow see correct routed URLs in the admin while editing a sitemap.
+     *
+     * @param string $url
+     *
+     * @return string
+     * @throws \Exception
      */
     public function routeURL($url)
     {
-        $container = Factory::getContainer();
-
         if (!$this->joomlaRouter) {
             // Get the router.
-            $app = \JApplicationSite::getInstance('site');
+            $app = \JApplicationCms::getInstance('site');
+
             $this->joomlaRouter = $app::getRouter('site');
 
             // Make sure that we have our router
@@ -48,38 +52,15 @@ class Router
 
         // Build route
         $scheme = array('path', 'query', 'fragment');
-        $uri = $this->joomlaRouter->build($url);
-        $url = $uri->toString($scheme);
+        $uri    = $this->joomlaRouter->build($url);
+        $url    = $uri->toString($scheme);
 
         // Replace spaces.
         $url = preg_replace('/\s/u', '%20', $url);
 
-        // Remove subfolders to return a relative frontend link
-        $url = preg_replace('#^' . $container->uri->base(true) . '#', '', $url);
-
-        // Remove administrator folder
-        $url = preg_replace('#^/administrator/#', '', $url);
-
-        return $url;
-    }
-
-    /**
-     * This method returns a full URL related to frontend router. Specially
-     * needed if the router is called by the admin
-     *
-     * @param string $url
-     *
-     * @return string
-     */
-    public function forceFrontendURL($url)
-    {
-        if (!preg_match('#^[^:]+://#', $url)) {
-            $baseUri = $this->getFrontendBase();
-
-            if (!substr_count($url, $baseUri)) {
-                $url = $baseUri . $url;
-            }
-        }
+        // Remove application subpaths (typically /administrator)
+        $adminPath = str_replace(\JUri::root(), '', \JUri::base());
+        $url       = str_replace($adminPath, '', $url);
 
         return $url;
     }
@@ -87,11 +68,12 @@ class Router
     /**
      * Checks if the supplied URL is internal
      *
-     * @param   string  $url  The URL to check.
+     * @param   string $url The URL to check.
      *
      * @return  boolean  True if Internal.
      *
-     * @since   11.1
+     * @return bool
+     * @throws \Exception
      */
     public function isInternalURL($url)
     {
@@ -101,21 +83,20 @@ class Router
         $base     = $uri->toString(array('scheme', 'host', 'port', 'path'));
         $host     = $uri->toString(array('scheme', 'host', 'port'));
         $path     = $uri->toString(array('path'));
-        $baseHost = $container->uri->getInstance($this->getFrontendBase())->toString(array('host'));
+        $baseHost = $container->uri->getInstance($uri->root())->toString(array('host'));
 
         // Check if we have a relative path as url, considering it will always be internal
         if ($path === $url) {
             return true;
         }
 
-        $jriBase  = $this->getFrontendBase();
-
         // @see JURITest
         if (empty($host) && strpos($path, 'index.php') === 0
-            || !empty($host) && preg_match('#' . preg_quote($jriBase, '#') . '#', $base)
+            || !empty($host) && preg_match('#' . preg_quote($uri->root(), '#') . '#', $base)
             || !empty($host) && $host === $baseHost && strpos($path, 'index.php') !== false
-            || !empty($host) && $base === $host && preg_match('#' . preg_quote($base, '#') . '#', $this->getFrontendBase())) {
-
+            || !empty($host) && $base === $host
+            && preg_match('#' . preg_quote($base, '#') . '#', $uri->root())
+        ) {
             return true;
         }
 
@@ -129,12 +110,11 @@ class Router
      * all the urls, which should point to the frontend only.
      *
      * @return string
+     * @throws \Exception
      */
     public function getFrontendBase()
     {
-        $container = Factory::getContainer();
-
-        return preg_replace('#/administrator[/]?$#', '/', $container->uri->base());
+        return Factory::getContainer()->uri->root();
     }
 
     /**
@@ -143,12 +123,13 @@ class Router
      * @param string
      *
      * @return bool
+     * @throws \Exception
      */
     public function isRelativeUri($url)
     {
         $container = Factory::getContainer();
 
-        $uri  = $container->uri->getInstance($url);
+        $uri = $container->uri->getInstance($url);
 
         return $uri->toString(array('path')) === $url;
     }
@@ -156,16 +137,22 @@ class Router
     /**
      * Converts an internal relative URI into a full link.
      *
-     * @param string $url
+     * @param string $path
      *
      * @return string
+     * @throws \Exception
      */
     public function convertRelativeUriToFullUri($path)
     {
-        $path = preg_replace('#^/#', '', $path);
-        $base = preg_replace('#/$#', '', $this->getFrontendBase());
+        if ($path[0] == '/') {
+            $scheme = array('scheme', 'user', 'pass', 'host', 'port');
+            $path = Factory::getContainer()->uri->getInstance()->toString($scheme) . $path;
 
-        return $base . '/' . $path;
+        } elseif ($this->isRelativeUri($path)) {
+            $path = $this->getFrontendBase() . $path;
+        }
+
+        return $path;
     }
 
     /**
@@ -177,9 +164,6 @@ class Router
     {
         // Remove double slashes
         $url = preg_replace('#([^:])(/{2,})#', '$1/', $url);
-
-        // Remove trailing slash
-        $url = preg_replace('#/$#', '', $url);
 
         return $url;
     }
@@ -202,5 +186,18 @@ class Router
         $url = trim($url);
 
         return $url;
+    }
+
+    /**
+     * Create a consistent url hash regardless of scheme or site root.
+     * 
+     * @param string $url
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function createUrlHash($url)
+    {
+        return md5(str_replace(Factory::getContainer()->uri->root(), '', $url));
     }
 }

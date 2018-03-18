@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
     <div id="footer" class="span12">
         <div>
             <a href="https://www.joomlashack.com">
-                <img src="../media/<?php echo $this->option; ?>/images/joomlashack-logo-150x38.png" />
+                <img src="../media/<?php echo $this->option; ?>/images/joomlashack-logo.png" width="150" />
             </a>
         </div>
         <br />

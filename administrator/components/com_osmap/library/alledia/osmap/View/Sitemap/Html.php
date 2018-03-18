@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -10,7 +10,9 @@
 namespace Alledia\OSMap\View\Sitemap;
 
 use Alledia\OSMap;
+use JFactory;
 use Joomla\Registry\Registry;
+use JText;
 
 defined('_JEXEC') or die();
 
@@ -25,7 +27,7 @@ class Html extends OSMap\View\Base
     /**
      * @var Registry
      */
-    protected $params;
+    protected $params = null;
 
     /**
      * @var bool
@@ -96,7 +98,33 @@ class Html extends OSMap\View\Base
 
         // Check if the sitemap is published
         if (!$this->sitemap->isPublished) {
-            throw new \Exception(\JText::_('COM_OSMAP_MSG_SITEMAP_IS_UNPUBLISHED'));
+            throw new \Exception(JText::_('COM_OSMAP_MSG_SITEMAP_IS_UNPUBLISHED'));
+        }
+
+        $app = JFactory::getApplication();
+        if ($title = $this->params->def('page_title')) {
+            if ($app->get('sitename_pagetitles', 0) == 1) {
+                $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+
+            } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+                $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+            }
+            $this->document->setTitle($title);
+
+            $pathway = $app->getPathWay();
+            $pathway->addItem($title, '');
+        }
+
+        if ($description = $this->params->get('menu-meta_description')) {
+            $this->document->setDescription($description);
+        }
+
+        if ($keywords = $this->params->get('menu-meta_keywords')) {
+            $this->document->setMetadata('keywords', $keywords);
+        }
+
+        if ($robots = $this->params->get('robots')) {
+            $this->document->setMetadata('robots', $robots);
         }
 
         parent::display($tpl);
@@ -191,20 +219,20 @@ class Html extends OSMap\View\Base
     {
         echo '<div class="osmap-debug-box">';
         echo '<div><span>#:</span>&nbsp;' . $this->generalCounter . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_UID') . ':</span>&nbsp;' . $node->uid . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_FULL_LINK') . ':</span>&nbsp;' . htmlspecialchars($node->fullLink) . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_RAW_LINK') . ':</span>&nbsp;' . htmlspecialchars($node->rawLink) . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_LINK') . ':</span>&nbsp;' . htmlspecialchars($node->link) . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_MODIFIED') . ':</span>&nbsp;' . htmlspecialchars($node->modified) . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_LEVEL') . ':</span>&nbsp;' . $node->level . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_DUPLICATE') . ':</span>&nbsp;' . \JText::_($node->duplicate ? 'JYES' : 'JNO') . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_VISIBLE_FOR_ROBOTS') . ':</span>&nbsp;' . \JText::_($node->visibleForRobots ? 'JYES' : 'JNO') . '</div>';
-        echo '<div><span>' . \JText::_('COM_OSMAP_ADAPTER_CLASS') . ':</span>&nbsp;' . $node->adapter . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_UID') . ':</span>&nbsp;' . $node->uid . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_FULL_LINK') . ':</span>&nbsp;' . htmlspecialchars($node->fullLink) . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_RAW_LINK') . ':</span>&nbsp;' . htmlspecialchars($node->rawLink) . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_LINK') . ':</span>&nbsp;' . htmlspecialchars($node->link) . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_MODIFIED') . ':</span>&nbsp;' . htmlspecialchars($node->modified) . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_LEVEL') . ':</span>&nbsp;' . $node->level . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_DUPLICATE') . ':</span>&nbsp;' . JText::_($node->duplicate ? 'JYES' : 'JNO') . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_VISIBLE_FOR_ROBOTS') . ':</span>&nbsp;' . JText::_($node->visibleForRobots ? 'JYES' : 'JNO') . '</div>';
+        echo '<div><span>' . JText::_('COM_OSMAP_ADAPTER_CLASS') . ':</span>&nbsp;' . $node->adapter . '</div>';
 
         if (method_exists($node, 'getAdminNotesString')) {
             $adminNotes = $node->getAdminNotesString();
             if (!empty($adminNotes)) {
-                echo '<div><span>' . \JText::_('COM_OSMAP_ADMIN_NOTES') . ':</span>&nbsp;' . nl2br($adminNotes) . '</div>';
+                echo '<div><span>' . JText::_('COM_OSMAP_ADMIN_NOTES') . ':</span>&nbsp;' . nl2br($adminNotes) . '</div>';
             }
         }
         echo '</div>';
@@ -273,7 +301,7 @@ class Html extends OSMap\View\Base
                     if ($this->debug) {
                         $debug = sprintf(
                             '<div><span>%s:</span>&nbsp;%s: %s</div>',
-                            \JText::_('COM_OSMAP_MENUTYPE'),
+                            JText::_('COM_OSMAP_MENUTYPE'),
                             $menu->menuItemId,
                             $menu->menuItemType
                         );

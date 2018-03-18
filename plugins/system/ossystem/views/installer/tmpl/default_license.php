@@ -7,26 +7,28 @@
  */
 
 defined('_JEXEC') or die();
-?>
 
-<?php if ($this->isLicensesManagerInstalled) : ?>
-
+if ($this->isLicensesManagerInstalled) :
+    ?>
     <div class="joomlashack-license-form">
-        <?php if (!empty($this->licenseKey)) : ?>
-
+        <?php
+        if (!empty($this->licenseKey)) :
+            ?>
             <a href="javascript:void(0);" class="joomlashack-installer-change-license-button joomlashack-button">
                 <?php echo JText::_('LIB_ALLEDIAINSTALLER_CHANGE_LICENSE_KEY'); ?>
             </a>
+        <?php
+        endif;
+        ?>
 
-        <?php endif; ?>
-
-        <div id="joomlashack-installer-license-panel" style="display: <?php echo empty($this->licenseKey)? '' : 'none'; ?>;">
+        <div id="joomlashack-installer-license-panel"
+             style="display: <?php echo empty($this->licenseKey) ? '' : 'none'; ?>;">
             <input
                 type="text"
                 name="joomlashack-license-keys"
                 id="joomlashack-license-keys"
                 value="<?php echo $this->licenseKey; ?>"
-                placeholder="<?php echo JText::_('LIB_ALLEDIAINSTALLER_LICENSE_KEYS_PLACEHOLDER'); ?>" />
+                placeholder="<?php echo JText::_('LIB_ALLEDIAINSTALLER_LICENSE_KEYS_PLACEHOLDER'); ?>"/>
 
             <p class="joomlashack-empty-key-msg">
                 <?php echo JText::_('LIB_ALLEDIAINSTALLER_MSG_LICENSE_KEYS_EMPTY'); ?>&nbsp;
@@ -35,11 +37,9 @@ defined('_JEXEC') or die();
                 </a>
             </p>
 
-            <a
-                id="joomlashack-license-save-button"
-                class="joomlashack-button"
-                href="javascript:void(0);">
-
+            <a id="joomlashack-license-save-button"
+               class="joomlashack-button"
+               href="javascript:void(0);">
                 <?php echo JText::_('LIB_ALLEDIAINSTALLER_SAVE_LICENSE_KEY'); ?>
             </a>
         </div>
@@ -58,52 +58,52 @@ defined('_JEXEC') or die();
     </div>
 
     <script>
-    (function($) {
-
-        $(function() {
-
-            $('.joomlashack-installer-change-license-button').on('click', function() {
-                $('#joomlashack-installer-license-panel').show();
-                $(this).hide();
-            });
-
-            $('#joomlashack-license-save-button').on('click', function() {
-
-                $.post('<?php echo JURI::root(); ?>/administrator/index.php?plugin=system_osmylicensesmanager&task=license.save',
-                    {
-                        'license-keys': $('#joomlashack-license-keys').val()
-                    },
-                    function(data) {
-                        try
-                        {
-                            var result = JSON.parse(data);
-
-                            $('#joomlashack-installer-license-panel').hide();
-
-                            if (result.success) {
-                                $('#joomlashack-installer-license-success').show();
-                            } else {
-                                $('#joomlashack-installer-license-error').show();
-                            }
-                        } catch (e) {
-                            $('#joomlashack-installer-license-panel').hide();
-                            $('#joomlashack-installer-license-error').show();
-                        }
-                    },
-                    'text'
-                ).fail(function() {
-                    $('#joomlashack-installer-license-panel').hide();
-                    $('#joomlashack-installer-license-error').show();
+        (function($) {
+            $(function() {
+                $('.joomlashack-installer-change-license-button').on('click', function() {
+                    $('#joomlashack-installer-license-panel').show();
+                    $(this).hide();
                 });
 
-            });
-        });
+                $('#joomlashack-license-save-button').on('click', function() {
 
-    })(jQuery);
+                    $.post('<?php echo JURI::root(); ?>/administrator/index.php?plugin=system_osmylicensesmanager&task=license.save',
+                        {
+                            'license-keys': $('#joomlashack-license-keys').val()
+                        },
+                        function(data) {
+                            try {
+                                var result = JSON.parse(data);
+
+                                $('#joomlashack-installer-license-panel').hide();
+
+                                if (result.success) {
+                                    $('#joomlashack-installer-license-success').show();
+                                } else {
+                                    $('#joomlashack-installer-license-error').show();
+                                }
+                            } catch (e) {
+                                $('#joomlashack-installer-license-panel').hide();
+                                $('#joomlashack-installer-license-error').show();
+                            }
+                        },
+                        'text'
+                    ).fail(function() {
+                        $('#joomlashack-installer-license-panel').hide();
+                        $('#joomlashack-installer-license-error').show();
+                    });
+
+                });
+            });
+
+        })(jQuery);
     </script>
 
-<?php else : ?>
+<?php
+else :
+    ?>
     <div class="error">
         <?php echo JText::_('LIB_ALLEDIAINSTALLER_LICENSE_KEYS_MANAGER_REQUIRED'); ?>
     </div>
-<?php endif; ?>
+<?php
+endif;

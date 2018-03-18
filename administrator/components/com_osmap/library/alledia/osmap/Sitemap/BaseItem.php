@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -22,70 +22,70 @@ class BaseItem extends \JObject
     /**
      * @var int;
      */
-    public $id;
+    public $id = null;
 
     /**
      * @var string;
      */
-    public $uid;
+    public $uid = null;
 
     /**
      * Item's link, which can be relative or un-routed
      *
      * @var string
      */
-    public $link;
+    public $link = null;
 
     /**
      * Routed full link, sanitized and without any hash segment
      *
      * @var string
      */
-    public $fullLink;
+    public $fullLink = null;
 
     /**
      * Routed fulll link, sanitized but can contains a hash segment
      *
      * @var string
      */
-    public $rawLink;
+    public $rawLink = null;
 
     /**
      * @var Registry
      */
-    public $params;
+    public $params = null;
 
     /**
      * @var string
      */
-    public $priority;
+    public $priority = null;
 
     /**
      * @var string
      */
-    public $changefreq;
+    public $changefreq = null;
 
     /**
      * @var string
      */
-    public $created;
+    public $created = null;
 
     /**
      * @var string
      */
-    public $modified;
+    public $modified = null;
 
     /**
      * @var string
      */
-    public $publishUp;
+    public $publishUp = null;
 
     /**
      * The component associated to the option URL param
      *
      * @var string
      */
-    public $component;
+    public $component = null;
 
     /**
      * @var bool
@@ -115,7 +115,7 @@ class BaseItem extends \JObject
     /**
      * @var string
      */
-    public $type;
+    public $type = null;
 
     /**
      * @var bool
@@ -150,12 +150,12 @@ class BaseItem extends \JObject
     /**
      * @var string
      */
-    public $settingsHash;
+    public $settingsHash = null;
 
     /**
      * @var int
      */
-    public $level;
+    public $level = null;
 
     /**
      * @var string
@@ -165,7 +165,7 @@ class BaseItem extends \JObject
     /**
      * @var object
      */
-    public $adapter;
+    public $adapter = null;
 
     /**
      * If true, says the item is visible for robots
@@ -186,7 +186,7 @@ class BaseItem extends \JObject
      *
      * @var array
      */
-    public $adminNotes;
+    public $adminNotes = null;
 
     /**
      * @var bool
@@ -206,12 +206,22 @@ class BaseItem extends \JObject
     /**
      * @var string
      */
-    public $menuItemName;
+    public $menuItemName = null;
 
     /**
      * @var string
      */
-    public $menuItemType;
+    public $menuItemType = null;
+
+    /**
+     * @var array
+     */
+    public $subnodes = null;
+
+    /**
+     * @var string
+     */
+    public $slug = null;
 
     /**
      * The constructor
@@ -220,9 +230,10 @@ class BaseItem extends \JObject
      *
      * @return void
      */
-    public function __construct(&$itemData)
+    public function __construct($itemData)
     {
-        $this->setProperties($itemData);
+        parent::__construct($itemData);
+
         if (class_exists('\\Alledia\\OSMap\\Sitemap\\ItemAdapter\\GenericPro')) {
             $this->adapterName = 'GenericPro';
         }

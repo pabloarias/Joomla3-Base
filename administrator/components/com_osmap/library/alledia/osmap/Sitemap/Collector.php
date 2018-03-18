@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -157,6 +157,7 @@ class Collector
      * @param callable $callback
      *
      * @return int
+     * @throws \Exception
      */
     public function fetch($callback)
     {
@@ -222,7 +223,7 @@ class Collector
 
         $this->currentMenu            = null;
         $this->tmpItemDefaultSettings = array();
-        $callback = null;
+        $callback                     = null;
 
         return $this->counter;
     }
@@ -443,7 +444,7 @@ class Collector
 
             // We need to make sure to have an URL free of hash chars
             $url  = $container->router->removeHashFromURL($item->fullLink);
-            $hash = md5($url);
+            $hash = $container->router->createUrlHash($url);
 
             if (isset($this->urlHashList[$hash])) {
                 $item->duplicate = true;
@@ -537,7 +538,7 @@ class Collector
                     if ($plugin->isLegacy) {
                         $params = $plugin->params->toArray();
                     } else {
-                        $params =& $plugin->params;
+                        $params = $plugin->params;
                     }
 
                     $arguments = array(
@@ -620,7 +621,12 @@ class Collector
                 ->select(
                     array(
                         '*',
-                        'IF (settings_hash IS NULL OR settings_hash = "", uid, CONCAT(uid, ":", settings_hash)) AS ' . $db->quoteName('key')
+                        sprintf(
+                            'IF (IFNULL(settings_hash, %1$s) = %1$s, uid, CONCAT(uid, %2$s, settings_hash)) AS %3$s',
+                            $db->quote(''),
+                            $db->quote(':'),
+                            $db->quoteName('key')
+                        )
                     )
                 )
                 ->from('#__osmap_items_settings')

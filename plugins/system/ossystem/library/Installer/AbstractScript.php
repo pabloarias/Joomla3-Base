@@ -10,10 +10,12 @@ namespace Alledia\Installer;
 
 defined('_JEXEC') or die();
 
+use Alledia\Installer\Extension\Licensed;
 use JFactory;
 use Joomla\Registry\Registry;
 use JTable;
 use JInstaller;
+use JTableExtension;
 use JText;
 use JUri;
 use JFolder;
@@ -96,6 +98,11 @@ abstract class AbstractScript
      * @var array
      */
     protected $relatedExtensionFeedback = array();
+
+    /**
+     * @var Licensed
+     */
+    protected $license = null;
 
     /**
      * AbstractScript constructor.
@@ -190,11 +197,26 @@ abstract class AbstractScript
      * @param JInstallerAdapter $parent
      *
      * @return void
+     * @throws \Exception
      */
     public function uninstall($parent)
     {
-        $this->uninstallRelated();
-        $this->showMessages();
+        try {
+            $this->uninstallRelated();
+            $this->showMessages();
+
+        } catch (\Exception $e) {
+            JFactory::getApplication()->enqueueMessage(
+                sprintf('%s:%s - %s', $e->getFile(), $e->getLine(), $e->getMessage()),
+                'error'
+            );
+
+        } catch (\Throwable $e) {
+            JFactory::getApplication()->enqueueMessage(
+                sprintf('%s:%s - %s', $e->getFile(), $e->getLine(), $e->getMessage()),
+                'error'
+            );
+        }
     }
 
     /**
@@ -212,6 +234,7 @@ abstract class AbstractScript
      * @param JInstallerAdapter $parent
      *
      * @return bool
+     * @throws \Exception
      */
     public function preFlight($type, $parent)
     {
@@ -251,11 +274,9 @@ abstract class AbstractScript
             }
 
             // Check for minimum previous version
-            if ($type == 'update' && $this->previousManifest && isset($this->manifest->alledia->previousminimum)) {
-                $targetVersion = (string)$this->manifest->alledia->previousminimum;
-                $lastVersion   = (string)$this->previousManifest->version;
-
-                if (!$this->validateTargetVersion($lastVersion, $targetVersion)) {
+            $targetVersion = (string)$this->manifest->alledia->previousminimum;
+            if ($type == 'update' && $targetVersion) {
+                if (!$this->validatePreviousVersion($targetVersion)) {
                     // Previous minimum is not installed
                     $minimumVersion = str_replace('*', 'x', $targetVersion);
 
@@ -267,6 +288,11 @@ abstract class AbstractScript
         }
 
         $this->cancelInstallation = !$success;
+
+        if ($type === 'update' && $success) {
+            $this->preserveFavicon();
+        }
+
         return $success;
     }
 
@@ -275,134 +301,151 @@ abstract class AbstractScript
      * @param JInstallerAdapter $parent
      *
      * @return void
+     * @throws \Exception
      */
     public function postFlight($type, $parent)
     {
-        if ($this->cancelInstallation) {
-            JFactory::getApplication()
-                ->enqueueMessage('LIB_ALLEDIAINSTALLER_INSTALL_CANCELLED', 'warning');
+        try {
+            if ($this->cancelInstallation) {
+                JFactory::getApplication()
+                    ->enqueueMessage('LIB_ALLEDIAINSTALLER_INSTALL_CANCELLED', 'warning');
 
-            return;
-        }
-
-        $this->clearObsolete();
-        $this->installRelated();
-        $this->addAllediaAuthorshipToExtension();
-
-        // @TODO: Stop the script here if this is a related extension (but still remove pro folder, if needed)
-
-        $this->element = (string)$this->manifest->alledia->element;
-
-        // Check and publish/reorder the plugin, if required
-        $published = false;
-        $ordering  = false;
-        if (strpos($type, 'install') !== false && $this->type === 'plugin') {
-            $published = $this->publishThisPlugin();
-            $ordering  = $this->reorderThisPlugin();
-        }
-
-        $extension = new Extension\Licensed(
-            (string)$this->manifest->alledia->namespace,
-            $this->type,
-            $this->group
-        );
-
-        // If Free, remove any missed Pro library
-        if (!$extension->isPro()) {
-            $proLibraryPath = $extension->getProLibraryPath();
-            if (file_exists($proLibraryPath)) {
-                jimport('joomla.filesystem.folder');
-                JFolder::delete($proLibraryPath);
-            }
-        }
-
-        // Check if we are on the backend before display anything. This fixes an issue
-        // on the updates triggered by Watchful, which is always triggered on the frontend
-        if (JPATH_BASE === JPATH_ROOT) {
-            // Frontend
-            return;
-        }
-
-        // Get the footer content
-        $this->footer  = '';
-        $footerElement = null;
-
-        // Check if we have a dedicated config.xml file
-        $configPath = $extension->getExtensionPath() . '/config.xml';
-        if (JFile::exists($configPath)) {
-            $config = $extension->getConfig();
-
-            if (!empty($config)) {
-                $footerElement = $config->xpath('//field[@type="customfooter"]');
-            }
-        } else {
-            $footerElement = $this->manifest->xpath('//field[@type="customfooter"]');
-        }
-
-        if (!empty($footerElement)) {
-            if (!class_exists('JFormFieldCustomFooter')) {
-                require_once $extension->getExtensionPath() . '/form/fields/customfooter.php';
+                return;
             }
 
-            $field                = new JFormFieldCustomFooter();
-            $field->fromInstaller = true;
-            $this->footer         = $field->getInputUsingCustomElement($footerElement[0]);
+            $this->clearObsolete();
+            $this->installRelated();
+            $this->addAllediaAuthorshipToExtension();
 
-            unset($field, $footerElement);
-        }
+            // @TODO: Stop the script here if this is a related extension (but still remove pro folder, if needed)
 
-        // Show additional installation messages
-        $extensionPath = $this->getExtensionPath($this->type, (string)$this->manifest->alledia->element, $this->group);
+            $this->element = (string)$this->manifest->alledia->element;
 
-        // If Pro extension, includes the license form view
-        if ($extension->isPro()) {
-            // Get the OSMyLicensesManager extension to handle the license key
-            $licensesManagerExtension         = new Extension\Generic('osmylicensesmanager', 'plugin', 'system');
-            $this->isLicensesManagerInstalled = false;
+            // Check and publish/reorder the plugin, if required
+            if (strpos($type, 'install') !== false && $this->type === 'plugin') {
+                $this->publishThisPlugin();
+                $this->reorderThisPlugin();
+            }
 
-            if (!empty($licensesManagerExtension)) {
-                if (isset($licensesManagerExtension->params)) {
-                    $this->licenseKey = $licensesManagerExtension->params->get('license-keys', '');
-                } else {
-                    $this->licenseKey = '';
+            // If Free, remove any missed Pro library
+            $license = $this->getLicense();
+            if (!$license->isPro()) {
+                $proLibraryPath = $license->getProLibraryPath();
+                if (file_exists($proLibraryPath)) {
+                    jimport('joomla.filesystem.folder');
+                    JFolder::delete($proLibraryPath);
+                }
+            }
+
+            // Check if we are on the backend before display anything. This fixes an issue
+            // on the updates triggered by Watchful, which is always triggered on the frontend
+            if (JPATH_BASE === JPATH_ROOT) {
+                // Frontend
+                return;
+            }
+
+            // Get the footer content
+            $this->footer  = '';
+            $footerElement = null;
+
+            // Check if we have a dedicated config.xml file
+            $configPath = $license->getExtensionPath() . '/config.xml';
+            if (is_file($configPath)) {
+                $config = $license->getConfig();
+
+                if (!empty($config)) {
+                    $footerElement = $config->xpath('//field[@type="customfooter"]');
+                }
+            } else {
+                $footerElement = $this->manifest->xpath('//field[@type="customfooter"]');
+            }
+
+            if (!empty($footerElement)) {
+                if (!class_exists('JFormFieldCustomFooter')) {
+                    require_once $license->getExtensionPath() . '/form/fields/customfooter.php';
                 }
 
-                $this->isLicensesManagerInstalled = true;
+                $field                = new JFormFieldCustomFooter();
+                $field->fromInstaller = true;
+                $this->footer         = $field->getInputUsingCustomElement($footerElement[0]);
+
+                unset($field, $footerElement);
             }
-        }
 
-        $name = $this->getName() . ($extension->isPro() ? ' Pro' : '');
+            // Show additional installation messages
+            $extensionPath = $this->getExtensionPath(
+                $this->type,
+                (string)$this->manifest->alledia->element,
+                $this->group
+            );
 
-        // Welcome message
-        if ($type === 'install') {
-            $string = 'LIB_ALLEDIAINSTALLER_THANKS_INSTALL';
-        } else {
-            $string = 'LIB_ALLEDIAINSTALLER_THANKS_UPDATE';
-        }
+            // If Pro extension, includes the license form view
+            if ($license->isPro()) {
+                // Get the OSMyLicensesManager extension to handle the license key
+                $licensesManagerExtension         = new Extension\Generic('osmylicensesmanager', 'plugin', 'system');
+                $this->isLicensesManagerInstalled = false;
 
-        // Variables for the included template
-        $this->welcomeMessage = JText::sprintf($string, $name);
-        $this->mediaURL       = JUri::root() . 'media/' . $extension->getFullElement();
+                if (!empty($licensesManagerExtension)) {
+                    if (isset($licensesManagerExtension->params)) {
+                        $this->licenseKey = $licensesManagerExtension->params->get('license-keys', '');
+                    } else {
+                        $this->licenseKey = '';
+                    }
 
-        $this->addStyle($this->mediaFolder . '/css/installer.css');
+                    $this->isLicensesManagerInstalled = true;
+                }
+            }
 
-        // Include the template
-        // Try to find the template in an alternative folder, since some extensions
-        // which uses FOF will display the "Installers" view on admin, errouniously.
-        // FOF look for views automatically reading the views folder. So on that
-        // case we move the installer view to another folder.
-        $path = $extensionPath . '/views/installer/tmpl/default.php';
-        
-        if (JFile::exists($path)) {
-            include $path;
-        } else {
-            $path = $extensionPath . '/alledia_views/installer/tmpl/default.php';
-            if (JFile::exists($path)) {
+            $name = $this->getName() . ($license->isPro() ? ' Pro' : '');
+
+            if ($type === 'update') {
+                $this->preserveFavicon();
+            }
+
+            // Welcome message
+            if ($type === 'install') {
+                $string = 'LIB_ALLEDIAINSTALLER_THANKS_INSTALL';
+            } else {
+                $string = 'LIB_ALLEDIAINSTALLER_THANKS_UPDATE';
+            }
+
+            // Variables for the included template
+            $this->welcomeMessage = JText::sprintf($string, $name);
+            $this->mediaURL       = JUri::root() . 'media/' . $license->getFullElement();
+
+            $this->addStyle($this->mediaFolder . '/css/installer.css');
+
+            /*
+             * Include the template
+             * Try to find the template in an alternative folder, since some extensions
+             * which uses FOF will display the "Installers" view on admin, errouniously.
+             * FOF look for views automatically reading the views folder. So on that
+             * case we move the installer view to another folder.
+            */
+            $path = $extensionPath . '/views/installer/tmpl/default.php';
+
+            if (is_file($path)) {
                 include $path;
+            } else {
+                $path = $extensionPath . '/alledia_views/installer/tmpl/default.php';
+                if (is_file($path)) {
+                    include $path;
+                }
             }
-        }
 
-        $this->showMessages();
+            $this->showMessages();
+
+        } catch (\Exception $e) {
+            JFactory::getApplication()->enqueueMessage(
+                sprintf('%s:%s - %s', $e->getFile(), $e->getLine(), $e->getMessage()),
+                'error'
+            );
+        } catch (\Throwable $e) {
+            JFactory::getApplication()->enqueueMessage(
+                sprintf('%s:%s - %s', $e->getFile(), $e->getLine(), $e->getMessage()),
+                'error'
+            );
+        }
     }
 
     /**
@@ -419,6 +462,9 @@ abstract class AbstractScript
 
             $source         = $this->installer->getPath('source');
             $extensionsPath = $source . '/extensions';
+
+            $defaultDowngrade = (string)$this->manifest->alledia->relatedExtensions['downgrade'];
+            $defaultDowngrade = !empty($defaultDowngrade) && ($defaultDowngrade == 'true' || $defaultDowngrade == '1');
 
             foreach ($this->manifest->alledia->relatedExtensions->extension as $extension) {
                 $path = $extensionsPath . '/' . (string)$extension;
@@ -450,8 +496,13 @@ abstract class AbstractScript
 
                     $this->storeFeedbackForRelatedExtension($element, 'name', (string)$newManifest->name);
 
-                    // Check if we have a higher version installed
-                    if (!$isNew) {
+                    // Check if we have a higher version installed unless downgrades are okay
+                    $downgrade = empty($attributes['downgrade'])
+                        ? $defaultDowngrade
+                        : (string)$attributes['downgrade'];
+                    $downgrade = $downgrade === true || $downgrade == 'true' || $downgrade == '1';
+
+                    if (!$isNew && !$downgrade) {
                         $currentManifestPath = $this->getManifestPath($type, $element, $group);
                         $currentManifest     = $this->getInfoFromManifest($currentManifestPath);
 
@@ -535,6 +586,9 @@ abstract class AbstractScript
 
     /**
      * Uninstall the related extensions that are useless without the component
+     *
+     * @return void
+     * @throws \Exception
      */
     protected function uninstallRelated()
     {
@@ -587,10 +641,11 @@ abstract class AbstractScript
      * @param string $element
      * @param string $group
      *
-     * @return JTable
+     * @return JTableExtension
      */
     protected function findExtension($type, $element, $group = null)
     {
+        /** @var JTableExtension $row */
         $row = JTable::getInstance('extension');
 
         $prefixes = array(
@@ -605,6 +660,11 @@ abstract class AbstractScript
             }
         }
 
+        // Fix the element for templates
+        if ('template' === $type) {
+            $element = str_replace('tpl_', '', $element);
+        }
+
         $terms = array(
             'type'    => $type,
             'element' => $element
@@ -615,6 +675,7 @@ abstract class AbstractScript
         }
 
         $eid = $row->find($terms);
+
         if ($eid) {
             $row->load($eid);
             return $row;
@@ -695,6 +756,7 @@ abstract class AbstractScript
                         JPATH_ADMINISTRATOR . '/components/com_plugins/models',
                         'PluginsModels'
                     );
+                    /** @var \PluginsModelPlugin $model */
                     $model = JModelLegacy::getInstance('Plugin', 'PluginsModel');
 
                     $ids = array();
@@ -712,6 +774,7 @@ abstract class AbstractScript
      * Display messages from array
      *
      * @return void
+     * @throws \Exception
      */
     protected function showMessages()
     {
@@ -748,6 +811,8 @@ abstract class AbstractScript
      * Delete obsolete files, folders and extensions.
      * Files and folders are identified from the site
      * root path and should starts with a slash.
+     *
+     * @return void
      */
     protected function clearObsolete()
     {
@@ -828,7 +893,7 @@ abstract class AbstractScript
     /**
      * Finds the extension row for the main extension
      *
-     * @return JTable
+     * @return JTableExtension
      */
     protected function findThisExtension()
     {
@@ -910,6 +975,22 @@ abstract class AbstractScript
         $fullElement .= $element;
 
         return $fullElement;
+    }
+
+    /**
+     * @return Licensed
+     */
+    protected function getLicense()
+    {
+        if ($this->license === null) {
+            $this->license = new Extension\Licensed(
+                (string)$this->manifest->alledia->namespace,
+                $this->type,
+                $this->group
+            );
+        }
+
+        return $this->license;
     }
 
     /**
@@ -1060,38 +1141,34 @@ abstract class AbstractScript
 
     /**
      * Check if it needs to publish the extension
+     *
+     * @return void
      */
     protected function publishThisPlugin()
     {
         $attributes = (array)$this->manifest->alledia->element->attributes();
-        $attributes = $attributes['@attributes'];
+        $attributes = (array)@$attributes['@attributes'];
 
         if (isset($attributes['publish']) && (bool)$attributes['publish']) {
             $extension = $this->findThisExtension();
             $extension->publish();
-
-            return true;
         }
-
-        return false;
     }
 
     /**
      * Check if it needs to reorder the extension
+     *
+     * @return void
      */
     protected function reorderThisPlugin()
     {
         $attributes = (array)$this->manifest->alledia->element->attributes();
-        $attributes = $attributes['@attributes'];
+        $attributes = (array)@$attributes['@attributes'];
 
         if (isset($attributes['ordering'])) {
             $extension = $this->findThisExtension();
             $this->setPluginOrder($extension, $attributes['ordering']);
-
-            return $attributes['ordering'];
         }
-
-        return false;
     }
 
     /**
@@ -1113,6 +1190,8 @@ abstract class AbstractScript
     /**
      * This method add a mark to the extensions, allowing to detect our extensions
      * on the extensions table.
+     *
+     * @return void
      */
     protected function addAllediaAuthorshipToExtension()
     {
@@ -1269,8 +1348,14 @@ abstract class AbstractScript
 
         foreach ($columns as $column => $specification) {
             if (!in_array($column, $existentColumns)) {
-                $db->setQuery('ALTER TABLE ' . $db->quoteName($table)
-                    . ' ADD COLUMN ' . $column . ' ' . $specification);
+                $db->setQuery(
+                    sprintf(
+                        'ALTER TABLE %s ADD COLUMN %s %s',
+                        $db->quoteName($table),
+                        $db->quoteName($column),
+                        $specification
+                    )
+                );
                 $db->execute();
             }
         }
@@ -1290,8 +1375,8 @@ abstract class AbstractScript
 
         foreach ($indexes as $index => $specification) {
             if (!in_array($index, $existentIndexes)) {
-                $db->setQuery('CREATE INDEX ' . $index . ' ON ' . $db->quoteName($table) . $specification);
-                $db->execute();
+                $db->setQuery(sprintf('CREATE INDEX %s ON %s', $specification, $index, $db->quoteName($table)))
+                    ->execute();
             }
         }
     }
@@ -1310,8 +1395,8 @@ abstract class AbstractScript
 
         foreach ($columns as $column) {
             if (in_array($column, $existentColumns)) {
-                $db->setQuery('ALTER TABLE ' . $db->quoteName($table) . ' DROP COLUMN ' . $column);
-                $db->execute();
+                $db->setQuery(sprintf('ALTER TABLE %s DROP COLUMN %s', $db->quoteName($table), $column))
+                    ->execute();
             }
         }
     }
@@ -1468,6 +1553,22 @@ abstract class AbstractScript
     }
 
     /**
+     * @param string $targetVersion
+     *
+     * @return bool
+     */
+    protected function validatePreviousVersion($targetVersion)
+    {
+        if ($this->previousManifest) {
+            $lastVersion = (string)$this->previousManifest->version;
+
+            return $this->validateTargetVersion($lastVersion, $targetVersion);
+        }
+
+        return true;
+    }
+
+    /**
      * Get the extension name. If no custom name is set, uses the namespace
      *
      * @return string
@@ -1481,5 +1582,40 @@ abstract class AbstractScript
             $name = $this->manifest->alledia->namespace;
         }
         return (string)$name;
+    }
+
+    /**
+     * If a template, preserve the favicon during an update.
+     * Rename favicon during preFlight(). Rename back during postFlight()
+     */
+    protected function preserveFavicon()
+    {
+        $nameOfExtension = (string)$this->manifest->alledia->element;
+
+        $extensionType = $this->getExtensionInfoFromElement($nameOfExtension);
+
+        if ($extensionType['prefix'] === 'tpl') {
+            $pathToTemplate = $this->getExtensionPath($this->type, $nameOfExtension);
+
+            // These will be used to preserve the favicon during an update
+            $favicon     = $pathToTemplate . '/favicon.ico';
+            $faviconTemp = $pathToTemplate . '/favicon-temp.ico';
+
+            /**
+             * Rename favicon.
+             * The order of the conditionals should be kept the same, because
+             * preFlight() runs before postFLight().
+             * If the order is reversed, favicon in update package will replace
+             * $faviconTemp during update, which we don't want to happen.
+             */
+            if (is_file($faviconTemp)) {
+                rename($faviconTemp, $favicon);
+
+            } else {
+                if (is_file($favicon)) {
+                    rename($favicon, $faviconTemp);
+                }
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -36,6 +36,12 @@ class OSMapViewXml extends JViewLegacy
      */
     protected $sitemap = null;
 
+    /**
+     * @param null $tpl
+     *
+     * @return void
+     * @throws Exception
+     */
     public function display($tpl = null)
     {
         $container = OSMap\Factory::getContainer();
@@ -49,17 +55,15 @@ class OSMapViewXml extends JViewLegacy
         $this->params      = JFactory::getApplication()->getParams();
         $this->osmapParams = JComponentHelper::getParams('com_osmap');
 
-        // Load the sitemap instance
         $this->sitemap = OSMap\Factory::getSitemap($id, $this->type);
 
-        // Check if the sitemap is published
         if (!$this->sitemap->isPublished) {
             throw new Exception(JText::_('COM_OSMAP_MSG_SITEMAP_IS_UNPUBLISHED'));
         }
 
         parent::display($tpl);
 
-        // Force to show a clean XML without other content
+        // Force to show a clean XML without other content or execution plugins
         jexit();
     }
 }

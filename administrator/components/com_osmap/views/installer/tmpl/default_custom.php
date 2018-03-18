@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved..
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved..
  * @author    Guillermo Vargas <guille@vargas.co.cr>
  * @author    Joomlashack <help@joomlashack.com>
  * @license   GNU General Public License version 2 or later; see LICENSE.txt
@@ -26,13 +26,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$app = JFactory::getApplication();
-$link = '<a href="index.php?option=com_plugins&view=plugins&filter.search=OSMap">' . JText::_('COM_OSMAP_INSTALLER_PLUGINS_PAGE') . '</a>';
-$app->enqueueMessage(JText::sprintf('COM_OSMAP_INSTALLER_GOTOPLUGINS', $link), 'warning');
-?>
-
-<?php if ($this->isXmapDataFound) : ?>
-
+if ($this->isXmapDataFound) :
+    ?>
     <div class="alledia-xmap-import">
         <div id="alledia-installer-xmap-import-message">
             <div id="alledia-installer-xmap-import-wipe-warning" class="alert alert-warning">
@@ -62,58 +57,55 @@ $app->enqueueMessage(JText::sprintf('COM_OSMAP_INSTALLER_GOTOPLUGINS', $link), '
     </div>
 
     <script>
-    (function($) {
+        (function($) {
+            $(function() {
+                var button  = $('#alledia-installer-xmap-import-button'),
+                    message = $('#alledia-installer-xmap-import-message'),
+                    title   = $('.alledia-xmap-import > h4.warning');
 
-        $(function() {
+                var showError = function() {
+                    $('#alledia-installer-xmap-import-error').show();
+                    title.hide();
+                };
 
-            var button  = $('#alledia-installer-xmap-import-button'),
-                message = $('#alledia-installer-xmap-import-message'),
-                title   = $('.alledia-xmap-import > h4.warning');
+                var showSuccess = function() {
+                    $('#alledia-installer-xmap-import-success').show();
+                    title.hide();
+                };
 
-            var showError = function() {
-                $('#alledia-installer-xmap-import-error').show();
-                title.hide();
-            }
+                button.on('click', function() {
+                    var goAhead = confirm('<?php echo JText::_("COM_OSMAP_INSTALLER_WIPE_CONFIRMATION"); ?>');
 
-            var showSuccess = function() {
-                $('#alledia-installer-xmap-import-success').show();
-                title.hide();
-            }
+                    if (goAhead) {
+                        button.text('<?php echo JText::_("COM_OSMAP_INSTALLER_IMPORTING"); ?>').off('click', this).css('cursor', 'default');
 
-            button.on('click', function() {
-                var goAhead = confirm('<?php echo JText::_("COM_OSMAP_INSTALLER_WIPE_CONFIRMATION"); ?>');
+                        $.post('<?php echo JURI::root(); ?>/administrator/index.php?option=com_osmap&task=sitemaps.migrateXMapData&format=json',
+                            {},
+                            function(data) {
+                                message.hide();
 
-                if (goAhead) {
-                    button.text('<?php echo JText::_("COM_OSMAP_INSTALLER_IMPORTING"); ?>').off('click', this).css('cursor', 'default');
+                                try {
+                                    var result = JSON.parse(data);
 
-                    $.post('<?php echo JURI::root(); ?>/administrator/index.php?option=com_osmap&task=sitemaps.migrateXMapData&format=json',
-                        {},
-                        function(data) {
-                            message.hide();
-
-                            try
-                            {
-                                var result = JSON.parse(data);
-
-                                if (result.success) {
-                                    showSuccess();
-                                } else {
+                                    if (result.success) {
+                                        showSuccess();
+                                    } else {
+                                        showError();
+                                    }
+                                } catch (e) {
                                     showError();
                                 }
-                            } catch (e) {
-                                showError();
-                            }
-                        },
-                        'text'
-                    ).fail(function() {
-                        message.hide();
-                        showError();
-                    });
-                }
+                            },
+                            'text'
+                        ).fail(function() {
+                            message.hide();
+                            showError();
+                        });
+                    }
+                });
             });
-        });
 
-    })(jQuery);
+        })(jQuery);
     </script>
-
-<?php endif; ?>
+    <?php
+endif;

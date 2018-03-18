@@ -10,12 +10,12 @@
 
 namespace Alledia\Installer;
 
+use Alledia\Framework\Factory;
 use JLog;
 
 defined('_JEXEC') or die();
 
 jimport('joomla.log.log');
-
 
 class Loader
 {
@@ -27,9 +27,10 @@ class Loader
      * This method will register a log message and display a warning for admins
      * in case the file is missed.
      *
-     * @param   string  $path  The file path you want to include
+     * @param   string $path The file path you want to include
      *
-     * @return  bool           True, if the file exists and was loaded well.
+     * @return  bool    True, if the file exists and was loaded well.
+     * @throws \Exception
      */
     public static function includeFile($path)
     {
@@ -67,8 +68,11 @@ class Loader
 
             // Warn admin users
             $app = Factory::getApplication();
-            if ($app->isAdmin()) {
-                $app->enqueueMessage('Alledia Framework Loader detected that a required file was not found! Please, check the logs.', 'error');
+            if ($app->getName() == 'administrator') {
+                $app->enqueueMessage(
+                    'Alledia Framework Loader detected that a required file was not found! Please, check the logs.',
+                    'error'
+                );
             }
 
             // Stand up a flag to warn a required file is missed

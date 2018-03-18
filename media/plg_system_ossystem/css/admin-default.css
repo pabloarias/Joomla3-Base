@@ -8,3 +8,7 @@
 #footer {
     text-align: center;
 }
+
+[href='#attrib-footer'] {
+	display: none !important;
+}

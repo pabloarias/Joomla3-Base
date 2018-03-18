@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -58,7 +58,7 @@ $container = OSMap\Factory::getContainer();
 ;(function($) {
     $(function() {
         $.fn.osmap.loadSitemapItems({
-            baseUri: '<?php echo $container->router->getFrontendBase(); ?>',
+            baseUri: '<?php echo $container->uri->root(); ?>',
             sitemapId: '<?php echo $this->sitemapId; ?>',
             container: '#osmap-items-list',
             language: '<?php echo $this->language; ?>',

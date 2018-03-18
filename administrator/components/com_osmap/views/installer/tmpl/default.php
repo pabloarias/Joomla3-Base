@@ -8,6 +8,10 @@
 
 defined('_JEXEC') or die();
 
+/**
+ * @var \Alledia\Installer\Extension\Licensed $license
+ */
+
 JHtml::_('jquery.framework');
 
 ?>
@@ -22,15 +26,13 @@ JHtml::_('jquery.framework');
             include __DIR__ . '/default_custom.php';
         }
 
-        if ($extension->isPro()) {
+        if ($license->isPro()) {
             include __DIR__ . "/default_license.php";
         }
 
         include __DIR__ . "/default_info.php";
-
         ?>
 
         <?php echo $this->footer; ?>
     </div>
-
 </div>

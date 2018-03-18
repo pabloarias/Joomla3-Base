@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -40,7 +40,7 @@ $printNodeCallback = function ($node) {
 
     // Print the item
     echo '<url>';
-    echo '<loc>' . $node->fullLink . '</loc>';
+    echo '<loc><![CDATA[' . $node->fullLink . ']]></loc>';
 
     foreach ($node->images as $image) {
         if (!empty($image->src)) {
@@ -53,7 +53,7 @@ $printNodeCallback = function ($node) {
                 echo '<![CDATA[' . $image->title . ']]>';
             }
             echo '</image:title>';
-            // Lincense
+            // License
             if (isset($image->license) && !empty($image->license)) {
                 echo '<image:license><![CDATA[' . $image->license . ']]></image:license>';
             }

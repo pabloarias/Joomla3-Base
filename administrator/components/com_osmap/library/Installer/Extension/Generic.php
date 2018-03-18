@@ -116,7 +116,7 @@ class Generic
         $element = $this->getElementToDb();
 
         // Load the extension info from database
-        $db = JFactory::getDbo();
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true)
             ->select(array(
                 $db->qn('extension_id'),
@@ -136,15 +136,16 @@ class Generic
         $row = $db->loadObject();
 
         if (is_object($row)) {
-            $this->id = $row->extension_id;
-            $this->name = $row->name;
-            $this->enabled = (bool) $row->enabled;
-            $this->params = new JRegistry($row->params);
+            $this->id      = $row->extension_id;
+            $this->name    = $row->name;
+            $this->enabled = (bool)$row->enabled;
+            $this->params  = new JRegistry($row->params);
+
         } else {
-            $this->id = null;
-            $this->name = null;
+            $this->id      = null;
+            $this->name    = null;
             $this->enabled = false;
-            $this->params = new JRegistry;
+            $this->params  = new JRegistry;
         }
     }
 
@@ -155,7 +156,7 @@ class Generic
      */
     public function isEnabled()
     {
-        return (bool) $this->enabled;
+        return (bool)$this->enabled;
     }
 
     /**
@@ -262,11 +263,23 @@ class Generic
     {
         $extensionPath = $this->getExtensionPath();
 
-        $path = $extensionPath . "/{$this->element}.xml";
+        // Templates or extension?
+        if ($this->type === 'template') {
+            $fileName = 'templateDetails.xml';
+        } else {
+            $fileName = $this->element . '.xml';
+
+            if ($this->type === 'template') {
+                $fileName = 'templateDetails.xml';
+            }
+        }
+
+        $path = $extensionPath . "/{$fileName}";
 
         if (!file_exists($path)) {
             $path = $extensionPath . "/{$this->getElementToDb()}.xml";
         }
+
 
         return $path;
     }
@@ -276,7 +289,7 @@ class Generic
      *
      * @param bool $force If true, force to load the manifest, ignoring the cached one
      *
-     * @return JRegistry
+     * @return \SimpleXMLElement
      */
     public function getManifest($force = false)
     {
@@ -285,7 +298,7 @@ class Generic
 
             $xml = simplexml_load_file($path);
 
-            $this->manifest = (object) json_decode(json_encode($xml));
+            $this->manifest = (object)json_decode(json_encode($xml));
         }
 
         return $this->manifest;
@@ -318,11 +331,11 @@ class Generic
      */
     public function getUpdateURL()
     {
-        $db = JFactory::getDbo();
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true)
             ->select('sites.location')
             ->from('#__update_sites AS sites')
-            ->join('LEFT', '#__update_sites_extensions AS extensions ON (sites.update_site_id = extensions.update_site_id)')
+            ->leftJoin('#__update_sites_extensions AS extensions ON (sites.update_site_id = extensions.update_site_id)')
             ->where('extensions.extension_id = ' . $this->id);
         $db->setQuery($query);
         $row = $db->loadResult();
@@ -340,15 +353,15 @@ class Generic
         $db = JFactory::getDbo();
 
         // Get the update site id
-        $join = $db->qn('#__update_sites_extensions') . ' AS extensions '
+        $join  = $db->qn('#__update_sites_extensions') . ' AS extensions '
             . 'ON (sites.update_site_id = extensions.update_site_id)';
         $query = $db->getQuery(true)
             ->select('sites.update_site_id')
             ->from($db->qn('#__update_sites') . ' AS sites')
-            ->join('LEFT', $join)
+            ->leftJoin($join)
             ->where('extensions.extension_id = ' . $this->id);
         $db->setQuery($query);
-        $siteId = (int) $db->loadResult();
+        $siteId = (int)$db->loadResult();
 
         if (!empty($siteId)) {
             $query = $db->getQuery(true)

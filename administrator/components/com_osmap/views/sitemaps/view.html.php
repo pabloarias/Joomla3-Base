@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -44,6 +44,12 @@ class OSMapViewSitemaps extends OSMap\View\Admin\Base
      */
     protected $item = null;
 
+    /**
+     * @param null $tpl
+     *
+     * @return void
+     * @throws Exception
+     */
     public function display($tpl = null)
     {
         /** @var OSMapModelSitemaps $model */
@@ -100,6 +106,10 @@ class OSMapViewSitemaps extends OSMap\View\Admin\Base
         parent::setToolBar($addDivider);
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     protected function displayAlerts()
     {
         $app = JFactory::getApplication();
@@ -128,6 +138,43 @@ class OSMapViewSitemaps extends OSMap\View\Admin\Base
             $url->setVar('disablecache', 1);
             $app->enqueueMessage(JText::sprintf('COM_OSMAP_WARNING_MULITLANGUAGE_CACHE', $url), 'warning');
         }
+    }
+
+    /**
+     * @param string $type
+     * @param string $lang
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function getLink($item, $type, $lang = null)
+    {
+        $linkId = in_array($type, array('news', 'images')) ? 'xml' : $type;
+        $query  = array();
+
+        if (!empty($item->menuIdList[$linkId])) {
+            $query['Itemid'] = $item->menuIdList[$linkId];
+        }
+
+        if (empty($query['Itemid'])) {
+            $query = array(
+                'option' => 'com_osmap',
+                'view'   => $linkId,
+                'id'     => $item->id
+            );
+        }
+
+        if ($type != $linkId) {
+            $query[$type] = 1;
+        }
+
+        if ($lang) {
+            $query['lang'] = $lang;
+        }
+
+        $router = OSMap\Factory::getContainer()->router;
+
+        return $router->routeURL('index.php?' . http_build_query($query));
     }
 
 }

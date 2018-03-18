@@ -2,7 +2,7 @@
 /**
  * @package   OSMap
  * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @copyright 2016-2017 Open Source Training, LLC. All rights reserved.
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
@@ -26,8 +26,9 @@ class Item extends BaseItem
      * @param int   $currentMenuItemId
      *
      * @return void
+     * @throws \Exception
      */
-    public function __construct(&$itemData, $currentMenuItemId)
+    public function __construct($itemData, $currentMenuItemId)
     {
         parent::__construct($itemData);
 
@@ -58,11 +59,11 @@ class Item extends BaseItem
         $this->rawLink = $this->fullLink;
 
         // Removes the hash segment from the Full link, if exists
-        $container = OSMap\Factory::getContainer();
+        $container      = OSMap\Factory::getContainer();
         $this->fullLink = $container->router->removeHashFromURL($this->fullLink);
 
         // Make sure to have a unique hash for the settings
-        $this->settingsHash = md5($this->fullLink . $currentMenuItemId);
+        $this->settingsHash = $container->router->createUrlHash($this->fullLink . $currentMenuItemId);
 
         /*
          * Do not use a "prepare" method because we need to make sure it will
@@ -121,6 +122,7 @@ class Item extends BaseItem
      * Check if the current link is an internal link.
      *
      * @return bool
+     * @throws \Exception
      */
     protected function checkLinkIsInternal()
     {
@@ -158,7 +160,7 @@ class Item extends BaseItem
 
         if (!OSMap\Helper\General::isEmptyDate($this->$attributeName)) {
             if (!is_numeric($this->$attributeName)) {
-                $date           = new \JDate($this->$attributeName);
+                $date                 = new \JDate($this->$attributeName);
                 $this->$attributeName = $date->toUnix();
             }
 
@@ -167,7 +169,7 @@ class Item extends BaseItem
                 if ($this->$attributeName < 0) {
                     $this->$attributeName = null;
                 } else {
-                    $date           = new \JDate($this->$attributeName);
+                    $date                 = new \JDate($this->$attributeName);
                     $this->$attributeName = $date->toISO8601();
                 }
             }
@@ -236,6 +238,7 @@ class Item extends BaseItem
      * Sanitize the link removing double slashes and trailing slash
      *
      * @return void
+     * @throws \Exception
      */
     protected function sanitizeFullLink()
     {
@@ -251,6 +254,7 @@ class Item extends BaseItem
      * URL, won't change the link.
      *
      * @return void
+     * @throws \Exception
      */
     protected function setFullLink()
     {
@@ -258,35 +262,26 @@ class Item extends BaseItem
 
         if ((bool)$this->home) {
             // Correct the URL for the home page.
-            $this->fullLink = $container->router->getFrontendBase();
-
             // Check if multi-language is enabled to use the proper route
             if (\JLanguageMultilang::isEnabled()) {
                 $lang = OSMap\Factory::getLanguage();
                 $tag  = $lang->getTag();
                 $lang = null;
 
-                if (version_compare(JVERSION, '3.5', '<')) {
-                    $homes = OSMap\Helper\Legacy::getSiteHomePages();
-                } else {
-                    $homes = \JLanguageMultilang::getSiteHomePages();
-                }
+                $homes = \JLanguageMultilang::getSiteHomePages();
 
-                if (isset($homes[$tag])) {
-                    $home = $homes[$tag];
-                } else {
-                    $home = $homes['*'];
-                }
-                $homes = array();
+                $home = isset($homes[$tag]) ? $homes[$tag] : $home = $homes['*'];
 
-                $this->fullLink .= $container->router->routeURL('index.php?Itemid=' . $home->id);
-                $home = null;
+                // Joomla bug? When in subfolder, multilingual home page doubles up the base path
+                $uri            = $container->uri->getInstance();
+                $this->fullLink = $uri->toString(array('scheme', 'host', 'port'))
+                    . $container->router->routeURL('index.php?Itemid=' . $home->id);
+
+            } else {
+                $this->fullLink = $container->uri->root();
             }
 
-            // Removes the /administrator from the URI if in the administrator
-            $this->fullLink = $container->router->sanitizeURL(
-                $container->router->forceFrontendURL($this->fullLink)
-            );
+            $this->fullLink = $container->router->sanitizeURL($this->fullLink);
 
             return;
         }
@@ -352,7 +347,7 @@ class Item extends BaseItem
             $this->fullLink = $container->router->routeURL($this->fullLink);
 
             // Make sure the link has the base uri
-            $this->fullLink = $container->router->forceFrontendURL($this->fullLink);
+            $this->fullLink = $container->router->convertRelativeUriToFullUri($this->fullLink);
         }
 
         $this->fullLink = $container->router->sanitizeURL($this->fullLink);

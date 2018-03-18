@@ -72,7 +72,7 @@ class Licensed extends Generic
      */
     public function isFree()
     {
-        return ! $this->isPro();
+        return !$this->isPro();
     }
 
     /**
@@ -111,6 +111,7 @@ class Licensed extends Generic
      * Loads the library, if existent (including the Pro Library)
      *
      * @return bool
+     * @throws \Exception
      */
     public function loadLibrary()
     {
@@ -118,7 +119,6 @@ class Licensed extends Generic
 
         // If we have a library path, lets load it
         if (file_exists($libraryPath)) {
-
             if ($this->isPro()) {
                 // Check if the pro library exists
                 if (!file_exists($this->getProLibraryPath())) {
