@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<metafile version="3.7" client="site">
+<metafile version="3.8" client="site">
 	<tag>es-ES</tag>
 	<name>Spanish (español)</name>
-	<version>3.7.2.1</version>
-	<creationDate>2016-04-06</creationDate>
-	<author>Spanish Translation Team: ComunidadJoomla</author>
-	<authorEmail>jcomunidad@gmail.com</authorEmail>
-	<authorUrl>http://www.comunidadjoomla.org</authorUrl>
-	<copyright>Copyright (C) 2005 - 2017 Open Source Matters. All rights reserved.</copyright>
-	<copyright>Copyright (C) 2005 - 2017 Comunidadjoomla.org. All rights reserved.</copyright>
+	<version>3.8.6.1</version>
+	<creationDate>2018-02-08</creationDate>
+	<author>Spanish Translation Team [es-ES]</author>
+	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
+	<authorUrl>https://es-es-translation-team.ddns.net/</authorUrl>
+	<copyright>Copyright (C) 2005 - 2018 Open Source Matters. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2005 - 2018 Spanish Tranlation Team [es-ES]. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<description>Spanish language pack for Joomla! 3.7.2 - Site</description>
+	<description>Spanish language pack for Joomla! 3.8.6 - Site</description>
 	<metadata>
 		<name>Spanish (español)</name>
 		<nativeName>Español (España)</nativeName>

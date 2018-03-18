@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension version="3.7" client="administrator" type="language" method="upgrade">
+<extension version="3.8" client="administrator" type="language" method="upgrade">
 	<name>Spanish (español)</name>
 	<tag>es-ES</tag>
-	<version>3.7.2.1</version>
-	<creationDate>25/05/2017</creationDate>
-	<author>ComunidadJoomla</author>
-	<authorEmail>jcomunidad@gmail.com</authorEmail>
-	<authorUrl></authorUrl>
-	<copyright>Copyright (C) 2005 - 2017 Comunidadjoomla.org. All rights reserved.</copyright>
+	<version>3.8.6.1</version>
+	<creationDate>13/03/2018</creationDate>
+	<author></author>
+	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
+	<authorUrl>https://es-es-translation-team.ddns.net/</authorUrl>
+	<copyright>Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>es-ES - Administration language</description>
 	<files>
@@ -96,6 +96,8 @@
 		<filename>es-ES.mod_popular.sys.ini</filename>
 		<filename>es-ES.mod_quickicon.ini</filename>
 		<filename>es-ES.mod_quickicon.sys.ini</filename>
+		<filename>es-ES.mod_sampledata.ini</filename>
+		<filename>es-ES.mod_sampledata.sys.ini</filename>
 		<filename>es-ES.mod_stats_admin.ini</filename>
 		<filename>es-ES.mod_stats_admin.sys.ini</filename>
 		<filename>es-ES.mod_status.ini</filename>
@@ -126,8 +128,6 @@
 		<filename>es-ES.plg_content_fields.sys.ini</filename>
 		<filename>es-ES.plg_content_finder.ini</filename>
 		<filename>es-ES.plg_content_finder.sys.ini</filename>
-		<filename>es-ES.plg_content_geshi.ini</filename>
-		<filename>es-ES.plg_content_geshi.sys.ini</filename>
 		<filename>es-ES.plg_content_joomla.ini</filename>
 		<filename>es-ES.plg_content_joomla.sys.ini</filename>
 		<filename>es-ES.plg_content_loadmodule.ini</filename>
@@ -170,8 +170,6 @@
 		<filename>es-ES.plg_fields_color.sys.ini</filename>
 		<filename>es-ES.plg_fields_editor.ini</filename>
 		<filename>es-ES.plg_fields_editor.sys.ini</filename>
-		<filename>es-ES.plg_fields_gallery.ini</filename>
-		<filename>es-ES.plg_fields_gallery.sys.ini</filename>
 		<filename>es-ES.plg_fields_image.ini</filename>
 		<filename>es-ES.plg_fields_image.sys.ini</filename>
 		<filename>es-ES.plg_fields_imagelist.ini</filename>
@@ -222,6 +220,8 @@
 		<filename>es-ES.plg_quickicon_joomlaupdate.sys.ini</filename>
 		<filename>es-ES.plg_quickicon_phpversioncheck.ini</filename>
 		<filename>es-ES.plg_quickicon_phpversioncheck.sys.ini</filename>
+		<filename>es-ES.plg_sampledata_blog.ini</filename>
+		<filename>es-ES.plg_sampledata_blog.sys.ini</filename>
 		<filename>es-ES.plg_search_categories.ini</filename>
 		<filename>es-ES.plg_search_categories.sys.ini</filename>
 		<filename>es-ES.plg_search_contacts.ini</filename>
