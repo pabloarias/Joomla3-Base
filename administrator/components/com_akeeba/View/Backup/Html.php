@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2006-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -195,7 +195,6 @@ class Html extends BaseView
 
 		// Preload Joomla! behaviours
 		JLoader::import('joomla.utilities.date');
-		JHtml::_('formbehavior.chosen');
 
 		// Load the models
 		/** @var  Backup $model */
@@ -264,11 +263,9 @@ class Html extends BaseView
 			$this->jpsPassword     = $engineConfiguration->get('engine.archiver.jps.key', '');
 		}
 
-		if (AKEEBA_PRO)
-		{
-			$this->showANGIEPassword = 1;
-			$this->ANGIEPassword     = $engineConfiguration->get('engine.installer.angie.key', '');
-		}
+		// Always show ANGIE password: we add that feature to the Core version as well
+		$this->showANGIEPassword = 1;
+		$this->ANGIEPassword     = $engineConfiguration->get('engine.installer.angie.key', '');
 
 		// Push language strings to Javascript
 		JText::script('COM_AKEEBA_BACKUP_TEXT_LASTRESPONSE');

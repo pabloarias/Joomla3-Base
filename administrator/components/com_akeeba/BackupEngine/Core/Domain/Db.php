@@ -2,7 +2,7 @@
 /**
  * Akeeba Engine
  * The modular PHP5 site backup engine
- * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2006-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU GPL version 3 or, at your option, any later version
  * @package   akeebaengine
  *
@@ -268,7 +268,7 @@ class Db extends Part
 	protected function createDatabasesINI()
 	{
 		// caching databases.ini contents
-		Factory::getLog()->log(LogLevel::DEBUG, __CLASS__ . "AkeebaCUBEDomainDBBackup :: Creating databases.ini data");
+		Factory::getLog()->log(LogLevel::DEBUG, __CLASS__ . " :: Creating databases.ini data");
 
 		// Create a new string
 		$this->databases_ini = '';

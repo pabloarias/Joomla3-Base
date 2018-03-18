@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2006-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -69,6 +69,8 @@ class Com_AkeebaInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Amazons3.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/azure.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Azure.php',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/backblaze.ini',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/Backblaze.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/cloudfiles.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Cloudfiles.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/cloudme.ini',
@@ -77,18 +79,24 @@ class Com_AkeebaInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Dreamobjects.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/dropbox.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Dropbox.php',
-			'administrator/components/com_akeeba/BackupEngine/Postproc/email.ini',
-			'administrator/components/com_akeeba/BackupEngine/Postproc/Email.php',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/dropbox2.ini',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/Dropbox2.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/ftp.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Ftp.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/ftpcurl.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Ftpcurl.php',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/googledrive.ini',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/Googledrive.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/googlestorage.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Googlestorage.php',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/googlestoragejson.ini',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/Googlestoragejson.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/idrivesync.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Idrivesync.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/onedrive.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/Onedrive.php',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/onedrivebusiness.ini',
+			'administrator/components/com_akeeba/BackupEngine/Postproc/Onedrivebusiness.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/s3.ini',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/S3.php',
 			'administrator/components/com_akeeba/BackupEngine/Postproc/sftp.ini',
@@ -297,6 +305,13 @@ class Com_AkeebaInstallerScript extends \FOF30\Utils\InstallScript
             // Obsolete AES-128 CTR implementation in Javascript
 			'media/com_akeeba/js/Encryption.min.js',
 			'media/com_akeeba/js/Encryption.min.map',
+
+            // PHP 7.2 compatibility
+            'administrator/components/com_akeeba/BackupEngine/Base/Object.php',
+
+			// Obsolete media files
+            'media/com_akeeba/icons/akeeba-ui-32.png',
+            'media/com_akeeba/changelog.png',
 		),
 		'folders' => array(
 			// Directories used up to version 4.1 (inclusive)
@@ -479,6 +494,9 @@ class Com_AkeebaInstallerScript extends \FOF30\Utils\InstallScript
 
 		// Parent method
 		parent::postflight($type, $parent);
+
+		// Add ourselves to the list of extensions depending on Akeeba FEF
+		$this->addDependency('file_fef', $this->componentName);
 
 		// Uninstall post-installation messages we are no longer using
 		$this->uninstallObsoletePostinstallMessages();

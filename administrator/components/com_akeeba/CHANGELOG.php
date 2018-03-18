@@ -1,4 +1,51 @@
 <?php die();?>
+Akeeba Backup 6.0.1
+================================================================================
++ Warn the user if either FOF or FEF is not installed
++ While importing backup archives, they are now sorted alphabetically
+# [HIGH] Site Transfer Wizard: browser-specific BUTTON element behavior prevents using this feature in Firefox
+# [LOW] Inadvertent space between domain and path in the Schedule page
+
+Akeeba Backup 6.0.0
+================================================================================
+# [LOW] Fixed warning message during the installation due to missing folders
+
+Akeeba Backup 6.0.0.b1
+================================================================================
++ Rewritten interface using our brand new Akeeba Frontend Framework
++ Preliminary Joomla! 4.0 support
+# [MEDIUM] Fixed connection issue to the database when certain hostnames are used (named pipes)
+# [LOW] The kicktemp folder and the kickstart.transfer.php file were not removed after Site Transfer Wizard had finished
+# [LOW] The Transfer Wizard may select a chunk size which is too big for the target server
+# [LOW] Using the Site Transfer Wizard may result in a "wordpress" folder being left behind on some servers with a broken FTP server (technically a bug with your FTP server; we had to remove a minor feature to work around it)
+# [LOW] Add-on ANGIE language files would not be included in the backup archive
+# [LOW] Leftover empty file after the end of the Configuration Wizard run
+
+Akeeba Backup 5.6.4
+================================================================================
+# [LOW] Add-on ANGIE language files would not be included in the backup archive
+
+Akeeba Backup 5.6.3
+================================================================================
+! Some JavaScript files had a zero size in the 5.6.2 package
+
+Akeeba Backup 5.6.1 & 5.6.2
+================================================================================
+! Missing language strings (fixed in 5.6.2)
++ Display info about exceptions and PHP 7+ fatal errors in the backend
++ BackBlaze B2 integration (Pro only)
+~ PHP 7.2 compatibility: renaming Object class to BaseObject
+~ Update Dropbox API with the new "_v2" endpoints where applicable
+~ JSON API stepBackup: now enforcing the check for the MANDATORY parameter "backupid"
+# [MEDIUM] Backing up to JPS with a static salt using the JSON API would always fail
+# [MEDIUM] "Apply to all" filter button does not work due to a Javascript issue
+# [LOW] Core version: some post-processing options were displayed even though the code to make them work was not present.
+# [LOW] The ANGIE Password option in Configuration and Backup Now pages didn't show up in the Core release
+# [LOW] Calendar fields did not display the month due to a Joomla! 3.7+ CSS-related bug
+# [LOW] Programmatically triggering mouse events could fail in some browsers, e.g. newer versions of Firefox
+# [LOW] WebDav post-processing: Fixed issue with hosts without a valid certificate file and SSL connections
+# [LOW] Backup On Update was available on Pro version only. Now it's available in the Core version, too.
+
 Akeeba Backup 5.6.0
 ================================================================================
 + Added warning if HHVM instead of PHP is used

@@ -2,7 +2,7 @@
 /**
  * @package    AkeebaBackup
  * @subpackage backuponupdate
- * @copyright  Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2006-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license    GNU General Public License version 3, or later
  *
  * @since      3.3
@@ -61,11 +61,6 @@ if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/inclu
 	return;
 }
 
-// If this is not the Professional release, bail out. So far I have only
-// received complaints about this feature from users of the Core release
-// who never bothered to read the documentation. FINE! If you are bitching
-// about it, you don't get this feature (unless you are a developer who can
-// come here and edit the code). Fair enough.
 JLoader::import('joomla.filesystem.file');
 $db = JFactory::getDbo();
 
@@ -79,19 +74,6 @@ $db->setQuery($query);
 $enabled = $db->loadResult();
 
 if (!$enabled)
-{
-	return;
-}
-
-// Is it the Pro release?
-@include_once(JPATH_ADMINISTRATOR . '/components/com_akeeba/version.php');
-
-if (!defined('AKEEBA_PRO'))
-{
-	return;
-}
-
-if (!AKEEBA_PRO)
 {
 	return;
 }
@@ -264,14 +246,17 @@ class plgSystemBackuponupdate extends JPlugin
 				return;
 			}
 
-			$document->addStyleDeclaration($this->loadTemplate('default.css'));
+			$isJoomla4 = version_compare(JVERSION, '3.999999.999999', 'gt');
+			$baseDocumentName = $isJoomla4 ? 'joomla4' : 'default';
+
+			$document->addStyleDeclaration($this->loadTemplate($baseDocumentName . '.css'));
 
 			$fakeModule = (object)[
 				'id' => -1,
 				'title' => 'Backup on Update',
 				'module' => 'mod_custom',
 				'position' => 'status',
-				'content' => $this->loadTemplate('default.html', [
+				'content' => $this->loadTemplate($baseDocumentName . '.html', [
 					'active' => $this->getBoUFlag()
 				]),
 				'showtitle' => 0,

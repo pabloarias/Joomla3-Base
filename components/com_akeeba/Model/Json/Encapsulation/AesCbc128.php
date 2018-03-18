@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaBackup
- * @copyright Copyright (c)2006-2017 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2006-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -44,7 +44,7 @@ class AesCbc128 extends Base
 	public function decode($serverKey, $data)
 	{
 		$data = base64_decode($data);
-		return Factory::getEncryption()->AESDecryptCBC($data, $serverKey, 128);
+		return $this->getEncryption()->AESDecryptCBC($data, $serverKey, 128);
 	}
 
 	/**
@@ -65,6 +65,6 @@ class AesCbc128 extends Base
 	 */
 	public function encode($serverKey, $data)
 	{
-		return base64_encode(Factory::getEncryption()->AESEncryptCBC($data, $serverKey, 128));
+		return base64_encode($this->getEncryption()->AESEncryptCBC($data, $serverKey, 128));
 	}
 }
