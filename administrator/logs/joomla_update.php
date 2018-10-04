@@ -133,3 +133,21 @@
 2018-03-18T09:42:30+00:00	INFO ::1	update	Borrando los archivos y carpetas que han sido eliminados.
 2018-03-18T09:42:33+00:00	INFO ::1	update	Limpieza posterior a la instalación.
 2018-03-18T09:42:33+00:00	INFO ::1	update	La actualización a la versión 3.8.6 se ha completado.
+2018-10-04T20:41:00+00:00	INFO 127.0.0.1	update	Actualización inciciadoa por el usuario Super User (999). La versión antigua es la 3.8.6.
+2018-10-04T20:41:03+00:00	INFO 127.0.0.1	update	Descargando el archivo desde https://s3-us-west-2.amazonaws.com/joomla-official-downloads/joomladownloads/joomla3/Joomla_3.8.12-Stable-Update_Package.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZ6S3Q3YQHG57ZRA%2F20181004%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20181004T204101Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&X-Amz-Signature=5b5461596849a0e13c210e59ad4b17affff63c67df251090d131989fa191d248.
+2018-10-04T20:41:06+00:00	INFO 127.0.0.1	update	El archivoe Joomla_3.8.12-Stable-Update_Package.zip se ha descargado.
+2018-10-04T20:41:06+00:00	INFO 127.0.0.1	update	Iniciando la instalación de la versión nueva.
+2018-10-04T20:41:40+00:00	INFO 127.0.0.1	update	Actualización inciciadoa por el usuario Super User (999). La versión antigua es la 3.8.6.
+2018-10-04T20:41:43+00:00	INFO 127.0.0.1	update	El archivoe Joomla_3.8.12-Stable-Update_Package.zip se ha descargado.
+2018-10-04T20:41:43+00:00	INFO 127.0.0.1	update	Iniciando la instalación de la versión nueva.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Finalizando la instalación.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.2-2017-10-14. Texto de la consulta: ALTER TABLE `#__content` ADD INDEX `idx_alias` (`alias`(191));.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.4-2018-01-16. Texto de la consulta: ALTER TABLE `#__user_keys` DROP INDEX `series_2`;.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.4-2018-01-16. Texto de la consulta: ALTER TABLE `#__user_keys` DROP INDEX `series_3`;.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.6-2018-02-14. Texto de la consulta: INSERT INTO `#__extensions` (`extension_id`, `package_id`, `name`, `type`, `elem.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.6-2018-02-14. Texto de la consulta: INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.8-2018-05-18. Texto de la consulta: INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.8.9-2018-06-19. Texto de la consulta: UPDATE `#__extensions` SET `enabled` = '1' WHERE `name` = 'mod_sampledata';.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
+2018-10-04T20:41:46+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.8.12 se ha completado.
