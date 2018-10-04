@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   AllediaFramework
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright 2016-2018 Open Source Training, LLC., All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -68,8 +68,8 @@ abstract class AbstractFlexibleModule extends Licensed
     /**
      * Class constructor that instantiate the free and pro library, if installed
      *
-     * @param string $namespace  Namespace
-     * @param object $module     The base module, instance of stdClass
+     * @param string $namespace Namespace
+     * @param object $module    The base module, instance of stdClass
      */
     public function __construct($namespace, $module = null)
     {
@@ -78,16 +78,26 @@ abstract class AbstractFlexibleModule extends Licensed
         $this->loadLibrary();
 
         if (is_object($module)) {
-            $this->id        = $module->id;
-            $this->title     = $module->title;
-            $this->module    = $module->module;
-            $this->position  = $module->position;
-            $this->content   = $module->content;
-            $this->showtitle = $module->showtitle;
-            $this->menuid    = $module->menuid;
-            $this->name      = $module->name;
-            $this->style     = $module->style;
-            $this->params    = new Registry($module->params);
+            $properties = array(
+                'id',
+                'title',
+                'module',
+                'position',
+                'content',
+                'showtitle',
+                'menuid',
+                'name',
+                'style',
+                'params'
+            );
+            foreach ($properties as $property) {
+                if (isset($module->$property)) {
+                    $this->$property = $module->$property;
+                }
+            }
+            if (!$this->params instanceof Registry) {
+                $this->params = new Registry($this->params);
+            }
         }
     }
 

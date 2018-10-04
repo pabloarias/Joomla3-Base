@@ -1,18 +1,16 @@
 <?php
 /**
  * @package   AllediaFramework
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright 2016-2018 Open Source Training, LLC., All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
 namespace Alledia\Framework;
 
-use Alledia\Framework\Exception;
-
 defined('_JEXEC') or die();
 
-class Object
+class Base
 {
     const MAP_UNDEFINED = 'undefined';
 
@@ -49,8 +47,8 @@ class Object
     /**
      * Set the public properties from the passed array/object
      *
-     * @param array|object $data Values to copy to $this
-     * @param array        $map  Use properties from $data translated using a field map
+     * @param array|Base $data Values to copy to $this
+     * @param array      $map  Use properties from $data translated using a field map
      *
      * @return $this
      * @throws Exception
@@ -112,9 +110,9 @@ class Object
      * will be used for the unknown value.
      *
      *
-     * @param array|object $source Source data to be mapped
-     * @param array        $keys   Extension keys for which values are being requested
-     * @param array        $map    Associative array where key=Extension Key, value=Source Key
+     * @param array|Base $source Source data to be mapped
+     * @param array      $keys   Extension keys for which values are being requested
+     * @param array      $map    Associative array where key=Extension Key, value=Source Key
      *
      * @return array An array of all specified keys with values filled in based on map
      * @throws Exception
@@ -158,9 +156,9 @@ class Object
     /**
      * Safely get a value from an object|array
      *
-     * @param object|array $data
-     * @param string       $var
-     * @param mixed        $default
+     * @param Base|array $data
+     * @param string     $var
+     * @param mixed      $default
      *
      * @return mixed
      */

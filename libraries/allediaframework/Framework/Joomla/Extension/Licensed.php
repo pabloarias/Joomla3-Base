@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   AllediaInstaller
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright 2016-2018 Open Source Training, LLC., All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -51,6 +51,7 @@ class Licensed extends Generic
         parent::__construct($namespace, $type, $folder, $basePath);
 
         $this->license = @strtolower($this->manifest->alledia->license);
+
         // Make sure we are using the correct namespace
         $this->namespace = @$this->manifest->alledia->namespace;
 
@@ -75,7 +76,7 @@ class Licensed extends Generic
      */
     public function isFree()
     {
-        return ! $this->isPro();
+        return !$this->isPro();
     }
 
     /**

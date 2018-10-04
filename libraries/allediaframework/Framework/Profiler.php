@@ -1,16 +1,14 @@
 <?php
 /**
- * @package   OSMap
- * @copyright 2007-2014 XMap - Joomla! Vargas - Guillermo Vargas. All rights reserved.
- * @copyright 2016 Open Source Training, LLC. All rights reserved.
+ * @package   AllediaFramework
  * @contact   www.joomlashack.com, help@joomlashack.com
- * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
+ * @copyright 2016-2018 Open Source Training, LLC., All rights reserved
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
 namespace Alledia\Framework;
 
 defined('_JEXEC') or die();
-
 
 class Profiler
 {
@@ -22,17 +20,28 @@ class Profiler
 
     protected $lastMemory = 0;
 
+    /**
+     * @return void
+     */
     public function start()
     {
         $this->initialMemory = memory_get_usage();
     }
 
+    /**
+     * @param string $label
+     *
+     * @return void
+     */
     public function step($label = null)
     {
         $this->startStep($label);
         $this->endStep();
     }
 
+    /**
+     * @return void
+     */
     public function echoData()
     {
         echo "\n";
@@ -48,12 +57,16 @@ class Profiler
             $operator = $diff > 0 ? '+' : '-';
         }
 
-        echo  '    diff: ' . $operator . number_format(abs($diff), 0, '.', ',') . ' bytes    peak: ' . number_format($peak, '0', '.', ',') . ' bytes';
+        echo '    diff: ' . $operator . number_format(abs($diff), 0, '.', ',') . ' bytes'
+            . '    peak: ' . number_format($peak, '0', '.', ',') . ' bytes';
 
         $this->lastMemory = $total;
         echo "\n";
     }
 
+    /**
+     * @param string $label
+     */
     public function startStep($label = null)
     {
         echo "\n";
@@ -61,6 +74,9 @@ class Profiler
         $this->echoData();
     }
 
+    /**
+     * @return void
+     */
     public function endStep()
     {
         $this->echoData();
@@ -68,6 +84,12 @@ class Profiler
         echo "\n";
     }
 
+    /**
+     * @param string $label
+     * @param int    $leftPadding
+     *
+     * @return void
+     */
     protected function printHeader($label = null, $leftPadding = 4)
     {
         if (!is_null($label)) {
@@ -79,11 +101,15 @@ class Profiler
             $length += strlen($label) + 2;
 
             echo str_repeat('=', $this->maxLength - $length);
+
         } else {
             $this->printSeparator();
         }
     }
 
+    /**
+     * @return void
+     */
     protected function printSeparator()
     {
         echo str_repeat("=", $this->maxLength);

@@ -1,19 +1,18 @@
 <?php
 /**
  * @package   AllediaFramework
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright 2016-2018 Open Source Training, LLC., All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
 namespace Alledia\Framework\Content;
 
-use Alledia\Framework\Object;
-use Alledia\Framework\Content\Tag;
+use Alledia\Framework\Base;
 
 defined('_JEXEC') or die();
 
-class Text extends Object
+class Text extends Base
 {
     public $content = '';
 
@@ -31,7 +30,9 @@ class Text extends Object
      * Extract multiple {mytag} tags from the content
      *
      * @todo Recognize unclose tags like {dumbtag param1="12"}
+     *
      * @param  string $tagName
+     *
      * @return array  An array with all tags {tagName} found on the text
      */
     protected function extractPluginTags($tagName)
@@ -46,6 +47,7 @@ class Text extends Object
      * as Tag instances
      *
      * @param  string $tagName
+     *
      * @return array  An array with all tags {tagName} found on the text
      */
     public function getPluginTags($tagName)
@@ -65,6 +67,7 @@ class Text extends Object
      * as Tag instances
      *
      * @param  string $tagName
+     *
      * @return array  An array with all tags {tagName} found on the text
      * @deprecated 1.3.1 Use getPluginsTags instead
      */

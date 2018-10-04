@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   AllediaFramework
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright 2016-2018 Open Source Training, LLC., All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -58,15 +58,13 @@ abstract class AbstractPlugin extends JPlugin
     {
         parent::loadLanguage($extension, $basePath);
 
-        $languagePath = JPATH_SITE . '/plugins/' . $this->_type . '/' . $this->_name;
-        $languageFile = 'plg_' . $this->_type . '_' . $this->_name . '.sys';
-
-        $language = JFactory::getLanguage();
-        $language->load($languageFile, $languagePath);
+        $systemStrings = 'plg_' . $this->_type . '_' . $this->_name . '.sys';
+        parent::loadLanguage($systemStrings, $basePath);
     }
 
     /**
      * Method to load the extension data
+     *
      * @return void
      */
     protected function loadExtension()

@@ -3,12 +3,12 @@
     <name>Joomlashack Framework</name>
     <libraryname>allediaframework</libraryname>
     <author>Joomlashack</author>
-    <creationDate>October 02 2017</creationDate>
-    <copyright>Copyright (C) 2016 Open Source Training, LLC. All rights reserved.</copyright>
+    <creationDate>September 06 2018</creationDate>
+    <copyright>Copyright (C) 2016-2018 Open Source Training, LLC. All rights reserved.</copyright>
     <license>GPL v3</license>
-    <authorEmail>support@alledia.com</authorEmail>
-    <authorUrl>https://www.alledia.com</authorUrl>
-    <version>1.6.0</version>
+    <authorEmail>help@joomlashack.co</authorEmail>
+    <authorUrl>https://www.joomlashack.com</authorUrl>
+    <version>1.6.3</version>
     <variant>FREE</variant>
     <description>Shared library for Joomlashack extensions</description>
 

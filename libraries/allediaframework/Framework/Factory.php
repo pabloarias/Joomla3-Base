@@ -1,12 +1,14 @@
 <?php
 /**
  * @package   AllediaFramework
- * @contact   www.alledia.com, hello@alledia.com
- * @copyright 2016 Alledia.com, All rights reserved
+ * @contact   www.joomlashack.com, help@joomlashack.com
+ * @copyright 2016-2018 Open Source Training, LLC., All rights reserved
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
 namespace Alledia\Framework;
+
+use Alledia\Framework\Joomla\Extension\Licensed;
 
 defined('_JEXEC') or die();
 
@@ -26,7 +28,7 @@ abstract class Factory extends \JFactory
      * @param  string $type      The extension type
      * @param  string $folder    The extension folder (plugins only)
      *
-     * @return object            The extension instance
+     * @return Licensed          The extension instance
      */
     public static function getExtension($namespace, $type, $folder = null)
     {
