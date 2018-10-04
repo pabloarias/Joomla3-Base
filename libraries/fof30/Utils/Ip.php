@@ -468,6 +468,12 @@ class Ip
 				return $_SERVER['HTTP_X_FORWARDED_FOR'];
 			}
 
+			// Are we under CloudFlare?
+			if (self::$allowIpOverrides && array_key_exists('HTTP_CF_CONNECTING_IP', $_SERVER))
+			{
+				return $_SERVER['HTTP_CF_CONNECTING_IP'];
+			}
+
 			// Are we using Sucuri firewall? They use a custom HTTP header
 			if (self::$allowIpOverrides && array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER))
 			{
@@ -478,6 +484,12 @@ class Ip
 			if (self::$allowIpOverrides && array_key_exists('HTTP_CLIENT_IP', $_SERVER))
 			{
 				return $_SERVER['HTTP_CLIENT_IP'];
+			}
+
+			// CLI applications
+			if (!array_key_exists('REMOTE_ADDR', $_SERVER))
+			{
+				return '';
 			}
 
 			// Normal, non-proxied server or server behind a transparent proxy
@@ -498,6 +510,12 @@ class Ip
 			return getenv('HTTP_X_FORWARDED_FOR');
 		}
 
+		// Are we under CloudFlare?
+		if (self::$allowIpOverrides && getenv('HTTP_CF_CONNECTING_IP'))
+		{
+			return getenv('HTTP_CF_CONNECTING_IP');
+		}
+
 		// Are we using Sucuri firewall? They use a custom HTTP header
 		if (self::$allowIpOverrides && getenv('HTTP_X_SUCURI_CLIENTIP'))
 		{
@@ -516,7 +534,7 @@ class Ip
 			return getenv('REMOTE_ADDR');
 		}
 
-		// Catch-all case for broken servers, apparently
+		// Catch-all case for broken servers and CLI applications
 		return '';
 	}
 

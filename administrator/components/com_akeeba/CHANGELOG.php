@@ -1,4 +1,52 @@
 <?php die();?>
+Akeeba Backup 6.2.1
+================================================================================
+! Missing language strings in the restoration script (ANGIE)
+
+Akeeba Backup 6.2.0
+================================================================================
++ Support for DreamObjects' new US East cluster
++ Use automatically provisioned temporary Amazon S3 credentials when running inside an Amazon EC2 instance with an attached IAM Role
++ Option to delete everything before restoring a backup archive. Please read the documentation before enabling and using it.
+- Removing OneDrive for Business support. Microsoft's documentation is wrong and the integration only worked with the one test account we used - and it stopped working after release of version 6.1.2. This feature will NOT be revisited.
+# [HIGH] Uploading to Google Drive, Dropbox, OneDrive or Google Storage (JSON API) would fail if chunked uploads were enabled but the uploaded file was smaller than the selected chunk size.
+# [HIGH] Some multipart ZIP files would result in an infinite loop
+# [MEDIUM] Cannot fetch back or delete files stored in a Google Team Drive
+# [MEDIUM] Using Hybrid mode for restoration had no effect (worked like direct file writes)
+# [MEDIUM] Google Storage (JSON API) creates problematic file name when saving files to the bucket's root
+# [LOW] Suppress open_basedir warning on parent of web root folder
+# [LOW] ANGIE: Warnings issued on empty message queue
+# [LOW] Cosmetic: PHP 7.2 warning on Manage Backups page with single part backups
+
+Akeeba Backup 6.1.2
+================================================================================
++ Added support for Google Team Drives
++ Manage One-click Backup Icon status from the Profiles page
+# [MEDIUM] Testing the FTP / SFTP connection was unreliable when using the cURL transport options
+# [MEDIUM] JPS secret key was not applied on backups started from backend
+# [MEDIUM] ANGIE secret key was not applied on backups started from backend
+# [HIGH] DirectSFTP over cURL did not work due to wrong class name
+
+Akeeba Backup 6.1.1
+================================================================================
++ Added support for new Amazon S3 regions: Canada, Mumbai, Seoul, Osaka-Local, Ningxia, London, Paris
++ OneDrive for Business support
++ OVH cloud storage support
++ OpenStack Swift support
+# [LOW] DirectFTP and Upload to FTP create folders with 0744 instead of 0755 permissions
+
+Akeeba Backup 6.1.0
+================================================================================
++ Support for Amazon S3 OneZone-IA (single zone, infrequent access) storage class
++ Revamped Site Transfer Wizard, with more options to improve compatibility with more servers
+# [HIGH] Links pointing outside open_basedir restrictions cause a PHP Fatal error, halting the backup
+# [MEDIUM] Installer (ANGIE) language files not included in the backup
+# [MEDIUM] Default backup file permissions should be 0644, not 0755
+# [MEDIUM] Fixed folder scanning when a file is inaccessible due to open_basedir restrictions
+# [LOW] The View Log link displayed after backup is broken when the backup completes in a single page load
+# [LOW] The Site Transfer Wizard uses the wrong color labels
+# [LOW] The Site Transfer Wizard interface works erratically
+
 Akeeba Backup 6.0.1
 ================================================================================
 + Warn the user if either FOF or FEF is not installed
