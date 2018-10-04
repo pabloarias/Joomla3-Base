@@ -121,7 +121,7 @@ abstract class AbstractScript
      */
     public function initProperties($parent)
     {
-        $this->installer = $parent->get('parent');
+        $this->installer = $parent->getParent();
         $this->manifest  = $this->installer->getManifest();
         $this->messages  = array();
 
@@ -138,8 +138,10 @@ abstract class AbstractScript
         }
 
         // Get the previous manifest for use in upgrades
-        $adminPath    = $this->installer->getPath('extension_administrator');
-        $manifestPath = $adminPath . '/' . basename($this->installer->getPath('manifest'));
+        // @TODO: Is there a better way? This should work for components, modules and plugins.
+        $targetPath   = $this->installer->getPath('extension_administrator')
+            ?: $this->installer->getPath('extension_root');
+        $manifestPath = $targetPath . '/' . basename($this->installer->getPath('manifest'));
         if (is_file($manifestPath)) {
             $this->previousManifest = simplexml_load_file($manifestPath);
         }
@@ -148,7 +150,7 @@ abstract class AbstractScript
         $language = JFactory::getLanguage();
         $basePath = $this->installer->getPath('source');
         if (is_dir($basePath)) {
-            if ($this->type == 'component' && $basePath != $adminPath) {
+            if ($this->type == 'component' && $basePath != $targetPath) {
                 // For components sourced by manifest, need to find the admin folder
                 if ($files = $this->manifest->administration->files) {
                     if ($files = (string)$files['folder']) {
@@ -463,30 +465,22 @@ abstract class AbstractScript
             $source         = $this->installer->getPath('source');
             $extensionsPath = $source . '/extensions';
 
-            $defaultDowngrade = (string)$this->manifest->alledia->relatedExtensions['downgrade'];
-            $defaultDowngrade = !empty($defaultDowngrade) && ($defaultDowngrade == 'true' || $defaultDowngrade == '1');
+            $defaultAttributes = $this->manifest->alledia->relatedExtensions->attributes();
+            $defaultDowngrade  = $this->getXmlValue($defaultAttributes['downgrade'], 'bool');
+            $defaultPublish    = $this->getXmlValue($defaultAttributes['publish'], 'bool');
 
             foreach ($this->manifest->alledia->relatedExtensions->extension as $extension) {
-                $path = $extensionsPath . '/' . (string)$extension;
-
-                $attributes = (array)$extension->attributes();
-                if (!empty($attributes)) {
-                    $attributes = $attributes['@attributes'];
-                }
+                $path = $extensionsPath . '/' . $this->getXmlValue($extension);
 
                 if (is_dir($path)) {
-                    $type    = $attributes['type'];
-                    $element = $attributes['element'];
-
-                    $group = '';
-                    if (isset($attributes['group'])) {
-                        $group = $attributes['group'];
-                    }
+                    $type    = $this->getXmlValue($extension['type']);
+                    $element = $this->getXmlValue($extension['element']);
+                    $group   = $this->getXmlValue($extension['group']);
 
                     $current = $this->findExtension($type, $element, $group);
                     $isNew   = empty($current);
 
-                    $typeName = ucfirst(trim(($group ?: '') . ' ' . $type));
+                    $typeName = ucfirst(trim($group . ' ' . $type));
 
                     // Get data from the manifest
                     $tmpInstaller = new JInstaller;
@@ -496,12 +490,7 @@ abstract class AbstractScript
 
                     $this->storeFeedbackForRelatedExtension($element, 'name', (string)$newManifest->name);
 
-                    // Check if we have a higher version installed unless downgrades are okay
-                    $downgrade = empty($attributes['downgrade'])
-                        ? $defaultDowngrade
-                        : (string)$attributes['downgrade'];
-                    $downgrade = $downgrade === true || $downgrade == 'true' || $downgrade == '1';
-
+                    $downgrade = $this->getXmlValue($extension['downgrade'], 'bool', $defaultDowngrade);
                     if (!$isNew && !$downgrade) {
                         $currentManifestPath = $this->getManifestPath($type, $element, $group);
                         $currentManifest     = $this->getInfoFromManifest($currentManifestPath);
@@ -534,24 +523,16 @@ abstract class AbstractScript
 
                             if (is_object($current)) {
                                 if ($type === 'plugin') {
-                                    if (isset($attributes['publish']) && $this->parseConditionalExpression($attributes['publish'])) {
+                                    if ($this->getXmlValue($extension['publish'], 'bool', $defaultPublish)) {
                                         $current->publish();
 
-                                        $this->storeFeedbackForRelatedExtension(
-                                            $element,
-                                            'publish',
-                                            (bool)$attributes['publish']
-                                        );
+                                        $this->storeFeedbackForRelatedExtension($element, 'publish', true);
                                     }
 
-                                    if (isset($attributes['ordering'])) {
-                                        $this->setPluginOrder($current, $attributes['ordering']);
+                                    if ($ordering = $this->getXmlValue($extension['ordering'])) {
+                                        $this->setPluginOrder($current, $ordering);
 
-                                        $this->storeFeedbackForRelatedExtension(
-                                            $element,
-                                            'ordering',
-                                            $attributes['ordering']
-                                        );
+                                        $this->storeFeedbackForRelatedExtension($element, 'ordering', $ordering);
                                     }
                                 }
                             }
@@ -560,10 +541,7 @@ abstract class AbstractScript
                         $this->storeFeedbackForRelatedExtension(
                             $element,
                             'message',
-                            JText::sprintf(
-                                'LIB_ALLEDIAINSTALLER_RELATED_UPDATE_STATE_INSTALLED',
-                                $newVersion
-                            )
+                            JText::sprintf('LIB_ALLEDIAINSTALLER_RELATED_UPDATE_STATE_INSTALLED', $newVersion)
                         );
 
                     } else {
@@ -595,21 +573,16 @@ abstract class AbstractScript
         if ($this->manifest->alledia->relatedExtensions) {
             $installer = new JInstaller;
 
+            $defaultAttributes = $this->manifest->alledia->relatedExtensions->attributes();
+            $defaultUninstall  = $this->getXmlValue($defaultAttributes['uninstall'], 'bool');
+
             foreach ($this->manifest->alledia->relatedExtensions->extension as $extension) {
-                $attributes = (array)$extension->attributes();
-                if (!empty($attributes)) {
-                    $attributes = $attributes['@attributes'];
-                }
+                $type    = $this->getXmlValue($extension['type']);
+                $element = $this->getXmlValue($extension['element']);
+                $group   = $this->getXmlValue($extension['group']);
 
-                $type    = $attributes['type'];
-                $element = $attributes['element'];
-
-                if (isset($attributes['uninstall']) && (bool)$attributes['uninstall']) {
-                    $group = '';
-                    if (isset($attributes['group'])) {
-                        $group = $attributes['group'];
-                    }
-
+                $uninstall = $this->getXmlValue($extension['uninstall'], 'bool', $defaultUninstall);
+                if ($uninstall) {
                     if ($current = $this->findExtension($type, $element, $group)) {
                         $msg     = 'LIB_ALLEDIAINSTALLER_RELATED_UNINSTALL';
                         $msgtype = 'message';
@@ -692,12 +665,12 @@ abstract class AbstractScript
      * (before:element) Before the named plugin
      * (after:element) After the named plugin
      *
-     * @param JTable $extension
-     * @param string $order
+     * @param JTableExtension $extension
+     * @param string          $order
      *
      * @return void
      */
-    protected function setPluginOrder(JTable $extension, $order)
+    protected function setPluginOrder(JTableExtension $extension, $order)
     {
         if ($extension->type == 'plugin' && !empty($order)) {
             $db    = JFactory::getDbo();
@@ -821,18 +794,9 @@ abstract class AbstractScript
             // Extensions
             if ($obsolete->extension) {
                 foreach ($obsolete->extension as $extension) {
-                    $attributes = (array)$extension->attributes();
-                    if (!empty($attributes)) {
-                        $attributes = $attributes['@attributes'];
-                    }
-
-                    $type    = $attributes['type'];
-                    $element = $attributes['element'];
-
-                    $group = '';
-                    if (isset($attributes['group'])) {
-                        $group = $attributes['group'];
-                    }
+                    $type    = $this->getXmlValue($extension['type']);
+                    $element = $this->getXmlValue($extension['element']);
+                    $group   = $this->getXmlValue($extension['group']);
 
                     $current = $this->findExtension($type, $element, $group);
                     if (!empty($current)) {
@@ -866,8 +830,6 @@ abstract class AbstractScript
 
             // Files
             if ($obsolete->file) {
-                jimport('joomla.filesystem.file');
-
                 foreach ($obsolete->file as $file) {
                     $path = JPATH_ROOT . '/' . trim((string)$file, '/');
                     if (file_exists($path)) {
@@ -897,18 +859,10 @@ abstract class AbstractScript
      */
     protected function findThisExtension()
     {
-        $attributes = (array)$this->manifest->attributes();
-        $attributes = $attributes['@attributes'];
-
-        $group = '';
-        if ($attributes['type'] === 'plugin') {
-            $group = $attributes['group'];
-        }
-
         $extension = $this->findExtension(
-            $attributes['type'],
-            (string)$this->manifest->alledia->element,
-            $group
+            $this->getXmlValue($this->manifest['type']),
+            $this->getXmlValue($this->manifest->alledia->element),
+            $this->getXmlValue($this->manifest['group'])
         );
 
         return $extension;
@@ -1016,6 +970,7 @@ abstract class AbstractScript
                     $info->set($e->getName(), (string)$e);
                 }
             }
+
         } else {
             $relativePath = str_replace(JPATH_SITE . '/', '', $manifestPath);
             $this->setMessage(
@@ -1618,4 +1573,33 @@ abstract class AbstractScript
             }
         }
     }
+
+    /**
+     * @param SimpleXMLElement|string $element
+     * @param string                  $type
+     * @param mixed                   $default
+     *
+     * @return bool|string
+     */
+    protected function getXmlValue($element, $type = 'string', $default = null)
+    {
+        $value = $element ? (string)$element : $default;
+
+        switch ($type) {
+            case 'bool':
+            case 'boolean':
+                $value = $element
+                    ? $value == 'true' || $value == '1'
+                    : (bool)$default;
+                break;
+
+            case 'string':
+            default:
+                $value = trim($value);
+                break;
+        }
+
+        return $value;
+    }
+
 }
