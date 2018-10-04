@@ -2,11 +2,11 @@
 <extension version="3.8" client="administrator" type="language" method="upgrade">
 	<name>Spanish (español)</name>
 	<tag>es-ES</tag>
-	<version>3.8.6.1</version>
-	<creationDate>13/03/2018</creationDate>
+	<version>3.8.12.2</version>
+	<creationDate>09/09/2018</creationDate>
 	<author></author>
 	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
-	<authorUrl>https://es-es-translation-team.ddns.net/</authorUrl>
+	<authorUrl>http://joomlaes.org</authorUrl>
 	<copyright>Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>es-ES - Administration language</description>
@@ -258,6 +258,8 @@
 		<filename>es-ES.plg_system_remember.sys.ini</filename>
 		<filename>es-ES.plg_system_sef.ini</filename>
 		<filename>es-ES.plg_system_sef.sys.ini</filename>
+		<filename>es-ES.plg_system_sessiongc.ini</filename>
+		<filename>es-ES.plg_system_sessiongc.sys.ini</filename>
 		<filename>es-ES.plg_system_stats.ini</filename>
 		<filename>es-ES.plg_system_stats.sys.ini</filename>
 		<filename>es-ES.plg_system_updatenotification.ini</filename>

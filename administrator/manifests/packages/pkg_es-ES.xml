@@ -2,17 +2,17 @@
 <extension type="package" version="3.8" method="upgrade">
 	<name>joomla_lang_full</name>
 	<packagename>es-ES</packagename>
-	<version>3.8.6.1</version>
-	<creationDate>13/03/2018</creationDate>
+	<version>3.8.12.2</version>
+	<creationDate>09/09/2018</creationDate>
 	<author></author>
 	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
-	<authorUrl>https://es-es-translation-team.ddns.net/</authorUrl>
+	<authorUrl>http://joomlaes.org</authorUrl>
 	<copyright>Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<url></url>
 	<packager>Valc</packager>
 	<packagerurl></packagerurl>
-	<description><![CDATA[<div style="text-align:left;"><h2>Successfully installed the spanish language pack for Joomla! 3.8.6.</h2><p></p><p>Please report any bugs or issues at the Spanish Translation Team using the mail: es.es.translation.team@gmail.com</p><p></p><p>Translated by: The Spanish Translation Team [es-ES]</p><h2>El paquete en español para Joomla! 3.8.6 se ha instalado correctamente.</h2><p></p><p>Por favor, reporte cualquier bug o asunto relacionado a nuestra dirección de correo electrónico: es.es.translation.team@gmail.com</p><p></p><p>Traducción: Spanish Translation Team [es-ES]</p></div>]]></description>
+	<description><![CDATA[<div style="text-align:left;"><h2>Successfully installed the spanish language pack for Joomla! 3.8.12.</h2><p></p><p>Please report any bugs or issues at the Spanish Translation Team using the mail: es.es.translation.team@gmail.com</p><p></p><p>Translated by: The Spanish Translation Team [es-ES]</p><h2>El paquete en español para Joomla! 3.8.12 se ha instalado correctamente.</h2><p></p><p>Por favor, reporte cualquier bug o asunto relacionado a nuestra dirección de correo electrónico: es.es.translation.team@gmail.com</p><p></p><p>Traducción: Spanish Translation Team [es-ES]</p></div>]]></description>
 	<blockChildUninstall>true</blockChildUninstall>
 	<files>
 		<file type="language" client="site" id="es-ES">site_es-ES.zip</file>
