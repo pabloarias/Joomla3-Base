@@ -20,7 +20,7 @@ class JConfig {
 	public $dbprefix = 'j4ogy_';
 	public $live_site = '';
 	public $secret = '8FFHFRS4OgnP5z34';
-	public $gzip = '0';
+	public $gzip = '1';
 	public $error_reporting = 'none';
 	public $helpurl = 'https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&lang={langcode}';
 	public $ftp_host = '';
