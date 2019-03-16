@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="file" version="1.6" method="upgrade" client="site">
+    <name>backup - Spanish (Spain)</name>
+    <author>Akeeba Ltd</author>
+    <authorurl>https://www.akeeba.com</authorurl>
+	<copyright>Copyright (C) 2010-2018 Akeeba Ltd. All rights reserved.</copyright>
+	<license>GNU GPL v3 or later</license>
+    <version>20180901.012403</version>
+    <creationDate>01 Sep 2018</creationDate>
+    <description>Spanish (Spain) language files for Akeeba Backup</description>
+	<fileset><files folder="backend" target="administrator/language/es-ES"><filename>es-ES.com_akeeba.sys.ini</filename><filename>es-ES.com_akeeba.ini</filename><filename>es-ES.plg_system_akeebaupdatecheck.ini</filename><filename>es-ES.plg_system_akeebaupdatecheck.sys.ini</filename><filename>es-ES.plg_system_backuponupdate.sys.ini</filename><filename>es-ES.plg_system_backuponupdate.ini</filename><filename>es-ES.plg_quickicon_akeebabackup.sys.ini</filename><filename>es-ES.plg_quickicon_akeebabackup.ini</filename></files><files folder="frontend" target="language/es-ES"><filename>es-ES.com_akeeba.ini</filename></files><files folder="angie" target="administrator/components/com_akeeba/Master/Installers"><filename>language-angie.jpa</filename></files></fileset>
+</extension>
