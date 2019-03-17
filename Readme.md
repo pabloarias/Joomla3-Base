@@ -22,10 +22,9 @@ Archivos a eliminar antes del despliegue en producción:
 
 ## Contenidos incluidos
 
-- Nota legal.
-- Política de privacidad.
-- Mapa web (OSmap). Recuerda indicar en el archivo robots.txt la URL y, preferiblemente que sea algo como "sitemap.xml" a través de una redirección en el archivo .htaccess.
-- Menú con estos 3 elementos anteriores (Menú footer).
+- Artículo con Nota legal genérica.
+- Artículo con Política de Privacidad genérica.
+- Menú con estos dos elementos anteriores (Footer menu).
 - Módulo para mostrar este menú en el pie de página.
 
 ## Cambios en la configuración global
@@ -37,14 +36,17 @@ Archivos a eliminar antes del despliegue en producción:
 - Desactivada la opción de mostrar la etiqueta meta del autor.
 - Duración de la sesión establecida a 480 minutos.
 
-## Otras configuraciones iniciales realizadas
-
-### Idiomas
+## Idiomas
 
 - Establecido el idioma español por defecto en la parte pública y privada.
 - El español es el idioma por defecto para los contenidos.
 
-### Configuración inicial del componente de contenidos
+## Configuración inicial del componente de contenidos
 
 - Renombrada categoría "Uncategorised" a "General".
 - Cambiada en la configuración de vista de un artículo que no se muestren la categoría, la fecha, los iconos (imprimir, PDF...) y la navegación entre artículos.
+- Habilitado router actual y mostrar sin URLs sin IDs (incluyendo el componente de contactos, usuarios y canales electrónicos).
+
+## Otras configuraciones iniciales realizadas
+
+Habilitado plugin de Redirecciones para recolectar errores 404.
