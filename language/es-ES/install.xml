@@ -2,12 +2,12 @@
 <extension version="3.9" client="site" type="language" method="upgrade">
 	<name>Spanish (español)</name>
 	<tag>es-ES</tag>
-	<version>3.9.1.1</version>
-	<creationDate>19/12/2018</creationDate>
+	<version>3.9.5.1</version>
+	<creationDate>05/05/2019</creationDate>
 	<author></author>
 	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
 	<authorUrl>http://joomlaes.org</authorUrl>
-	<copyright>Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>es-ES - Site language</description>
 	<files>
