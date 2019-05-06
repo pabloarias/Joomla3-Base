@@ -15,7 +15,7 @@ class JConfig {
 	public $dbtype = 'mysqli';
 	public $host = 'localhost';
 	public $user = 'root';
-	public $password = '';
+	public $password = 'bleras';
 	public $db = 'joomla3base';
 	public $dbprefix = 'j4ogy_';
 	public $live_site = '';
@@ -32,7 +32,7 @@ class JConfig {
 	public $offset = 'Europe/Madrid';
 	public $mailonline = '1';
 	public $mailer = 'mail';
-	public $mailfrom = '';
+	public $mailfrom = 'correo@pabloarias.eu';
 	public $fromname = 'Joomla 3 Base';
 	public $sendmail = '/usr/sbin/sendmail';
 	public $smtpauth = '0';

@@ -1,4 +1,8 @@
 <?php die();?>
+Akeeba Backup 6.4.2.1
+================================================================================
+! Backup over CLI was broken (the previous fix didn't cover another, less common, failure reason)
+
 Akeeba Backup 6.4.2
 ================================================================================
 ! Backup over CLI was broken
