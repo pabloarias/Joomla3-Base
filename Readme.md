@@ -16,7 +16,7 @@ Archivos a eliminar antes del despliegue en producción:
 
 ## Paquetes incluidos
 
-- Joomla 3.9.5
+- Joomla 3.9.11
 - Idioma español 3.9.5.1
 - Akeeba Backup 6.4.2.1 con traducción al español
 
