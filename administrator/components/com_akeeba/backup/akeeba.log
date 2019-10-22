@@ -31,3 +31,36 @@ DEBUG   |190829 00:33:17|-- Loading optional filter Stack\StackHoststats
 DEBUG   |190829 00:33:17|-- Loading optional filter Stack\StackActionlogs
 DEBUG   |190829 00:33:17|-- Loading optional filter Stack\StackMyjoomla
 DEBUG   |190829 00:33:17|-- Loading optional filter Stack\StackFinder
+DEBUG   |191023 01:42:05|Fetching filter data from database
+DEBUG   |191023 01:42:05|Loading filters
+DEBUG   |191023 01:42:05|-- Loading filter Tables
+DEBUG   |191023 01:42:05|-- Loading filter Multidb
+DEBUG   |191023 01:42:05|-- Loading filter Regexskipdirs
+DEBUG   |191023 01:42:05|-- Loading filter Tabledata
+DEBUG   |191023 01:42:05|-- Loading filter Skipfiles
+DEBUG   |191023 01:42:05|-- Loading filter Regexskipfiles
+DEBUG   |191023 01:42:05|-- Loading filter Regexdirectories
+DEBUG   |191023 01:42:05|-- Loading filter Incremental
+DEBUG   |191023 01:42:05|-- Loading filter Files
+DEBUG   |191023 01:42:05|-- Loading filter Directories
+DEBUG   |191023 01:42:05|-- Loading filter Regextables
+DEBUG   |191023 01:42:05|-- Loading filter Regexfiles
+DEBUG   |191023 01:42:05|-- Loading filter Regextabledata
+DEBUG   |191023 01:42:05|-- Loading filter Extradirs
+DEBUG   |191023 01:42:05|-- Loading filter Skipdirs
+DEBUG   |191023 01:42:05|-- Loading filter Excludefiles
+DEBUG   |191023 01:42:05|-- Loading filter Sitedb
+DEBUG   |191023 01:42:05|-- Loading filter Libraries
+DEBUG   |191023 01:42:05|-- Loading filter Systemcachefiles
+DEBUG   |191023 01:42:05|-- Loading filter Excludetabledata
+DEBUG   |191023 01:42:05|-- Loading filter Excludefolders
+DEBUG   |191023 01:42:05|-- Loading filter Joomlaskipfiles
+DEBUG   |191023 01:42:05|-- Loading filter Joomlaskipdirs
+DEBUG   |191023 01:42:05|-- Loading filter Siteroot
+DEBUG   |191023 01:42:05|-- Loading filter Cvsfolders
+DEBUG   |191023 01:42:05|Loading optional filters
+DEBUG   |191023 01:42:05|-- Loading optional filter Stack\StackErrorlogs
+DEBUG   |191023 01:42:05|-- Loading optional filter Stack\StackHoststats
+DEBUG   |191023 01:42:05|-- Loading optional filter Stack\StackFinder
+DEBUG   |191023 01:42:05|-- Loading optional filter Stack\StackMyjoomla
+DEBUG   |191023 01:42:05|-- Loading optional filter Stack\StackActionlogs
