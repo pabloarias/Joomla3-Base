@@ -27,3 +27,12 @@
 2019-08-28T22:25:32+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
 2019-08-28T22:25:32+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
 2019-08-28T22:25:32+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.9.11 se ha completado.
+2019-10-22T23:39:56+00:00	INFO 127.0.0.1	update	Iniciando la instalación de la versión nueva.
+2019-10-22T23:40:10+00:00	INFO 127.0.0.1	update	Actualización inciciadoa por el usuario Super User (821). La versión antigua es la 3.9.11.
+2019-10-22T23:40:12+00:00	INFO 127.0.0.1	update	Descargando el archivo desde https://s3-us-west-2.amazonaws.com/joomla-official-downloads/joomladownloads/joomla3/Joomla_3.9.12-Stable-Update_Package.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZ6S3Q3YQHG57ZRA%2F20191022%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20191022T234007Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&X-Amz-Signature=e3fcae12d51c33ebee30e28f8c1a00fd0ef9688faa4f6ec89bec35bf24bc1f3b.
+2019-10-22T23:40:17+00:00	INFO 127.0.0.1	update	El archivoe Joomla_3.9.12-Stable-Update_Package.zip se ha descargado.
+2019-10-22T23:40:17+00:00	INFO 127.0.0.1	update	Iniciando la instalación de la versión nueva.
+2019-10-22T23:40:18+00:00	INFO 127.0.0.1	update	Finalizando la instalación.
+2019-10-22T23:40:18+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
+2019-10-22T23:40:18+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
+2019-10-22T23:40:18+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.9.12 se ha completado.
