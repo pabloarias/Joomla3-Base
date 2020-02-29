@@ -2,8 +2,8 @@
 <extension type="package" version="3.9" method="upgrade">
 	<name>joomla_language_full</name>
 	<packagename>es-ES</packagename>
-	<version>3.9.11.1</version>
-	<creationDate>15/08/2019</creationDate>
+	<version>3.9.15.1</version>
+	<creationDate>23/02/2020</creationDate>
 	<author></author>
 	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
 	<authorUrl>http://joomlaes.org</authorUrl>
@@ -12,7 +12,7 @@
 	<url></url>
 	<packager>Valc</packager>
 	<packagerurl></packagerurl>
-	<description><![CDATA[<div style="text-align:left;"><h2>Successfully installed the spanish language pack for Joomla! 3.9.11.1</h2><p></p><p>Please report any bugs or issues at the Spanish Translation Team using the mail: es.es.translation.team@gmail.com</p><p></p><p>Translated by: The Spanish Translation Team [es-ES]</p><h2>El paquete en español para Joomla! 3.9.11.1 se ha instalado correctamente.</h2><p></p><p>Por favor, reporte cualquier bug o asunto relacionado a nuestra dirección de correo electrónico: es.es.translation.team@gmail.com</p><p></p><p>Traducción: Spanish Translation Team [es-ES]</p></div>]]></description>
+	<description><![CDATA[<div style="text-align:left;"><h2>Successfully installed the spanish language pack for Joomla! 3.9.15.1</h2><p></p><p>Please report any bugs or issues at the Spanish Translation Team using the mail: es.es.translation.team@gmail.com</p><p></p><p>Translated by: The Spanish Translation Team [es-ES]</p><h2>El paquete en español para Joomla! 3.9.15.1 se ha instalado correctamente.</h2><p></p><p>Por favor, reporte cualquier bug o asunto relacionado a nuestra dirección de correo electrónico: es.es.translation.team@gmail.com</p><p></p><p>Traducción: Spanish Translation Team [es-ES]</p></div>]]></description>
 	<blockChildUninstall>true</blockChildUninstall>
 	<files>
 		<file type="language" client="site" id="es-ES">site_es-ES.zip</file>

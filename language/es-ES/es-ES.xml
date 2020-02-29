@@ -2,15 +2,15 @@
 <metafile version="3.9" client="site">
 	<tag>es-ES</tag>
 	<name>Spanish (español)</name>
-	<version>3.9.11.1</version>
+	<version>3.9.15.1</version>
 	<creationDate>2018-02-08</creationDate>
 	<author>Spanish Translation Team [es-ES]</author>
 	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
 	<authorUrl>http://joomlaes.org</authorUrl>
-	<copyright>Copyright (C) 2005 - 2019 Open Source Matters. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.</copyright>
 	<copyright>Copyright (C) 2005 - 2019 Spanish Tranlation Team [es-ES]. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<description>Spanish language pack for Joomla! 3.9.11 - Site</description>
+	<description>Spanish language pack for Joomla! 3.9.15 - Site</description>
 	<metadata>
 		<name>Spanish (español)</name>
 		<nativeName>Español (España)</nativeName>
