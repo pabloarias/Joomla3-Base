@@ -2,9 +2,9 @@
 <extension version="3.9" client="administrator" type="language" method="upgrade">
 	<name>Spanish (español)</name>
 	<tag>es-ES</tag>
-	<version>3.9.15.1</version>
-	<creationDate>23/02/2020</creationDate>
-	<author></author>
+	<version>3.9.18.1</version>
+	<creationDate>28/04/2020</creationDate>
+	<author>Spanish Translation Team [es-ES]</author>
 	<authorEmail>es.es.translation.team@gmail.com</authorEmail>
 	<authorUrl>http://joomlaes.org</authorUrl>
 	<copyright>Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.</copyright>
