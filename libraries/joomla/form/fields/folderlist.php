@@ -188,9 +188,16 @@ class JFormFieldFolderList extends JFormFieldList
 
 		if (!is_dir($path))
 		{
-			$path = JPATH_ROOT . '/' . $path;
+			if (is_dir(JPATH_ROOT . '/' . $path))
+			{
+				$path = JPATH_ROOT . '/' . $path;
+			}
+			else 
+			{
+				return;
+			}
 		}
-		
+
 		$path = JPath::clean($path);
 
 		// Prepend some default options based on field attributes.
