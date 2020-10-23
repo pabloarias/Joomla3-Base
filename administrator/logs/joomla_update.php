@@ -42,3 +42,15 @@
 2020-05-29T22:30:00+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
 2020-05-29T22:30:01+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
 2020-05-29T22:30:01+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.9.18 se ha completado.
+2020-10-23T14:47:41+00:00	INFO 127.0.0.1	update	Actualización inciciadoa por el usuario Super User (821). La versión antigua es la 3.9.18.
+2020-10-23T14:47:44+00:00	INFO 127.0.0.1	update	Descargando el archivo desde https://s3-us-west-2.amazonaws.com/joomla-official-downloads/joomladownloads/joomla3/Joomla_3.9.22-Stable-Update_Package.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZ6S3Q3YQHG57ZRA%2F20201023%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20201023T144733Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&X-Amz-Signature=3e210e9502d5fe401ab451d02bdbff62216f4d08b9f89c0f2e03fc2bdb65593d.
+2020-10-23T14:47:47+00:00	INFO 127.0.0.1	update	El archivoe Joomla_3.9.22-Stable-Update_Package.zip se ha descargado.
+2020-10-23T14:47:47+00:00	INFO 127.0.0.1	update	Iniciando la instalación de la versión nueva.
+2020-10-23T14:47:48+00:00	INFO 127.0.0.1	update	Finalizando la instalación.
+2020-10-23T14:47:48+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.9.19-2020-05-16. Texto de la consulta: ALTER TABLE `#__ucm_content` MODIFY `core_title` varchar(400) NOT NULL DEFAULT '.
+2020-10-23T14:47:48+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.9.19-2020-06-01. Texto de la consulta: INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description.
+2020-10-23T14:47:48+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.9.21-2020-08-02. Texto de la consulta: INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description.
+2020-10-23T14:47:48+00:00	INFO 127.0.0.1	update	Consulta ejecutada desde el archivo 3.9.22-2020-09-16. Texto de la consulta: INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description.
+2020-10-23T14:47:48+00:00	INFO 127.0.0.1	update	Borrando los archivos y carpetas que han sido eliminados.
+2020-10-23T14:47:50+00:00	INFO 127.0.0.1	update	Limpieza posterior a la instalación.
+2020-10-23T14:47:50+00:00	INFO 127.0.0.1	update	La actualización a la versión 3.9.22 se ha completado.
