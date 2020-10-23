@@ -8,7 +8,7 @@
 namespace Akeeba\Backup\Admin\View\Configuration;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\Backup\Admin\View\ViewTraits\ProfileIdAndName;
 use Akeeba\Engine\Factory;
@@ -39,7 +39,7 @@ class Html extends BaseView
 	 */
 	public function onBeforeMain()
 	{
-		$this->container->template->addJS('media://com_akeeba/js/Configuration.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/Configuration.min.js', true, false, $this->container->mediaVersion);
 
 		$this->getProfileIdAndName();
 

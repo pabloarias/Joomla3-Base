@@ -8,7 +8,7 @@
 namespace Akeeba\Backup\Admin\View\ControlPanel;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\Backup\Admin\Helper\Status;
 use Akeeba\Backup\Admin\Model\ControlPanel;
@@ -241,7 +241,7 @@ class Html extends BaseView
 		Platform::getInstance()->load_version_defines();
 
 		// Add the Javascript to the document
-		$this->container->template->addJS('media://com_akeeba/js/ControlPanel.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/ControlPanel.min.js', true, false, $this->container->mediaVersion);
 		$this->addJSScriptOptions();
 	}
 

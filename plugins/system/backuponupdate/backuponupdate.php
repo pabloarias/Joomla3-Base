@@ -8,13 +8,17 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
-class plgSystemBackuponupdate extends JPlugin
+class plgSystemBackuponupdate extends CMSPlugin
 {
+	/** @var \Joomla\CMS\Application\AdministratorApplication */
+	public $app;
+
 	private $isEnabled;
 
 	/**
@@ -73,7 +77,7 @@ class plgSystemBackuponupdate extends JPlugin
 		}
 
 		// Handle the flag toggle through AJAX
-		$ji          = new JInput();
+		$ji          = Factory::getApplication()->input;
 		$toggleParam = $ji->getCmd('_akeeba_backup_on_update_toggle');
 
 		if ($toggleParam && ($toggleParam == Factory::getSession()->getToken()))
@@ -162,7 +166,7 @@ class plgSystemBackuponupdate extends JPlugin
 	 */
 	public function onAfterModuleList(&$modules)
 	{
-		$app = Factory::getApplication();
+		$app = $this->app;
 
 		// Only work when format=html (since we try adding CSS and Javascript on the page which is only valid in HTML).
 		if ($app->input->getCmd('format', 'html') != 'html')
@@ -180,6 +184,12 @@ class plgSystemBackuponupdate extends JPlugin
 
 		// Make sure we are enabled
 		if (!$this->isEnabled())
+		{
+			return;
+		}
+
+		// Is the main menu supposed to be hidden?
+		if ($this->app->input->getBool('hidemainmenu', false))
 		{
 			return;
 		}
@@ -211,7 +221,7 @@ class plgSystemBackuponupdate extends JPlugin
 				 * need to load it with the class_exists trick. As for the method_exists, it's us trying to make sure future
 				 * versions of Joomla! won't break anything.
 				 */
-				if (class_exists('Joomla\CMS\Factory', true) && method_exists('Joomla\CMS\Factory', 'getDocument'))
+				if (class_exists('Joomla\CMS\Factory', true) && method_exists(Factory::class, 'getDocument'))
 				{
 					$document = Factory::getDocument();
 				}
@@ -317,7 +327,7 @@ class plgSystemBackuponupdate extends JPlugin
 
 		$this->isEnabled = false;
 
-		if (!version_compare(PHP_VERSION, '5.6.0', '>='))
+		if (!version_compare(PHP_VERSION, '7.1.0', '>='))
 		{
 			return false;
 		}

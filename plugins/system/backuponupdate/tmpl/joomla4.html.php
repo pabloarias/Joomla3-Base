@@ -5,10 +5,11 @@
  * @license   GNU General Public License version 3, or later
  */
 
+defined('_JEXEC') || die();
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
-defined('_JEXEC') or die();
 /**
  * @package    AkeebaBackup
  * @subpackage backuponupdate
@@ -37,7 +38,7 @@ if (empty($document))
 
 $document->addScript('../media/com_akeeba/js/System.min.js');
 
-$token = urlencode(JFactory::getSession()->getToken());
+$token = urlencode(Factory::getSession()->getToken());
 $js    = <<< JS
 ; // Work around broken third party Javascript
 
@@ -50,9 +51,13 @@ function akeeba_backup_on_update_toggle()
 
 akeeba.System.documentReady(function() {
     var myItem = document.getElementById('plg_system_backuponupdate');
+    if (typeof myItem == "undefined") return;
     var myContainer = myItem.parentElement;
+    if (typeof myContainer == "undefined") return;
     var headerIconsContainer = myContainer.parentElement.parentElement;
+    if (typeof headerIconsContainer == "undefined") return;
     var headerIcons = headerIconsContainer.querySelectorAll('div.header-item');
+    if (typeof headerIcons == "undefined") return;
     
     if (headerIcons.length < 2)
 	{
@@ -63,7 +68,9 @@ akeeba.System.documentReady(function() {
 		headerIconsContainer.insertBefore(myItem, headerIcons[1]);
 	}
     
-    headerIconsContainer.removeChild(myContainer);
+    try {
+        headerIconsContainer.removeChild(myContainer);
+    } catch (e) {}
 })
 
 JS;
@@ -81,7 +88,7 @@ $document->addScriptDeclaration($js);
 						  aria-hidden="true"></span>
 			</div>
 			<div class="align-items-center tiny">
-				<?= JText::_('PLG_SYSTEM_BACKUPONUPDATE_LBL_' . ($params['active'] ? 'ACTIVE' : 'INACTIVE')) ?>
+				<?= Text::_('PLG_SYSTEM_BACKUPONUPDATE_LBL_' . ($params['active'] ? 'ACTIVE' : 'INACTIVE')) ?>
 			</div>
 		</a>
 	</div>

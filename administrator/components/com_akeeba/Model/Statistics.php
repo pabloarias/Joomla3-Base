@@ -8,8 +8,9 @@
 namespace Akeeba\Backup\Admin\Model;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
+use Akeeba\Backup\Admin\Model\Exceptions\FrozenRecordError;
 use Akeeba\Engine\Factory;
 use Akeeba\Engine\Platform;
 use Exception;
@@ -17,20 +18,20 @@ use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
-use JFactory;
-use JFile;
-use JLoader;
 use Joomla\CMS\Access\Access;
+use Joomla\CMS\Factory as JFactory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\User\User;
-use JPagination;
-use JText;
+use RuntimeException;
 
 class Statistics extends Model
 {
 	/**
 	 * The JPagination object, used in the GUI
 	 *
-	 * @var  JPagination
+	 * @var  Pagination
 	 */
 	private $pagination;
 
@@ -369,7 +370,7 @@ ENDBODY;
 				$mailer->setBody($email_body);
 				$mailer->Send();
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				// Joomla! 3.5 is written by incompetent bonobos
 			}
@@ -401,15 +402,15 @@ ENDBODY;
 
 		if ((!is_numeric($id)) || ($id <= 0))
 		{
-			throw new RecordNotLoaded(JText::_('COM_AKEEBA_BUADMIN_ERROR_INVALIDID'));
+			throw new RecordNotLoaded(Text::_('COM_AKEEBA_BUADMIN_ERROR_INVALIDID'));
 		}
 
-		// Try to delete files
+		// Try to delete files. This will check (and stop) if any record is a frozen one
 		$this->deleteFile();
 
 		if (!Platform::getInstance()->delete_statistics($id))
 		{
-			throw new \RuntimeException($db->getError(), 500);
+			throw new RuntimeException($db->getError(), 500);
 		}
 
 		return true;
@@ -422,17 +423,21 @@ ENDBODY;
 	 */
 	public function deleteFile()
 	{
-		JLoader::import('joomla.filesystem.file');
-
 		$id = $this->getState('id', 0);
 
 		if ((!is_numeric($id)) || ($id <= 0))
 		{
-			throw new RecordNotLoaded(JText::_('COM_AKEEBA_BUADMIN_ERROR_INVALIDID'));
+			throw new RecordNotLoaded(Text::_('COM_AKEEBA_BUADMIN_ERROR_INVALIDID'));
 		}
 
 		// Get the backup statistics record and the files to delete
 		$stat     = (array) Platform::getInstance()->get_statistics($id);
+
+		if ($stat['frozen'])
+		{
+			throw new FrozenRecordError(Text::_('COM_AKEEBA_BUADMIN_FROZENRECORD_ERROR'));
+		}
+
 		$allFiles = Factory::getStatistics()->get_all_filenames($stat, false);
 
 		// Remove the custom log file if necessary
@@ -457,7 +462,7 @@ ENDBODY;
 
 			if (!$new_status)
 			{
-				$new_status = JFile::delete($filename);
+				$new_status = File::delete($filename);
 			}
 
 			$status = $status ? $new_status : false;
@@ -471,23 +476,19 @@ ENDBODY;
 	 *
 	 * @param   array  $filters  Filters to apply. See Platform::get_statistics_list
 	 *
-	 * @return  JPagination
-	 *
+	 * @return  Pagination
 	 */
 	public function &getPagination($filters = null)
 	{
 		if (empty($this->pagination))
 		{
-			// Import the pagination library
-			JLoader::import('joomla.html.pagination');
-
 			// Prepare pagination values
 			$total      = Platform::getInstance()->get_statistics_count($filters);
 			$limitstart = $this->getState('limitstart', 0);
 			$limit      = $this->getState('limit', 10);
 
 			// Create the pagination object
-			$this->pagination = new JPagination($total, $limitstart, $limit);
+			$this->pagination = new Pagination($total, $limitstart, $limit);
 		}
 
 		return $this->pagination;
@@ -502,6 +503,30 @@ ENDBODY;
 	{
 		$this->container->params->set('show_howtorestoremodal', 0);
 		$this->container->params->save();
+	}
+
+	/**
+	 * Freeze or melt a backup report
+	 *
+	 * @param array $ids        Array of backup IDs that should be updated
+	 * @param int   $freeze     1= freeze, 0= melt
+	 *
+	 * @throws Exception
+	 */
+	public function freezeUnfreezeRecords(array $ids, $freeze)
+	{
+		if (!$ids)
+		{
+			return;
+		}
+
+		$freeze = (int) $freeze;
+
+		foreach ($ids as $id)
+		{
+			// If anything wrong happens, let the exception bubble up, so it will be reported
+			Platform::getInstance()->set_or_update_statistics($id, ['frozen' => $freeze]);
+		}
 	}
 
 	/**
@@ -532,7 +557,7 @@ ENDBODY;
 			{
 				if (!@unlink($logPath))
 				{
-					JFile::delete($logPath);
+					File::delete($logPath);
 				}
 			}
 		}

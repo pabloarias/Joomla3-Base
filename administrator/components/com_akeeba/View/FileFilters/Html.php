@@ -8,7 +8,7 @@
 namespace Akeeba\Backup\Admin\View\FileFilters;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\Backup\Admin\Model\FileFilters;
 use Akeeba\Backup\Admin\View\ViewTraits\ProfileIdAndName;
@@ -41,7 +41,7 @@ class Html extends BaseView
 	 */
 	public function onBeforeMain()
 	{
-		$this->container->template->addJS('media://com_akeeba/js/FileFilters.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/FileFilters.min.js', true, false, $this->container->mediaVersion);
 
 		/** @var FileFilters $model */
 		$model = $this->getModel();

@@ -8,18 +8,22 @@
 namespace Akeeba\Backup\Admin\View\Manage;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\Backup\Admin\Model\Profiles;
 use Akeeba\Backup\Admin\Model\Statistics;
+use Akeeba\Engine\Factory;
 use Akeeba\Engine\Platform;
 use DateTimeZone;
+use Exception;
 use FOF30\Date\Date;
 use FOF30\View\DataView\Html as BaseView;
-use JLoader;
+use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\HTML\HTMLHelper as JHtml;
 use Joomla\CMS\Language\Text as JText;
+use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Uri\Uri as JUri;
+use stdClass;
 
 /**
  * View controller for the Backup Now page
@@ -69,6 +73,13 @@ class Html extends BaseView
 	public $profilesList = [];
 
 	/**
+	 * List of frozen options for JHtmlSelect
+	 *
+	 * @var  array
+	 */
+	public $frozenList = [];
+
+	/**
 	 * Order direction, ASC/DESC
 	 *
 	 * @var  string
@@ -111,6 +122,13 @@ class Html extends BaseView
 	public $fltProfile = '';
 
 	/**
+	 * Frozen records filter
+	 *
+	 * @var string
+	 */
+	public $fltFrozen = '';
+
+	/**
 	 * List of records to display
 	 *
 	 * @var  array
@@ -120,7 +138,7 @@ class Html extends BaseView
 	/**
 	 * Pagination object
 	 *
-	 * @var \JPagination
+	 * @var Pagination
 	 */
 	public $pagination = null;
 
@@ -159,15 +177,12 @@ class Html extends BaseView
 	 *
 	 * @return  void
 	 *
-	 * @throws  \Exception
+	 * @throws  Exception
 	 */
 	public function onBeforeMain()
 	{
 		// Load custom Javascript for this page
-		$this->container->template->addJS('media://com_akeeba/js/Manage.min.js');
-
-		// Load core classes used in the view template
-		JLoader::import('joomla.utilities.date');
+		$this->container->template->addJS('media://com_akeeba/js/Manage.min.js', true, false, $this->container->mediaVersion);
 
 		$user              = $this->container->platform->getUser();
 		$this->permissions = [
@@ -203,7 +218,9 @@ class Html extends BaseView
 		$this->fltTo            = $platform->getUserStateFromRequest($hash . 'filter_to', 'to', $input, '');
 		$this->fltOrigin        = $platform->getUserStateFromRequest($hash . 'filter_origin', 'origin', $input, '');
 		$this->fltProfile       = $platform->getUserStateFromRequest($hash . 'filter_profile', 'profile', $input, '');
-		$this->lists            = new \stdClass();
+		$this->fltFrozen        = $platform->getUserStateFromRequest($hash . 'filter_frozen', 'frozen', $input, '');
+
+		$this->lists            = new stdClass();
 		$this->lists->order     = $platform->getUserStateFromRequest($hash . 'filter_order', 'filter_order', $input, 'backupstart');
 		$this->lists->order_Dir = $platform->getUserStateFromRequest($hash . 'filter_order_Dir', 'filter_order_Dir', $input, 'DESC');
 
@@ -219,7 +236,7 @@ class Html extends BaseView
 
 		if (!$this->container->platform->isCli() && class_exists('JFactory'))
 		{
-			$app = \JFactory::getApplication();
+			$app = JFactory::getApplication();
 
 			if (method_exists($app, 'get'))
 			{
@@ -250,6 +267,12 @@ class Html extends BaseView
 		$this->profilesList = $profilesList; // Profiles list for select box
 		$this->itemCount    = count($this->items);
 		$this->pagination   = $model->getPagination($filters); // Pagination object
+
+		$this->frozenList = [
+			JHtml::_('select.option', '', '–' . JText::_('COM_AKEEBA_BUADMIN_LABEL_FROZEN_SELECT') . '–'),
+			JHtml::_('select.option', '1', JText::_('COM_AKEEBA_BUADMIN_LABEL_FROZEN_FROZEN')),
+			JHtml::_('select.option', '2', JText::_('COM_AKEEBA_BUADMIN_LABEL_FROZEN_UNFROZEN')),
+		];
 
 		if ($this->lists->order_Dir)
 		{
@@ -321,7 +344,7 @@ class Html extends BaseView
 
 		if (version_compare(PHP_VERSION, '5.6.0', 'lt'))
 		{
-			return number_format($sizeInBytes / pow(1024, $unit), $decimals, $decSeparator, $thousandsSeparator) . ' ' . $units[$unit];
+			return number_format($sizeInBytes / 1024 ** $unit, $decimals, $decSeparator, $thousandsSeparator) . ' ' . $units[$unit];
 		}
 
 		return number_format($sizeInBytes / (1024 ** $unit), $decimals, $decSeparator, $thousandsSeparator) . ' ' . $units[$unit];
@@ -341,7 +364,7 @@ class Html extends BaseView
 		if (!is_array($backup_types))
 		{
 			// Load a mapping of backup types to textual representation
-			$scripting    = \Akeeba\Engine\Factory::getEngineParamsProvider()->loadScripting();
+			$scripting    = Factory::getEngineParamsProvider()->loadScripting();
 			$backup_types = [];
 			foreach ($scripting['scripts'] as $key => $data)
 			{
@@ -557,7 +580,6 @@ class Html extends BaseView
 		}
 		elseif ($this->fltTo)
 		{
-			JLoader::import('joomla.utilities.date');
 			$toDate = new Date($this->fltTo);
 			$to     = $toDate->format('Y-m-d') . ' 23:59:59';
 
@@ -567,6 +589,7 @@ class Html extends BaseView
 				'value'   => $to,
 			];
 		}
+
 		if ($this->fltOrigin)
 		{
 			$filters[] = [
@@ -575,12 +598,30 @@ class Html extends BaseView
 				'value'   => $this->fltOrigin,
 			];
 		}
+
 		if ($this->fltProfile)
 		{
 			$filters[] = [
 				'field'   => 'profile_id',
 				'operand' => '=',
 				'value'   => (int) $this->fltProfile,
+			];
+		}
+
+		if ($this->fltFrozen == 1)
+		{
+			$filters[] = [
+				'field'   => 'frozen',
+				'operand' => '=',
+				'value'   => 1,
+			];
+		}
+		elseif ($this->fltFrozen == 2)
+		{
+			$filters[] = [
+				'field'   => 'frozen',
+				'operand' => '=',
+				'value'   => 0,
 			];
 		}
 

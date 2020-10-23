@@ -9,6 +9,7 @@
 
 namespace Akeeba\Engine\Core\Domain;
 
+defined('AKEEBAENGINE') || die();
 
 use Akeeba\Engine\Base\Part;
 use Akeeba\Engine\Factory;
@@ -722,7 +723,8 @@ class Finalization extends Part
 			return true;
 		}
 
-		$exception = null;
+		$exception          = null;
+		$finishedProcessing = false;
 
 		try
 		{
@@ -764,10 +766,11 @@ class Finalization extends Part
 		// We finished normally. Fetch the stats record
 		$statistics = Factory::getStatistics();
 		$registry   = Factory::getConfiguration();
-		$data       = [
+		$data = [
 			'backupend' => Platform::getInstance()->get_timestamp_database(),
 			'status'    => 'complete',
 			'multipart' => $registry->get('volatile.statistics.multipart', 0),
+			'instep'    => 0,
 		];
 
 		try
@@ -897,6 +900,13 @@ class Finalization extends Part
 			{
 				$stat = Platform::getInstance()->get_statistics($id);
 
+				// Exclude frozen record from quota management
+				if (isset($stat['frozen']) && $stat['frozen'])
+				{
+					Factory::getLog()->debug(sprintf("Excluding frozen backup id %d from quota management", $id));
+					continue;
+				}
+
 				try
 				{
 					$backupstart = new DateTime($stat['backupstart']);
@@ -911,7 +921,7 @@ class Finalization extends Part
 
 				// Get the log file name
 				$tag      = $stat['tag'];
-				$backupId = isset($stat['backupid']) ? $stat['backupid'] : '';
+				$backupId = $stat['backupid'] ?? '';
 				$logName  = '';
 
 				if (!empty($backupId))
@@ -1031,7 +1041,7 @@ class Finalization extends Part
 			else
 			{
 				Factory::getLog()->debug("Processing count quotas");
-				// Yes, aply the quota setting. Add to $ret all entries minus the last
+				// Yes, apply the quota setting. Add to $ret all entries minus the last
 				// $countQuota ones.
 				$totalRecords = count($allFiles);
 				$checkLimit   = $totalRecords - $countQuota;
@@ -1064,7 +1074,7 @@ class Finalization extends Part
 										$killLogs[] = dirname($filePath) . '/' . $def['logname'];
 
 									}
-									elseif(@file_exists(dirname($filePath) . '/' . substr($def['logname'], 0, -4)))
+									elseif (@file_exists(dirname($filePath) . '/' . substr($def['logname'], 0, -4)))
 									{
 										/**
 										 * Transitional period: the log file akeeba.tag.log.php may not exist but the
@@ -1219,7 +1229,7 @@ class Finalization extends Part
 		{
 			$filename = array_shift($this->remote_files_killlist);
 
-			list($engineName, $path) = explode('://', $filename);
+			[$engineName, $path] = explode('://', $filename);
 
 			$engine = Factory::getPostprocEngine($engineName);
 
@@ -1288,6 +1298,12 @@ class Finalization extends Part
 		foreach ($allRecords as $item)
 		{
 			if ($item['id'] == $latestBackupId)
+			{
+				continue;
+			}
+
+			// Skip frozen records
+			if (isset($item['frozen']) && $item['frozen'])
 			{
 				continue;
 			}

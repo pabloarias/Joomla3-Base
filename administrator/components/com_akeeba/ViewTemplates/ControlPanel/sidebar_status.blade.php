@@ -8,7 +8,7 @@
 /** @var $this \Akeeba\Backup\Admin\View\ControlPanel\Html */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 ?>
 <div class="akeeba-panel">
@@ -60,25 +60,10 @@ defined('_JEXEC') or die();
             </a>
         @endif
 
-        {{-- Reload update information --}}
-        @if (!AKEEBA_PRO)
-            <p style="margin: 0.5em 0">
-                <a href="index.php?option=com_akeeba&view=ControlPanel&task=reloadUpdateInformation"
-                   class="akeeba-btn--dark">
-                    @lang('COM_AKEEBA_CPANEL_MSG_RELOADUPDATE')
-                </a>
-            </p>
-        @else
-            <a href="index.php?option=com_akeeba&view=ControlPanel&task=reloadUpdateInformation"
-               class="akeeba-btn--dark">
-                @lang('COM_AKEEBA_CPANEL_MSG_RELOADUPDATE')
-            </a>
-        @endif
-
         {{-- Pro upsell --}}
         @if(!AKEEBA_PRO && (time() - $this->lastUpsellDismiss < 1296000))
             <p style="margin: 0.5em 0">
-                <a href="https://www.akeebabackup.com/landing/akeeba-backup.html"
+                <a href="https://www.akeeba.com/landing/akeeba-backup.html"
                    class="akeeba-btn--ghost--small">
                     <span class="aklogo-backup-j"></span>
                     @lang('COM_AKEEBA_CONTROLPANEL_BTN_LEARNMORE')

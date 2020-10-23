@@ -15,7 +15,7 @@ use Joomla\CMS\HTML\HTMLHelper as JHtml;
 use Joomla\CMS\Language\Text as JText;
 use Joomla\CMS\Uri\Uri as JUri;
 
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 class Html extends \FOF30\View\DataView\Html
 {
@@ -41,8 +41,8 @@ class Html extends \FOF30\View\DataView\Html
 	public function onBeforeMain()
 	{
 		// Load Javascript files
-		$this->container->template->addJS('media://com_akeeba/js/FileFilters.min.js');
-		$this->container->template->addJS('media://com_akeeba/js/RegExFileFilter.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/FileFilters.min.js', true, false, $this->container->mediaVersion);
+		$this->container->template->addJS('media://com_akeeba/js/RegExFileFilter.min.js', true, false, $this->container->mediaVersion);
 
 		/** @var RegExFileFilters $model */
 		$model = $this->getModel();

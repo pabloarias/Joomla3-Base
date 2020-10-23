@@ -9,7 +9,7 @@
 
 namespace Akeeba\Engine\Dump\Native;
 
-
+defined('AKEEBAENGINE') || die();
 
 use Akeeba\Engine\Driver\QueryException;
 use Akeeba\Engine\Dump\Base;
@@ -153,7 +153,7 @@ class Mysql extends Base
 			{
 				// The CREATE command wasn't cached. Time to create it. The $type and $dependencies
 				// variables will be thrown away.
-				$type         = isset($this->tables_data[$tableName]['type']) ? $this->tables_data[$tableName]['type'] : 'table';
+				$type         = $this->tables_data[$tableName]['type'] ?? 'table';
 				$dependencies = [];
 				$outCreate    = $this->get_create($tableAbstract, $tableName, $type, $dependencies);
 			}
@@ -1403,7 +1403,7 @@ class Mysql extends Base
 			$table_sql = trim($table_sql);
 			$lines     = explode("\n", $table_sql);
 			$firstLine = array_shift($lines);
-			$pattern   = '/^CREATE(.*) ' . strtoupper($type) . ' (.*)/i';
+			$pattern   = '/^CREATE(.*?) ' . strtoupper($type) . ' (.*)/i';
 			$result    = preg_match($pattern, $firstLine, $matches);
 			$table_sql = 'CREATE ' . strtoupper($type) . ' ' . $matches[2] . "\n" . implode("\n", $lines);
 			$table_sql = trim($table_sql);
@@ -1418,7 +1418,7 @@ class Mysql extends Base
 		if (in_array($type, ['table', 'merge', 'view']))
 		{
 			// Check for CREATE VIEW
-			$pattern = '/^CREATE(.*) VIEW (.*)/i';
+			$pattern = '/^CREATE(.*?) VIEW (.*)/i';
 			$result  = preg_match($pattern, $table_sql, $matches);
 
 			if ($result === 1)
@@ -1456,7 +1456,7 @@ class Mysql extends Base
 				 * TABLESPACE tablespace_name [STORAGE {DISK|MEMORY}]
 				 * where tablespace_name can be a quoted or unquoted identifier.
 				 */
-				list($validCharRegEx, $unicodeFlag) = $this->getMySQLIdentifierCharacterRegEx();
+				[$validCharRegEx, $unicodeFlag] = $this->getMySQLIdentifierCharacterRegEx();
 				$tablespaceName = "((($validCharRegEx){1,})|(`.*`))";
 				$suffix         = 'STORAGE\s{1,}(DISK|MEMORY)';
 				$regex          = "#TABLESPACE\s{1,}$tablespaceName\s{0,}($suffix){0,1}#i" . $unicodeFlag;
@@ -1482,7 +1482,6 @@ class Mysql extends Base
 		 * Replace table name and names of referenced tables with their abstracted forms and populate dependency tables
 		 * at the same time.
 		 */
-
 		// On DB only backup we don't want any replacing to take place, do we?
 		if (!Factory::getEngineParamsProvider()->getScriptingParameter('db.abstractnames', 1))
 		{
@@ -1501,7 +1500,7 @@ class Mysql extends Base
 		 *
 		 * By quoting before we make sure this won't happen.
 		 */
-		list($dependencies, $table_sql) = $this->replaceTableNamesWithAbstracts($table_name, $table_sql, !$notracking);
+		[$dependencies, $table_sql] = $this->replaceTableNamesWithAbstracts($table_name, $table_sql, !$notracking);
 
 		// On DB only backup we don't want any replacing to take place, do we?
 		if (!Factory::getEngineParamsProvider()->getScriptingParameter('db.abstractnames', 1))
@@ -1629,7 +1628,7 @@ class Mysql extends Base
 				 * not, e.g. in the definitions of TRIGGERs, we need to base our detection on the valid characters for
 				 * unquoted MySQL table names per https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
 				 */
-				list($bareCharRegex, $regexFlags) = $this->getMySQLIdentifierCharacterRegEx();
+				[$bareCharRegex, $regexFlags] = $this->getMySQLIdentifierCharacterRegEx();
 				$fullCharRegex = "/$bareCharRegex/$regexFlags";
 
 				while (true)

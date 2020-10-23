@@ -8,16 +8,18 @@
 namespace Akeeba\Backup\Admin\Dispatcher;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\Backup\Admin\Helper\SecretWord;
 use Akeeba\Backup\Admin\Model\ControlPanel;
 use Akeeba\Engine\Factory;
 use Akeeba\Engine\Platform;
+use AkeebaFEFHelper;
 use FOF30\Container\Container;
 use FOF30\Dispatcher\Dispatcher as BaseDispatcher;
 use FOF30\Dispatcher\Mixin\ViewAliases;
 use Joomla\CMS\Factory as JFactory;
+use Joomla\CMS\Language\Text;
 
 class Dispatcher extends BaseDispatcher
 {
@@ -28,6 +30,7 @@ class Dispatcher extends BaseDispatcher
 	{
 		onBeforeDispatch as onBeforeDispatchViewAliases;
 	}
+
 	/** @var  \Akeeba\Backup\Admin\Container  The container we belong to */
 	protected $container = null;
 
@@ -90,7 +93,7 @@ class Dispatcher extends BaseDispatcher
 		// Does the user have adequate permissions to access our component?
 		if (!$this->container->platform->authorise('core.manage', 'com_akeeba'))
 		{
-			throw new \RuntimeException(\JText::_('JERROR_ALERTNOAUTHOR'), 404);
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 404);
 		}
 
 		// FEF Renderer options. Used to load the common CSS file.
@@ -101,6 +104,15 @@ class Dispatcher extends BaseDispatcher
 		{
 			$customCss .= ', media://com_akeeba/css/dark.min.css';
 		}
+
+		$helperFile = JPATH_SITE . '/media/fef/fef.php';
+
+		if (!class_exists('AkeebaFEFHelper') && is_file($helperFile))
+		{
+			include_once $helperFile;
+		}
+
+		AkeebaFEFHelper::load();
 
 		$this->container->renderer->setOptions([
 			'custom_css' => $customCss,
@@ -130,7 +142,7 @@ class Dispatcher extends BaseDispatcher
 				// The update is stuck. We will display a warning in the Control Panel
 			}
 
-			$msg = \JText::_('COM_AKEEBA_CONTROLPANEL_MSG_REBUILTTABLES');
+			$msg = Text::_('COM_AKEEBA_CONTROLPANEL_MSG_REBUILTTABLES');
 			$this->container->platform->redirect('index.php', 307, $msg, 'warning');
 		}
 
@@ -182,33 +194,6 @@ class Dispatcher extends BaseDispatcher
 		$this->container->renderer->setOption('linkbar_style', 'classic');
 	}
 
-	public function onAfterDispatch()
-	{
-		/**
-		 * Apply our CloudFlare Rocket Loader workaround.
-		 *
-		 * See the after_render.php file for a lengthy explanation.
-		 */
-		if ($this->input->get('format', 'html') != 'html')
-		{
-			return;
-		}
-
-		if (!function_exists('akeebaBackupOnAfterRenderToFixBrokenCloudFlareRocketLoader'))
-		{
-			require_once __DIR__ . '/after_render.php';
-		}
-
-		try
-		{
-			JFactory::getApplication()->registerEvent('onAfterRender', 'akeebaBackupOnAfterRenderToFixBrokenCloudFlareRocketLoader');
-		}
-		catch (\Exception $e)
-		{
-			// Ooops. JFactory died on us. Bye-bye!
-		}
-	}
-
 	public function loadAkeebaEngine()
 	{
 		// Necessary defines for Akeeba Engine
@@ -216,7 +201,6 @@ class Dispatcher extends BaseDispatcher
 		{
 			define('AKEEBAENGINE', 1);
 			define('AKEEBAROOT', $this->container->backEndPath . '/BackupEngine');
-			define('ALICEROOT', $this->container->backEndPath . '/AliceEngine');
 		}
 
 		// Make sure we have a profile set throughout the component's lifetime
@@ -230,12 +214,6 @@ class Dispatcher extends BaseDispatcher
 		// Load Akeeba Engine
 		$basePath = $this->container->backEndPath;
 		require_once $basePath . '/BackupEngine/Factory.php';
-
-		// Load ALICE (Pro version only)
-		if (@file_exists($basePath . '/AliceEngine/factory.php'))
-		{
-			require_once $basePath . '/AliceEngine/factory.php';
-		}
 	}
 
 	public function loadAkeebaEngineConfiguration()
@@ -254,17 +232,17 @@ class Dispatcher extends BaseDispatcher
 	private function loadCommonJavascript()
 	{
 		// Do not move: everything depends on UserInterfaceCommon
-		$this->container->template->addJS('media://com_akeeba/js/UserInterfaceCommon.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/UserInterfaceCommon.min.js', true, false, $this->container->mediaVersion);
 		// Do not move: System depends on Modal
-		$this->container->template->addJS('media://com_akeeba/js/Modal.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/Modal.min.js', true, false, $this->container->mediaVersion);
 		// Do not move: System depends on Ajax
-		$this->container->template->addJS('media://com_akeeba/js/Ajax.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/Ajax.min.js', true, false, $this->container->mediaVersion);
 		// Do not move: System depends on Ajax
-		$this->container->template->addJS('media://com_akeeba/js/System.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/System.min.js', true, false, $this->container->mediaVersion);
 		// Do not move: Tooltip depends on System
-		$this->container->template->addJS('media://com_akeeba/js/Tooltip.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/Tooltip.min.js', true, false, $this->container->mediaVersion);
 		// Always add last (it's the least important)
-		$this->container->template->addJS('media://com_akeeba/js/piecon.min.js');
+		$this->container->template->addJS('media://com_akeeba/js/piecon.min.js', true, false, $this->container->mediaVersion);
 	}
 
 	/**

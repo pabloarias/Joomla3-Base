@@ -8,7 +8,7 @@
 /** @var $this \Akeeba\Backup\Admin\View\ControlPanel\Html */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 // All of the buttons in this panel require the Configure privilege
 if (!$this->permissions['configure'])
@@ -22,7 +22,7 @@ if (!$this->permissions['configure'])
             <h3>@lang('COM_AKEEBA_CPANEL_HEADER_ADVANCED')</h3>
         </header>
 
-        <div class="akeeba-grid--small">
+        <div class="akeeba-grid">
             @if($this->permissions['configure'])
                 <a class="akeeba-action--teal"
                    href="index.php?option=com_akeeba&view=Schedule">
