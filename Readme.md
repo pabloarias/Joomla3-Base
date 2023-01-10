@@ -2,6 +2,8 @@
 
 Este es un paquete que incluye Joomla 3 y diversas extensiones para hacer más breve la inicialización de un nuevo proyecto web.
 
+¡Ojo! En estos momentos no deberías estar pensando en desplegar un proyecto con Joomla 3. Usa siempre la última versión disponible.
+
 ## Notas
 
 - Se puede descargar un archivo jpa, copia del sitio completo, desde la carpeta administrator/components/com_akeeba/backup.
